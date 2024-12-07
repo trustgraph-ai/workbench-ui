@@ -12,7 +12,7 @@ def run():
 
     logging.info("Starting...")
 
-    a = Api()
+    a = Api(port=8089)
 
     a.run()
 

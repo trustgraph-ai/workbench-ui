@@ -9,7 +9,7 @@ ui:
 	rm -rf workbench-ui/workbench/ui/
 	cp -r dist/ workbench-ui/workbench/ui/
 #	cp public/*.png workbench-ui/workbench/ui/
-#	cp public/*.svg workbench-ui/workbench/ui/
+	cp public/*.svg workbench-ui/workbench/ui/
 
 service-package: ui update-package-versions
 	cd workbench-ui && python3 setup.py sdist --dist-dir ../pkgs/
