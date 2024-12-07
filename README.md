@@ -1,5 +1,5 @@
 
-# Config util MVP
+# Workbench util MVP
 
 ## Setup for Python
 
@@ -29,8 +29,8 @@ make service-package
 Then run the Python package which serves the generator and UI:
 
 ```
-export PYTHONPATH=config-ui
-config-ui/scripts/service
+export PYTHONPATH=workbench-ui
+workbench-ui/scripts/service
 ```
 
 Generation should work
@@ -45,7 +45,7 @@ make service-package VERSION=0.0.0
 and run it
 
 ```
-podman run -i -t -p 8080:8080 localhost/config-ui:0.0.0
+podman run -i -t -p 8080:8080 localhost/workbench-ui:0.0.0
 ```
 
 Go to http://localhost:8080
