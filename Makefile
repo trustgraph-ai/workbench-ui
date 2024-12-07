@@ -6,29 +6,18 @@ all: service-package container
 
 ui:
 	npm run build
-	rm -rf config-ui/config_ui/ui/
-	cp -r dist/ config-ui/config_ui/ui/
-	cp public/*.png config-ui/config_ui/ui/
-	cp public/*.svg config-ui/config_ui/ui/
+	rm -rf workbench-ui/workbench/ui/
+	cp -r dist/ workbench-ui/workbench/ui/
+#	cp public/*.png workbench-ui/workbench/ui/
+#	cp public/*.svg workbench-ui/workbench/ui/
 
-template-data:
-	rm -rf config-ui/config_ui/templates
-	mkdir -p config-ui/config_ui/templates
-	find templates -name '*.jsonnet' | cpio -pdm config-ui/config_ui/
-
-resources-data:
-	rm -rf config-ui/config_ui/resources
-	mkdir -p config-ui/config_ui/resources
-	cp -r grafana config-ui/config_ui/resources/
-	cp -r prometheus config-ui/config_ui/resources/
-
-service-package: ui template-data resources-data update-package-versions
-	cd config-ui && python3 setup.py sdist --dist-dir ../pkgs/
+service-package: ui update-package-versions
+	cd workbench-ui && python3 setup.py sdist --dist-dir ../pkgs/
 
 update-package-versions:
-	echo __version__ = \"${PACKAGE_VERSION}\" > config-ui/config_ui/version.py
+	echo __version__ = \"${PACKAGE_VERSION}\" > workbench-ui/workbench/version.py
 
-CONTAINER=localhost/config-ui
+CONTAINER=localhost/workbench-ui
 DOCKER=podman
 
 container:
