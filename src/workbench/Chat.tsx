@@ -17,17 +17,22 @@ const Chat : React.FC <ChatProps> = ({
 
     const onMessage = useCallback((message : any) => {
         console.log("MESSAGE:", message);
+        if (message.data) {
+            console.log(message.data);
+            const obj = JSON.parse(message.data);
+            console.log(obj.response.response);
+        }
     }, []);
 
     const click = () => {
         console.log(text);
-        console.log(socket);
         socket.send(
             JSON.stringify({
                 "id": "12314",
-                "service": "embeddings",
+                "service": "text-completion",
                 "request": {
-                    "text": text
+                    "system": "You are a helpful assistant.",
+                    "prompt": text
                 }
             })
         );
