@@ -10,9 +10,9 @@ RUN mkdir /root/wheels
 
 RUN pip wheel -w /root/wheels --no-deps jsonnet
 
-COPY config-ui /root/config-ui/
+COPY workbench-ui /root/workbench-ui/
 
-RUN (cd /root/config-ui && pip wheel -w /root/wheels --no-deps .)
+RUN (cd /root/workbench-ui && pip wheel -w /root/wheels --no-deps .)
 
 FROM alpine:3.20
 
