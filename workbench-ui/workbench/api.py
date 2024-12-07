@@ -1,4 +1,5 @@
 
+import aiohttp
 from aiohttp import web
 import yaml
 import zipfile
@@ -98,6 +99,44 @@ class Api:
         except Exception as e:
             logging.error(f"Exception: {e}")
             raise web.HTTPInternalServerError()
+
+    async def socket(req):
+
+          ws_server = web.WebSocketResponse()
+          await ws_server.prepare(req)
+
+          session = aiohttp.ClientSession()
+
+          url = "http://localhost:8080/api/v1/mux"
+          async with session.ws_connect(url) as ws_client:
+
+            async def wsforward(ws_from,ws_to):
+                async for msg in ws_from:
+
+                    mt = msg.type
+                    md = msg.data
+
+                    if mt == aiohttp.WSMsgType.TEXT:
+                        await ws_to.send_str(md)
+                    elif mt == aiohttp.WSMsgType.BINARY:
+                        await ws_to.send_bytes(md)
+                    elif mt == aiohttp.WSMsgType.PING:
+                        await ws_to.ping()
+                    elif mt == aiohttp.WSMsgType.PONG:
+                        await ws_to.pong()
+                    elif ws_to.closed:
+                        await ws_to.close(
+                            code=ws_to.close_code,message=msg.extra
+                        )
+                    else:
+                        raise ValueError('Wasn't expecting this message')
+
+            finished, unfinished = await asyncio.wait([
+                wsforward(ws_server,ws_client),
+                wsforward(ws_client,ws_server)
+            ], return_when=asyncio.FIRST_COMPLETED)
+
+            return ws_server
 
     def run(self):
 

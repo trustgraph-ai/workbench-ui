@@ -3,7 +3,7 @@ import React from 'react';
 
 import { Typography, Box, Stack } from '@mui/material';
 
-const Banner: React.FC = () => {
+const Banner : React.FC = () => {
 
     return (
 
@@ -18,7 +18,7 @@ const Banner: React.FC = () => {
                         height="45"/>
                 </Box>
                 <Typography variant="h4" component="h1">
-                    TrustGraph Configuration Generator
+                    TrustGraph Workbench
                 </Typography>
         </Stack>
     );

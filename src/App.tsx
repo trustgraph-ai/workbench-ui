@@ -1,12 +1,12 @@
 
 import './App.scss';
-import SimpleEditor from './simple-editor/SimpleEditor';
+import Workbench from './workbench/Workbench';
 
 function App() {
 
     return (
         <>
-        <SimpleEditor/>
+        <Workbench/>
         </>
     );
 
