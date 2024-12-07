@@ -1,4 +1,5 @@
 
+import asyncio
 import aiohttp
 from aiohttp import web
 import yaml
@@ -16,6 +17,8 @@ class Api:
 
         self.port = int(config.get("port", "8080"))
         self.app = web.Application(middlewares=[])
+
+        self.app.add_routes([web.get("/api/socket", self.socket)])
 
         self.app.add_routes([web.get("/{tail:.*}", self.everything)])
 
@@ -100,18 +103,27 @@ class Api:
             logging.error(f"Exception: {e}")
             raise web.HTTPInternalServerError()
 
-    async def socket(req):
+    async def socket(self, request):
 
-          ws_server = web.WebSocketResponse()
-          await ws_server.prepare(req)
+        ws_server = web.WebSocketResponse()
+        await ws_server.prepare(request)
 
-          session = aiohttp.ClientSession()
+        session = aiohttp.ClientSession()
 
-          url = "http://localhost:8080/api/v1/mux"
-          async with session.ws_connect(url) as ws_client:
+        url = "http://localhost:8088/api/v1/mux"
 
-            async def wsforward(ws_from,ws_to):
-                async for msg in ws_from:
+        running = True
+
+        async with session.ws_connect(url) as ws_client:
+
+            async def wsforward(ws_from, ws_to):
+
+                while running:
+
+                    try:
+                        msg = await ws_from.receive(timeout=0.5)
+                    except TimeoutError:
+                        continue
 
                     mt = msg.type
                     md = msg.data
@@ -124,19 +136,31 @@ class Api:
                         await ws_to.ping()
                     elif mt == aiohttp.WSMsgType.PONG:
                         await ws_to.pong()
-                    elif ws_to.closed:
-                        await ws_to.close(
-                            code=ws_to.close_code,message=msg.extra
-                        )
+                    elif mt == aiohttp.WSMsgType.CLOSE:
+                        break
                     else:
-                        raise ValueError('Wasn't expecting this message')
+                        print("Weird message", mt)
+                        break
 
-            finished, unfinished = await asyncio.wait([
-                wsforward(ws_server,ws_client),
-                wsforward(ws_client,ws_server)
-            ], return_when=asyncio.FIRST_COMPLETED)
+            s2c_task = asyncio.create_task(wsforward(ws_server, ws_client))
+            c2s_task = asyncio.create_task(wsforward(ws_client, ws_server))
 
-            return ws_server
+            fin, unfin = await asyncio.wait(
+                [s2c_task, c2s_task],
+                return_when=asyncio.FIRST_COMPLETED
+            )
+
+            running = False
+
+            await ws_server.close()
+            await ws_client.close()
+
+            await s2c_task
+            await c2s_task
+
+        await session.close()
+
+        return ws_server
 
     def run(self):
 
