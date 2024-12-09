@@ -4,7 +4,7 @@ import { createContext, ReactChild, useState, useEffect } from "react";
 const SOCKET_RECONNECTION_TIMEOUT = 2000;
 const SOCKET_URL = "/api/socket";
 
-import { createSocket } from "./Socket";
+import { createSocket } from "./create-socket";
 
 const socket = createSocket();
 
@@ -15,8 +15,6 @@ interface ISocketProvider {
 }
 
 export const SocketProvider = (props : ISocketProvider) => {
-
-//    const [ws, setWs] = useState<Socket>(socket);
 
     return (
         <SocketContext.Provider value={socket}>
