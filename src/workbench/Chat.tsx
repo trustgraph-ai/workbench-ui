@@ -29,49 +29,28 @@ const Chat : React.FC <ChatProps> = ({
 
     const [messages, setMessages] = useState<Message[]>([
         {
-            role: "ai",
-            text: "bunch",
-        },
-        {
             role: "human",
             text: "hello there",
         },
         {
             role: "ai",
-            text: "bunch",
+            text: "Hi!",
         },
-        {
-            role: "human",
-            text: "hello there",
-        }
     ]);
 
-    const handleSendMessage = useCallback((message : any) => {
-        console.log("MESSAGE:", message);
-        if (message.data) {
-            console.log(message.data);
-            const obj = JSON.parse(message.data);
-            console.log(obj.response.response);
-        }
-    }, []);
+    const onSubmit = (text : string) => {
 
-//console.log(messages);
+console.log("MESSAGE:", text);
 
-    const onMessage = () => {
         console.log("Text:", text);
         setMessages([
             ...messages,
             {
-                role: "ai",
-                text: "message",
-            },
-            {
                 role: "human",
-                text: "message",
-            }
+                text: text,
+            },
         ]);
 
-/*
         socket.send(
             JSON.stringify({
                 "id": "12314",
@@ -82,10 +61,42 @@ const Chat : React.FC <ChatProps> = ({
                 }
             })
         );
-*/
-    }
+
+/*
+
+        if (message) {
+            console.log(message.data);
+            const obj = JSON.parse(message.data);
+            console.log(obj.response.response);
+        }
+        */
+        
+    };
+
+    const onMessage = (message : any) => {
+
+        if (!message.data) return;
+
+        const obj = JSON.parse(message.data);
+
+        console.log("In-bound:", obj);
+
+        const text = obj.response.response;
+        console.log(text);
+
+        setMessages([
+            ...messages,
+            {
+                role: "ai",
+                text: text,
+            },
+        ]);
+
+    };
+       
 
     useEffect(() => {
+
         socket.addEventListener("message", onMessage);
 
         return () => {
@@ -126,7 +137,7 @@ const Chat : React.FC <ChatProps> = ({
             </ListItem>
           ))}
         </List>
-        <Box component="form" onSubmit={handleSendMessage} sx={{ display: 'flex', mt: 2 }}>
+        <Box sx={{ display: 'flex', mt: 2 }}>
           <TextField
             fullWidth
             variant="outlined"
@@ -134,9 +145,17 @@ const Chat : React.FC <ChatProps> = ({
             value={text}
             onChange={(e) => setText(e.target.value)}
           />
-          <Button type="submit" variant="contained" endIcon={<Send />} sx={{ ml: 1 }}>
-            Send
+
+          <Button
+              type="submit"
+              variant="contained"
+              endIcon={<Send />}
+              onClick={()=>{onSubmit(text)}}              
+              sx={{ ml: 1 }}
+          >
+              Send
           </Button>
+
         </Box>
 
 
@@ -166,7 +185,7 @@ const Chat : React.FC <ChatProps> = ({
                 </Box>
 
                 <Box>
-                    <Button onClick={()=>click()}>Submit</Button>
+                    <Button onClick={()=>{onSubmit(text)}}>Submit</Button>
                 </Box>
 
             </Stack>
