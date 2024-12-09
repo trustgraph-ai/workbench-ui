@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 
 import {
     List, ListItem, ListItemText, Avatar, Card, CardContent,
@@ -24,6 +24,9 @@ const Chat : React.FC <ChatProps> = ({
 }) => {
 
     const socket = useSocket();
+
+    // For scrolling into view
+    const scrollRef = useRef();
 
     const [text, setText] = useState<string>("hello world");
 
@@ -64,6 +67,16 @@ const Chat : React.FC <ChatProps> = ({
         }
     });
 
+    const scrollToElement = () => {
+        const { current } = scrollRef;
+        if (current !== null) {
+            console.log("SCROLLING");
+            current.scrollIntoView({behavior: "smooth"});
+        }
+    }
+
+    useEffect(scrollToElement, [messages]);
+
     return (
         <>
             <Card sx={{ width: "40rem", margin: "auto", mt: 4 }}>
@@ -76,7 +89,7 @@ const Chat : React.FC <ChatProps> = ({
                             const bgcolor = message.role === 'ai' ? 'primary.main' : 'secondary.main';
                             const mr = message.role === 'human' ? 0 : 2;
                             const ml = message.role === 'human' ? 2 : 0;
-
+                            const last = (ix == (messages.length - 1));
                             return (
                                 <ListItem
                                     key={ix}
@@ -91,24 +104,25 @@ const Chat : React.FC <ChatProps> = ({
                                         { message.role === 'ai' ? <SmartToy/> : <Person/> }
                                     </Avatar>
 
-                            <ListItemText
-                                primary={message.role === 'ai' ? 'AI' : 'You'}
-                                secondary={
-                                  <Typography
-                                    sx={{ display: 'inline' }}
-                                    component="span"
-                                    variant="body2"
-                                    color="text.primary"
-                                  >
-                                    {message.text}
-                                  </Typography>
-                                }
-                                sx={{ textAlign: message.role === 'human' ? 'right' : 'left' }}
-                              />
-                            </ListItem>
-                          )})}
+                                    <ListItemText
+                                        primary={message.role === 'ai' ? 'AI' : 'You'}
+                                        secondary={
+                                          <Typography
+                                              sx={{ display: 'inline' }}
+                                              component="span"
+                                              variant="body2"
+                                              color="text.primary"
+                                          >
+                                              {message.text}
+                                          </Typography>
+                                        }
+                                        sx={{ textAlign: message.role === 'human' ? 'right' : 'left' }}
+                                        ref={last ? scrollRef : null}
+                                    />
+                               </ListItem>
+                         )})}
                     </List>
-                    <Box sx={{ display: 'flex', mt: 2 }}>
+                    <Box sx={{ display: 'flex', mt: 2 }} >
                         <TextField
                           fullWidth
                           variant="outlined"
