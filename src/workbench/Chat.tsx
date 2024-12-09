@@ -40,9 +40,8 @@ const Chat : React.FC <ChatProps> = ({
 
     const onSubmit = (text : string) => {
 
-console.log("MESSAGE:", text);
+        console.log("-> ", text);
 
-        console.log("Text:", text);
         setMessages([
             ...messages,
             {
@@ -61,15 +60,6 @@ console.log("MESSAGE:", text);
                 }
             })
         );
-
-/*
-
-        if (message) {
-            console.log(message.data);
-            const obj = JSON.parse(message.data);
-            console.log(obj.response.response);
-        }
-        */
         
     };
 
@@ -79,10 +69,9 @@ console.log("MESSAGE:", text);
 
         const obj = JSON.parse(message.data);
 
-        console.log("In-bound:", obj);
+        console.log("<- ", obj);
 
         const text = obj.response.response;
-        console.log(text);
 
         setMessages([
             ...messages,
