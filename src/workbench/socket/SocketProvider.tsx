@@ -4,9 +4,11 @@ import { createContext, ReactChild, useState, useEffect } from "react";
 const SOCKET_RECONNECTION_TIMEOUT = 2000;
 const SOCKET_URL = "/api/socket";
 
-const websocket = new WebSocket(SOCKET_URL);
+import { createSocket } from "./Socket";
 
-export const SocketContext = createContext(websocket);
+const socket = createSocket();
+
+export const SocketContext = createContext(socket);
 
 interface ISocketProvider {
     children : ReactChild;
@@ -14,29 +16,10 @@ interface ISocketProvider {
 
 export const SocketProvider = (props : ISocketProvider) => {
 
-    const [ws, setWs] = useState<WebSocket>(websocket);
-
-    useEffect(() => {
-
-        const onClose = () => {
-            setTimeout(() => {
-                setWs(new WebSocket(SOCKET_URL));
-            }, SOCKET_RECONNECTION_TIMEOUT);
-        };
-
-        ws.addEventListener("close", onClose);
-
-        ws.addEventListener("open", () => { console.log("OPEN"); });
-
-        return () => {
-            ws.removeEventListener("close", onClose);
-        };
-
-    }, [ws, setWs]);
-
+//    const [ws, setWs] = useState<Socket>(socket);
 
     return (
-        <SocketContext.Provider value={ws}>
+        <SocketContext.Provider value={socket}>
             {props.children}
         </SocketContext.Provider>
     );

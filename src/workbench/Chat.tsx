@@ -10,7 +10,7 @@ import {
     Send, SmartToy, Person
 } from '@mui/icons-material';
 
-import { useSocket } from './socket/Socket';
+import { useSocket } from './socket/socket';
 
 interface ChatProps {
 }
@@ -50,28 +50,13 @@ const Chat : React.FC <ChatProps> = ({
             },
         ]);
 
-        socket.send(
-            JSON.stringify({
-                "id": "12314",
-                "service": "text-completion",
-                "request": {
-                    "system": "You are a helpful assistant.",
-                    "prompt": text
-                }
-            })
-        );
+        socket.send(text);
         
     };
 
-    const onMessage = (message : any) => {
+    const onMessage = (text : any) => {
 
-        if (!message.data) return;
-
-        const obj = JSON.parse(message.data);
-
-        console.log("<- ", obj);
-
-        const text = obj.response.response;
+        console.log("<- ", text);
 
         setMessages([
             ...messages,
@@ -86,10 +71,10 @@ const Chat : React.FC <ChatProps> = ({
 
     useEffect(() => {
 
-        socket.addEventListener("message", onMessage);
+        socket.addEventListener("text-completion", onMessage);
 
         return () => {
-            socket.removeEventListener("message", onMessage);
+            socket.removeEventListener("text-completion", onMessage);
         }
 
     });
