@@ -28,7 +28,7 @@ const Chat : React.FC <ChatProps> = ({
     // For scrolling into view
     const scrollRef = useRef();
 
-    const [text, setText] = useState<string>("hello world");
+    const [text, setText] = useState<string>("2+5");
 
     const [messages, setMessages] = useState<Message[]>([
         {
@@ -36,18 +36,6 @@ const Chat : React.FC <ChatProps> = ({
             text: "Hello and welcome!",
         },
     ]);
-
-    const onSubmit = (text : string) => {
-        console.log("-> ", text);
-        setMessages([
-            ...messages,
-            {
-                role: "human",
-                text: text,
-            },
-        ]);
-        socket.send(text);
-    };
 
     const onMessage = (text : any) => {
         console.log("<- ", text);
@@ -59,18 +47,38 @@ const Chat : React.FC <ChatProps> = ({
             },
         ]);
     };
-       
-    useEffect(() => {
-        socket.addEventListener("text-completion", onMessage);
-        return () => {
-            socket.removeEventListener("text-completion", onMessage);
-        }
-    });
+      
+    const onSubmit = (text : string) => {
+
+        console.log("-> ", text);
+
+        let updated = [
+            ...messages,
+            {
+                role: "human",
+                text: text,
+            },
+        ];
+
+        setMessages(updated);
+
+        socket.textComplete(text).then(
+            (response : string) => {
+                setMessages([
+                    ...updated,
+                    {
+                        role: "ai",
+                        text: response,
+                    },
+                ]);
+            }
+        );
+
+    };
 
     const scrollToElement = () => {
         const { current } = scrollRef;
         if (current !== null) {
-            console.log("SCROLLING");
             current.scrollIntoView({behavior: "smooth"});
         }
     }
