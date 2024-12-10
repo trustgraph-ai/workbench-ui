@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, Dispatch, SetStateAction } from 'react';
 
 import {
     Card, CardContent, Typography, Box, Button, TextField
@@ -12,9 +12,10 @@ import ChatHistory from './ChatHistory';
 import { Message } from './state/Message';
 import { Entity } from './state/Entity';
 import { Value } from './state/Value';
+import { TriplesQueryResponse } from './socket/trustgraph-socket';
 
 interface ChatConversationProps {
-    setEntities : (ents : Entity[]) => void;
+    setEntities : Dispatch<SetStateAction<Entity[]>>;
 };
 
 const RDFS_LABEL = "http://www.w3.org/2000/01/rdf-schema#label"
@@ -73,7 +74,7 @@ const ChatConversation : React.FC <ChatConversationProps> = ({
 
             // For entities, lookup labels
             (entities : Value[]) => {
-                const promises = Promise.all(
+                const promises = Promise.all<TriplesQueryResponse[]>(
                     entities.map(
                         (ent : Value) =>
                             socket.triplesQuery(
@@ -90,18 +91,18 @@ const ChatConversation : React.FC <ChatConversationProps> = ({
         ).then(
 
             // Convert graph labels to an entity list
-            (responses : any[]) => {
+            (responses : TriplesQueryResponse[]) => {
+
                 for(let resp of responses) {
                     if (!resp.response) continue;
                     if (resp.response.length < 1) continue;
 
-                    const ent = {
+                    const ent : Entity = {
                         label: resp.response[0].o.v,
                         uri: resp.response[0].s.v,
                     };
 
-    console.log(ent);
-                    setEntities((e) => [ ...e, ent ]);
+                    setEntities((e : Entity[]) => [ ...e, ent ]);
 
                 }
             }

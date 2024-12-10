@@ -2,8 +2,8 @@
 //const SOCKET_RECONNECTION_TIMEOUT = 2000;
 const SOCKET_URL = "/api/socket";
 
-interface Socket {
-    textComplete : any;
+export interface Socket {
+    textCompletion : any;
     graphRag : any;
     agent : any;
     embeddings : any;
@@ -11,17 +11,44 @@ interface Socket {
     triplesQuery : any;
 };
 
-interface Value {
+export interface Value {
     v : string,
     e : boolean,
 };
 
-interface Callbacks {
+export interface Callbacks {
     success : any;
     error : any;
 };
 
-interface ApiResponse {
+export interface TextCompletionResponse {
+    id : string;
+    response : {
+        response : string;
+    };
+};
+
+export interface GraphRagResponse {
+    id : string;
+    response : any;
+};
+
+export interface AgentResponse {
+    id : string;
+    response : any;
+};
+
+export interface EmbeddingsResponse {
+    id : string;
+    response : any;
+};
+
+export interface GraphEmbeddingsQueryResponse {
+    id : string;
+    response : any;
+};
+
+export interface TriplesQueryResponse {
     id : string;
     response : any;
 };
@@ -57,7 +84,7 @@ export const createTrustGraphSocket = () : Socket => {
     };
 */
 
-    const textComplete = (text : string) => {
+    const textCompletion = (text : string) => {
         const mid = "m" + id.toString();
         id++;
         const msg = JSON.stringify({
@@ -69,14 +96,14 @@ export const createTrustGraphSocket = () : Socket => {
             }
         });
 
-        return new Promise<ApiResponse>((resolve, reject) => {
+        return new Promise<TextCompletionResponse>((resolve, reject) => {
 
             inFlight[mid] = { success: resolve, error: reject};
 
             ws.send(msg);
 
         }).then(
-            (obj : ApiResponse) => {
+            (obj) => {
                 delete inFlight[obj.id];
                 return obj.response.response;
             }
@@ -94,14 +121,14 @@ export const createTrustGraphSocket = () : Socket => {
             }
         });
 
-        return new Promise<ApiResponse>((resolve, reject) => {
+        return new Promise<GraphRagResponse>((resolve, reject) => {
 
             inFlight[mid] = { success: resolve, error: reject};
 
             ws.send(msg);
 
         }).then(
-            (obj : ApiResponse) => {
+            (obj) => {
                 delete inFlight[obj.id];
                 return obj.response.response;
             }
@@ -129,7 +156,7 @@ export const createTrustGraphSocket = () : Socket => {
             console.log("Error:", e);
         };
 
-        const ok = (e : ApiResponse) => {
+        const ok = (e : AgentResponse) => {
             if (e.response.thought) think(e.response.thought);
             if (e.response.observation) observe(e.response.observation);
             if (e.response.answer) {
@@ -155,7 +182,7 @@ export const createTrustGraphSocket = () : Socket => {
             }
         });
 
-        return new Promise<ApiResponse>((resolve, reject) => {
+        return new Promise<EmbeddingsResponse>((resolve, reject) => {
             inFlight[mid] = { success: resolve, error: reject};
             ws.send(msg);
         }).then(
@@ -181,7 +208,7 @@ export const createTrustGraphSocket = () : Socket => {
             }
         });
 
-        return new Promise<ApiResponse>((resolve, reject) => {
+        return new Promise<GraphEmbeddingsQueryResponse>((resolve, reject) => {
             inFlight[mid] = { success: resolve, error: reject};
             ws.send(msg);
         }).then(
@@ -210,7 +237,7 @@ export const createTrustGraphSocket = () : Socket => {
             }
         });
 
-        return new Promise<ApiResponse>((resolve, reject) => {
+        return new Promise<TriplesQueryResponse>((resolve, reject) => {
             inFlight[mid] = { success: resolve, error: reject};
             ws.send(msg);
         }).then(
@@ -236,7 +263,7 @@ export const createTrustGraphSocket = () : Socket => {
     ws.addEventListener("open", doOpen);
 
     return {
-        textComplete: textComplete,
+        textCompletion: textCompletion,
         graphRag: graphRag,
         agent: agent,
         embeddings: embeddings,
