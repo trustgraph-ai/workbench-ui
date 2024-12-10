@@ -11,8 +11,7 @@ import { useSocket } from './socket/socket';
 import ChatHistory from './ChatHistory';
 import { Message } from './state/Message';
 import { Entity } from './state/Entity';
-import { Value } from './state/Value';
-import { TriplesQueryResponse } from './socket/trustgraph-socket';
+import { Triple, Value } from './socket/trustgraph-socket';
 
 interface ChatConversationProps {
     setEntities : Dispatch<SetStateAction<Entity[]>>;
@@ -74,7 +73,7 @@ const ChatConversation : React.FC <ChatConversationProps> = ({
 
             // For entities, lookup labels
             (entities : Value[]) => {
-                const promises = Promise.all<TriplesQueryResponse[]>(
+                return Promise.all<Triple[]>(
                     entities.map(
                         (ent : Value) =>
                             socket.triplesQuery(
@@ -85,13 +84,15 @@ const ChatConversation : React.FC <ChatConversationProps> = ({
                             )
                     )
                 );
-                return promises;
             }
 
         ).then(
 
+(x : any) => console.log(x)
+
+/*
             // Convert graph labels to an entity list
-            (responses : TriplesQueryResponse[]) => {
+            (responses : Triple[][]) => {
 
                 for(let resp of responses) {
                     if (!resp.response) continue;
@@ -106,6 +107,8 @@ const ChatConversation : React.FC <ChatConversationProps> = ({
 
                 }
             }
+
+*/
 
         );
 

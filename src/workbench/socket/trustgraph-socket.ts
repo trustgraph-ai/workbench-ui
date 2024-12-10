@@ -2,19 +2,31 @@
 const SOCKET_RECONNECTION_TIMEOUT = 2000;
 const SOCKET_URL = "/api/socket";
 
-export interface Socket {
-    close : any;
-    textCompletion : any;
-    graphRag : any;
-    agent : any;
-    embeddings : any;
-    graphEmbeddingsQuery : any;
-    triplesQuery : any;
-};
-
 export interface Value {
     v : string,
     e : boolean,
+};
+
+export interface Triple {
+    s? : Value,
+    p? : Value,
+    o? : Value,
+};
+
+export interface Socket {
+    close : () => void;
+    textCompletion : (text : string) => Promise<string>;
+    graphRag : (text : string) => Promise<string>;
+    agent : (
+        question : string, think : any, observe : any, answer : any,
+    ) => void;
+    embeddings : (text : string) => Promise<number[][]>;
+    graphEmbeddingsQuery : (
+        vecs : number[][], limit : number
+    ) => Promise<Value[]>;
+    triplesQuery : (
+        s? : Value, p? : Value, o? : Value, limit? : number
+    ) => Promise<Triple[]>;
 };
 
 export interface Callbacks {
@@ -46,12 +58,18 @@ export interface EmbeddingsResponse {
 
 export interface GraphEmbeddingsQueryResponse {
     id : string;
-    response : any;
+    response : {
+        entities : Value[];
+    };
 };
 
 export interface TriplesQueryResponse {
     id : string;
-    response : any;
+    response : {
+         s : Value,
+         p : Value,
+         o : Value,
+    }[];
 };
 
 export const createTrustGraphSocket = () : Socket => {
