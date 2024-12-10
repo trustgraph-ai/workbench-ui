@@ -1,19 +1,16 @@
 
 import React, { useState, Dispatch, SetStateAction } from 'react';
 
-import {
-    Card, CardContent, Typography, Box, Button, TextField
-} from '@mui/material';
+import { Card, CardContent, Typography } from '@mui/material';
 
-import { Send } from '@mui/icons-material';
+import ChatHistory from './ChatHistory';
+import InputArea from './InputArea';
 
 import { useSocket } from './socket/socket';
-import ChatHistory from './ChatHistory';
 import { Message } from './state/Message';
 import { Entity } from './state/Entity';
 import { Triple, Value } from './socket/trustgraph-socket';
 
-import InputArea from './InputArea';
 
 interface ChatConversationProps {
     setEntities : Dispatch<SetStateAction<Entity[]>>;

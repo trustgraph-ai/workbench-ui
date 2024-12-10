@@ -1,17 +1,9 @@
 
-import React, { useState, Dispatch, SetStateAction } from 'react';
+import React from 'react';
 
-import {
-    Card, CardContent, Typography, Box, Button, TextField
-} from '@mui/material';
+import { Box, Button, TextField } from '@mui/material';
 
 import { Send } from '@mui/icons-material';
-
-import { useSocket } from './socket/socket';
-import ChatHistory from './ChatHistory';
-import { Message } from './state/Message';
-import { Entity } from './state/Entity';
-import { Triple, Value } from './socket/trustgraph-socket';
 
 interface InputAreaProps {
     text : string;
