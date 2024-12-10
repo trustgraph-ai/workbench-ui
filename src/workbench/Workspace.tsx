@@ -20,7 +20,10 @@ const Workspace : React.FC = () => {
             <Toolbox
                 tool={tool} setTool={setTool}
             />
-            <Tool tool={tool}/>
+            <Tool
+                tool={tool}
+                sx={{ minWidth: '40rem', maxWidth: '90rem' }}
+            />
         </Stack>
 
     );

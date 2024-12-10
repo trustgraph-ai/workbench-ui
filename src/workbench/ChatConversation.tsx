@@ -111,7 +111,7 @@ const ChatConversation : React.FC <ChatConversationProps> = ({
 
     return (
         <>
-            <Card sx={{ width: "40rem", margin: "auto", mt: 4 }}>
+            <Card sx={{ width: "40rem", margin: "0.5rem" }}>
                 <CardContent>
                     <Typography variant="h5" component="div" gutterBottom>
                         AI Chat History

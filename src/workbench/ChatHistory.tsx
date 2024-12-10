@@ -31,7 +31,14 @@ const ChatHistory : React.FC <ChatHistoryProps> = ({
     useEffect(scrollToElement, [messages]);
 
     return (
-        <List sx={{ height: 400, overflowY: 'auto' }}>
+        <List
+            sx={{
+                minHeight: '30rem',
+                maxHeight: '45rem',
+                overflowY: 'auto'
+            }}
+        >
+
             {messages.map((message, ix) => {
 
                 const bgcolor =
@@ -79,6 +86,7 @@ const ChatHistory : React.FC <ChatHistoryProps> = ({
                         />
                    </ListItem>
              )})}
+
         </List>
     );
 

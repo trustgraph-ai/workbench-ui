@@ -14,7 +14,7 @@ const Workbench : React.FC = () => {
     return (
 
         <SocketProvider>
-            <Box className="editor">
+            <Box className="workbench">
                 <Banner/>
                 <Workspace/>
             </Box>
