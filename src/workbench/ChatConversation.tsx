@@ -13,6 +13,8 @@ import { Message } from './state/Message';
 import { Entity } from './state/Entity';
 import { Triple, Value } from './socket/trustgraph-socket';
 
+import InputArea from './InputArea';
+
 interface ChatConversationProps {
     setEntities : Dispatch<SetStateAction<Entity[]>>;
 };
@@ -46,7 +48,7 @@ const ChatConversation : React.FC <ChatConversationProps> = ({
         );
     };
       
-    const onSubmit = (text : string) => {
+    const onSubmit = () => {
 
         console.log("-> ", text);
 
@@ -118,24 +120,11 @@ const ChatConversation : React.FC <ChatConversationProps> = ({
                         AI Chat History
                     </Typography>
                     <ChatHistory messages={messages}/>
-                    <Box sx={{ display: 'flex', mt: 2 }} >
-                        <TextField
-                          fullWidth
-                          variant="outlined"
-                          placeholder="Type your message..."
-                          value={text}
-                          onChange={(e) => setText(e.target.value)}
-                        />
-                        <Button
-                            type="submit"
-                            variant="contained"
-                            endIcon={<Send />}
-                            onClick={()=>{onSubmit(text)}}              
-                            sx={{ ml: 1 }}
-                        >
-                            Send
-                        </Button>
-                    </Box>
+                    <InputArea
+                        text={text}
+                        setText={setText}
+                        onSubmit={onSubmit}
+                    />
                 </CardContent>
             </Card>
         </>
