@@ -55,20 +55,48 @@ const Chat : React.FC <ChatProps> = ({
 
         addMessage(text, "human");
 
-//        socket.textComplete(text).then(
-//            (response : string) => addMessage(response, "ai")
-//        );
-
-//        socket.graphRag(text).then(
-//            (response : string) => addMessage(response, "ai")
-//        );
-
-
+/*
+        socket.textComplete(text).then(
+            (response : string) => addMessage(response, "ai")
+        );
+*/
+/*
+        socket.graphRag(text).then(
+            (response : string) => addMessage(response, "ai")
+        );
+*/
+/*
         socket.agent(
             text,
             (m) => addMessage("think: " + m, "ai"),
             (m) => addMessage("observe: " + m, "ai"),
             (m) => addMessage(m, "ai")
+        );
+*/
+
+/*
+        socket.embeddings(text).then(
+            (vecs : number[][]) => {
+//                addMessage(JSON.stringify(vec), "asdai");
+                addMessage("[vec]", "ai");
+
+                socket.graphEmbeddingsQuery(vecs, 5).then(
+                   (ents) => {
+                       for(let ent of ents) {
+                           addMessage(ent.v, "ai");
+                       }
+                   }
+                );
+            }
+        );
+    */
+
+// http://trustgraph.ai/e/remain
+
+        socket.triplesQuery({ v: text, e: true }).then(
+            (res : number[][]) => {
+                addMessage(JSON.stringify(res), "ai");
+            }
         );
 
     };

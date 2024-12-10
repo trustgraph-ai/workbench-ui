@@ -8,6 +8,11 @@ interface Socket {
     send : (text : string) => void;
 };
 
+interface Value {
+    v : string,
+    e : boolean,
+};
+
 export const createSocket = () : Socket => {
 
     let id = 1;
@@ -119,6 +124,82 @@ export const createSocket = () : Socket => {
 
     }
 
+    const embeddings = (text : string) => {
+        const mid = "m" + id.toString();
+        id++;
+        const msg = JSON.stringify({
+            "id": mid,
+            "service": "embeddings",
+            "request": {
+                "text": text,
+            }
+        });
+
+        return new Promise((resolve, reject) => {
+            inFlight[mid] = { s: resolve, e: reject};
+            ws.send(msg);
+        }).then(
+            (obj) => {
+                delete inFlight[obj.id];
+                return obj.response.vectors;
+            }
+        );
+    }
+
+    const graphEmbeddingsQuery = (
+        vecs : number[][],
+        limit : number | undefined,
+    ) => {
+        const mid = "m" + id.toString();
+        id++;
+        const msg = JSON.stringify({
+            "id": mid,
+            "service": "graph-embeddings-query",
+            "request": {
+                "vectors": vecs,
+                "limit": limit ? limit : 20,
+            }
+        });
+
+        return new Promise((resolve, reject) => {
+            inFlight[mid] = { s: resolve, e: reject};
+            ws.send(msg);
+        }).then(
+            (obj) => {
+                delete inFlight[obj.id];
+                return obj.response.entities;
+            }
+        );
+    }
+
+    const triplesQuery = (
+        s : Value | undefined,
+        p : Value | undefined,
+        o : Value | undefined,
+        limit : number | undefined,
+    ) => {
+        const mid = "m" + id.toString();
+        id++;
+        const msg = JSON.stringify({
+            "id": mid,
+            "service": "triples-query",
+            "request": {
+                s: s, p: p, o: o,
+                limit: limit ? limit : 20,
+            }
+        });
+
+        return new Promise((resolve, reject) => {
+            inFlight[mid] = { s: resolve, e: reject};
+            ws.send(msg);
+        }).then(
+            (obj) => {
+                delete inFlight[obj.id];
+                return obj.response;
+            }
+        );
+    }
+
     const doOpen = () => {
         console.log("OPEN");
     }
@@ -138,6 +219,9 @@ export const createSocket = () : Socket => {
         textComplete: textComplete,
         graphRag: graphRag,
         agent: agent,
+        embeddings: embeddings,
+        graphEmbeddingsQuery: graphEmbeddingsQuery,
+        triplesQuery: triplesQuery,
     };
 
 }
