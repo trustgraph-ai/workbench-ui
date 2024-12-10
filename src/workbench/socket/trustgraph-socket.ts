@@ -24,7 +24,10 @@ export interface Socket {
     textCompletion : (text : string) => Promise<string>;
     graphRag : (text : string) => Promise<string>;
     agent : (
-        question : string, think : any, observe : any, answer : any,
+        question : string,
+        think : (t : string) => void,
+        observe : (t : string) => void,
+        answer : (t : string) => void,
     ) => void;
     embeddings : (text : string) => Promise<number[][]>;
     graphEmbeddingsQuery : (
@@ -35,9 +38,14 @@ export interface Socket {
     ) => Promise<Triple[]>;
 };
 
+export interface ApiResponse {
+    id : string;
+    response : any;
+};
+
 export interface Callbacks {
-    success : any;
-    error : any;
+    success : (resp: ApiResponse) => void;
+    error : (err : string) => void;
 };
 
 export interface TextCompletionResponse {
@@ -49,17 +57,26 @@ export interface TextCompletionResponse {
 
 export interface GraphRagResponse {
     id : string;
-    response : any;
+    response : {
+        response : string;
+    };
 };
 
 export interface AgentResponse {
     id : string;
-    response : any;
+    response : {
+        thought? : string;
+        observation? : string;
+        answer? : string;
+        error? : string;
+    };
 };
 
 export interface EmbeddingsResponse {
     id : string;
-    response : any;
+    response : {
+        vectors : number[][];
+    };
 };
 
 export interface GraphEmbeddingsQueryResponse {
@@ -83,7 +100,7 @@ export const createTrustGraphSocket = () : Socket => {
 
     let inFlight : { [key : string] : Callbacks } = {}
 
-    const onMessage = (message : any) => {
+    const onMessage = (message : MessageEvent) => {
 
         if (!message.data) return;
         const obj = JSON.parse(message.data);
@@ -159,9 +176,9 @@ export const createTrustGraphSocket = () : Socket => {
 
     const agent = (
         question : string,
-        think : any,
-        observe : any,
-        answer : any
+        think : (s : string) => void,
+        observe : (s : string) => void,
+        answer : (s : string) => void,
     ) => {
         const mid = "m" + id.toString();
         id++;
@@ -174,7 +191,7 @@ export const createTrustGraphSocket = () : Socket => {
 
         });
 
-        const err = (e : any) => {
+        const err = (e : string) => {
             console.log("Error:", e);
         };
 
