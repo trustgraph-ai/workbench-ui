@@ -51,14 +51,14 @@ const ChatConversation : React.FC <ChatConversationProps> = ({
         console.log("-> ", text);
 
         addMessage(text, "human");
-/*
+
         socket.agent(
             text,
-            (m) => addMessage("think: " + m, "ai"),
-            (m) => addMessage("observe: " + m, "ai"),
+            (m) => addMessage("\u{1f914} " + m, "ai"),
+            (m) => addMessage("\u{1f575}\u{fe0f} " + m, "ai"),
             (m) => addMessage(m, "ai")
         );
-*/
+
         // Empty entity list
         setEntities([]);
 
