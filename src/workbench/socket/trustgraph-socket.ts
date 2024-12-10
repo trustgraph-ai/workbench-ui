@@ -1,8 +1,9 @@
 
-//const SOCKET_RECONNECTION_TIMEOUT = 2000;
+const SOCKET_RECONNECTION_TIMEOUT = 2000;
 const SOCKET_URL = "/api/socket";
 
 export interface Socket {
+    close : any;
     textCompletion : any;
     graphRag : any;
     agent : any;
@@ -73,16 +74,15 @@ export const createTrustGraphSocket = () : Socket => {
 
     };
 
-// FIXME: Reconnect not used?!
-/*
     const onClose = () => {
         console.log("CLOSE");
-        setTimeout(() => {
-            ws = new WebSocket(SOCKET_URL);
-        },
-        SOCKET_RECONNECTION_TIMEOUT);
+        setTimeout(
+            () => {
+                ws = new WebSocket(SOCKET_URL);
+            },
+            SOCKET_RECONNECTION_TIMEOUT
+        );
     };
-*/
 
     const textCompletion = (text : string) => {
         const mid = "m" + id.toString();
@@ -254,15 +254,16 @@ export const createTrustGraphSocket = () : Socket => {
 
     const doClose = () => {
         ws.removeEventListener("message", onMessage);
-        ws.removeEventListener("close", doClose);
+        ws.removeEventListener("close", onClose);
         ws.removeEventListener("open", doOpen);
     };
 
     ws.addEventListener("message", onMessage);
-    ws.addEventListener("close", doClose);
+    ws.addEventListener("close", onClose);
     ws.addEventListener("open", doOpen);
 
     return {
+        close: doClose,
         textCompletion: textCompletion,
         graphRag: graphRag,
         agent: agent,

@@ -17,19 +17,15 @@ const ChatHistory : React.FC <ChatHistoryProps> = ({
     messages
 }) => {
 
-    const scrollRef = useRef();
+    const scrollRef = useRef<HTMLInputElement>(null);
 
     const scrollToElement = () => {
 
-
-// FIXME
-
-/*
         const { current } = scrollRef;
         if (current !== null) {
-            current!.scrollIntoView({behavior: "smooth"});
+            current.scrollIntoView({behavior: "smooth"});
         }
-*/
+
     }
 
     useEffect(scrollToElement, [messages]);
