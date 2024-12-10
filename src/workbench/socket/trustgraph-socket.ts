@@ -66,9 +66,11 @@ export interface GraphEmbeddingsQueryResponse {
 export interface TriplesQueryResponse {
     id : string;
     response : {
-         s : Value,
-         p : Value,
-         o : Value,
+        response : {
+             s : Value;
+             p : Value;
+             o : Value;
+         };
     }[];
 };
 
@@ -261,7 +263,7 @@ export const createTrustGraphSocket = () : Socket => {
         }).then(
             (obj) => {
                 delete inFlight[obj.id];
-                return obj.response;
+                return obj.response.response;
             }
         );
     }

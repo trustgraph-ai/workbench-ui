@@ -88,27 +88,23 @@ const ChatConversation : React.FC <ChatConversationProps> = ({
 
         ).then(
 
-(x : any) => console.log(x)
-
-/*
             // Convert graph labels to an entity list
             (responses : Triple[][]) => {
 
                 for(let resp of responses) {
-                    if (!resp.response) continue;
-                    if (resp.response.length < 1) continue;
+
+                    if (!resp) continue;
+                    if (resp.length < 1) continue;
 
                     const ent : Entity = {
-                        label: resp.response[0].o.v,
-                        uri: resp.response[0].s.v,
+                        label: resp[0].o.v,
+                        uri: resp[0].s.v,
                     };
 
                     setEntities((e : Entity[]) => [ ...e, ent ]);
 
                 }
             }
-
-*/
 
         );
 
