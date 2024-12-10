@@ -135,8 +135,6 @@ export const createSocket = () : Socket => {
 
     return {
         ws: ws,
-        addEventListener: addEventListener,
-        removeEventListener: removeEventListener,
         textComplete: textComplete,
         graphRag: graphRag,
         agent: agent,
