@@ -1,18 +1,11 @@
 
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState } from 'react';
 
-import {
-    List, ListItem, ListItemText, Avatar, Card, CardContent,
-    Typography, Box, Button, Stack, TextField
-} from '@mui/material';
-
-import {
-    Send, SmartToy, Person
-} from '@mui/icons-material';
-
-import { useSocket } from './socket/socket';
+import { Stack } from '@mui/material';
 
 import ChatConversation from './ChatConversation';
+import EntityList from './EntityList';
+import { Entity } from './state/Entity';
 
 interface ChatProps {
 }
@@ -20,9 +13,21 @@ interface ChatProps {
 const Chat : React.FC <ChatProps> = ({
 }) => {
 
+    const [entities, setEntities] = useState<Entity[]>([]);
+
     return (
         <>
-            <ChatConversation/>
+            <Stack direction="row">
+
+                <ChatConversation
+                    setEntities={setEntities}
+                />
+
+                <EntityList
+                    entities={entities}
+                />
+
+            </Stack>
         </>
 
     );

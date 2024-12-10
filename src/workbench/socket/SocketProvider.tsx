@@ -1,12 +1,9 @@
 
-import { createContext, ReactChild, useState, useEffect } from "react";
+import { createContext, ReactChild } from "react";
 
-const SOCKET_RECONNECTION_TIMEOUT = 2000;
-const SOCKET_URL = "/api/socket";
+import { createTrustGraphSocket } from "./trustgraph-socket";
 
-import { createSocket } from "./create-socket";
-
-const socket = createSocket();
+const socket = createTrustGraphSocket();
 
 export const SocketContext = createContext(socket);
 

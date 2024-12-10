@@ -1,26 +1,27 @@
 
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState } from 'react';
 
 import {
-    List, ListItem, ListItemText, Avatar, Card, CardContent,
-    Typography, Box, Button, Stack, TextField
+    Card, CardContent, Typography, Box, Button, TextField
 } from '@mui/material';
-import { Send, SmartToy, Person } from '@mui/icons-material';
+
+import { Send } from '@mui/icons-material';
 
 import { useSocket } from './socket/socket';
 import ChatHistory from './ChatHistory';
 import { Message } from './state/Message';
+import { Entity } from './state/Entity';
+import { Value } from './state/Value';
 
 interface ChatConversationProps {
+    setEntities : (ents : Entity[]) => void;
 };
 
 const ChatConversation : React.FC <ChatConversationProps> = ({
+    setEntities
 }) => {
 
     const socket = useSocket();
-
-    // For scrolling into view
-    const scrollRef = useRef();
 
     const [text, setText] = useState<string>("2+5");
 
@@ -50,16 +51,6 @@ const ChatConversation : React.FC <ChatConversationProps> = ({
         addMessage(text, "human");
 
 /*
-        socket.textComplete(text).then(
-            (response : string) => addMessage(response, "ai")
-        );
-*/
-/*
-        socket.graphRag(text).then(
-            (response : string) => addMessage(response, "ai")
-        );
-*/
-/*
         socket.agent(
             text,
             (m) => addMessage("think: " + m, "ai"),
@@ -68,30 +59,65 @@ const ChatConversation : React.FC <ChatConversationProps> = ({
         );
 */
 
-/*
-        socket.embeddings(text).then(
-            (vecs : number[][]) => {
-//                addMessage(JSON.stringify(vec), "asdai");
-                addMessage("[vec]", "ai");
+        // Empty entity list
+        setEntities([]);
 
-                socket.graphEmbeddingsQuery(vecs, 5).then(
-                   (ents) => {
-                       for(let ent of ents) {
-                           addMessage(ent.v, "ai");
-                       }
-                   }
+        // Take the text, and get embeddings
+        socket.embeddings(text).then(
+
+            // Take the embeddings, and lookup entities using graph
+            // embeddings
+            (vecs : number[][]) => socket.graphEmbeddingsQuery(vecs, 5)
+
+        ).then(
+
+            // For entities, lookup labels
+            (entities : Value[]) => {
+                const promises = Promise.all(
+                    entities.map(
+                        (ent : Value) =>
+                            socket.triplesQuery(
+                                ent,
+                                undefined,
+                                undefined,
+                                1
+                            )
+                    )
                 );
+                return promises;
             }
+
+        ).then(
+
+            // Convert graph labels to an entity list
+            (responses : any[]) => {
+                for(let resp of responses) {
+                    if (!resp.response) continue;
+                    if (resp.response.length < 1) continue;
+
+                    const ent = {
+                        label: resp.response[0].o,
+                        uri: resp.response[0].s,
+                    };
+
+console.log(ent);
+// FIXME
+//                    setEntities((e) => [ ...e, ent ]);
+
+                }
+            }
+
         );
-    */
 
 // http://trustgraph.ai/e/remain
 
+/*
         socket.triplesQuery({ v: text, e: true }).then(
             (res : number[][]) => {
                 addMessage(JSON.stringify(res), "ai");
             }
         );
+        */
 
     };
 

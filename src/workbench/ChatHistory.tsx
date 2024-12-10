@@ -1,14 +1,11 @@
 
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, {  useEffect, useRef } from 'react';
 
 import {
-    List, ListItem, ListItemText, Avatar, Card, CardContent,
-    Typography, Box, Button, Stack, TextField
+    List, ListItem, ListItemText, Avatar, Typography
 } from '@mui/material';
 
-import {
-    Send, SmartToy, Person
-} from '@mui/icons-material';
+import { SmartToy, Person } from '@mui/icons-material';
 
 import { Message } from './state/Message';
 
@@ -23,10 +20,16 @@ const ChatHistory : React.FC <ChatHistoryProps> = ({
     const scrollRef = useRef();
 
     const scrollToElement = () => {
+
+
+// FIXME
+
+/*
         const { current } = scrollRef;
         if (current !== null) {
-            current.scrollIntoView({behavior: "smooth"});
+            current!.scrollIntoView({behavior: "smooth"});
         }
+*/
     }
 
     useEffect(scrollToElement, [messages]);

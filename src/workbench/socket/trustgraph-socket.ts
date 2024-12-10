@@ -1,11 +1,14 @@
 
-import { EventBus } from './EventBus';
-
-const SOCKET_RECONNECTION_TIMEOUT = 2000;
+//const SOCKET_RECONNECTION_TIMEOUT = 2000;
 const SOCKET_URL = "/api/socket";
 
 interface Socket {
-    send : (text : string) => void;
+    textComplete : any;
+    graphRag : any;
+    agent : any;
+    embeddings : any;
+    graphEmbeddingsQuery : any;
+    triplesQuery : any;
 };
 
 interface Value {
@@ -13,13 +16,22 @@ interface Value {
     e : boolean,
 };
 
-export const createSocket = () : Socket => {
+interface Callbacks {
+    success : any;
+    error : any;
+};
+
+interface ApiResponse {
+    id : string;
+    response : any;
+};
+
+export const createTrustGraphSocket = () : Socket => {
 
     let id = 1;
     let ws = new WebSocket(SOCKET_URL);
-    let textCompletion = new EventBus();
 
-    let inFlight = {}
+    let inFlight : { [key : string] : Callbacks } = {}
 
     const onMessage = (message : any) => {
 
@@ -29,11 +41,13 @@ export const createSocket = () : Socket => {
         if (!obj.id) return;
 
         if (inFlight[obj.id]) {
-            inFlight[obj.id].s(obj);
+            inFlight[obj.id].success(obj);
         }
 
     };
 
+// FIXME: Reconnect not used?!
+/*
     const onClose = () => {
         console.log("CLOSE");
         setTimeout(() => {
@@ -41,6 +55,7 @@ export const createSocket = () : Socket => {
         },
         SOCKET_RECONNECTION_TIMEOUT);
     };
+*/
 
     const textComplete = (text : string) => {
         const mid = "m" + id.toString();
@@ -54,14 +69,14 @@ export const createSocket = () : Socket => {
             }
         });
 
-        return new Promise((resolve, reject) => {
+        return new Promise<ApiResponse>((resolve, reject) => {
 
-            inFlight[mid] = { s: resolve, e: reject};
+            inFlight[mid] = { success: resolve, error: reject};
 
             ws.send(msg);
 
         }).then(
-            (obj) => {
+            (obj : ApiResponse) => {
                 delete inFlight[obj.id];
                 return obj.response.response;
             }
@@ -79,21 +94,26 @@ export const createSocket = () : Socket => {
             }
         });
 
-        return new Promise((resolve, reject) => {
+        return new Promise<ApiResponse>((resolve, reject) => {
 
-            inFlight[mid] = { s: resolve, e: reject};
+            inFlight[mid] = { success: resolve, error: reject};
 
             ws.send(msg);
 
         }).then(
-            (obj) => {
+            (obj : ApiResponse) => {
                 delete inFlight[obj.id];
                 return obj.response.response;
             }
         );
     }
 
-    const agent = (question : string, think, observe, answer) => {
+    const agent = (
+        question : string,
+        think : any,
+        observe : any,
+        answer : any
+    ) => {
         const mid = "m" + id.toString();
         id++;
         const msg = JSON.stringify({
@@ -105,11 +125,11 @@ export const createSocket = () : Socket => {
 
         });
 
-        const err = (e) => {
+        const err = (e : any) => {
             console.log("Error:", e);
         };
 
-        const ok = (e) => {
+        const ok = (e : ApiResponse) => {
             if (e.response.thought) think(e.response.thought);
             if (e.response.observation) observe(e.response.observation);
             if (e.response.answer) {
@@ -118,7 +138,7 @@ export const createSocket = () : Socket => {
             }
         };
 
-        inFlight[mid] = { s: ok, e: err};
+        inFlight[mid] = { success: ok, error: err};
 
         ws.send(msg);
 
@@ -135,8 +155,8 @@ export const createSocket = () : Socket => {
             }
         });
 
-        return new Promise((resolve, reject) => {
-            inFlight[mid] = { s: resolve, e: reject};
+        return new Promise<ApiResponse>((resolve, reject) => {
+            inFlight[mid] = { success: resolve, error: reject};
             ws.send(msg);
         }).then(
             (obj) => {
@@ -161,8 +181,8 @@ export const createSocket = () : Socket => {
             }
         });
 
-        return new Promise((resolve, reject) => {
-            inFlight[mid] = { s: resolve, e: reject};
+        return new Promise<ApiResponse>((resolve, reject) => {
+            inFlight[mid] = { success: resolve, error: reject};
             ws.send(msg);
         }).then(
             (obj) => {
@@ -184,13 +204,13 @@ export const createSocket = () : Socket => {
             "id": mid,
             "service": "triples-query",
             "request": {
-                s: s, p: p, o: o,
+                success: s, p: p, o: o,
                 limit: limit ? limit : 20,
             }
         });
 
-        return new Promise((resolve, reject) => {
-            inFlight[mid] = { s: resolve, e: reject};
+        return new Promise<ApiResponse>((resolve, reject) => {
+            inFlight[mid] = { success: resolve, error: reject};
             ws.send(msg);
         }).then(
             (obj) => {
@@ -215,7 +235,6 @@ export const createSocket = () : Socket => {
     ws.addEventListener("open", doOpen);
 
     return {
-        ws: ws,
         textComplete: textComplete,
         graphRag: graphRag,
         agent: agent,
