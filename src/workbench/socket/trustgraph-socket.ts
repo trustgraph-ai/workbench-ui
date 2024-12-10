@@ -7,10 +7,16 @@ export interface Value {
     e : boolean,
 };
 
-export interface Triple {
+export interface PartialTriple {
     s? : Value,
     p? : Value,
     o? : Value,
+};
+
+export interface Triple {
+    s : Value,
+    p : Value,
+    o : Value,
 };
 
 export interface Socket {
@@ -66,12 +72,8 @@ export interface GraphEmbeddingsQueryResponse {
 export interface TriplesQueryResponse {
     id : string;
     response : {
-        response : {
-             s : Value;
-             p : Value;
-             o : Value;
-         };
-    }[];
+        response : Triple[];
+    };
 };
 
 export const createTrustGraphSocket = () : Socket => {
@@ -240,10 +242,10 @@ export const createTrustGraphSocket = () : Socket => {
     }
 
     const triplesQuery = (
-        s : Value | undefined,
-        p : Value | undefined,
-        o : Value | undefined,
-        limit : number | undefined,
+        s? : Value,
+        p? : Value,
+        o? : Value,
+        limit? : number,
     ) => {
         const mid = "m" + id.toString();
         id++;
