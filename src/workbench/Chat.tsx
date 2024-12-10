@@ -37,41 +37,38 @@ const Chat : React.FC <ChatProps> = ({
         },
     ]);
 
-    const onMessage = (text : any) => {
-        console.log("<- ", text);
-        setMessages([
-            ...messages,
-            {
-                role: "ai",
-                text: text,
-            },
-        ]);
+    const addMessage = (text : string, role : string) => {
+        setMessages(
+            (msgs) => [
+                ...msgs,
+                {
+                    role: role,
+                    text: text,
+                },
+            ]
+        );
     };
       
     const onSubmit = (text : string) => {
 
         console.log("-> ", text);
 
-        let updated = [
-            ...messages,
-            {
-                role: "human",
-                text: text,
-            },
-        ];
+        addMessage(text, "human");
 
-        setMessages(updated);
+//        socket.textComplete(text).then(
+//            (response : string) => addMessage(response, "ai")
+//        );
 
-        socket.textComplete(text).then(
-            (response : string) => {
-                setMessages([
-                    ...updated,
-                    {
-                        role: "ai",
-                        text: response,
-                    },
-                ]);
-            }
+//        socket.graphRag(text).then(
+//            (response : string) => addMessage(response, "ai")
+//        );
+
+
+        socket.agent(
+            text,
+            (m) => addMessage("think: " + m, "ai"),
+            (m) => addMessage("observe: " + m, "ai"),
+            (m) => addMessage(m, "ai")
         );
 
     };

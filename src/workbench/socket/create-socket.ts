@@ -25,7 +25,6 @@ export const createSocket = () : Socket => {
 
         if (inFlight[obj.id]) {
             inFlight[obj.id].s(obj);
-            delete inFlight[obj.id];
         }
 
     };
@@ -57,8 +56,67 @@ export const createSocket = () : Socket => {
             ws.send(msg);
 
         }).then(
-            (obj) => obj.response.response
+            (obj) => {
+                delete inFlight[obj.id];
+                return obj.response.response;
+            }
         );
+    }
+
+    const graphRag = (text : string) => {
+        const mid = "m" + id.toString();
+        id++;
+        const msg = JSON.stringify({
+            "id": mid,
+            "service": "graph-rag",
+            "request": {
+                "query": text,
+            }
+        });
+
+        return new Promise((resolve, reject) => {
+
+            inFlight[mid] = { s: resolve, e: reject};
+
+            ws.send(msg);
+
+        }).then(
+            (obj) => {
+                delete inFlight[obj.id];
+                return obj.response.response;
+            }
+        );
+    }
+
+    const agent = (question : string, think, observe, answer) => {
+        const mid = "m" + id.toString();
+        id++;
+        const msg = JSON.stringify({
+            "id": mid,
+            "service": "agent",
+            "request": {
+                "question": question,
+            }
+
+        });
+
+        const err = (e) => {
+            console.log("Error:", e);
+        };
+
+        const ok = (e) => {
+            if (e.response.thought) think(e.response.thought);
+            if (e.response.observation) observe(e.response.observation);
+            if (e.response.answer) {
+                answer(e.response.answer);
+                delete inFlight[mid];
+            }
+        };
+
+        inFlight[mid] = { s: ok, e: err};
+
+        ws.send(msg);
+
     }
 
     const doOpen = () => {
@@ -80,6 +138,8 @@ export const createSocket = () : Socket => {
         addEventListener: addEventListener,
         removeEventListener: removeEventListener,
         textComplete: textComplete,
+        graphRag: graphRag,
+        agent: agent,
     };
 
 }
