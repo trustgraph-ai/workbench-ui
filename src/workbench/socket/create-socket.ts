@@ -19,7 +19,6 @@ export const createSocket = () : Socket => {
     const onMessage = (message : any) => {
 
         if (!message.data) return;
-
         const obj = JSON.parse(message.data);
 
         if (!obj.id) return;
@@ -38,19 +37,6 @@ export const createSocket = () : Socket => {
         },
         SOCKET_RECONNECTION_TIMEOUT);
     };
-
-    const send = (text : string) => {
-        const msg = JSON.stringify({
-            "id": "m" + id.toString(),
-            "service": "text-completion",
-            "request": {
-                "system": "You are a helpful assistant.",
-                "prompt": text,
-            }
-        });
-        ws.send(msg);
-        id++;
-    }
 
     const textComplete = (text : string) => {
         const mid = "m" + id.toString();
@@ -85,27 +71,12 @@ export const createSocket = () : Socket => {
         ws.removeEventListener("open", doOpen);
     };
 
-    const addEventListener = (kind, callback) => {
-        if (kind == "text-completion") {
-            textCompletion.register(callback);
-            return
-        }
-    };
-
-    const removeEventListener = (kind, callback) => {
-        if (kind == "text-completion") {
-            textCompletion.unregister(callback);
-            return
-        }
-    };
-
     ws.addEventListener("message", onMessage);
     ws.addEventListener("close", doClose);
     ws.addEventListener("open", doOpen);
 
     return {
         ws: ws,
-        send: send,
         addEventListener: addEventListener,
         removeEventListener: removeEventListener,
         textComplete: textComplete,
