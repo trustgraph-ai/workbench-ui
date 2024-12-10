@@ -200,11 +200,12 @@ export const createTrustGraphSocket = () : Socket => {
     ) => {
         const mid = "m" + id.toString();
         id++;
+
         const msg = JSON.stringify({
             "id": mid,
             "service": "triples-query",
             "request": {
-                success: s, p: p, o: o,
+                s: s, p: p, o: o,
                 limit: limit ? limit : 20,
             }
         });

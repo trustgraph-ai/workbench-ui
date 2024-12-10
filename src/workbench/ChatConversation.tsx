@@ -17,6 +17,8 @@ interface ChatConversationProps {
     setEntities : (ents : Entity[]) => void;
 };
 
+const RDFS_LABEL = "http://www.w3.org/2000/01/rdf-schema#label"
+
 const ChatConversation : React.FC <ChatConversationProps> = ({
     setEntities
 }) => {
@@ -49,7 +51,6 @@ const ChatConversation : React.FC <ChatConversationProps> = ({
         console.log("-> ", text);
 
         addMessage(text, "human");
-
 /*
         socket.agent(
             text,
@@ -58,7 +59,6 @@ const ChatConversation : React.FC <ChatConversationProps> = ({
             (m) => addMessage(m, "ai")
         );
 */
-
         // Empty entity list
         setEntities([]);
 
@@ -78,7 +78,7 @@ const ChatConversation : React.FC <ChatConversationProps> = ({
                         (ent : Value) =>
                             socket.triplesQuery(
                                 ent,
-                                undefined,
+                                { v: RDFS_LABEL, e: true, },
                                 undefined,
                                 1
                             )
@@ -96,28 +96,17 @@ const ChatConversation : React.FC <ChatConversationProps> = ({
                     if (resp.response.length < 1) continue;
 
                     const ent = {
-                        label: resp.response[0].o,
-                        uri: resp.response[0].s,
+                        label: resp.response[0].o.v,
+                        uri: resp.response[0].s.v,
                     };
 
-console.log(ent);
-// FIXME
-//                    setEntities((e) => [ ...e, ent ]);
+    console.log(ent);
+                    setEntities((e) => [ ...e, ent ]);
 
                 }
             }
 
         );
-
-// http://trustgraph.ai/e/remain
-
-/*
-        socket.triplesQuery({ v: text, e: true }).then(
-            (res : number[][]) => {
-                addMessage(JSON.stringify(res), "ai");
-            }
-        );
-        */
 
     };
 
