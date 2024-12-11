@@ -1,7 +1,7 @@
 
-import React from 'react';
+import React, { useRef } from 'react';
 
-import { Box, Button, TextField } from '@mui/material';
+import { Box, Button, TextField, CircularProgress } from '@mui/material';
 
 import { Send } from '@mui/icons-material';
 import { useWorkbenchStateStore } from './state/WorkbenchState';
@@ -18,6 +18,13 @@ const InputArea : React.FC <InputAreaProps> = ({
     const setInput = useWorkbenchStateStore((state) => state.setInput);
     const working = useWorkbenchStateStore((state) => state.working);
 
+    const inputRef = useRef<HTMLInputElement>(null);
+
+    const submit = () => {
+        onSubmit();
+        inputRef.current.focus();
+    }
+
     return (
         <>
             <Box sx={{ display: 'flex', mt: 2 }} >
@@ -26,19 +33,42 @@ const InputArea : React.FC <InputAreaProps> = ({
                   variant="outlined"
                   placeholder="Type your message..."
                   value={input}
+                  inputRef={inputRef}
                   onChange={(e) => setInput(e.target.value)}
                 />
-                <Button
-                    type="submit"
-                    variant="contained"
-                    disabled={working}
-                    endIcon={<Send />}
-                    onClick={()=>{onSubmit()}}
-                    sx={{ ml: 1 }}
-                >
-                    Send
-                </Button>
-                {working}
+
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+
+                    <Box sx={{ m: 1, position: 'relative' }}>
+                        <Button
+                            type="submit"
+                            variant="contained"
+                            disabled={working > 0}
+                            endIcon={<Send/>}
+                            onClick={()=>{submit()}}
+                            sx={{ ml: 1 }}
+                        >
+                            Send
+                        </Button>
+                    </Box>
+                    <Box sx={{ m: 1, position: 'relative' }}>
+
+                        {(working > 0) && <CircularProgress
+                            size={24}
+                            sx={{
+                                color: 'gray',
+                                position: 'absolute',
+                                top: '50%',
+                                left: '50%',
+                                marginTop: '-12px',
+                                marginLeft: '-75px',
+                              }}
+                        />
+                        }
+                    </Box>
+
+                </Box>
+
             </Box>
         </>
 

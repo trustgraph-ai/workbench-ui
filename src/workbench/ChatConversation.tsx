@@ -65,6 +65,7 @@ const ChatConversation : React.FC <ChatConversationProps> = ({
         socket.textCompletion(input).then(
             (text : string) => {
                 addMessage("ai", text);
+                setInput("");
                 decWorking();
             }
         );
