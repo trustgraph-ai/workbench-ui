@@ -8,14 +8,15 @@ import {
 import { SmartToy, Person } from '@mui/icons-material';
 
 import { Message } from './state/Message';
+import { useWorkbenchStateStore } from './state/WorkbenchState';
 
 interface ChatHistoryProps {
-    messages: Message[];
 }
 
 const ChatHistory : React.FC <ChatHistoryProps> = ({
-    messages
 }) => {
+
+    const messages = useWorkbenchStateStore((state) => state.messages);
 
     const scrollRef = useRef<HTMLInputElement>(null);
 

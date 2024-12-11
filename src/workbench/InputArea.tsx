@@ -4,16 +4,19 @@ import React from 'react';
 import { Box, Button, TextField } from '@mui/material';
 
 import { Send } from '@mui/icons-material';
+import { useWorkbenchStateStore } from './state/WorkbenchState';
 
 interface InputAreaProps {
-    text : string;
-    setText : (text : string) => void;
     onSubmit : () => void;
 };
 
 const InputArea : React.FC <InputAreaProps> = ({
-    text, setText, onSubmit
+    onSubmit
 }) => {
+
+    const input = useWorkbenchStateStore((state) => state.input);
+    const setInput = useWorkbenchStateStore((state) => state.setInput);
+    const working = useWorkbenchStateStore((state) => state.working);
 
     return (
         <>
@@ -22,18 +25,20 @@ const InputArea : React.FC <InputAreaProps> = ({
                   fullWidth
                   variant="outlined"
                   placeholder="Type your message..."
-                  value={text}
-                  onChange={(e) => setText(e.target.value)}
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
                 />
                 <Button
                     type="submit"
                     variant="contained"
+                    disabled={working}
                     endIcon={<Send />}
                     onClick={()=>{onSubmit()}}
                     sx={{ ml: 1 }}
                 >
                     Send
                 </Button>
+                {working}
             </Box>
         </>
 

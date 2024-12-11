@@ -10,7 +10,7 @@ import { useSocket } from './socket/socket';
 import { Message } from './state/Message';
 import { Entity } from './state/Entity';
 import { Triple, Value } from './socket/trustgraph-socket';
-
+import { useWorkbenchStateStore } from './state/WorkbenchState';
 
 interface ChatConversationProps {
     setEntities : Dispatch<SetStateAction<Entity[]>>;
@@ -24,45 +24,53 @@ const ChatConversation : React.FC <ChatConversationProps> = ({
 
     const socket = useSocket();
 
-    const [text, setText] = useState<string>("2+5");
+    const messages = useWorkbenchStateStore((state) => state.messages);
+    const addMessage = useWorkbenchStateStore((state) => state.addMessage);
 
-    const [messages, setMessages] = useState<Message[]>([
-        {
-            role: "ai",
-            text: "Hello and welcome!",
-        },
-    ]);
+    const input = useWorkbenchStateStore((state) => state.input);
+    const setInput = useWorkbenchStateStore((state) => state.setInput);
 
-    const addMessage = (text : string, role : string) => {
-        setMessages(
-            (msgs) => [
-                ...msgs,
-                {
-                    role: role,
-                    text: text,
-                },
-            ]
-        );
-    };
+    const incWorking = useWorkbenchStateStore((state) => state.incWorking);
+    const decWorking = useWorkbenchStateStore((state) => state.decWorking);
       
     const onSubmit = () => {
 
-        console.log("-> ", text);
+        let stopSpinner1 = null;
+        let stopSpinner2 = null;
 
-        addMessage(text, "human");
+        new Promise<boolean>((resolve, reject) => {
+            stopSpinner1 = resolve;
+        });
 
+        new Promise<boolean>((resolve, reject) => {
+            stopSpinner2 = resolve;
+        });
+
+        console.log("-> ", input);
+
+        addMessage("human", input);
+
+        incWorking();
+        incWorking();
+
+/*
         socket.agent(
-            text,
-            (m) => addMessage("\u{1f914} " + m, "ai"),
-            (m) => addMessage("\u{1f575}\u{fe0f} " + m, "ai"),
-            (m) => addMessage(m, "ai")
+            input,
+            (m) => addMessage("ai", "\u{1f914} " + m),
+            (m) => addMessage("ai, "\u{1f575}\u{fe0f} " + m),
+            (m) => addMessage("ai", m)
+        );
+*/
+
+        socket.textCompletion(input).then(
+            (text : string) => {
+                addMessage("ai", text);
+                decWorking();
+            }
         );
 
-        // Empty entity list
-        setEntities([]);
-
         // Take the text, and get embeddings
-        socket.embeddings(text).then(
+        socket.embeddings(input).then(
 
             // Take the embeddings, and lookup entities using graph
             // embeddings
@@ -90,6 +98,8 @@ const ChatConversation : React.FC <ChatConversationProps> = ({
             // Convert graph labels to an entity list
             (responses : Triple[][]) => {
 
+                let entities : Entity[] = [];
+
                 for(let resp of responses) {
 
                     if (!resp) continue;
@@ -100,9 +110,15 @@ const ChatConversation : React.FC <ChatConversationProps> = ({
                         uri: resp[0].s.v,
                     };
 
-                    setEntities((e : Entity[]) => [ ...e, ent ]);
+                    entities.push(ent);
 
                 }
+
+                console.log(entities);
+                setEntities(entities);
+
+                decWorking();
+
             }
 
         );
@@ -116,10 +132,8 @@ const ChatConversation : React.FC <ChatConversationProps> = ({
                     <Typography variant="h5" component="div" gutterBottom>
                         AI Chat History
                     </Typography>
-                    <ChatHistory messages={messages}/>
+                    <ChatHistory/>
                     <InputArea
-                        text={text}
-                        setText={setText}
                         onSubmit={onSubmit}
                     />
                 </CardContent>
