@@ -13,18 +13,11 @@ interface ChatProps {
 const Chat : React.FC <ChatProps> = ({
 }) => {
 
-    const [entities, setEntities] = useState<Entity[]>([]);
-
     return (
         <>
             <Stack direction="row">
 
                 <ChatConversation
-                    setEntities={setEntities}
-                />
-
-                <EntityList
-                    entities={entities}
                 />
 
             </Stack>

@@ -6,6 +6,7 @@ import { Stack } from '@mui/material';
 import Toolbox from './Toolbox';
 import Chat from './Chat';
 import EntityDetail from './EntityDetail';
+import EntityList from './EntityList';
 
 import { useWorkbenchStateStore } from './state/WorkbenchState';
 
@@ -22,8 +23,10 @@ const Workspace : React.FC = () => {
     return (
 
         <Stack direction="row">
-            <Toolbox
-            />
+            <Stack direct="col">
+                <Toolbox/>
+                <EntityList/>
+            </Stack>
             <Tool
                 tool={tool}
                 sx={{ minWidth: '40rem', maxWidth: '90rem' }}
