@@ -13,13 +13,11 @@ import { Triple, Value } from './socket/trustgraph-socket';
 import { useWorkbenchStateStore } from './state/WorkbenchState';
 
 interface ChatConversationProps {
-    setEntities : Dispatch<SetStateAction<Entity[]>>;
 };
 
 const RDFS_LABEL = "http://www.w3.org/2000/01/rdf-schema#label"
 
 const ChatConversation : React.FC <ChatConversationProps> = ({
-    setEntities
 }) => {
 
     const socket = useSocket();
@@ -32,6 +30,8 @@ const ChatConversation : React.FC <ChatConversationProps> = ({
 
     const incWorking = useWorkbenchStateStore((state) => state.incWorking);
     const decWorking = useWorkbenchStateStore((state) => state.decWorking);
+
+    const setEntities = useWorkbenchStateStore((state) => state.setEntities);
       
     const onSubmit = () => {
 

@@ -5,20 +5,24 @@ import { Stack } from '@mui/material';
 
 import Toolbox from './Toolbox';
 import Chat from './Chat';
+import EntityDetail from './EntityDetail';
+
+import { useWorkbenchStateStore } from './state/WorkbenchState';
 
 const Tool : React.FC<{ tool : string}> = ({ tool }) => {
    if (tool == "chat") return <Chat/>;
+   if (tool == "entity") return <EntityDetail/>;
 }
 
 const Workspace : React.FC = () => {
 
-    const [tool, setTool] = useState<string>("chat");
+    const tool = useWorkbenchStateStore((state) => state.tool);
+    const setTool = useWorkbenchStateStore((state) => state.setTool);
 
     return (
 
         <Stack direction="row">
             <Toolbox
-                tool={tool} setTool={setTool}
             />
             <Tool
                 tool={tool}

@@ -26,10 +26,6 @@ const InputArea : React.FC <InputAreaProps> = ({
         e.preventDefault();
     }
 
-//    const handleSubmit = (e) => {
-//        console.log("SUBMIT");
-//    }
-
     return (
         <>
             <form onSubmit={submit} >

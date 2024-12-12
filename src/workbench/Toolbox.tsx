@@ -5,14 +5,16 @@ import { List, ListItemButton, ListItemText } from '@mui/material';
 import { ListItemIcon } from '@mui/material';
 import { ChatBubble } from '@mui/icons-material';
 
+import { useWorkbenchStateStore } from './state/WorkbenchState';
+
 interface ToolboxProps {
-    tool : string;
-    setTool : (tool : string) => void;
-}
+};
 
 const Toolbox : React.FC <ToolboxProps> = ({
-    tool, setTool,
 }) => {
+
+    const tool = useWorkbenchStateStore((state) => state.tool);
+    const setTool = useWorkbenchStateStore((state) => state.setTool);
 
     return (
 
@@ -33,7 +35,7 @@ const Toolbox : React.FC <ToolboxProps> = ({
                     </ListItemIcon>
                     <ListItemText primary={'Chat'}/>
                 </ListItemButton>
-
+{/*
                 <ListItemButton
                     key={'graph-rag'}
                     selected={tool == 'graph-rag'}
@@ -43,6 +45,17 @@ const Toolbox : React.FC <ToolboxProps> = ({
                         <ChatBubble/>
                     </ListItemIcon>
                     <ListItemText primary="GraphRAG"/>
+                </ListItemButton>
+*/}
+                <ListItemButton
+                    key={'entity'}
+                    selected={tool == 'entity'}
+                    onClick={() => { setTool('entity') }}
+                >
+                    <ListItemIcon>
+                        <ChatBubble/>
+                    </ListItemIcon>
+                    <ListItemText primary="Entity"/>
                 </ListItemButton>
 
             </List>
