@@ -20,56 +20,64 @@ const InputArea : React.FC <InputAreaProps> = ({
 
     const inputRef = useRef<HTMLInputElement>(null);
 
-    const submit = () => {
+    const submit = (e) => {
         onSubmit();
         inputRef.current.focus();
+        e.preventDefault();
     }
+
+//    const handleSubmit = (e) => {
+//        console.log("SUBMIT");
+//    }
 
     return (
         <>
-            <Box sx={{ display: 'flex', mt: 2 }} >
-                <TextField
-                  fullWidth
-                  variant="outlined"
-                  placeholder="Type your message..."
-                  value={input}
-                  inputRef={inputRef}
-                  onChange={(e) => setInput(e.target.value)}
-                />
+            <form onSubmit={submit} >
 
-                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <Box sx={{ display: 'flex', mt: 2 }} >
 
-                    <Box sx={{ m: 1, position: 'relative' }}>
-                        <Button
-                            type="submit"
-                            variant="contained"
-                            disabled={working > 0}
-                            endIcon={<Send/>}
-                            onClick={()=>{submit()}}
-                            sx={{ ml: 1 }}
-                        >
-                            Send
-                        </Button>
+                    <TextField
+                      fullWidth
+                      variant="outlined"
+                      placeholder="Type your message..."
+                      value={input}
+                      inputRef={inputRef}
+                      onChange={(e) => setInput(e.target.value)}
+                    />
+
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+
+                        <Box sx={{ m: 1, position: 'relative' }}>
+                            <Button
+                                type="submit"
+                                variant="contained"
+                                disabled={working > 0}
+                                endIcon={<Send/>}
+                                sx={{ ml: 1 }}
+                            >
+                                Send
+                            </Button>
+                        </Box>
+                        <Box sx={{ m: 1, position: 'relative' }}>
+
+                            {(working > 0) && <CircularProgress
+                                size={24}
+                                sx={{
+                                    color: 'gray',
+                                    position: 'absolute',
+                                    top: '50%',
+                                    left: '50%',
+                                    marginTop: '-12px',
+                                    marginLeft: '-75px',
+                                  }}
+                            />
+                            }
+                        </Box>
+
                     </Box>
-                    <Box sx={{ m: 1, position: 'relative' }}>
-
-                        {(working > 0) && <CircularProgress
-                            size={24}
-                            sx={{
-                                color: 'gray',
-                                position: 'absolute',
-                                top: '50%',
-                                left: '50%',
-                                marginTop: '-12px',
-                                marginLeft: '-75px',
-                              }}
-                        />
-                        }
-                    </Box>
-
                 </Box>
+            </form>
 
-            </Box>
         </>
 
     );
