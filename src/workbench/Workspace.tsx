@@ -1,7 +1,7 @@
 
 import React, { useState} from 'react';
 
-import { Stack } from '@mui/material';
+import { Stack, Divider } from '@mui/material';
 
 import Toolbox from './Toolbox';
 import Chat from './Chat';
@@ -23,7 +23,10 @@ const Workspace : React.FC = () => {
     return (
 
         <Stack direction="row">
-            <Stack direct="col">
+            <Stack
+                direct="col"
+                divider={<Divider orientation="horizontal" flexItem />}
+            >
                 <Toolbox/>
                 <EntityList/>
             </Stack>
