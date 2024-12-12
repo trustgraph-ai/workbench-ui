@@ -19,7 +19,12 @@ const EntityDetail : React.FC <EntityDetailProps> = ({
 
     return (
         <>
-            {selected.label} {selected.uri}
+            <div>
+                {selected && <div>
+                    {selected.label} {selected.uri}
+                    </div>}
+                {(selected === undefined) ? <div>Nothing selected</div> : null}
+            </div>
         </>
 
     );
