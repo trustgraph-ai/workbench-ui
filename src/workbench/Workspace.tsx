@@ -1,7 +1,7 @@
 
 import React, { useState} from 'react';
 
-import { Stack, Divider } from '@mui/material';
+import { Stack, Divider, Box } from '@mui/material';
 
 import Toolbox from './Toolbox';
 import Chat from './Chat';
@@ -30,10 +30,12 @@ const Workspace : React.FC = () => {
                 <Toolbox/>
                 <EntityList/>
             </Stack>
-            <Tool
-                tool={tool}
-                sx={{ minWidth: '40rem', maxWidth: '90rem' }}
-            />
+            <Box>
+                <Tool
+                    tool={tool}
+                    sx={{ minWidth: '40rem', maxWidth: '90rem' }}
+                />
+            </Box>
         </Stack>
 
     );
