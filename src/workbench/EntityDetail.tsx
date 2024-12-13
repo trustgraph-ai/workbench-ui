@@ -26,7 +26,7 @@ const EntityDetail : React.FC <EntityDetailProps> = ({
         return ( <div>No node selected.</div> );
     }
 
-    const [table, setTable] = useState<any[]>([]);
+    const [table, setTable] = useState<any>(undefined);
 
     useEffect(() => {
 
@@ -39,76 +39,13 @@ const EntityDetail : React.FC <EntityDetailProps> = ({
         ).then(
             (d) => divide(d)
         ).then(
-            console.log
+            (d) => setTable(d)
         );
-
-/*
-        socket.triplesQuery(
-            {
-                v: selected.uri,
-                e: true,
-            },
-            undefined,
-            undefined,
-            20,
-        ).then(
-            (triples : Triple[]) =>
-                triples.map(
-                    (t) => [
-                    ]
-                )
-        ).then(
-            (triples : Triple[]) => {
-            console.log(triples);
-                return {
-                    props: triples.filter((t) => !t.o.e),
-                    rels: triples.filter((t) => t.o.e),
-                }
-            }*/
-/*
-        ).then(
-            (resp : any[]) => {
-
-                return Promise.all(
-                    resp.map(
-                        (t : any) => {
-                            return t;
-                        }
-                    )
-                )
-
-            }
-        ).then(
-            (resp : any) => {
-                console.log(resp);
-            }
-        );
-
-
-
-                const tbl = resp.map(
-                    (t : Triple) => {
-                        return [t.s.v, t.p.v, t.o.v];
-                    }
-                );
-                setTable(tbl);
-            }
-        );
-        */
 
     }, [selected]);
 
-/*
-            return Promise.all<Triple[]>(
-                resp.map(
-                    (ent : Value) =>
-                        socket.triplesQuery(
-                            ent
-        }
-        setTable(
-            
-        );
-        */
+    if (!table)
+        return ( <div>No data.</div> );
 
     return (
         <>
@@ -116,30 +53,32 @@ const EntityDetail : React.FC <EntityDetailProps> = ({
                 <div>{selected.label}</div>
                 <div>{selected.uri}</div>
             </div>
+
             <div style={{ borderCollapse: "collapse", paddingTop: '1rem' }}>
+
                 <table style={{ borderCollapse: "collapse" }}>
                 <tbody>
                     {
-                        table.map(
+                        table.rels.map(
                             (row, ix) => (
                                 <tr key={ix}>
                                     <td style={{
                                         border: '1px solid black',
                                         padding: '1rem',
                                     }}>
-                                        {row[0]}
+                                        {row.slabel}
                                     </td>
                                     <td style={{
                                         border: '1px solid black',
                                         padding: '1rem',
                                     }}>
-                                        {row[1]}
+                                        {row.plabel}
                                     </td>
                                     <td style={{
                                         border: '1px solid black',
                                         padding: '1rem',
                                     }}>
-                                        {row[2]}
+                                        {row.olabel}
                                     </td>
                                 </tr>
                             )
@@ -147,7 +86,46 @@ const EntityDetail : React.FC <EntityDetailProps> = ({
                     }
                     </tbody>
                 </table>
+
             </div>
+
+            <hr/>
+
+            <div style={{ borderCollapse: "collapse", paddingTop: '1rem' }}>
+
+                <table style={{ borderCollapse: "collapse" }}>
+                <tbody>
+                    {
+                        table.props.map(
+                            (row, ix) => (
+                                <tr key={ix}>
+                                    <td style={{
+                                        border: '1px solid black',
+                                        padding: '1rem',
+                                    }}>
+                                        {row.slabel}
+                                    </td>
+                                    <td style={{
+                                        border: '1px solid black',
+                                        padding: '1rem',
+                                    }}>
+                                        {row.plabel}
+                                    </td>
+                                    <td style={{
+                                        border: '1px solid black',
+                                        padding: '1rem',
+                                    }}>
+                                        {row.olabel}
+                                    </td>
+                                </tr>
+                            )
+                        )
+                    }
+                    </tbody>
+                </table>
+
+            </div>
+
         </>
 
     );
