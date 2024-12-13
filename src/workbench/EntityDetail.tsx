@@ -9,7 +9,7 @@ import { Entity } from './state/Entity';
 import { useSocket } from './socket/socket';
 import { useWorkbenchStateStore } from './state/WorkbenchState';
 import {
-    RDFS_LABEL, queryFrom, queryLabel, labelS, labelP, labelO
+    RDFS_LABEL, queryFrom, queryLabel, labelS, labelP, labelO, divide,
 } from './state/graph-algos';
 
 interface EntityDetailProps {
@@ -30,12 +30,14 @@ const EntityDetail : React.FC <EntityDetailProps> = ({
 
     useEffect(() => {
 
-        queryFrom(selected.uri).then(
-            labelS
+        queryFrom(socket, selected.uri).then(
+            (d) => labelS(socket, d)
         ).then(
-            labelP
+            (d) => labelP(socket, d)
         ).then(
-            labelO
+            (d) => labelO(socket, d)
+        ).then(
+            (d) => divide(d)
         ).then(
             console.log
         );
