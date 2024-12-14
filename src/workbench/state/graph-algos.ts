@@ -118,4 +118,63 @@ export const filterUnwanted =
         }
     );
 
+export const tabulate =
+    (socket : Socket, uri : string) => {
+
+    // FIXME: Cache more
+    // FIXME: Too many queries
+
+    return queryFrom(socket, uri).then(
+            (d) => labelS(socket, d)
+        ).then(
+            (d) => labelP(socket, d)
+        ).then(
+            (d) => labelO(socket, d)
+        ).then(
+            (d) => filterUnwanted(d)
+        ).then(
+            (d) => divide(d)
+        ).then(
+            (d) => {
+                return {
+                    props: d.props.map(
+                        (prop) => {
+                            return {
+                                prop: {
+                                    ...prop.p,
+                                    label: prop.plabel,
+                                },
+                                value: {
+                                    ...prop.o,
+                                    label: prop.olabel,
+                                },
+                            };
+                        }
+                    ),
+                    rels: d.rels,
+                };
+            }
+        ).then(
+            (d) => {
+                return {
+                    props: d.props,
+                    rels: d.rels.map(
+                        (rel) => {
+                            return {
+                                rel: {
+                                    ...rel.o,
+                                    label: rel.olabel,
+                                },
+                                value: {
+                                    ...rel.o,
+                                    label: rel.olabel,
+                                },
+                            };
+                        }
+                    )
+                };
+            }
+        );
+
+};
 

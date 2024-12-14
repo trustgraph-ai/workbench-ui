@@ -9,8 +9,7 @@ import { Entity } from './state/Entity';
 import { useSocket } from './socket/socket';
 import { useWorkbenchStateStore } from './state/WorkbenchState';
 import {
-    RDFS_LABEL, queryFrom, queryLabel, labelS, labelP, labelO, divide,
-    filterUnwanted,
+    tabulate
 } from './state/graph-algos';
 
 interface EntityDetailProps {
@@ -28,21 +27,17 @@ const EntityDetail : React.FC <EntityDetailProps> = ({
     }
 
     const [table, setTable] = useState<any>(undefined);
+    const [stuff, setStuff] = useState<string>("");
 
     useEffect(() => {
 
-        queryFrom(socket, selected.uri).then(
-            (d) => labelS(socket, d)
-        ).then(
-            (d) => labelP(socket, d)
-        ).then(
-            (d) => labelO(socket, d)
-        ).then(
-            (d) => filterUnwanted(d)
-        ).then(
-            (d) => divide(d)
-        ).then(
-            (d) => setTable(d)
+        tabulate(socket, selected.uri).then(
+//            (d) => setTable(d)
+ (d) => {
+    setStuff(JSON.stringify(d, null, 4));
+    console.log(d);
+    setTable({});
+ }
         );
 
     }, [selected]);
@@ -57,6 +52,10 @@ const EntityDetail : React.FC <EntityDetailProps> = ({
                 <div>{selected.uri}</div>
             </div>
 
+<pre>
+{stuff}
+</pre>
+{/*
             <div style={{ borderCollapse: "collapse", paddingTop: '1rem' }}>
 
                 <table style={{ borderCollapse: "collapse" }}>
@@ -127,6 +126,7 @@ const EntityDetail : React.FC <EntityDetailProps> = ({
                 </table>
 
             </div>
+            */}
 
         </>
 
