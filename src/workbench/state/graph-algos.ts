@@ -24,6 +24,7 @@ const predefined = {
     "https://schema.org/DigitalDocument": "digital document",
     "https://schema.org/startDate": "start date",
     "https://schema.org/endDate": "end date",
+    "https://schema.org/name": "name",
 };
 
 export const LIMIT = 15;
@@ -54,23 +55,34 @@ export const queryIn = (socket : Socket, uri : string, limit? : number) => {
     );
 };
 
+export const queryPred = (socket : Socket, uri : string, limit? : number) => {
+    return socket.triplesQuery(
+        undefined,
+        { v: uri, e: true, },
+        undefined,
+        limit ? limit : LIMIT,
+    ).then(
+        (triples) => triples.map(
+            (t) => { return { ...t, direc: "pred" } }
+        )
+    );
+};
+
 export const query = (socket : Socket, uri : string, limit? : number) => {
     return Promise.all([
-        queryOut(socket, uri), queryIn(socket, uri)
+        queryOut(socket, uri),
+        queryPred(socket, uri),
+        queryIn(socket, uri),
     ]).then(
         (resp) => {
-            return resp[0].concat(resp[1]);
+            return resp[0].concat(resp[1]).concat(resp[2]);
         }
     );
 };
 
 export const queryLabel =
     (socket : Socket, uri : string) : Promise<string> => {
-
-console.log("?????", uri);
-console.log("--->", uri in predefined, predefined);
         if (uri in predefined) {
-        console.log(">>>>", uri, predefined);
             return new Promise((s) => s(predefined[uri]));
             }
 
@@ -169,6 +181,7 @@ export const divide =
             props: selectProps(triples),
             in: selectIn(triples),
             out: selectOut(triples),
+            pred: selectPred(triples),
         };
     };
 
@@ -181,7 +194,7 @@ export const selectRels =
 export const selectIn =
     (triples : any[]) => filter(
         triples,
-        (t : Triple) => (t.o.e && t.direc == "in"),
+        (t : Triple) => (t.direc == "in"),
     );
 
 export const selectOut =
@@ -190,8 +203,17 @@ export const selectOut =
         (t : Triple) => (t.o.e && t.direc == "out"),
     );
 
+export const selectPred =
+    (triples : any[]) => filter(
+        triples,
+        (t : Triple) => (t.direc == "pred"),
+    );
+
 export const selectProps =
-    (triples : any[]) => filter(triples, (t : Triple) => !t.o.e);
+    (triples : any[]) => filter(
+        triples,
+        (t : Triple) => (t.direc == "in" && !t.o.e)
+    );
 
 export const filterInternals =
     (triples : any[]) => triples.filter(
@@ -248,6 +270,15 @@ export const getView =
                         return {
                             rel: rel.p,
                             entity: rel.o,
+                        };
+                    }
+                ),
+                pred: d.pred.map(
+                    (rel) => {
+                        return {
+                            rel: rel.s,
+                            src: rel.p,
+                            dest: rel.o,
                         };
                     }
                 ),

@@ -24,7 +24,6 @@ const Entity : React.FC<{value : any}> = ({value}) => {
 
     const setSelected = useWorkbenchStateStore((state) => state.setSelected);
 
-console.log(value);
     return (
         <Button
             sx={{ textTransform: 'initial'}}
@@ -60,6 +59,10 @@ const EntityDetail : React.FC <EntityDetailProps> = ({
 
     if (!view)
         return ( <div>No data.</div> );
+
+////////////////////////////////////////////////////////////////////////////
+// FIXME: These keys won't track change!
+////////////////////////////////////////////////////////////////////////////
 
  console.log(view);
     return (
@@ -116,6 +119,26 @@ const EntityDetail : React.FC <EntityDetailProps> = ({
                                      <Entity value={rel.rel}/>
                                      <ArrowForward/>
                                      <Entity value={rel.entity}/>
+                                 </Stack>
+                             </Box>
+                         );
+                     }
+                )}
+
+                { view.pred.map(
+                     (rel, ix) => {
+                         return (
+                             <Box key={'pred' + ix.toString()}>
+                                 <Stack
+                                     direction="row"
+                                     alignItems="center"
+                                     gap={0}
+                                 >
+                                     <Entity value={rel.src}/>
+                                     <ArrowForward/>
+                                     <Entity value={rel.rel}/>
+                                     <ArrowForward/>
+                                     <Entity value={rel.dest}/>
                                  </Stack>
                              </Box>
                          );
