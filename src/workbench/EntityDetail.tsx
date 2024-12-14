@@ -33,7 +33,6 @@ const EntityDetail : React.FC <EntityDetailProps> = ({
 //            (d) => setTable(d)
  (d : any) => {
     setStuff(JSON.stringify(d, null, 4));
-    console.log(d);
     setTable({});
  }
         );

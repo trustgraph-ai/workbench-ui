@@ -138,8 +138,6 @@ export const tabulate =
     // FIXME: Too many queries
 
     return queryFrom(socket, uri).then(
-        (d) => labelS(socket, d)
-    ).then(
         (d) => labelP(socket, d)
     ).then(
         (d) => labelO(socket, d)
@@ -175,7 +173,20 @@ export const tabulate =
                 ),
             };
         }
+    ).then(
+        (d) => {
+            return queryLabel(socket, uri).then(
+                (label : string) => {
+                     return {
+                          ...d,
+                          uri: uri,
+                          label: label,
+                     };
+                }
+            );
+        }
     );
 
 };
+
 
