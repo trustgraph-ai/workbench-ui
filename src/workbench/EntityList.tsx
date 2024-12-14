@@ -15,6 +15,7 @@ const EntityList : React.FC <EntityListProps> = ({
 }) => {
 
     const entities = useWorkbenchStateStore((state) => state.entities);
+    const selected = useWorkbenchStateStore((state) => state.selected);
     const setSelected = useWorkbenchStateStore((state) => state.setSelected);
     const setTool = useWorkbenchStateStore((state) => state.setTool);
 
@@ -31,6 +32,7 @@ const EntityList : React.FC <EntityListProps> = ({
 
                     <ListItemButton
                         key={ix}
+                        selected={selected === entity}
                         onClick={() => onClick(entity)}
                     >
                         <Avatar

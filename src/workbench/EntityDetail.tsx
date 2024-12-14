@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, ReactNode } from 'react';
 
 import { Typography, Box, Stack } from '@mui/material';
 
@@ -11,6 +11,22 @@ import { getView } from './state/graph-algos';
 
 interface EntityDetailProps {
 }
+
+const Literal : React.FC<{value : any}> = ({value}) => {
+    return (
+        <Typography variant="body1">
+            {value.label}
+        </Typography>
+    );
+};
+
+const Entity : React.FC<{value : any}> = ({value}) => {
+    return (
+        <Typography variant="body1">
+            {value.label}
+        </Typography>
+    );
+};
 
 const EntityDetail : React.FC <EntityDetailProps> = ({
 }) => {
@@ -57,15 +73,11 @@ const EntityDetail : React.FC <EntityDetailProps> = ({
                                      alignItems="center"
                                      gap={0}
                                  >
-                                     <Typography variant="body1">
-                                         {prop.prop.label}
-                                     </Typography>
+                                     <Entity value={prop.prop}/>
                                      <Typography variant="body1">
                                          :
                                      </Typography>
-                                     <Typography variant="body1">
-                                         {prop.value.label}
-                                     </Typography>
+                                     <Literal value={prop.value}/>
                                  </Stack>
                              </Box>
                          );
@@ -81,13 +93,9 @@ const EntityDetail : React.FC <EntityDetailProps> = ({
                                      alignItems="center"
                                      gap={0}
                                  >
-                                     <Typography variant="body1">
-                                         {rel.rel.label}
-                                     </Typography>
+                                     <Entity value={rel.rel}/>
                                      <ArrowBack/>
-                                     <Typography variant="body1">
-                                         {rel.entity.label}
-                                     </Typography>
+                                     <Entity value={rel.entity}/>
                                  </Stack>
                              </Box>
                          );
@@ -103,13 +111,9 @@ const EntityDetail : React.FC <EntityDetailProps> = ({
                                      alignItems="center"
                                      gap={0}
                                  >
-                                     <Typography variant="body1">
-                                         {rel.rel.label}
-                                     </Typography>
+                                     <Entity value={rel.rel}/>
                                      <ArrowForward/>
-                                     <Typography variant="body1">
-                                         {rel.entity.label}
-                                     </Typography>
+                                     <Entity value={rel.entity}/>
                                  </Stack>
                              </Box>
                          );

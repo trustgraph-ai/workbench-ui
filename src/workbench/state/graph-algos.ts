@@ -3,7 +3,7 @@ import { Socket } from '../socket/trustgraph-socket';
 import { Triple } from './Triple';
 
 export const RDFS_LABEL = "http://www.w3.org/2000/01/rdf-schema#label"
-export const LIMIT = 30;
+export const LIMIT = 15;
 
 export const queryOut = (socket : Socket, uri : string, limit? : number) => {
     return socket.triplesQuery(
@@ -179,6 +179,8 @@ export const getView =
     // FIXME: Too many queries
 
     return query(socket, uri).then(
+        (d) => labelS(socket, d)
+    ).then(
         (d) => labelP(socket, d)
     ).then(
         (d) => labelO(socket, d)
