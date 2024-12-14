@@ -8,7 +8,7 @@ import InputArea from './InputArea';
 
 import { useSocket } from './socket/socket';
 import { Entity } from './state/Entity';
-import { Triple, Value } from './socket/trustgraph-socket';
+import { Triple, Value } from './state/Triple';
 import { useWorkbenchStateStore } from './state/WorkbenchState';
 
 interface ChatConversationProps {

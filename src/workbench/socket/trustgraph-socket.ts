@@ -1,23 +1,8 @@
 
+import { Triple, Value } from '../state/Triple';
+
 const SOCKET_RECONNECTION_TIMEOUT = 2000;
 const SOCKET_URL = "/api/socket";
-
-export interface Value {
-    v : string,
-    e : boolean,
-};
-
-export interface PartialTriple {
-    s? : Value,
-    p? : Value,
-    o? : Value,
-};
-
-export interface Triple {
-    s : Value,
-    p : Value,
-    o : Value,
-};
 
 export interface Socket {
     close : () => void;

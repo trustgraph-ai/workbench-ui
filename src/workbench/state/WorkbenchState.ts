@@ -23,7 +23,7 @@ export interface WorkbenchState {
     unsetSelected : () => void;
 
     setTool : (v : string) => void;
-    setEntities : (ents : Entities[]) => void;
+    setEntities : (ents : Entity[]) => void;
 
 }
 

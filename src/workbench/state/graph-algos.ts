@@ -1,5 +1,6 @@
 
-import { Socket } from './trustgraph-socket';
+import { Socket } from '../socket/trustgraph-socket';
+import { Triple } from './Triple';
 
 export const RDFS_LABEL = "http://www.w3.org/2000/01/rdf-schema#label"
 
@@ -12,27 +13,27 @@ export const queryFrom = (socket : Socket, uri : string) => {
     );
 };
 
-export const queryLabel = (socket : Socket, uri : string) => {
-    if (uri == RDFS_LABEL)
-        return new Promise((s) => s("label"));
+export const queryLabel =
+    (socket : Socket, uri : string) : Promise<string> => {
+        if (uri == RDFS_LABEL)
+            return new Promise((s) => s("label"));
 
-    return socket.triplesQuery(
-        { v: uri, e: true, },
-        { v: RDFS_LABEL, e : true, },
-        undefined,
-        1,
-    ).then(
-        (triples : Triple[]) => {
-            if (triples.length > 0)
-                return triples[0].o.v;
-            else
-                return uri;
-        }
-    );
+        return socket.triplesQuery(
+            { v: uri, e: true, },
+            { v: RDFS_LABEL, e : true, },
+            undefined,
+            1,
+        ).then(
+            (triples : Triple[]) => {
+                if (triples.length > 0)
+                    return triples[0].o.v;
+                else
+                    return uri;
+            }
+        );
+    };
 
-};
-
-export const labelS = (socket : Socket, triples : {s, p, o : Entity}[]) => {
+export const labelS = (socket : Socket, triples : Triple[]) => {
     return Promise.all(
         triples.map(
             (t) => {
@@ -52,7 +53,7 @@ export const labelS = (socket : Socket, triples : {s, p, o : Entity}[]) => {
     );
 };
 
-export const labelP = (socket : Socket, triples : {s, p, o : Entity}[]) => {
+export const labelP = (socket : Socket, triples : Triple[]) => {
     return Promise.all(
         triples.map(
             (t) => {
@@ -72,7 +73,7 @@ export const labelP = (socket : Socket, triples : {s, p, o : Entity}[]) => {
     );
 };
 
-export const labelO = (socket : Socket, triples : {s, p, o : Entity}[]) => {
+export const labelO = (socket : Socket, triples : Triple[]) => {
     return Promise.all(
         triples.map(
             (t) => {
@@ -90,7 +91,7 @@ export const labelO = (socket : Socket, triples : {s, p, o : Entity}[]) => {
                     );
                 else
                     return new Promise(
-                        (resolve, reject) => {
+                        (resolve) => {
                             resolve({
                                 ...t,
                                 o: {
@@ -117,10 +118,10 @@ export const filter =
     (triples : any[], fn : any) => triples.filter((t) => fn(t));
 
 export const selectRels =
-    (triples : any[]) => filter(triples, (t) => t.o.e);
+    (triples : any[]) => filter(triples, (t : Triple) => t.o.e);
 
 export const selectProps =
-    (triples : any[]) => filter(triples, (t) => !t.o.e);
+    (triples : any[]) => filter(triples, (t : Triple) => !t.o.e);
 
 export const filterInternals =
     (triples : any[]) => triples.filter(
