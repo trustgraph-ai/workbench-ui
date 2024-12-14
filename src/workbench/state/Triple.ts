@@ -3,6 +3,7 @@ export interface Value {
     v : string,
     e : boolean,
     label? : string,
+    direc? : string,
 };
 
 export interface PartialTriple {

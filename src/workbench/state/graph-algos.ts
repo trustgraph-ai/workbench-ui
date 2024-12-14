@@ -3,13 +3,41 @@ import { Socket } from '../socket/trustgraph-socket';
 import { Triple } from './Triple';
 
 export const RDFS_LABEL = "http://www.w3.org/2000/01/rdf-schema#label"
+export const LIMIT = 30;
 
-export const queryFrom = (socket : Socket, uri : string) => {
+export const queryOut = (socket : Socket, uri : string, limit? : number) => {
     return socket.triplesQuery(
         { v: uri, e: true, },
         undefined,
         undefined,
-        20,
+        limit ? limit : LIMIT,
+    ).then(
+        (triples) => triples.map(
+            (t) => { return { ...t, direc: "out" } }
+        )
+    );
+};
+
+export const queryIn = (socket : Socket, uri : string, limit? : number) => {
+    return socket.triplesQuery(
+        undefined,
+        undefined,
+        { v: uri, e: true, },
+        limit ? limit : LIMIT,
+    ).then(
+        (triples) => triples.map(
+            (t) => { return { ...t, direc: "in" } }
+        )
+    );
+};
+
+export const query = (socket : Socket, uri : string, limit? : number) => {
+    return Promise.all([
+        queryOut(socket, uri), queryIn(socket, uri)
+    ]).then(
+        (resp) => {
+            return resp[0].concat(resp[1]);
+        }
     );
 };
 
@@ -110,7 +138,8 @@ export const divide =
     (triples : any[]) => {
         return {
             props: selectProps(triples),
-            rels: selectRels(triples),
+            in: selectIn(triples),
+            out: selectOut(triples),
         };
     };
 
@@ -119,6 +148,18 @@ export const filter =
 
 export const selectRels =
     (triples : any[]) => filter(triples, (t : Triple) => t.o.e);
+
+export const selectIn =
+    (triples : any[]) => filter(
+        triples,
+        (t : Triple) => (t.o.e && t.direc == "in"),
+    );
+
+export const selectOut =
+    (triples : any[]) => filter(
+        triples,
+        (t : Triple) => (t.o.e && t.direc == "out"),
+    );
 
 export const selectProps =
     (triples : any[]) => filter(triples, (t : Triple) => !t.o.e);
@@ -131,13 +172,13 @@ export const filterInternals =
         }
     );
 
-export const tabulate =
+export const getView =
     (socket : Socket, uri : string) => {
 
     // FIXME: Cache more
     // FIXME: Too many queries
 
-    return queryFrom(socket, uri).then(
+    return query(socket, uri).then(
         (d) => labelP(socket, d)
     ).then(
         (d) => labelO(socket, d)
@@ -148,6 +189,7 @@ export const tabulate =
     ).then(
         (d) => {
             return {
+                ...d,
                 props: d.props.map(
                     (prop) => {
                         return {
@@ -156,14 +198,21 @@ export const tabulate =
                         };
                     }
                 ),
-                rels: d.rels,
             };
         }
     ).then(
         (d) => {
             return {
-                props: d.props,
-                rels: d.rels.map(
+                ...d,
+                in: d.in.map(
+                    (rel) => {
+                        return {
+                            rel: rel.p,
+                            entity: rel.s,
+                        };
+                    }
+                ),
+                out: d.out.map(
                     (rel) => {
                         return {
                             rel: rel.p,
@@ -188,5 +237,4 @@ export const tabulate =
     );
 
 };
-
 
