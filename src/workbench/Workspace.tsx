@@ -1,5 +1,5 @@
 
-import React, { useState} from 'react';
+import React from 'react';
 
 import { Stack, Divider, Box } from '@mui/material';
 
@@ -18,13 +18,12 @@ const Tool : React.FC<{ tool : string}> = ({ tool }) => {
 const Workspace : React.FC = () => {
 
     const tool = useWorkbenchStateStore((state) => state.tool);
-    const setTool = useWorkbenchStateStore((state) => state.setTool);
 
     return (
 
         <Stack direction="row">
             <Stack
-                direct="col"
+                direction="column"
                 divider={<Divider orientation="horizontal" flexItem />}
             >
                 <Toolbox/>

@@ -40,7 +40,10 @@ export const labelS = (socket : Socket, triples : {s, p, o : Entity}[]) => {
                     (label : string) => {
                         return {
                             ...t,
-                            slabel: label,
+                            s: {
+                                ...t.s,
+                                label: label,
+                            },
                         };
                     }
                 )
@@ -57,7 +60,10 @@ export const labelP = (socket : Socket, triples : {s, p, o : Entity}[]) => {
                     (label : string) => {
                         return {
                             ...t,
-                            plabel: label,
+                            p: {
+                                ...t.p,
+                                label: label,
+                            },
                         };
                     }
                 )
@@ -75,7 +81,10 @@ export const labelO = (socket : Socket, triples : {s, p, o : Entity}[]) => {
                         (label : string) => {
                             return {
                                 ...t,
-                                olabel: label,
+                                o: {
+                                    ...t.o,
+                                    label: label,
+                                },
                             };
                         }
                     );
@@ -84,7 +93,10 @@ export const labelO = (socket : Socket, triples : {s, p, o : Entity}[]) => {
                         (resolve, reject) => {
                             resolve({
                                 ...t,
-                                olabel: t.o.v,
+                                o: {
+                                    ...t.o,
+                                    label: t.o.v,
+                                },
                             });
                         }
                     );
@@ -110,7 +122,7 @@ export const selectRels =
 export const selectProps =
     (triples : any[]) => filter(triples, (t) => !t.o.e);
 
-export const filterUnwanted =
+export const filterInternals =
     (triples : any[]) => triples.filter(
         (t) => {
             if (t.p.e && t.p.v == RDFS_LABEL) return false;
@@ -125,56 +137,44 @@ export const tabulate =
     // FIXME: Too many queries
 
     return queryFrom(socket, uri).then(
-            (d) => labelS(socket, d)
-        ).then(
-            (d) => labelP(socket, d)
-        ).then(
-            (d) => labelO(socket, d)
-        ).then(
-            (d) => filterUnwanted(d)
-        ).then(
-            (d) => divide(d)
-        ).then(
-            (d) => {
-                return {
-                    props: d.props.map(
-                        (prop) => {
-                            return {
-                                prop: {
-                                    ...prop.p,
-                                    label: prop.plabel,
-                                },
-                                value: {
-                                    ...prop.o,
-                                    label: prop.olabel,
-                                },
-                            };
-                        }
-                    ),
-                    rels: d.rels,
-                };
-            }
-        ).then(
-            (d) => {
-                return {
-                    props: d.props,
-                    rels: d.rels.map(
-                        (rel) => {
-                            return {
-                                rel: {
-                                    ...rel.o,
-                                    label: rel.olabel,
-                                },
-                                value: {
-                                    ...rel.o,
-                                    label: rel.olabel,
-                                },
-                            };
-                        }
-                    )
-                };
-            }
-        );
+        (d) => labelS(socket, d)
+    ).then(
+        (d) => labelP(socket, d)
+    ).then(
+        (d) => labelO(socket, d)
+    ).then(
+        (d) => filterInternals(d)
+    ).then(
+        (d) => divide(d)
+    ).then(
+        (d) => {
+            return {
+                props: d.props.map(
+                    (prop) => {
+                        return {
+                            prop: prop.p,
+                            value: prop.o,
+                        };
+                    }
+                ),
+                rels: d.rels,
+            };
+        }
+    ).then(
+        (d) => {
+            return {
+                props: d.props,
+                rels: d.rels.map(
+                    (rel) => {
+                        return {
+                            rel: rel.p,
+                            entity: rel.o,
+                        };
+                    }
+                ),
+            };
+        }
+    );
 
 };
 

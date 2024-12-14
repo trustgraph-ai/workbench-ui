@@ -16,8 +16,8 @@ export interface WorkbenchState {
     addMessage : (role : string, text : string) => void;
     setInput : (v : string) => void;
 
-    incWorking : (v : boolean) => void;
-    decWorking : (v : boolean) => void;
+    incWorking : () => void;
+    decWorking : () => void;
 
     setSelected : (e : Entity) => void;
     unsetSelected : () => void;
@@ -66,11 +66,11 @@ export const useWorkbenchStateStore = create<WorkbenchState>()(
 	    input: v,
 	})),
 
-        incWorking: (v) => set((state) => ({
+        incWorking: () => set((state) => ({
 	    working: state.working + 1,
 	})),
 
-        decWorking: (v) => set((state) => ({
+        decWorking: () => set((state) => ({
 	    working: state.working - 1,
 	})),
 

@@ -1,11 +1,9 @@
 
 import React, { useState, useEffect } from 'react';
 
-import { Stack } from '@mui/material';
+//import { Stack } from '@mui/material';
 
-import ChatConversation from './ChatConversation';
-import EntityList from './EntityList';
-import { Entity } from './state/Entity';
+//import { Entity } from './state/Entity';
 import { useSocket } from './socket/socket';
 import { useWorkbenchStateStore } from './state/WorkbenchState';
 import {
@@ -33,7 +31,7 @@ const EntityDetail : React.FC <EntityDetailProps> = ({
 
         tabulate(socket, selected.uri).then(
 //            (d) => setTable(d)
- (d) => {
+ (d : any) => {
     setStuff(JSON.stringify(d, null, 4));
     console.log(d);
     setTable({});

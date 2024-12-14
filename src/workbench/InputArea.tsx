@@ -20,9 +20,11 @@ const InputArea : React.FC <InputAreaProps> = ({
 
     const inputRef = useRef<HTMLInputElement>(null);
 
-    const submit = (e) => {
+    const submit : React.FormEventHandler<HTMLFormElement> = (e) => {
         onSubmit();
-        inputRef.current.focus();
+        if (inputRef.current) {
+            inputRef.current.focus();
+        }
         e.preventDefault();
     }
 

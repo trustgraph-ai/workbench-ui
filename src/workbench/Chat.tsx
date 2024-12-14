@@ -1,11 +1,9 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 
 import { Stack } from '@mui/material';
 
 import ChatConversation from './ChatConversation';
-import EntityList from './EntityList';
-import { Entity } from './state/Entity';
 
 interface ChatProps {
 }

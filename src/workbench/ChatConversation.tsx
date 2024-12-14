@@ -1,5 +1,5 @@
 
-import React, { useState, Dispatch, SetStateAction } from 'react';
+import React from 'react';
 
 import { Card, CardContent, Typography } from '@mui/material';
 
@@ -7,7 +7,6 @@ import ChatHistory from './ChatHistory';
 import InputArea from './InputArea';
 
 import { useSocket } from './socket/socket';
-import { Message } from './state/Message';
 import { Entity } from './state/Entity';
 import { Triple, Value } from './socket/trustgraph-socket';
 import { useWorkbenchStateStore } from './state/WorkbenchState';
@@ -22,7 +21,6 @@ const ChatConversation : React.FC <ChatConversationProps> = ({
 
     const socket = useSocket();
 
-    const messages = useWorkbenchStateStore((state) => state.messages);
     const addMessage = useWorkbenchStateStore((state) => state.addMessage);
 
     const input = useWorkbenchStateStore((state) => state.input);
@@ -34,17 +32,6 @@ const ChatConversation : React.FC <ChatConversationProps> = ({
     const setEntities = useWorkbenchStateStore((state) => state.setEntities);
       
     const onSubmit = () => {
-
-        let stopSpinner1 = null;
-        let stopSpinner2 = null;
-
-        new Promise<boolean>((resolve, reject) => {
-            stopSpinner1 = resolve;
-        });
-
-        new Promise<boolean>((resolve, reject) => {
-            stopSpinner2 = resolve;
-        });
 
         console.log("-> ", input);
 
