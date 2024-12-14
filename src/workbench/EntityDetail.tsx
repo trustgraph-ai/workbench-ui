@@ -10,6 +10,7 @@ import { useSocket } from './socket/socket';
 import { useWorkbenchStateStore } from './state/WorkbenchState';
 import {
     RDFS_LABEL, queryFrom, queryLabel, labelS, labelP, labelO, divide,
+    filterUnwanted,
 } from './state/graph-algos';
 
 interface EntityDetailProps {
@@ -36,6 +37,8 @@ const EntityDetail : React.FC <EntityDetailProps> = ({
             (d) => labelP(socket, d)
         ).then(
             (d) => labelO(socket, d)
+        ).then(
+            (d) => filterUnwanted(d)
         ).then(
             (d) => divide(d)
         ).then(
@@ -89,7 +92,6 @@ const EntityDetail : React.FC <EntityDetailProps> = ({
 
             </div>
 
-            <hr/>
 
             <div style={{ borderCollapse: "collapse", paddingTop: '1rem' }}>
 

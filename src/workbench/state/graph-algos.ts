@@ -93,12 +93,6 @@ export const labelO = (socket : Socket, triples : {s, p, o : Entity}[]) => {
     );
 };
 
-export const selectRels =
-    (triples : any[]) => triples.filter((t) => t.o.e);
-
-export const selectProps =
-    (triples : any[]) => triples.filter((t) => !t.o.e);
-
 export const divide =
     (triples : any[]) => {
         return {
@@ -106,4 +100,22 @@ export const divide =
             rels: selectRels(triples),
         };
     };
+
+export const filter =
+    (triples : any[], fn : any) => triples.filter((t) => fn(t));
+
+export const selectRels =
+    (triples : any[]) => filter(triples, (t) => t.o.e);
+
+export const selectProps =
+    (triples : any[]) => filter(triples, (t) => !t.o.e);
+
+export const filterUnwanted =
+    (triples : any[]) => triples.filter(
+        (t) => {
+            if (t.p.e && t.p.v == RDFS_LABEL) return false;
+            return true;
+        }
+    );
+
 

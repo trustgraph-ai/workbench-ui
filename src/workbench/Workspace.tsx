@@ -33,7 +33,6 @@ const Workspace : React.FC = () => {
             <Box>
                 <Tool
                     tool={tool}
-                    sx={{ minWidth: '40rem', maxWidth: '90rem' }}
                 />
             </Box>
         </Stack>

@@ -35,7 +35,7 @@ const ChatHistory : React.FC <ChatHistoryProps> = ({
         <List
             sx={{
                 minHeight: '30rem',
-                maxHeight: '45rem',
+                maxHeight: '55rem',
                 overflowY: 'auto'
             }}
         >
