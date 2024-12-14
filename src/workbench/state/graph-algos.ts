@@ -2,7 +2,30 @@
 import { Socket } from '../socket/trustgraph-socket';
 import { Triple } from './Triple';
 
-export const RDFS_LABEL = "http://www.w3.org/2000/01/rdf-schema#label"
+export const RDFS_LABEL = "http://www.w3.org/2000/01/rdf-schema#label";
+
+export const SKOS_DEFINITION =
+    "http://www.w3.org/2004/02/skos/core#definition";
+
+export const SCHEMAORG_SUBJECT_OF = "https://schema.org/subjectOf";
+
+export const SCHEMAORG_DESCRIPTION = "https://schema.org/description";
+
+const predefined = {
+    [RDFS_LABEL]: "label",
+    [SKOS_DEFINITION]: "definition",
+    [SCHEMAORG_SUBJECT_OF]: "subject of",
+    [SCHEMAORG_DESCRIPTION]: "description",
+    "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": "has type",
+    "https://schema.org/publication": "publication",
+    "https://schema.org/url": "url",
+    "https://schema.org/PublicationEvent": "publication event",
+    "https://schema.org/publishedBy": "published by",
+    "https://schema.org/DigitalDocument": "digital document",
+    "https://schema.org/startDate": "start date",
+    "https://schema.org/endDate": "end date",
+};
+
 export const LIMIT = 15;
 
 export const queryOut = (socket : Socket, uri : string, limit? : number) => {
@@ -43,8 +66,13 @@ export const query = (socket : Socket, uri : string, limit? : number) => {
 
 export const queryLabel =
     (socket : Socket, uri : string) : Promise<string> => {
-        if (uri == RDFS_LABEL)
-            return new Promise((s) => s("label"));
+
+console.log("?????", uri);
+console.log("--->", uri in predefined, predefined);
+        if (uri in predefined) {
+        console.log(">>>>", uri, predefined);
+            return new Promise((s) => s(predefined[uri]));
+            }
 
         return socket.triplesQuery(
             { v: uri, e: true, },
@@ -59,6 +87,7 @@ export const queryLabel =
                     return uri;
             }
         );
+
     };
 
 export const labelS = (socket : Socket, triples : Triple[]) => {

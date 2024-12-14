@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, ReactNode } from 'react';
 
-import { Typography, Box, Stack } from '@mui/material';
+import { Typography, Box, Stack, Button } from '@mui/material';
 
 import { ArrowForward, ArrowBack } from '@mui/icons-material';
 
@@ -21,10 +21,17 @@ const Literal : React.FC<{value : any}> = ({value}) => {
 };
 
 const Entity : React.FC<{value : any}> = ({value}) => {
+
+    const setSelected = useWorkbenchStateStore((state) => state.setSelected);
+
+console.log(value);
     return (
-        <Typography variant="body1">
+        <Button
+            sx={{ textTransform: 'initial'}}
+            onClick={ () => setSelected({ uri: value.v, label: value.label }) }
+        >
             {value.label}
-        </Typography>
+        </Button>
     );
 };
 
@@ -40,14 +47,12 @@ const EntityDetail : React.FC <EntityDetailProps> = ({
     }
 
     const [view, setView] = useState<any>(undefined);
-    const [stuff, setStuff] = useState<string>("");
 
     useEffect(() => {
 
         getView(socket, selected.uri).then(
             (d) => {
                 setView(d);
-                setStuff(JSON.stringify(d, null, 4));
             }
         );
 
@@ -74,9 +79,6 @@ const EntityDetail : React.FC <EntityDetailProps> = ({
                                      gap={0}
                                  >
                                      <Entity value={prop.prop}/>
-                                     <Typography variant="body1">
-                                         :
-                                     </Typography>
                                      <Literal value={prop.value}/>
                                  </Stack>
                              </Box>
