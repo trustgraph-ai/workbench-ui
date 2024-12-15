@@ -300,20 +300,34 @@ export const getView =
 
 };
 
+interface Node {
+    id : string,
+    label : string,
+    group : number,
+};
+
+interface Link {
+    source : string;
+    target : string;
+    label : string;
+    value : number;
+};
+
+export interface Subgraph {
+    nodeMap : Map<Node>;
+    linkMap : Map<Link>;
+    nodes : Node[];
+    links : Node[];
+};
+
+export const createSubgraph = () : Subgraph => {
+    return {
+        nodeMap: new Map<Node>(),
+        linkMap: new Map<Link>(),
+    };
+};
+
 export const toSubgraph = (triples) => {
-
-    interface Node {
-        id : string,
-        label : string,
-        group : number,
-    };
-
-    interface Link {
-        source : string;
-        target : string;
-        label : string;
-        value : number;
-    };
 
     let nodes = new Map<Node>();
     let links = new Map<Link>();
@@ -367,6 +381,63 @@ export const toSubgraph = (triples) => {
 
 };
 
+export const updateSubgraphTriples = (
+    triples : Triple[], sg : Subgraph
+) => {
+
+    let groupId = 1;
+
+    for (let t of triples) {
+
+        // Source has a URI, that can be its unique ID
+        const sourceId = t.s.v;
+
+        // Same for target, unless it's a literal, in which case
+        // use an ID which is unique to this edge so that it gets its
+        // own node
+        const targetId = t.o.e ? t.o.v : (t.s.v + "//" + t.p.v + "//" + t.o.e);
+
+        // Links have an ID so that this edge is unique
+        const linkId = (t.s.v + "//" + t.p.v + "//" + t.o.e);
+
+        if (!(sourceId in sg.nodeMap)) {
+            const n : Node = {
+                id: sourceId,
+                label: t.s.label,
+                group: groupId,
+            };
+            sg.nodeMap.set(sourceId, n);
+            sg.nodes.push(n);
+        }
+
+        if (!(targetId in sg.nodeMap)) {
+            const n : Node = {
+                id: targetId,
+                label: t.o.label,
+                group: groupId,
+            };
+            sg.nodeMap.set(targetId, n);
+            sg.nodes.push(n);
+        }
+
+        if (!(linkId in sg.linkMap)) {
+            const l : Link = {
+                source: sourceId,
+                target: targetId,
+                id: linkId,
+                label: t.p.label,
+                value: 1,
+            };
+            sg.linkMap.set(linkId, l);
+            sg.links.push(l);
+        }
+
+    }
+
+    return sg;
+
+};
+
 export const getSubgraph = (socket : Socket, uri : string) => {
 
     return query(socket, uri).then(
@@ -379,6 +450,24 @@ export const getSubgraph = (socket : Socket, uri : string) => {
         (d) => filterInternals(d)
     ).then(
         (d) => toSubgraph(d)
+    );
+
+};
+
+export const updateSubgraph = (
+    socket : Socket, uri : string, sg : Subgraph
+) => {
+
+    return query(socket, uri).then(
+        (d) => labelS(socket, d)
+    ).then(
+        (d) => labelP(socket, d)
+    ).then(
+        (d) => labelO(socket, d)
+    ).then(
+        (d) => filterInternals(d)
+    ).then(
+        (d) => updateSubgraphTriples(sg, d)
     );
 
 };
