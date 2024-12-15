@@ -40,12 +40,18 @@ const EntityDetail : React.FC <EntityDetailProps> = ({
     const socket = useSocket();
 
     const selected = useWorkbenchStateStore((state) => state.selected);
+    const setTool = useWorkbenchStateStore((state) => state.setTool);
 
     if (!selected) {
         return ( <div>No node selected.</div> );
     }
 
     const [view, setView] = useState<any>(undefined);
+
+    const graphView = () => {
+        console.log(selected.uri);
+        setTool("graph");
+    };
 
     useEffect(() => {
 
@@ -69,6 +75,13 @@ const EntityDetail : React.FC <EntityDetailProps> = ({
             <Typography variant="h5" component="div" gutterBottom>
                 {selected.label}
             </Typography>
+
+            <Button
+                variant="outlined"
+                onClick={()=> graphView()}
+            >
+                Graph view
+            </Button>
 
             <Box>
                 { view.props.map(

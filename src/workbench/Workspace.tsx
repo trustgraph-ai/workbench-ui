@@ -7,12 +7,14 @@ import Toolbox from './Toolbox';
 import Chat from './Chat';
 import EntityDetail from './EntityDetail';
 import EntityList from './EntityList';
+import GraphView from './GraphView';
 
 import { useWorkbenchStateStore } from './state/WorkbenchState';
 
 const Tool : React.FC<{ tool : string}> = ({ tool }) => {
    if (tool == "chat") return <Chat/>;
    if (tool == "entity") return <EntityDetail/>;
+   if (tool == "graph") return <GraphView/>;
 }
 
 const Workspace : React.FC = () => {

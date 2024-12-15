@@ -58,6 +58,17 @@ const Toolbox : React.FC <ToolboxProps> = ({
                     <ListItemText primary="Entity"/>
                 </ListItemButton>
 
+                <ListItemButton
+                    key={'graph'}
+                    selected={tool == 'graph'}
+                    onClick={() => { setTool('graph') }}
+                >
+                    <ListItemIcon>
+                        <ChatBubble/>
+                    </ListItemIcon>
+                    <ListItemText primary="Graph"/>
+                </ListItemButton>
+
             </List>
                         
         </>
