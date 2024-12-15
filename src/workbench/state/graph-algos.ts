@@ -321,27 +321,38 @@ export const toSubgraph = (triples) => {
 
     for (let t of triples) {
 
-        if (!(t.s.v in nodes)) {
-            nodes.set(t.s.v, {
-                id: t.s.v,
+        // Source has a URI, that can be its unique ID
+        const sourceId = t.s.v;
+
+        // Same for target, unless it's a literal, in which case
+        // use an ID which is unique to this edge so that it gets its
+        // own node
+        const targetId = t.o.e ? t.o.v : (t.s.v + "//" + t.p.v + "//" + t.o.e);
+
+        // Links have an ID so that this edge is unique
+        const linkId = (t.s.v + "//" + t.p.v + "//" + t.o.e);
+
+        if (!(sourceId in nodes)) {
+            nodes.set(sourceId, {
+                id: sourceId,
                 label: t.s.label,
                 group: groupId,
             });
         }
 
-        if (!(t.o.v in nodes)) {
-            nodes.set(t.o.v, {
-                id: t.o.v,
+        if (!(targetId in nodes)) {
+            nodes.set(targetId, {
+                id: targetId,
                 label: t.o.label,
                 group: groupId,
             });
         }
 
-        if (!(t.p.v in links)) {
-            links.set(t.p.v, {
-                source: t.s.v,
-                target: t.o.v,
-                uri: t.p.v,
+        if (!(linkId in links)) {
+            links.set(linkId, {
+                source: sourceId,
+                target: targetId,
+                id: linkId,
                 label: t.p.label,
                 value: 1,
             });
