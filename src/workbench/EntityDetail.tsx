@@ -64,7 +64,6 @@ const EntityDetail : React.FC <EntityDetailProps> = ({
 // FIXME: These keys won't track change!
 ////////////////////////////////////////////////////////////////////////////
 
- console.log(view);
     return (
         <>
             <Typography variant="h5" component="div" gutterBottom>
