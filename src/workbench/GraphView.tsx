@@ -67,7 +67,11 @@ const GraphView : React.FC <GraphViewProps> = ({
                 {selected.label}
             </Typography>
 
+            <Box>
+
             <ForceGraph3D
+                width={1200}
+                height={900}
                 graphData={view}
                 nodeLabel="label"
                 nodeAutoColorBy="group"
@@ -106,6 +110,8 @@ const GraphView : React.FC <GraphViewProps> = ({
                 onLinkClick={link => fgRef.current.emitParticle(link)}
 
             />
+
+            </Box>
         </>
     );
 
