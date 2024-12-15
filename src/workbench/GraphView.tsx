@@ -10,7 +10,9 @@ import SpriteText from 'three-spritetext'
 
 import { useSocket } from './socket/socket';
 import { useWorkbenchStateStore } from './state/WorkbenchState';
-import { getSubgraph } from './state/graph-algos';
+import {
+    getSubgraph, createSubgraph, updateSubgraph
+} from './state/graph-algos';
 
 interface GraphViewProps {
 }
@@ -31,10 +33,20 @@ const GraphView : React.FC <GraphViewProps> = ({
     const [view, setView] = useState<any>(undefined);
 
     useEffect(() => {
-
+/*
         getSubgraph(socket, selected.uri).then(
             (d) => {
                 setView(d);
+            }
+        );
+        */
+
+        const sg = createSubgraph();
+        console.log("SG==", sg);
+        updateSubgraph(socket, selected.uri, sg).then(
+            (sg) => {
+            console.log("SG<<", sg);
+                setView(sg);
             }
         );
 
@@ -50,7 +62,15 @@ const GraphView : React.FC <GraphViewProps> = ({
     );
 
     const nodeClick = (node) => {
-        console.log(node);
+//        console.log(node);
+        console.log(node.id);
+        updateSubgraph(socket, node.id, view).then(
+            (sg) => {
+                console.log("SG<<<<", sg);
+                setView(sg);
+            }
+        );
+        
     };
 
     return (
@@ -71,7 +91,7 @@ const GraphView : React.FC <GraphViewProps> = ({
                 }}
                 onNodeClick={nodeClick}
 
-                linkDirectionalArrowLength={3}
+                linkDirectionalArrowLength={1.5}
                 linkDirectionalArrowRelPos={1}
                 linkThreeObjectExtend={true}
                 linkThreeObject={link => {
@@ -93,7 +113,7 @@ const GraphView : React.FC <GraphViewProps> = ({
 
                 ref={fgRef}
                 linkDirectionalParticleColor={() => '#a0a0c0'}
-                linkDirectionalParticleWidth={2}
+                linkDirectionalParticleWidth={0.8}
                 linkHoverPrecision={2}
                 onLinkClick={link => fgRef.current.emitParticle(link)}
 

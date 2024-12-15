@@ -314,16 +314,14 @@ interface Link {
 };
 
 export interface Subgraph {
-    nodeMap : Map<Node>;
-    linkMap : Map<Link>;
     nodes : Node[];
-    links : Node[];
+    links : Link[];
 };
 
 export const createSubgraph = () : Subgraph => {
     return {
-        nodeMap: new Map<Node>(),
-        linkMap: new Map<Link>(),
+        nodes: [],
+        links: [],
     };
 };
 
@@ -332,7 +330,7 @@ export const toSubgraph = (triples) => {
     let nodes = new Map<Node>();
     let links = new Map<Link>();
     let groupId = 1;
-
+    
     for (let t of triples) {
 
         // Source has a URI, that can be its unique ID
@@ -341,10 +339,10 @@ export const toSubgraph = (triples) => {
         // Same for target, unless it's a literal, in which case
         // use an ID which is unique to this edge so that it gets its
         // own node
-        const targetId = t.o.e ? t.o.v : (t.s.v + "//" + t.p.v + "//" + t.o.e);
+        const targetId = t.o.e ? t.o.v : (t.s.v + "@@" + t.p.v + "@@" + t.o.e);
 
         // Links have an ID so that this edge is unique
-        const linkId = (t.s.v + "//" + t.p.v + "//" + t.o.e);
+        const linkId = (t.s.v + "@@" + t.p.v + "@@" + t.o.e);
 
         if (!(sourceId in nodes)) {
             nodes.set(sourceId, {
@@ -382,10 +380,16 @@ export const toSubgraph = (triples) => {
 };
 
 export const updateSubgraphTriples = (
-    triples : Triple[], sg : Subgraph
+    sg : Subgraph, triples : Triple[]
 ) => {
 
-    let groupId = 1;
+console.log("SG<", sg);
+console.log("T<", triples);
+
+    const groupId = 1;
+
+    let nodeIds = new Set<string>(sg.nodes.map(n => n.id));
+    let linkIds = new Set<string>(sg.links.map(n => n.id));
 
     for (let t of triples) {
 
@@ -395,32 +399,44 @@ export const updateSubgraphTriples = (
         // Same for target, unless it's a literal, in which case
         // use an ID which is unique to this edge so that it gets its
         // own node
-        const targetId = t.o.e ? t.o.v : (t.s.v + "//" + t.p.v + "//" + t.o.e);
+        const targetId = t.o.e ? t.o.v : (t.s.v + "@@" + t.p.v + "@@" + t.o.e);
 
         // Links have an ID so that this edge is unique
-        const linkId = (t.s.v + "//" + t.p.v + "//" + t.o.e);
+        const linkId = (t.s.v + "@@" + t.p.v + "@@" + t.o.e);
 
-        if (!(sourceId in sg.nodeMap)) {
+        if (!nodeIds.has(sourceId)) {
             const n : Node = {
                 id: sourceId,
                 label: t.s.label,
                 group: groupId,
             };
-            sg.nodeMap.set(sourceId, n);
-            sg.nodes.push(n);
+            nodeIds.add(sourceId);
+            sg = {
+                ...sg,
+                nodes: [
+                    ...sg.nodes,
+                    n,
+                ]
+            }
         }
 
-        if (!(targetId in sg.nodeMap)) {
+        if (!nodeIds.has(targetId)) {
             const n : Node = {
                 id: targetId,
                 label: t.o.label,
                 group: groupId,
             };
-            sg.nodeMap.set(targetId, n);
-            sg.nodes.push(n);
+            nodeIds.add(targetId);
+            sg = {
+                ...sg,
+                nodes: [
+                    ...sg.nodes,
+                    n,
+                ]
+            }
         }
 
-        if (!(linkId in sg.linkMap)) {
+        if (!linkIds.has(linkId)) {
             const l : Link = {
                 source: sourceId,
                 target: targetId,
@@ -428,11 +444,20 @@ export const updateSubgraphTriples = (
                 label: t.p.label,
                 value: 1,
             };
-            sg.linkMap.set(linkId, l);
-            sg.links.push(l);
+            linkIds.add(linkId);
+            sg = {
+                ...sg,
+                links: [
+                    ...sg.links,
+                    l,
+                ]
+            }
         }
 
     }
+
+console.log("SG>", sg);
+
 
     return sg;
 
@@ -457,6 +482,7 @@ export const getSubgraph = (socket : Socket, uri : string) => {
 export const updateSubgraph = (
     socket : Socket, uri : string, sg : Subgraph
 ) => {
+console.log("<+ ", sg);
 
     return query(socket, uri).then(
         (d) => labelS(socket, d)
