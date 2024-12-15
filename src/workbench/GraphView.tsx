@@ -33,26 +33,16 @@ const GraphView : React.FC <GraphViewProps> = ({
     const [view, setView] = useState<any>(undefined);
 
     useEffect(() => {
-/*
-        getSubgraph(socket, selected.uri).then(
-            (d) => {
-                setView(d);
-            }
-        );
-        */
 
         const sg = createSubgraph();
-        console.log("SG==", sg);
+
         updateSubgraph(socket, selected.uri, sg).then(
             (sg) => {
-            console.log("SG<<", sg);
                 setView(sg);
             }
         );
 
     }, [selected]);
-
-    console.log(view);
 
     if (!view)
         return ( <div>No data.</div> );
@@ -62,11 +52,9 @@ const GraphView : React.FC <GraphViewProps> = ({
     );
 
     const nodeClick = (node) => {
-//        console.log(node);
-        console.log(node.id);
+
         updateSubgraph(socket, node.id, view).then(
             (sg) => {
-                console.log("SG<<<<", sg);
                 setView(sg);
             }
         );

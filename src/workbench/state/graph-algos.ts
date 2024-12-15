@@ -27,7 +27,7 @@ const predefined = {
     "https://schema.org/name": "name",
 };
 
-export const LIMIT = 15;
+export const LIMIT = 30;
 
 export const queryOut = (socket : Socket, uri : string, limit? : number) => {
     return socket.triplesQuery(
@@ -325,66 +325,9 @@ export const createSubgraph = () : Subgraph => {
     };
 };
 
-export const toSubgraph = (triples) => {
-
-    let nodes = new Map<Node>();
-    let links = new Map<Link>();
-    let groupId = 1;
-    
-    for (let t of triples) {
-
-        // Source has a URI, that can be its unique ID
-        const sourceId = t.s.v;
-
-        // Same for target, unless it's a literal, in which case
-        // use an ID which is unique to this edge so that it gets its
-        // own node
-        const targetId = t.o.e ? t.o.v : (t.s.v + "@@" + t.p.v + "@@" + t.o.e);
-
-        // Links have an ID so that this edge is unique
-        const linkId = (t.s.v + "@@" + t.p.v + "@@" + t.o.e);
-
-        if (!(sourceId in nodes)) {
-            nodes.set(sourceId, {
-                id: sourceId,
-                label: t.s.label,
-                group: groupId,
-            });
-        }
-
-        if (!(targetId in nodes)) {
-            nodes.set(targetId, {
-                id: targetId,
-                label: t.o.label,
-                group: groupId,
-            });
-        }
-
-        if (!(linkId in links)) {
-            links.set(linkId, {
-                source: sourceId,
-                target: targetId,
-                id: linkId,
-                label: t.p.label,
-                value: 1,
-            });
-        }
-
-    }
-
-    return {
-        nodes: Array.from(nodes.values()),
-        links : Array.from(links.values()),
-    };
-
-};
-
 export const updateSubgraphTriples = (
     sg : Subgraph, triples : Triple[]
 ) => {
-
-console.log("SG<", sg);
-console.log("T<", triples);
 
     const groupId = 1;
 
@@ -456,33 +399,13 @@ console.log("T<", triples);
 
     }
 
-console.log("SG>", sg);
-
-
     return sg;
-
-};
-
-export const getSubgraph = (socket : Socket, uri : string) => {
-
-    return query(socket, uri).then(
-        (d) => labelS(socket, d)
-    ).then(
-        (d) => labelP(socket, d)
-    ).then(
-        (d) => labelO(socket, d)
-    ).then(
-        (d) => filterInternals(d)
-    ).then(
-        (d) => toSubgraph(d)
-    );
 
 };
 
 export const updateSubgraph = (
     socket : Socket, uri : string, sg : Subgraph
 ) => {
-console.log("<+ ", sg);
 
     return query(socket, uri).then(
         (d) => labelS(socket, d)
