@@ -341,7 +341,7 @@ export const toSubgraph = (triples) => {
         }
 
         if (!linkIds.has({src: src, dest: dest})) {
-            const l = { src: src, dest: dest, value: 1 };
+            const l = { source: src, target: dest, value: 1 };
             links.push(l);
             linkIds.add({src: src, dest: dest});
         }
