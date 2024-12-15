@@ -300,3 +300,74 @@ export const getView =
 
 };
 
+export const toSubgraph = (triples) => {
+
+    interface Node {
+        id : string,
+        group : number,
+    };
+
+    interface Link {
+        source : string;
+        target : string;
+        value : number;
+    };
+
+    let nodeId = 0;
+    let groupId = 1;
+
+    let nodeIds = new Set<string>();
+    let linkIds = new Set<{src : string, dest : string}>();
+
+    let nodes : Node[] = [];
+    let links : Link[] = [];
+
+    for (let t of triples) {
+
+        const src = t.s.v;
+        const rel = t.p.v;
+        const dest = t.o.v;
+
+        if (!nodeIds.has(src)) {
+            const n = { id: src, group: groupId };
+            nodes.push(n);
+            nodeIds.add(src);
+        }
+
+        if (!nodeIds.has(dest)) {
+            const n = { id: dest, group: groupId };
+            nodes.push(n);
+            nodeIds.add(dest);
+        }
+
+        if (!linkIds.has({src: src, dest: dest})) {
+            const l = { src: src, dest: dest, value: 1 };
+            links.push(l);
+            linkIds.add({src: src, dest: dest});
+        }
+
+    }
+
+    return {
+        nodes: nodes,
+        links : links
+    };
+
+};
+
+export const getSubgraph = (socket : Socket, uri : string) => {
+
+    return query(socket, uri).then(
+        (d) => labelS(socket, d)
+    ).then(
+        (d) => labelP(socket, d)
+    ).then(
+        (d) => labelO(socket, d)
+    ).then(
+        (d) => filterInternals(d)
+    ).then(
+        (d) => toSubgraph(d)
+    );
+
+};
+
