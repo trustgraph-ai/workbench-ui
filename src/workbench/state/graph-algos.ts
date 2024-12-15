@@ -304,53 +304,54 @@ export const toSubgraph = (triples) => {
 
     interface Node {
         id : string,
+        label : string,
         group : number,
     };
 
     interface Link {
         source : string;
         target : string;
+        label : string;
         value : number;
     };
 
-    let nodeId = 0;
+    let nodes = new Map<Node>();
+    let links = new Map<Link>();
     let groupId = 1;
-
-    let nodeIds = new Set<string>();
-    let linkIds = new Set<{src : string, dest : string}>();
-
-    let nodes : Node[] = [];
-    let links : Link[] = [];
 
     for (let t of triples) {
 
-        const src = t.s.v;
-        const rel = t.p.v;
-        const dest = t.o.v;
-
-        if (!nodeIds.has(src)) {
-            const n = { id: src, group: groupId };
-            nodes.push(n);
-            nodeIds.add(src);
+        if (!(t.s.v in nodes)) {
+            nodes.set(t.s.v, {
+                id: t.s.v,
+                label: t.s.label,
+                group: groupId,
+            });
         }
 
-        if (!nodeIds.has(dest)) {
-            const n = { id: dest, group: groupId };
-            nodes.push(n);
-            nodeIds.add(dest);
+        if (!(t.o.v in nodes)) {
+            nodes.set(t.o.v, {
+                id: t.o.v,
+                label: t.o.label,
+                group: groupId,
+            });
         }
 
-        if (!linkIds.has({src: src, dest: dest})) {
-            const l = { source: src, target: dest, value: 1 };
-            links.push(l);
-            linkIds.add({src: src, dest: dest});
+        if (!(t.p.v in links)) {
+            links.set(t.p.v, {
+                source: t.s.v,
+                target: t.o.v,
+                uri: t.p.v,
+                label: t.p.label,
+                value: 1,
+            });
         }
 
     }
 
     return {
-        nodes: nodes,
-        links : links
+        nodes: Array.from(nodes.values()),
+        links : Array.from(links.values()),
     };
 
 };

@@ -1,12 +1,12 @@
 
-import React, { useState, useEffect, ReactNode } from 'react';
+import React, { useState, useEffect, useRef, ReactNode } from 'react';
 
 import { Typography, Box, Stack, Button } from '@mui/material';
 
 import { ArrowForward, ArrowBack } from '@mui/icons-material';
 
 import { ForceGraph3D } from 'react-force-graph';
-import SpriteText from "https://esm.sh/three-spritetext";
+import SpriteText from 'three-spritetext'
 
 import { useSocket } from './socket/socket';
 import { useWorkbenchStateStore } from './state/WorkbenchState';
@@ -21,6 +21,8 @@ const GraphView : React.FC <GraphViewProps> = ({
     const socket = useSocket();
 
     const selected = useWorkbenchStateStore((state) => state.selected);
+
+    const fgRef = useRef();
 
     if (!selected) {
         return ( <div>No node selected.</div> );
@@ -43,9 +45,13 @@ const GraphView : React.FC <GraphViewProps> = ({
     if (!view)
         return ( <div>No data.</div> );
 
-////////////////////////////////////////////////////////////////////////////
-// FIXME: These keys won't track change!
-////////////////////////////////////////////////////////////////////////////
+    const wrap = (s, w) => s.replace(
+        new RegExp(`(?![^\\n]{1,${w}}$)([^\\n]{1,${w}})\\s`, 'g'), '$1\n'
+    );
+
+    const nodeClick = (node) => {
+        console.log(node);
+    };
 
     return (
         <>
@@ -55,15 +61,22 @@ const GraphView : React.FC <GraphViewProps> = ({
 
             <ForceGraph3D
                 graphData={view}
-                nodeLabel="nid"
+                nodeLabel="label"
                 nodeAutoColorBy="group"
+                nodeThreeObject={node => {
+                  const sprite = new SpriteText(wrap(node.label, 30));
+                  sprite.color = 'white';
+                  sprite.textHeight = 2;
+                  return sprite;
+                }}
+                onNodeClick={nodeClick}
+
+                linkDirectionalArrowLength={3}
+                linkDirectionalArrowRelPos={1}
                 linkThreeObjectExtend={true}
                 linkThreeObject={link => {
-                    // extend link with text sprite
-                    const sprite = new SpriteText(
-                        `${link.source} > ${link.target}`
-                    );
-                    sprite.color = 'lightgrey';
+                    const sprite = new SpriteText(wrap(link.label, 30));
+                    sprite.color = 'white';
                     sprite.textHeight = 1.5;
                     return sprite;
                 }}
@@ -77,6 +90,13 @@ const GraphView : React.FC <GraphViewProps> = ({
                     )
                     Object.assign(sprite.position, middlePos);
                 }}
+
+                ref={fgRef}
+                linkDirectionalParticleColor={() => '#a0a0c0'}
+                linkDirectionalParticleWidth={2}
+                linkHoverPrecision={2}
+                onLinkClick={link => fgRef.current.emitParticle(link)}
+
             />
         </>
     );
