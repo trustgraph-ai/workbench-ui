@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 
 import { Typography, Box, Stack, Button } from '@mui/material';
 
-import { ArrowForward, ArrowBack } from '@mui/icons-material';
+import { ArrowForward } from '@mui/icons-material';
 
 import { useSocket } from './socket/socket';
 import { useWorkbenchStateStore } from './state/WorkbenchState';
