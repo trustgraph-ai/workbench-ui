@@ -11,7 +11,7 @@ export const SCHEMAORG_SUBJECT_OF = "https://schema.org/subjectOf";
 
 export const SCHEMAORG_DESCRIPTION = "https://schema.org/description";
 
-const predefined = {
+const predefined : {[k : string] : string} = {
     [RDFS_LABEL]: "label",
     [SKOS_DEFINITION]: "definition",
     [SCHEMAORG_SUBJECT_OF]: "subject of",
@@ -70,9 +70,9 @@ export const queryPred = (socket : Socket, uri : string, limit? : number) => {
 
 export const query = (socket : Socket, uri : string, limit? : number) => {
     return Promise.all([
-        queryOut(socket, uri),
-        queryPred(socket, uri),
-        queryIn(socket, uri),
+        queryOut(socket, uri, limit),
+        queryPred(socket, uri, limit),
+        queryIn(socket, uri, limit),
     ]).then(
         (resp) => {
             return resp[0].concat(resp[1]).concat(resp[2]);
@@ -276,8 +276,8 @@ export const getView =
                 pred: d.pred.map(
                     (rel) => {
                         return {
-                            rel: rel.s,
-                            src: rel.p,
+                            src: rel.s,
+                            rel: rel.p,
                             dest: rel.o,
                         };
                     }
@@ -307,6 +307,7 @@ interface Node {
 };
 
 interface Link {
+    id : string;
     source : string;
     target : string;
     label : string;
@@ -350,7 +351,7 @@ export const updateSubgraphTriples = (
         if (!nodeIds.has(sourceId)) {
             const n : Node = {
                 id: sourceId,
-                label: t.s.label,
+                label: t.s.label ? t.s.label : "unknown",
                 group: groupId,
             };
             nodeIds.add(sourceId);
@@ -366,7 +367,7 @@ export const updateSubgraphTriples = (
         if (!nodeIds.has(targetId)) {
             const n : Node = {
                 id: targetId,
-                label: t.o.label,
+                label: t.o.label ? t.o.label : "unknown",
                 group: groupId,
             };
             nodeIds.add(targetId);
@@ -384,7 +385,7 @@ export const updateSubgraphTriples = (
                 source: sourceId,
                 target: targetId,
                 id: linkId,
-                label: t.p.label,
+                label: t.p.label ? t.p.label : "unknown",
                 value: 1,
             };
             linkIds.add(linkId);

@@ -49,7 +49,19 @@ const ChatConversation : React.FC <ChatConversationProps> = ({
         );
 */
 
+/*
         socket.textCompletion(input).then(
+            (text : string) => {
+                addMessage("ai", text);
+                setInput("");
+                decWorking();
+            }
+        );
+        */
+
+        socket.graphRag(
+            input
+        ).then(
             (text : string) => {
                 addMessage("ai", text);
                 setInput("");
@@ -62,7 +74,7 @@ const ChatConversation : React.FC <ChatConversationProps> = ({
 
             // Take the embeddings, and lookup entities using graph
             // embeddings
-            (vecs : number[][]) => socket.graphEmbeddingsQuery(vecs, 5)
+            (vecs : number[][]) => socket.graphEmbeddingsQuery(vecs, 10)
 
         ).then(
 
@@ -115,7 +127,7 @@ const ChatConversation : React.FC <ChatConversationProps> = ({
 
     return (
         <>
-            <Card sx={{ width: "40rem", margin: "0.5rem" }}>
+            <Card sx={{ width: "40rem", height: "80vh", margin: "0.5rem" }}>
                 <CardContent>
                     <Typography variant="h5" component="div" gutterBottom>
                         AI Chat History
