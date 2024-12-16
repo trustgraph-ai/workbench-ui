@@ -20,13 +20,29 @@ const Literal : React.FC<{value : any}> = ({value}) => {
     );
 };
 
+const Selected : React.FC<{value : any}> = ({value}) => {
+
+    return (
+        <Typography variant="body1" color="#802030"
+            sx={{
+                maxWidth: '20rem',
+            }}
+        >
+            {value.label}
+        </Typography>
+    );
+};
+
 const Entity : React.FC<{value : any}> = ({value}) => {
 
     const setSelected = useWorkbenchStateStore((state) => state.setSelected);
 
     return (
         <Button
-            sx={{ textTransform: 'initial'}}
+            sx={{
+                textTransform: 'initial',
+                maxWidth: '20rem',
+            }}
             onClick={ () => setSelected({ uri: value.v, label: value.label }) }
         >
             {value.label}
@@ -49,7 +65,6 @@ const EntityDetail : React.FC <EntityDetailProps> = ({
     const [view, setView] = useState<any>(undefined);
 
     const graphView = () => {
-        console.log(selected.uri);
         setTool("graph");
     };
 
@@ -84,6 +99,7 @@ const EntityDetail : React.FC <EntityDetailProps> = ({
             </Button>
 
             <Box>
+
                 { view.props.map(
                      (prop : any, ix : number) => {
                          return (
@@ -93,7 +109,10 @@ const EntityDetail : React.FC <EntityDetailProps> = ({
                                      alignItems="center"
                                      gap={0}
                                  >
+                                     <Selected value={selected}/>
+                                     <ArrowForward/>
                                      <Entity value={prop.prop}/>
+                                     <ArrowForward/>
                                      <Literal value={prop.value}/>
                                  </Stack>
                              </Box>
@@ -110,9 +129,11 @@ const EntityDetail : React.FC <EntityDetailProps> = ({
                                      alignItems="center"
                                      gap={0}
                                  >
-                                     <Entity value={rel.rel}/>
-                                     <ArrowBack/>
+                                     <Selected value={selected}/>
+                                     <ArrowForward/>
                                      <Entity value={rel.entity}/>
+                                     <ArrowForward/>
+                                     <Entity value={rel.rel}/>
                                  </Stack>
                              </Box>
                          );
@@ -128,6 +149,8 @@ const EntityDetail : React.FC <EntityDetailProps> = ({
                                      alignItems="center"
                                      gap={0}
                                  >
+                                     <Selected value={selected}/>
+                                     <ArrowForward/>
                                      <Entity value={rel.rel}/>
                                      <ArrowForward/>
                                      <Entity value={rel.entity}/>
@@ -148,7 +171,7 @@ const EntityDetail : React.FC <EntityDetailProps> = ({
                                  >
                                      <Entity value={rel.src}/>
                                      <ArrowForward/>
-                                     <Entity value={rel.rel}/>
+                                     <Selected value={rel.rel}/>
                                      <ArrowForward/>
                                      <Entity value={rel.dest}/>
                                  </Stack>

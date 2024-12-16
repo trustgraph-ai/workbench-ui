@@ -276,8 +276,8 @@ export const getView =
                 pred: d.pred.map(
                     (rel) => {
                         return {
-                            rel: rel.s,
-                            src: rel.p,
+                            src: rel.s,
+                            rel: rel.p,
                             dest: rel.o,
                         };
                     }
