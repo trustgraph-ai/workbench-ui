@@ -1,9 +1,7 @@
 
-import React, { useState, useEffect, useRef, ReactNode } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
-import { Typography, Box, Stack, Button } from '@mui/material';
-
-import { ArrowForward, ArrowBack } from '@mui/icons-material';
+import { Typography, Box } from '@mui/material';
 
 import { ForceGraph3D } from 'react-force-graph';
 import SpriteText from 'three-spritetext'
@@ -11,7 +9,7 @@ import SpriteText from 'three-spritetext'
 import { useSocket } from './socket/socket';
 import { useWorkbenchStateStore } from './state/WorkbenchState';
 import {
-    getSubgraph, createSubgraph, updateSubgraph
+    createSubgraph, updateSubgraph
 } from './state/graph-algos';
 
 interface GraphViewProps {
@@ -24,7 +22,7 @@ const GraphView : React.FC <GraphViewProps> = ({
 
     const selected = useWorkbenchStateStore((state) => state.selected);
 
-    const fgRef = useRef();
+    const fgRef = useRef<any>();
 
     if (!selected) {
         return ( <div>No node selected.</div> );
@@ -47,11 +45,11 @@ const GraphView : React.FC <GraphViewProps> = ({
     if (!view)
         return ( <div>No data.</div> );
 
-    const wrap = (s, w) => s.replace(
+    const wrap = (s : string, w : number) => s.replace(
         new RegExp(`(?![^\\n]{1,${w}}$)([^\\n]{1,${w}})\\s`, 'g'), '$1\n'
     );
 
-    const nodeClick = (node) => {
+    const nodeClick = (node : any) => {
 
         updateSubgraph(socket, node.id, view).then(
             (sg) => {
@@ -75,7 +73,7 @@ const GraphView : React.FC <GraphViewProps> = ({
                 graphData={view}
                 nodeLabel="label"
                 nodeAutoColorBy="group"
-                nodeThreeObject={node => {
+                nodeThreeObject={(node : any) => {
                   const sprite = new SpriteText(wrap(node.label, 30));
                   sprite.color = 'white';
                   sprite.textHeight = 2;
@@ -86,13 +84,14 @@ const GraphView : React.FC <GraphViewProps> = ({
                 linkDirectionalArrowLength={1.5}
                 linkDirectionalArrowRelPos={1}
                 linkThreeObjectExtend={true}
-                linkThreeObject={link => {
+                linkThreeObject={(link : any) => {
                     const sprite = new SpriteText(wrap(link.label, 30));
                     sprite.color = 'white';
                     sprite.textHeight = 1.5;
                     return sprite;
                 }}
                 linkPositionUpdate={(sprite, { start, end }) => {
+/*
                     const middlePos = Object.assign(
                         ...['x', 'y', 'z'].map(
                             c => ({
@@ -100,6 +99,12 @@ const GraphView : React.FC <GraphViewProps> = ({
                             })
                         )
                     )
+*/
+                    const middlePos = {
+                        x: start.x + (end.x - start.x) / 2,
+                        y: start.y + (end.y - start.y) / 2,
+                        z: start.z + (end.z - start.z) / 2,
+                    };
                     Object.assign(sprite.position, middlePos);
                 }}
 
@@ -107,8 +112,10 @@ const GraphView : React.FC <GraphViewProps> = ({
                 linkDirectionalParticleColor={() => '#a0a0c0'}
                 linkDirectionalParticleWidth={0.8}
                 linkHoverPrecision={2}
-                onLinkClick={link => fgRef.current.emitParticle(link)}
-
+                onLinkClick={link => {
+                    if (fgRef.current != undefined)
+                        fgRef.current.emitParticle(link);
+                }}
             />
 
             </Box>

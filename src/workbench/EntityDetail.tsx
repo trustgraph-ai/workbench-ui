@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, ReactNode } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import { Typography, Box, Stack, Button } from '@mui/material';
 
@@ -85,7 +85,7 @@ const EntityDetail : React.FC <EntityDetailProps> = ({
 
             <Box>
                 { view.props.map(
-                     (prop, ix) => {
+                     (prop : any, ix : number) => {
                          return (
                              <Box key={'prop' + ix.toString()}>
                                  <Stack
@@ -102,7 +102,7 @@ const EntityDetail : React.FC <EntityDetailProps> = ({
                 )}
 
                 { view.in.map(
-                     (rel, ix) => {
+                     (rel : any, ix : number) => {
                          return (
                              <Box key={'rel' + ix.toString()}>
                                  <Stack
@@ -120,7 +120,7 @@ const EntityDetail : React.FC <EntityDetailProps> = ({
                 )}
 
                 { view.out.map(
-                     (rel, ix) => {
+                     (rel : any, ix : number) => {
                          return (
                              <Box key={'out' + ix.toString()}>
                                  <Stack
@@ -138,7 +138,7 @@ const EntityDetail : React.FC <EntityDetailProps> = ({
                 )}
 
                 { view.pred.map(
-                     (rel, ix) => {
+                     (rel : any, ix : number) => {
                          return (
                              <Box key={'pred' + ix.toString()}>
                                  <Stack
