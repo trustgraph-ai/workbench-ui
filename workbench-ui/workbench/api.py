@@ -24,9 +24,6 @@ class Api:
 
         self.ui = importlib.resources.files().joinpath("ui")
 
-#        self.templates = importlib.resources.files().joinpath("templates")
-#        self.resources = importlib.resources.files().joinpath("resources")
-
     def open(self, path):
 
         if ".." in path:
@@ -110,7 +107,7 @@ class Api:
 
         session = aiohttp.ClientSession()
 
-        url = "http://localhost:8088/api/v1/mux"
+        url = "http://api-gateway:8088/api/v1/mux"
 
         running = True
 
