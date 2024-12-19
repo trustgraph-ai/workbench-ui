@@ -15,7 +15,7 @@ logger.setLevel(logging.INFO)
 class Api:
     def __init__(self, **config):
 
-        self.port = int(config.get("port", "8080"))
+        self.port = int(config.get("port", "8888"))
         self.app = web.Application(middlewares=[])
 
         self.app.add_routes([web.get("/api/socket", self.socket)])
@@ -118,7 +118,9 @@ class Api:
                 while running:
 
                     try:
-                        msg = await ws_from.receive(timeout=0.5)
+                        # Short timeout seems to cause underlying websocket
+                        # to go 'closed'?!
+                        msg = await ws_from.receive(timeout=120)
                     except TimeoutError:
                         continue
 

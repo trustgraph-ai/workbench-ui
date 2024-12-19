@@ -28,5 +28,5 @@ RUN pip install /root/wheels/* && \
     rm -rf /root/wheels
 
 CMD service
-EXPOSE 8080
+EXPOSE 8888
 

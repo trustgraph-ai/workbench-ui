@@ -1,6 +1,6 @@
 
 PACKAGE_VERSION=0.0.0
-VERSION=0.0.0
+VERSION=0.0.8
 
 all: service-package container
 
@@ -17,10 +17,17 @@ service-package: ui update-package-versions
 update-package-versions:
 	echo __version__ = \"${PACKAGE_VERSION}\" > workbench-ui/workbench/version.py
 
-CONTAINER=localhost/workbench-ui
+CONTAINER=docker.io/trustgraph/workbench-ui
 DOCKER=podman
 
 container:
 	${DOCKER} build -f Containerfile -t ${CONTAINER}:${VERSION} \
 	    --format docker
+
+push:
+	${DOCKER} push ${CONTAINER}:${VERSION}
+
+docker-hub-login:
+	cat docker-token.txt | \
+	    docker login -u trustgraph --password-stdin registry-1.docker.io
 
