@@ -1,8 +1,6 @@
 
 import React from 'react';
 
-import { Stack } from '@mui/material';
-
 import ChatConversation from './ChatConversation';
 
 interface ChatProps {

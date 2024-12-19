@@ -26,9 +26,10 @@ const Workspace : React.FC = () => {
         <Stack
             direction="row" className="workspace"
         >
+
             <Stack
-                direction="column" flexItem
-                divider={<Divider orientation="horizontal"/>}
+                direction="column"
+                divider={<Divider orientation="horizontal" flexItem/>}
             >
                 <Toolbox/>
                 <EntityList/>
