@@ -23,18 +23,21 @@ const Workspace : React.FC = () => {
 
     return (
 
-        <Stack direction="row">
+        <Stack
+            direction="row" className="workspace"
+        >
             <Stack
-                direction="column"
-                divider={<Divider orientation="horizontal" flexItem />}
+                direction="column" flexItem
+                divider={<Divider orientation="horizontal"/>}
             >
                 <Toolbox/>
                 <EntityList/>
             </Stack>
-            <Box>
-                <Tool
-                    tool={tool}
-                />
+            <Box
+                className="toolspace"
+                sx={{ width: '100%' }}
+            >
+                <Tool tool={tool}/>
             </Box>
         </Stack>
 

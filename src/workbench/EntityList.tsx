@@ -25,7 +25,7 @@ const EntityList : React.FC <EntityListProps> = ({
     };
 
     return (
-        <List sx={{ height: '30rem', width: '20rem', overflowY: 'auto' }}>
+        <List className="entities" sx={{ overflowY: 'auto' }}>
             {entities.map((entity, ix) => {
 
                 return (

@@ -127,7 +127,15 @@ const ChatConversation : React.FC <ChatConversationProps> = ({
 
     return (
         <>
-            <Card sx={{ width: "40rem", height: "80vh", margin: "0.5rem" }}>
+            <Card
+                className="chat-conversation"
+                sx={{
+                    margin: "0.5rem", height: "100%",
+                    minWidth: '30rem', maxWidth: '60rem',
+                    overflowY: 'auto'
+                }}
+            >
+
                 <CardContent>
                     <Typography variant="h5" component="div" gutterBottom>
                         AI Chat History
@@ -137,6 +145,7 @@ const ChatConversation : React.FC <ChatConversationProps> = ({
                         onSubmit={onSubmit}
                     />
                 </CardContent>
+
             </Card>
         </>
 

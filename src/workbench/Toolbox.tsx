@@ -21,8 +21,9 @@ const Toolbox : React.FC <ToolboxProps> = ({
         <>
 
             <List
+                className="toolbox"
                 component="nav" aria-label="toolbox"
-                sx={{ width: "18rem" }}
+                sx={{ width: "18rem", mt: '1rem' }}
             >
 
                 <ListItemButton
@@ -35,18 +36,7 @@ const Toolbox : React.FC <ToolboxProps> = ({
                     </ListItemIcon>
                     <ListItemText primary={'Chat'}/>
                 </ListItemButton>
-{/*
-                <ListItemButton
-                    key={'graph-rag'}
-                    selected={tool == 'graph-rag'}
-                    onClick={() => { setTool('graph-rag') }}
-                >
-                    <ListItemIcon>
-                        <ChatBubble/>
-                    </ListItemIcon>
-                    <ListItemText primary="GraphRAG"/>
-                </ListItemButton>
-*/}
+
                 <ListItemButton
                     key={'entity'}
                     selected={tool == 'entity'}

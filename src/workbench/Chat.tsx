@@ -13,12 +13,7 @@ const Chat : React.FC <ChatProps> = ({
 
     return (
         <>
-            <Stack direction="row">
-
-                <ChatConversation
-                />
-
-            </Stack>
+            <ChatConversation/>
         </>
 
     );

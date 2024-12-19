@@ -13,7 +13,7 @@ export default defineConfig({
                  changeOrigin: true,
                  ws: true,
                  secure: false,
-                 rewrite: () => "/api/v1/mux",
+                 rewrite: () => "/api/v1/socket",
             },
         }
     }

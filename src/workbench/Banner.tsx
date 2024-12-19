@@ -8,6 +8,7 @@ const Banner : React.FC = () => {
     return (
 
         <Stack
+            className="banner"
             alignItems="center"
             direction="row"
             gap={2}
