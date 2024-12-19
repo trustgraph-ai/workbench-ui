@@ -12,10 +12,20 @@ import logging
 logger = logging.getLogger("api")
 logger.setLevel(logging.INFO)
 
+class Running:
+    def __init__(self): self.running = True
+    def get(self): return self.running
+    def stop(self): self.running = False
+
 class Api:
     def __init__(self, **config):
 
         self.port = int(config.get("port", "8888"))
+        self.gateway = config.get("gateway", "http://api-gateway:8088")
+
+        if self.gateway[-1] != "/":
+            self.gateway += "/"
+
         self.app = web.Application(middlewares=[])
 
         self.app.add_routes([web.get("/api/socket", self.socket)])
@@ -107,20 +117,18 @@ class Api:
 
         session = aiohttp.ClientSession()
 
-        url = "http://api-gateway:8088/api/v1/mux"
+        url = self.gateway + "api/v1/socket"
 
-        running = True
+        running = Running()
 
         async with session.ws_connect(url) as ws_client:
 
-            async def wsforward(ws_from, ws_to):
+            async def wsforward(ws_from, ws_to, running):
 
-                while running:
+                while running.get():
 
                     try:
-                        # Short timeout seems to cause underlying websocket
-                        # to go 'closed'?!
-                        msg = await ws_from.receive(timeout=120)
+                        msg = await ws_from.receive(timeout=0.5)
                     except TimeoutError:
                         continue
 
@@ -141,21 +149,20 @@ class Api:
                         print("Weird message", mt)
                         break
 
-            s2c_task = asyncio.create_task(wsforward(ws_server, ws_client))
-            c2s_task = asyncio.create_task(wsforward(ws_client, ws_server))
+                running.stop()
 
-            fin, unfin = await asyncio.wait(
-                [s2c_task, c2s_task],
-                return_when=asyncio.FIRST_COMPLETED
+            s2c_task = asyncio.create_task(
+                wsforward(ws_server, ws_client, running)
             )
 
-            running = False
+            await wsforward(ws_client, ws_server, running)
+
+            running.stop()
 
             await ws_server.close()
             await ws_client.close()
 
             await s2c_task
-            await c2s_task
 
         await session.close()
 
