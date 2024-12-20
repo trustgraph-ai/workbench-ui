@@ -12,7 +12,7 @@ def run():
 
     logging.info("Starting...")
 
-    a = Api(port=8888, gateway="ws://localhost:8088/")
+    a = Api(port=8888, gateway="ws://api-gateway:8088/")
 
     a.run()
 
