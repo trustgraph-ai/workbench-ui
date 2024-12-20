@@ -128,7 +128,7 @@ class Api:
                 while running.get():
 
                     try:
-                        msg = await ws_from.receive(timeout=0.5)
+                        msg = await ws_from.receive(timeout=1000)
                     except TimeoutError:
                         continue
 
