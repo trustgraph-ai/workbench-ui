@@ -8,8 +8,6 @@ RUN apk add --update --no-cache --no-progress python3 py3-pip py3-wheel \
 
 RUN mkdir /root/wheels
 
-RUN pip wheel -w /root/wheels --no-deps jsonnet
-
 COPY workbench-ui /root/workbench-ui/
 
 RUN (cd /root/workbench-ui && pip wheel -w /root/wheels --no-deps .)
