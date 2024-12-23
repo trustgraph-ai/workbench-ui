@@ -81,31 +81,15 @@ export interface TriplesQueryResponse {
 export const createTrustGraphSocket = () : Socket => {
 
     let id = 1;
-    let ws = new WebSocket(SOCKET_URL);
 
-    let inFlight : { [key : string] : Callbacks } = {}
+    let state : any = {};
 
-    const onMessage = (message : MessageEvent) => {
+    state.ws = new WebSocket(SOCKET_URL);
 
-        if (!message.data) return;
-        const obj = JSON.parse(message.data);
-
-        if (!obj.id) return;
-
-        if (inFlight[obj.id]) {
-            inFlight[obj.id].success(obj);
-        }
-
-    };
-
-    const onClose = () => {
-        console.log("CLOSE");
-        setTimeout(
-            () => {
-                ws = new WebSocket(SOCKET_URL);
-            },
-            SOCKET_RECONNECTION_TIMEOUT
-        );
+    const doClose = () => {
+        state.ws.removeEventListener("message", onMessage);
+        state.ws.removeEventListener("close", onClose);
+        state.ws.removeEventListener("open", doOpen);
     };
 
     const textCompletion = (text : string) => {
@@ -124,7 +108,7 @@ export const createTrustGraphSocket = () : Socket => {
 
             inFlight[mid] = { success: resolve, error: reject};
 
-            ws.send(msg);
+            state.ws.send(msg);
 
         }).then(
             (obj) => {
@@ -149,7 +133,7 @@ export const createTrustGraphSocket = () : Socket => {
 
             inFlight[mid] = { success: resolve, error: reject};
 
-            ws.send(msg);
+            state.ws.send(msg);
 
         }).then(
             (obj) => {
@@ -191,7 +175,7 @@ export const createTrustGraphSocket = () : Socket => {
 
         inFlight[mid] = { success: ok, error: err};
 
-        ws.send(msg);
+        state.ws.send(msg);
 
     }
 
@@ -208,7 +192,7 @@ export const createTrustGraphSocket = () : Socket => {
 
         return new Promise<EmbeddingsResponse>((resolve, reject) => {
             inFlight[mid] = { success: resolve, error: reject};
-            ws.send(msg);
+            state.ws.send(msg);
         }).then(
             (obj) => {
                 delete inFlight[obj.id];
@@ -234,7 +218,7 @@ export const createTrustGraphSocket = () : Socket => {
 
         return new Promise<GraphEmbeddingsQueryResponse>((resolve, reject) => {
             inFlight[mid] = { success: resolve, error: reject};
-            ws.send(msg);
+            state.ws.send(msg);
         }).then(
             (obj) => {
                 delete inFlight[obj.id];
@@ -263,7 +247,7 @@ export const createTrustGraphSocket = () : Socket => {
 
         return new Promise<TriplesQueryResponse>((resolve, reject) => {
             inFlight[mid] = { success: resolve, error: reject};
-            ws.send(msg);
+            state.ws.send(msg);
         }).then(
             (obj) => {
                 delete inFlight[obj.id];
@@ -272,29 +256,48 @@ export const createTrustGraphSocket = () : Socket => {
         );
     }
 
+    state.close = doClose;
+    state.textCompletion = textCompletion;
+    state.graphRag = graphRag;
+    state.agent = agent;
+    state.embeddings = embeddings;
+    state.graphEmbeddingsQuery = graphEmbeddingsQuery;
+    state.triplesQuery = triplesQuery;
+
+    let inFlight : { [key : string] : Callbacks } = {}
+
+    const onMessage = (message : MessageEvent) => {
+
+        if (!message.data) return;
+        const obj = JSON.parse(message.data);
+
+        if (!obj.id) return;
+
+        if (inFlight[obj.id]) {
+            inFlight[obj.id].success(obj);
+        }
+
+    };
+
+    const onClose = () => {
+        console.log("CLOSE");
+        setTimeout(
+            () => {
+                state.ws = new WebSocket(SOCKET_URL);
+            },
+            SOCKET_RECONNECTION_TIMEOUT
+        );
+    };
+
     const doOpen = () => {
         console.log("OPEN");
     }
 
-    const doClose = () => {
-        ws.removeEventListener("message", onMessage);
-        ws.removeEventListener("close", onClose);
-        ws.removeEventListener("open", doOpen);
-    };
+    state.ws.addEventListener("message", onMessage);
+    state.ws.addEventListener("close", onClose);
+    state.ws.addEventListener("open", doOpen);
 
-    ws.addEventListener("message", onMessage);
-    ws.addEventListener("close", onClose);
-    ws.addEventListener("open", doOpen);
-
-    return {
-        close: doClose,
-        textCompletion: textCompletion,
-        graphRag: graphRag,
-        agent: agent,
-        embeddings: embeddings,
-        graphEmbeddingsQuery: graphEmbeddingsQuery,
-        triplesQuery: triplesQuery,
-    };
+    return state as Socket;
 
 }
 
