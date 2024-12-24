@@ -1,6 +1,8 @@
 
 import { Triple, Value } from '../state/Triple';
 
+type Timeout = ReturnType<typeof setTimeout>;
+
 const SOCKET_RECONNECTION_TIMEOUT = 2000;
 const SOCKET_URL = "/api/socket";
 
@@ -40,7 +42,7 @@ export interface ApiResponse {
 export interface ServiceCall {
     success : (resp: any) => void;
     error : (err : any) => void;
-    timeoutId : number;
+    timeoutId : Timeout;
     timeout : number;
     expiry : number;
     retries : number;
@@ -357,7 +359,21 @@ export class SocketImplementation {
             }
         };
 
-        this.inflight[mid] = { success: ok, error: err};
+        const timeout = 60000;
+        const retries = 2;
+        const expiry = Date.now() + timeout;
+
+        this.inflight[mid] = {
+            success: ok,
+            error: err,
+            timeoutId: setTimeout(
+                () => this.timeout(mid),
+                timeout,
+            ),
+            timeout: timeout,
+            expiry: expiry,
+            retries: retries,
+        };
 
         if (this.ws) {
             this.ws.send(msg);
