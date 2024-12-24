@@ -37,9 +37,11 @@ export interface ApiResponse {
     response : any;
 };
 
-export interface Callbacks {
+export interface ServiceCall {
     success : (resp: any) => void;
     error : (err : any) => void;
+    timeout : number;
+    expiry : numer;
 };
 
 export interface TextCompletionRequest {
@@ -116,16 +118,22 @@ function makeid(length : number) {
 
 export class SocketImplementation {
 
-    ws : WebSocket;
+    ws? : WebSocket;
     tag : string;
     id : number;
-    inFlight : { [key : string] : Callbacks } = {};
+    inflight : { [key : string] : ServiceCall } = {};
 
     constructor() {
 
-        this.ws = new WebSocket(SOCKET_URL);
         this.tag = makeid(8);
         this.id = 1;
+
+        this.openSocket();
+
+    }
+
+    openSocket() {
+        this.ws = new WebSocket(SOCKET_URL);
 
         const onMessage = (message : MessageEvent) => {
 
@@ -138,14 +146,17 @@ export class SocketImplementation {
 
             if (!obj.id) return;
 
-            if (this.inFlight[obj.id]) {
-                this.inFlight[obj.id].success(obj.response);
+            if (this.inflight[obj.id]) {
+                this.inflight[obj.id].success(obj.response);
+            } else {
+                console.log("Message ID", this.inflight[obj.id], "not known");
             }
 
         };
 
         const onClose = () => {
             console.log("[socket close]");
+            this.ws = undefined;
             setTimeout(
                 () => { this.reopen() }, 
                 SOCKET_RECONNECTION_TIMEOUT,
@@ -163,7 +174,9 @@ export class SocketImplementation {
     }
 
     reopen() {
-        this.ws = new WebSocket(SOCKET_URL);
+        console.log("[socket reopen >]");
+        this.openSocket();
+        console.log(this.ws);
     }
 
     close() {
@@ -171,7 +184,10 @@ export class SocketImplementation {
 //        this.ws.removeEventListener("message", onMessage);
 //        this.ws.removeEventListener("close", onClose);
 //        this.ws.removeEventListener("open", doOpen);
-        this.ws.close();
+        if (this.ws) {
+            this.ws.close();
+            this.ws = undefined;
+        }
     }
 
     getNextId() {
@@ -180,11 +196,30 @@ export class SocketImplementation {
         return mid;
     }
 
+    timeout(mid : string) {
+
+        if (this.inflight[mid].expiry < Date.now()) {
+            this.inflight[mid].error("Timeout");
+            delete this.inflight[mid];
+            return
+        }
+
+        this.inflight[mid].timeout = setTimeout(
+            () => this.timeout(mid),
+            this.inflight[mid].expiry - Date.now(),
+        );
+
+    }
+
     makeRequest<RequestType, ResponseType>(
-        service : string, request : RequestType
+        service : string, request : RequestType,
+        timeout : number,
     ) {
 
         const mid = this.getNextId();
+
+        if (timeout == undefined)
+            timeout = 10;
 
         const msg = {
             id: mid,
@@ -193,18 +228,35 @@ export class SocketImplementation {
         };
 
         return new Promise<ResponseType>((resolve, reject) => {
-            this.inFlight[mid] = { success: resolve, error: reject};
+
+            this.inflight[mid] = {
+                success: resolve,
+                error: reject,
+                timeout: setTimeout(
+                    () => this.timeout(mid),
+                    timeout,
+                ),
+                expiry: Date.now(),
+            };
 
             console.log("-->", msg);
 
-            this.ws.send(JSON.stringify(msg));
+            if (this.ws) {
+                this.ws.send(JSON.stringify(msg));
+            }
+            // FIXME: Else arrange for re-connect & retry
 
         }).then(
             (obj) => {
-                delete this.inFlight[mid];
+
+                clearTimeout(this.inflight[mid].timeout);
+                delete this.inflight[mid];
+
                 return (obj as ResponseType);
+
             }
         );
+
     }
 
 
@@ -256,14 +308,22 @@ export class SocketImplementation {
             if (resp.thought) think(resp.thought);
             if (resp.observation) observe(resp.observation);
             if (resp.answer) {
+
                 answer(resp.answer);
-                delete this.inFlight[mid];
+
+                clearTimeout(this.inflight[mid].timeout);
+                delete this.inflight[mid];
+
             }
         };
 
-        this.inFlight[mid] = { success: ok, error: err};
+        this.inflight[mid] = { success: ok, error: err};
 
-        this.ws.send(msg);
+        if (this.ws) {
+            this.ws.send(msg);
+        } else {
+            // Arrange for send later
+        }
 
     }
 

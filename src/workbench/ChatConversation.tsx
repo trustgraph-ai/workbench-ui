@@ -36,7 +36,7 @@ const ChatConversation : React.FC <ChatConversationProps> = ({
         addMessage("human", input);
 
         incWorking();
-        incWorking();
+//        incWorking();
 
 /*
         socket.agent(
@@ -65,8 +65,17 @@ const ChatConversation : React.FC <ChatConversationProps> = ({
                 setInput("");
                 decWorking();
             }
-        );
+        ).catch(
+            (err) => {
+                console.log("Graph RAG error:", err);
 
+                addMessage("ai", err.toString());
+                setInput("");
+                decWorking();
+
+            }
+        );
+/*
         // Take the text, and get embeddings
         socket.embeddings(input).then(
 
@@ -120,7 +129,16 @@ const ChatConversation : React.FC <ChatConversationProps> = ({
 
             }
 
+        ).catch(
+            (err) => {
+                console.log("Graph embeddings error:", err);
+
+                addMessage("ai", err.toString());
+                decWorking();
+            }
         );
+
+*/
 
     };
 
