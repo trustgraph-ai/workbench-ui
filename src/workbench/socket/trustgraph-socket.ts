@@ -33,12 +33,25 @@ export interface Callbacks {
     error : (err : any) => void;
 };
 
+export interface TextCompletionRequest {
+    system : string;
+    prompt : string;
+};
+
 export interface TextCompletionResponse {
     response : string;
 };
 
+export interface GraphRagRequest {
+    query : string;
+};
+
 export interface GraphRagResponse {
     response : string;
+};
+
+export interface AgentRequest {
+    question : string;
 };
 
 export interface AgentResponse {
@@ -48,12 +61,28 @@ export interface AgentResponse {
     error? : string;
 };
 
+export interface EmbeddingsRequest {
+    text : string;
+};
+
 export interface EmbeddingsResponse {
     vectors : number[][];
 };
 
+export interface GraphEmbeddingsQueryRequest {
+    vectors : number[][];
+    limit : number;
+};
+
 export interface GraphEmbeddingsQueryResponse {
     entities : Value[];
+};
+
+export interface TriplesQueryRequest {
+    s? : Value;
+    p? : Value;
+    o? : Value;
+    limit : number;
 };
 
 export interface TriplesQueryResponse {
@@ -142,7 +171,9 @@ export class SocketImplementation {
         return mid;
     }
 
-    makeRequest<ResponseType>(service : string, request : any) {
+    makeRequest<RequestType, ResponseType>(
+        service : string, request : RequestType
+    ) {
 
         const mid = this.getNextId();
 
@@ -169,7 +200,7 @@ export class SocketImplementation {
 
 
     textCompletion(system : string, text : string) : Promise<string> {
-        return this.makeRequest<TextCompletionResponse>(
+        return this.makeRequest<TextCompletionRequest, TextCompletionResponse>(
             "text-completion",
             {
                 system: system,
@@ -179,7 +210,7 @@ export class SocketImplementation {
     }
 
     graphRag(text : string) {
-        return this.makeRequest<GraphRagResponse>(
+        return this.makeRequest<GraphRagRequest, GraphRagResponse>(
             "graph-rag",
             {
                 query: text,
@@ -226,7 +257,7 @@ export class SocketImplementation {
     }
 
     embeddings(text : string) {
-        return this.makeRequest<EmbeddingsResponse>(
+        return this.makeRequest<EmbeddingsRequest, EmbeddingsResponse>(
             "embeddings",
             {
                 text: text,
@@ -238,7 +269,9 @@ export class SocketImplementation {
         vecs : number[][],
         limit : number | undefined,
     ) {
-        return this.makeRequest<GraphEmbeddingsQueryResponse>(
+        return this.makeRequest<
+            GraphEmbeddingsQueryRequest, GraphEmbeddingsQueryResponse
+        >(
             "graph-embeddings-query",
             {
                 vectors: vecs,
@@ -254,14 +287,13 @@ export class SocketImplementation {
         o? : Value,
         limit? : number,
     ) {
-        let pr = this.makeRequest(
+        return this.makeRequest<TriplesQueryRequest, TriplesQueryResponse>(
             "triples-query",
             {
                 s: s, p: p, o: o,
                 limit: limit ? limit : 20,
             }
-        ) as Promise<TriplesQueryResponse>;
-        return pr.then(r => r.response);
+        ).then(r => r.response);
     }
 
 };
