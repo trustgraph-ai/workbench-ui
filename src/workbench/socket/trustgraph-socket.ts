@@ -5,22 +5,31 @@ const SOCKET_RECONNECTION_TIMEOUT = 2000;
 const SOCKET_URL = "/api/socket";
 
 export interface Socket {
+
     close : () => void;
+
     textCompletion : (system : string, text : string) => Promise<string>;
+
     graphRag : (text : string) => Promise<string>;
+
     agent : (
         question : string,
         think : (t : string) => void,
         observe : (t : string) => void,
         answer : (t : string) => void,
+        error : (e : string) => void,
     ) => void;
+
     embeddings : (text : string) => Promise<number[][]>;
+
     graphEmbeddingsQuery : (
         vecs : number[][], limit : number
     ) => Promise<Value[]>;
+
     triplesQuery : (
         s? : Value, p? : Value, o? : Value, limit? : number
     ) => Promise<Triple[]>;
+
 };
 
 export interface ApiResponse {
@@ -223,6 +232,7 @@ export class SocketImplementation {
         think : (s : string) => void,
         observe : (s : string) => void,
         answer : (s : string) => void,
+        error : (s : string) => void,
     ) {
 
         const mid = this.getNextId();
@@ -237,6 +247,7 @@ export class SocketImplementation {
         });
 
         const err = (e : string) => {
+            error(e);
             console.log("Error:", e);
         };
 
