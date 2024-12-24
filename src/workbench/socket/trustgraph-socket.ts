@@ -78,79 +78,144 @@ export interface TriplesQueryResponse {
     };
 };
 
-export const createTrustGraphSocket = () : Socket => {
+// FIXME: Should use something more 'unique', cryptorand
+function makeid(length : number) {
+    let result = '';
+    const characters = 'abcdefghijklmnopqrstuvwxyz';
+    const charactersLength = characters.length;
+    let counter = 0;
+    while (counter < length) {
+      result += characters.charAt(
+          Math.floor(Math.random() * charactersLength)
+      );
+      counter += 1;
+    }
+    return result;
+}
 
-    let id = 1;
 
-    let state : any = {};
+export class SocketImplementation {
 
-    state.ws = new WebSocket(SOCKET_URL);
+    ws : WebSocket;
+    tag : string;
+    id : number;
+    inFlight : { [key : string] : Callbacks } = {};
 
-    const doClose = () => {
-        state.ws.removeEventListener("message", onMessage);
-        state.ws.removeEventListener("close", onClose);
-        state.ws.removeEventListener("open", doOpen);
-    };
+    constructor() {
 
-    const textCompletion = (text : string) => {
-        const mid = "m" + id.toString();
-        id++;
-        const msg = JSON.stringify({
-            "id": mid,
-            "service": "text-completion",
-            "request": {
-                "system": "You are a helpful assistant.",
-                "prompt": text,
+        this.ws = new WebSocket(SOCKET_URL);
+        this.tag = makeid(8);
+        this.id = 1;
+
+        const onMessage = (message : MessageEvent) => {
+
+            if (!message.data) return;
+
+
+            const obj = JSON.parse(message.data);
+
+            console.log("<--", obj);
+
+            if (!obj.id) return;
+
+            if (this.inFlight[obj.id]) {
+                this.inFlight[obj.id].success(obj);
             }
+
+        };
+
+        const onClose = () => {
+            console.log("[socket close]");
+            setTimeout(
+                () => { this.reopen() }, 
+                SOCKET_RECONNECTION_TIMEOUT,
+            );
+        };
+
+        const onOpen = () => {
+            console.log("[socket open]");
+        }
+
+        this.ws.addEventListener("message", onMessage);
+        this.ws.addEventListener("close", onClose);
+        this.ws.addEventListener("open", onOpen);
+
+    }
+
+    reopen() {
+        this.ws = new WebSocket(SOCKET_URL);
+    }
+
+    close() {
+          // Maybe these 'leak' websocket references?
+//        this.ws.removeEventListener("message", onMessage);
+//        this.ws.removeEventListener("close", onClose);
+//        this.ws.removeEventListener("open", doOpen);
+        this.ws.close();
+    }
+
+    getNextId() {
+        const mid = this.tag + "-" + this.id.toString();
+        this.id++;
+        return mid;
+    }
+
+    makeRequest(service : string, request : any) {
+
+        const mid = this.getNextId();
+
+        const msg = JSON.stringify({
+            id: mid,
+            service: service,
+            request: request,
         });
 
-        return new Promise<TextCompletionResponse>((resolve, reject) => {
+        return new Promise<any>((resolve, reject) => {
+            this.inFlight[mid] = { success: resolve, error: reject};
 
-            inFlight[mid] = { success: resolve, error: reject};
+            console.log("-->", msg);
 
-            state.ws.send(msg);
+            this.ws.send(msg);
 
         }).then(
             (obj) => {
-                delete inFlight[obj.id];
-                return obj.response.response;
+                delete this.inFlight[mid];
+                return obj.response;
             }
         );
     }
 
-    const graphRag = (text : string) => {
-        const mid = "m" + id.toString();
-        id++;
-        const msg = JSON.stringify({
-            "id": mid,
-            "service": "graph-rag",
-            "request": {
-                "query": text,
+
+    textCompletion(system : string, text : string) {
+        const p = this.makeRequest(
+            "text-completion",
+            {
+                system: system,
+                prompt: text,
             }
-        });
-
-        return new Promise<GraphRagResponse>((resolve, reject) => {
-
-            inFlight[mid] = { success: resolve, error: reject};
-
-            state.ws.send(msg);
-
-        }).then(
-            (obj) => {
-                delete inFlight[obj.id];
-                return obj.response.response;
-            }
-        );
+        ) as Promise<TextCompletionResponse>;
+        return p.then(r => r.response);
     }
 
-    const agent = (
+    graphRag(text : string) {
+        const p = this.makeRequest(
+            "graph-rag",
+            {
+                query: text,
+            }
+        ) as Promise<GraphRagResponse>;
+        return p.then(r => r.response);
+    }
+
+    agent(
         question : string,
         think : (s : string) => void,
         observe : (s : string) => void,
         answer : (s : string) => void,
-    ) => {
-        const mid = "m" + id.toString();
-        id++;
+    ) {
+
+        const mid = this.getNextId();
+
         const msg = JSON.stringify({
             "id": mid,
             "service": "agent",
@@ -169,135 +234,62 @@ export const createTrustGraphSocket = () : Socket => {
             if (e.response.observation) observe(e.response.observation);
             if (e.response.answer) {
                 answer(e.response.answer);
-                delete inFlight[mid];
+                delete this.inFlight[mid];
             }
         };
 
-        inFlight[mid] = { success: ok, error: err};
+        this.inFlight[mid] = { success: ok, error: err};
 
-        state.ws.send(msg);
+        this.ws.send(msg);
 
     }
 
-    const embeddings = (text : string) => {
-        const mid = "m" + id.toString();
-        id++;
-        const msg = JSON.stringify({
-            "id": mid,
-            "service": "embeddings",
-            "request": {
-                "text": text,
+    embeddings(text : string) {
+        let p = this.makeRequest(
+            "embeddings",
+            {
+                text: text,
             }
-        });
-
-        return new Promise<EmbeddingsResponse>((resolve, reject) => {
-            inFlight[mid] = { success: resolve, error: reject};
-            state.ws.send(msg);
-        }).then(
-            (obj) => {
-                delete inFlight[obj.id];
-                return obj.response.vectors;
-            }
-        );
+        ) as Promise<EmbeddingsResponse>;
+        return p.then(r => r.vectors);
     }
 
-    const graphEmbeddingsQuery = (
+    graphEmbeddingsQuery(
         vecs : number[][],
         limit : number | undefined,
-    ) => {
-        const mid = "m" + id.toString();
-        id++;
-        const msg = JSON.stringify({
-            "id": mid,
-            "service": "graph-embeddings-query",
-            "request": {
-                "vectors": vecs,
-                "limit": limit ? limit : 20,
+    ) {
+        let pr = this.makeRequest(
+            "graph-embeddings-query",
+            {
+                vectors: vecs,
+                limit: limit ? limit : 20,
             }
-        });
+        ) as Promise<GraphEmbeddingsQueryResponse>;
+        return pr.then(r => r.entities);
 
-        return new Promise<GraphEmbeddingsQueryResponse>((resolve, reject) => {
-            inFlight[mid] = { success: resolve, error: reject};
-            state.ws.send(msg);
-        }).then(
-            (obj) => {
-                delete inFlight[obj.id];
-                return obj.response.entities;
-            }
-        );
     }
 
-    const triplesQuery = (
+    triplesQuery(
         s? : Value,
         p? : Value,
         o? : Value,
         limit? : number,
-    ) => {
-        const mid = "m" + id.toString();
-        id++;
-
-        const msg = JSON.stringify({
-            "id": mid,
-            "service": "triples-query",
-            "request": {
+    ) {
+        let pr = this.makeRequest(
+            "triples-query",
+            {
                 s: s, p: p, o: o,
                 limit: limit ? limit : 20,
             }
-        });
-
-        return new Promise<TriplesQueryResponse>((resolve, reject) => {
-            inFlight[mid] = { success: resolve, error: reject};
-            state.ws.send(msg);
-        }).then(
-            (obj) => {
-                delete inFlight[obj.id];
-                return obj.response.response;
-            }
-        );
+        ) as Promise<TriplesQueryResponse>;
+        return pr.then(r => r.response);
     }
 
-    state.close = doClose;
-    state.textCompletion = textCompletion;
-    state.graphRag = graphRag;
-    state.agent = agent;
-    state.embeddings = embeddings;
-    state.graphEmbeddingsQuery = graphEmbeddingsQuery;
-    state.triplesQuery = triplesQuery;
+};
 
-    let inFlight : { [key : string] : Callbacks } = {}
+export const createTrustGraphSocket = () : Socket => {
 
-    const onMessage = (message : MessageEvent) => {
-
-        if (!message.data) return;
-        const obj = JSON.parse(message.data);
-
-        if (!obj.id) return;
-
-        if (inFlight[obj.id]) {
-            inFlight[obj.id].success(obj);
-        }
-
-    };
-
-    const onClose = () => {
-        console.log("CLOSE");
-        setTimeout(
-            () => {
-                state.ws = new WebSocket(SOCKET_URL);
-            },
-            SOCKET_RECONNECTION_TIMEOUT
-        );
-    };
-
-    const doOpen = () => {
-        console.log("OPEN");
-    }
-
-    state.ws.addEventListener("message", onMessage);
-    state.ws.addEventListener("close", onClose);
-    state.ws.addEventListener("open", doOpen);
-
-    return state as Socket;
+    return new SocketImplementation();
 
 }
 
