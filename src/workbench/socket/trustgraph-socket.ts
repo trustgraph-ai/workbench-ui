@@ -6,7 +6,7 @@ const SOCKET_URL = "/api/socket";
 
 export interface Socket {
     close : () => void;
-    textCompletion : (text : string) => Promise<string>;
+    textCompletion : (system : string, text : string) => Promise<string>;
     graphRag : (text : string) => Promise<string>;
     agent : (
         question : string,
@@ -29,53 +29,35 @@ export interface ApiResponse {
 };
 
 export interface Callbacks {
-    success : (resp: ApiResponse) => void;
-    error : (err : string) => void;
+    success : (resp: any) => void;
+    error : (err : any) => void;
 };
 
 export interface TextCompletionResponse {
-    id : string;
-    response : {
-        response : string;
-    };
+    response : string;
 };
 
 export interface GraphRagResponse {
-    id : string;
-    response : {
-        response : string;
-    };
+    response : string;
 };
 
 export interface AgentResponse {
-    id : string;
-    response : {
-        thought? : string;
-        observation? : string;
-        answer? : string;
-        error? : string;
-    };
+    thought? : string;
+    observation? : string;
+    answer? : string;
+    error? : string;
 };
 
 export interface EmbeddingsResponse {
-    id : string;
-    response : {
-        vectors : number[][];
-    };
+    vectors : number[][];
 };
 
 export interface GraphEmbeddingsQueryResponse {
-    id : string;
-    response : {
-        entities : Value[];
-    };
+    entities : Value[];
 };
 
 export interface TriplesQueryResponse {
-    id : string;
-    response : {
-        response : Triple[];
-    };
+    response : Triple[];
 };
 
 // FIXME: Should use something more 'unique', cryptorand
@@ -119,7 +101,7 @@ export class SocketImplementation {
             if (!obj.id) return;
 
             if (this.inFlight[obj.id]) {
-                this.inFlight[obj.id].success(obj);
+                this.inFlight[obj.id].success(obj.response);
             }
 
         };
@@ -160,7 +142,7 @@ export class SocketImplementation {
         return mid;
     }
 
-    makeRequest(service : string, request : any) {
+    makeRequest<ResponseType>(service : string, request : any) {
 
         const mid = this.getNextId();
 
@@ -170,7 +152,7 @@ export class SocketImplementation {
             request: request,
         };
 
-        return new Promise<any>((resolve, reject) => {
+        return new Promise<ResponseType>((resolve, reject) => {
             this.inFlight[mid] = { success: resolve, error: reject};
 
             console.log("-->", msg);
@@ -180,31 +162,29 @@ export class SocketImplementation {
         }).then(
             (obj) => {
                 delete this.inFlight[mid];
-                return obj.response;
+                return (obj as ResponseType);
             }
         );
     }
 
 
-    textCompletion(system : string, text : string) {
-        const p = this.makeRequest(
+    textCompletion(system : string, text : string) : Promise<string> {
+        return this.makeRequest<TextCompletionResponse>(
             "text-completion",
             {
                 system: system,
                 prompt: text,
             }
-        ) as Promise<TextCompletionResponse>;
-        return p.then(r => r.response);
+        ).then(r => r.response);
     }
 
     graphRag(text : string) {
-        const p = this.makeRequest(
+        return this.makeRequest<GraphRagResponse>(
             "graph-rag",
             {
                 query: text,
             }
-        ) as Promise<GraphRagResponse>;
-        return p.then(r => r.response);
+        ).then(r => r.response);
     }
 
     agent(
@@ -229,11 +209,12 @@ export class SocketImplementation {
             console.log("Error:", e);
         };
 
-        const ok = (e : AgentResponse) => {
-            if (e.response.thought) think(e.response.thought);
-            if (e.response.observation) observe(e.response.observation);
-            if (e.response.answer) {
-                answer(e.response.answer);
+        const ok = (e : ApiResponse) => {
+            const resp = (e.response as AgentResponse);
+            if (resp.thought) think(resp.thought);
+            if (resp.observation) observe(resp.observation);
+            if (resp.answer) {
+                answer(resp.answer);
                 delete this.inFlight[mid];
             }
         };
@@ -245,27 +226,25 @@ export class SocketImplementation {
     }
 
     embeddings(text : string) {
-        let p = this.makeRequest(
+        return this.makeRequest<EmbeddingsResponse>(
             "embeddings",
             {
                 text: text,
             }
-        ) as Promise<EmbeddingsResponse>;
-        return p.then(r => r.vectors);
+        ).then(r => r.vectors);
     }
 
     graphEmbeddingsQuery(
         vecs : number[][],
         limit : number | undefined,
     ) {
-        let pr = this.makeRequest(
+        return this.makeRequest<GraphEmbeddingsQueryResponse>(
             "graph-embeddings-query",
             {
                 vectors: vecs,
                 limit: limit ? limit : 20,
             }
-        ) as Promise<GraphEmbeddingsQueryResponse>;
-        return pr.then(r => r.entities);
+        ).then(r => r.entities);
 
     }
 
