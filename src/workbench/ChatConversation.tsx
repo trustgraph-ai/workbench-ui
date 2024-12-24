@@ -75,14 +75,14 @@ const ChatConversation : React.FC <ChatConversationProps> = ({
 
             }
         );
-/*
+
         // Take the text, and get embeddings
         socket.embeddings(input).then(
 
             // Take the embeddings, and lookup entities using graph
             // embeddings
             (vecs : number[][]) => {
-                return socket.graphEmbeddingsQuery(vecs, 10);
+                return socket.graphEmbeddingsQuery(vecs, 15);
             }
 
         ).then(
@@ -137,8 +137,6 @@ const ChatConversation : React.FC <ChatConversationProps> = ({
                 decWorking();
             }
         );
-
-*/
 
     };
 

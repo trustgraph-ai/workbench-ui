@@ -40,8 +40,10 @@ export interface ApiResponse {
 export interface ServiceCall {
     success : (resp: any) => void;
     error : (err : any) => void;
+    timeoutId : number;
     timeout : number;
-    expiry : numer;
+    expiry : number;
+    retries : number;
 };
 
 export interface TextCompletionRequest {
@@ -149,7 +151,7 @@ export class SocketImplementation {
             if (this.inflight[obj.id]) {
                 this.inflight[obj.id].success(obj.response);
             } else {
-                console.log("Message ID", this.inflight[obj.id], "not known");
+//                console.log("Message ID", obj.id, "not known");
             }
 
         };
@@ -174,9 +176,8 @@ export class SocketImplementation {
     }
 
     reopen() {
-        console.log("[socket reopen >]");
+        console.log("[socket reopen]");
         this.openSocket();
-        console.log(this.ws);
     }
 
     close() {
@@ -198,13 +199,39 @@ export class SocketImplementation {
 
     timeout(mid : string) {
 
-        if (this.inflight[mid].expiry < Date.now()) {
-            this.inflight[mid].error("Timeout");
-            delete this.inflight[mid];
-            return
+//        console.log("Timeout", mid);
+
+//        console.log("T>", this.inflight[mid].expiry, Date.now());
+//        console.log("Timeout in attempt", this.inflight[mid].retries);
+
+        if (this.inflight[mid].expiry <= Date.now()) {
+
+//            console.log("Timeout expired");
+
+            if (this.inflight[mid].retries <= 0) {
+                this.inflight[mid].error("Timeout/retries");
+                delete this.inflight[mid];
+                return;
+            }
+
+            this.inflight[mid].retries -= 1;
+
+//            console.log("Attempt", this.inflight[mid].retries, "...");
+
+            const expiry = Date.now() + this.inflight[mid].timeout;
+            this.inflight[mid].expiry = expiry;
+
+            this.inflight[mid].timeoutId = setTimeout(
+                () => this.timeout(mid),
+                this.inflight[mid].timeout
+            );
+
+            return;
+
         }
 
-        this.inflight[mid].timeout = setTimeout(
+//        console.log("Reset timer...");
+        this.inflight[mid].timeoutId = setTimeout(
             () => this.timeout(mid),
             this.inflight[mid].expiry - Date.now(),
         );
@@ -213,13 +240,15 @@ export class SocketImplementation {
 
     makeRequest<RequestType, ResponseType>(
         service : string, request : RequestType,
-        timeout : number,
+        timeout? : number,
+        retries? : number,
     ) {
 
         const mid = this.getNextId();
 
-        if (timeout == undefined)
-            timeout = 10;
+        if (timeout == undefined) timeout = 10000;
+
+        if (retries == undefined) retries = 3;
 
         const msg = {
             id: mid,
@@ -229,14 +258,18 @@ export class SocketImplementation {
 
         return new Promise<ResponseType>((resolve, reject) => {
 
+            const expiry = Date.now() + timeout;
+
             this.inflight[mid] = {
                 success: resolve,
                 error: reject,
-                timeout: setTimeout(
+                timeoutId: setTimeout(
                     () => this.timeout(mid),
                     timeout,
                 ),
-                expiry: Date.now(),
+                timeout: timeout,
+                expiry: expiry,
+                retries: retries,
             };
 
             console.log("-->", msg);
@@ -244,12 +277,17 @@ export class SocketImplementation {
             if (this.ws) {
                 this.ws.send(JSON.stringify(msg));
             }
+
             // FIXME: Else arrange for re-connect & retry
 
         }).then(
+
             (obj) => {
 
-                clearTimeout(this.inflight[mid].timeout);
+//            console.log("Success at attempt", this.inflight[mid].retries);
+
+
+                clearTimeout(this.inflight[mid].timeoutId);
                 delete this.inflight[mid];
 
                 return (obj as ResponseType);
@@ -266,7 +304,8 @@ export class SocketImplementation {
             {
                 system: system,
                 prompt: text,
-            }
+            },
+            30000,
         ).then(r => r.response);
     }
 
@@ -275,7 +314,8 @@ export class SocketImplementation {
             "graph-rag",
             {
                 query: text,
-            }
+            },
+            60000,
         ).then(r => r.response);
     }
 
@@ -311,7 +351,7 @@ export class SocketImplementation {
 
                 answer(resp.answer);
 
-                clearTimeout(this.inflight[mid].timeout);
+                clearTimeout(this.inflight[mid].timeoutId);
                 delete this.inflight[mid];
 
             }
@@ -332,7 +372,8 @@ export class SocketImplementation {
             "embeddings",
             {
                 text: text,
-            }
+            },
+            20000
         ).then(r => r.vectors);
     }
 
@@ -347,7 +388,8 @@ export class SocketImplementation {
             {
                 vectors: vecs,
                 limit: limit ? limit : 20,
-            }
+            },
+            20000,
         ).then(r => r.entities);
 
     }
@@ -363,7 +405,8 @@ export class SocketImplementation {
             {
                 s: s, p: p, o: o,
                 limit: limit ? limit : 20,
-            }
+            },
+            20000,
         ).then(r => r.response);
     }
 
