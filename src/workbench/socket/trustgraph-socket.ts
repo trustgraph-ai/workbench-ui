@@ -164,18 +164,18 @@ export class SocketImplementation {
 
         const mid = this.getNextId();
 
-        const msg = JSON.stringify({
+        const msg = {
             id: mid,
             service: service,
             request: request,
-        });
+        };
 
         return new Promise<any>((resolve, reject) => {
             this.inFlight[mid] = { success: resolve, error: reject};
 
             console.log("-->", msg);
 
-            this.ws.send(msg);
+            this.ws.send(JSON.stringify(msg));
 
         }).then(
             (obj) => {
@@ -288,8 +288,6 @@ export class SocketImplementation {
 };
 
 export const createTrustGraphSocket = () : Socket => {
-
     return new SocketImplementation();
-
 }
 

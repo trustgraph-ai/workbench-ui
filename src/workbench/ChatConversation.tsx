@@ -33,8 +33,6 @@ const ChatConversation : React.FC <ChatConversationProps> = ({
       
     const onSubmit = () => {
 
-//        console.log("-> ", input);
-
         addMessage("human", input);
 
         incWorking();
@@ -75,7 +73,6 @@ const ChatConversation : React.FC <ChatConversationProps> = ({
             // Take the embeddings, and lookup entities using graph
             // embeddings
             (vecs : number[][]) => {
-            console.log("vecs", vecs);
                 return socket.graphEmbeddingsQuery(vecs, 10);
             }
 
@@ -117,7 +114,6 @@ const ChatConversation : React.FC <ChatConversationProps> = ({
 
                 }
 
-//                console.log(entities);
                 setEntities(entities);
 
                 decWorking();
