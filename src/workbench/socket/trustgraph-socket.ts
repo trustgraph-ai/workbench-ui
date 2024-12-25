@@ -104,19 +104,18 @@ export interface TriplesQueryResponse {
     response : Triple[];
 };
 
-// FIXME: Should use something more 'unique', cryptorand
 function makeid(length : number) {
-    let result = '';
-    const characters = 'abcdefghijklmnopqrstuvwxyz';
-    const charactersLength = characters.length;
-    let counter = 0;
-    while (counter < length) {
-      result += characters.charAt(
-          Math.floor(Math.random() * charactersLength)
-      );
-      counter += 1;
-    }
-    return result;
+
+    const array = new Uint32Array(length);
+    crypto.getRandomValues(array);
+
+    const characters = 'abcdefghijklmnopqrstuvwxyz1234567890';
+
+    return array.reduce(
+        (acc, current) => acc + characters[current % (characters.length)],
+        ""
+    );
+
 }
 
 
