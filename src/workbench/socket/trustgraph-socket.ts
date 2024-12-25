@@ -143,7 +143,6 @@ export class SocketImplementation {
 
             if (!message.data) return;
 
-
             const obj = JSON.parse(message.data);
 
             console.log("<--", obj);
@@ -211,6 +210,7 @@ export class SocketImplementation {
 //            console.log("Timeout expired");
 
             if (this.inflight[mid].retries <= 0) {
+                console.log("Timeout for", mid);
                 this.inflight[mid].error("Timeout/retries");
                 delete this.inflight[mid];
                 return;
@@ -389,7 +389,7 @@ export class SocketImplementation {
             {
                 text: text,
             },
-            20000
+            30000
         ).then(r => r.vectors);
     }
 
@@ -405,7 +405,7 @@ export class SocketImplementation {
                 vectors: vecs,
                 limit: limit ? limit : 20,
             },
-            20000,
+            30000,
         ).then(r => r.entities);
 
     }
@@ -422,7 +422,7 @@ export class SocketImplementation {
                 s: s, p: p, o: o,
                 limit: limit ? limit : 20,
             },
-            20000,
+            30000,
         ).then(r => r.response);
     }
 

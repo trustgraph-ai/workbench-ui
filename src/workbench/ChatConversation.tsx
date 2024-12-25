@@ -82,7 +82,7 @@ const ChatConversation : React.FC <ChatConversationProps> = ({
             // Take the embeddings, and lookup entities using graph
             // embeddings
             (vecs : number[][]) => {
-                return socket.graphEmbeddingsQuery(vecs, 55);
+                return socket.graphEmbeddingsQuery(vecs, 15);
             }
 
         ).then(
