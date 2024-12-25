@@ -128,7 +128,7 @@ export class SocketImplementation {
 
     constructor() {
 
-        this.tag = makeid(8);
+        this.tag = makeid(16);
         this.id = 1;
 
         this.openSocket();
