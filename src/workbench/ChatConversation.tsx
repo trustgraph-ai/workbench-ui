@@ -33,12 +33,10 @@ const ChatConversation : React.FC <ChatConversationProps> = ({
       
     const onSubmit = () => {
 
-        console.log("-> ", input);
-
         addMessage("human", input);
 
         incWorking();
-        incWorking();
+//        incWorking();
 
 /*
         socket.agent(
@@ -50,7 +48,7 @@ const ChatConversation : React.FC <ChatConversationProps> = ({
 */
 
 /*
-        socket.textCompletion(input).then(
+        socket.textCompletion(system, input).then(
             (text : string) => {
                 addMessage("ai", text);
                 setInput("");
@@ -67,6 +65,15 @@ const ChatConversation : React.FC <ChatConversationProps> = ({
                 setInput("");
                 decWorking();
             }
+        ).catch(
+            (err) => {
+                console.log("Graph RAG error:", err);
+
+                addMessage("ai", err.toString());
+                setInput("");
+                decWorking();
+
+            }
         );
 
         // Take the text, and get embeddings
@@ -74,7 +81,9 @@ const ChatConversation : React.FC <ChatConversationProps> = ({
 
             // Take the embeddings, and lookup entities using graph
             // embeddings
-            (vecs : number[][]) => socket.graphEmbeddingsQuery(vecs, 10)
+            (vecs : number[][]) => {
+                return socket.graphEmbeddingsQuery(vecs, 15);
+            }
 
         ).then(
 
@@ -114,13 +123,19 @@ const ChatConversation : React.FC <ChatConversationProps> = ({
 
                 }
 
-                console.log(entities);
                 setEntities(entities);
 
                 decWorking();
 
             }
 
+        ).catch(
+            (err) => {
+                console.log("Graph embeddings error:", err);
+
+                addMessage("ai", err.toString());
+                decWorking();
+            }
         );
 
     };

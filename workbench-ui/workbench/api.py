@@ -128,7 +128,7 @@ class Api:
                 while running.get():
 
                     try:
-                        msg = await ws_from.receive(timeout=1000)
+                        msg = await ws_from.receive(timeout=2)
                     except TimeoutError:
                         continue
 
@@ -152,10 +152,10 @@ class Api:
                 running.stop()
 
             s2c_task = asyncio.create_task(
-                wsforward(ws_server, ws_client, running)
+                wsforward(ws_client, ws_server, running)
             )
 
-            await wsforward(ws_client, ws_server, running)
+            await wsforward(ws_server, ws_client, running)
 
             running.stop()
 
