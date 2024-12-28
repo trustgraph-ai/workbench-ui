@@ -5,13 +5,13 @@ from prometheus_client import start_http_server
 
 from . api import Api
 
-default_api_gateway = "http://api-gateway:8088/"
+default_api_gateway = "ws://api-gateway:8088/"
 default_port = 8888
 
 def run():
 
     logging.basicConfig(
-        level=logging.DEBUG,
+        level=logging.INFO,
         format="%(asctime)s %(levelname)s %(message)s"
     )
 

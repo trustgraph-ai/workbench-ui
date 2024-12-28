@@ -38,6 +38,7 @@ setuptools.setup(
     install_requires=[
         "aiohttp",
         "prometheus-client",
+        "websockets",
     ],
     scripts=[
         "scripts/service",
