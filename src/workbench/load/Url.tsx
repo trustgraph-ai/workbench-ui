@@ -15,12 +15,11 @@ const Url : React.FC<UrlProps> = ({
     return (
         <>
 
-            <Box>
+            <Box sx={{ m: 2 }}>
 
                 <TextField
                     sx={{
                         width: '50rem',
-                        m: 1,
                     }}
                     label="Published at URL"
                     defaultValue={value}

@@ -15,12 +15,11 @@ const Title : React.FC<TitleProps> = ({
     return (
         <>
 
-            <Box>
+            <Box sx={{ m: 2 }}>
 
                 <TextField
                     sx={{
                         width: '50rem',
-                        m: 1,
                     }}
                     label="Title"
                     defaultValue={value}

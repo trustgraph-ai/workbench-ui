@@ -12,6 +12,24 @@ import { useWorkbenchStateStore } from '../state/WorkbenchState';
 import Title from './Title';
 import Url from './Url';
 import Keywords from './Keywords';
+import Operation from './Operation';
+
+const Content : React.FC<{operation : string}> = ({ operation }) => {
+
+    if (operation == "upload-pdf") return null;
+    if (operation == "upload-text") return null;
+    
+    return (
+        <Box sx={{ m: 2 }}>
+            <TextField
+                fullWidth
+                label="Text"
+                multiline
+                rows={15}
+            />
+        </Box>
+    );
+}
 
 interface LoadProps {
 }
@@ -24,6 +42,7 @@ const Load : React.FC <LoadProps> = ({
     const [title, setTitle] = useState<string>("");
     const [url, setUrl] = useState<string>("");
     const [keywords, setKeywords] = useState<string[]>([]);
+    const [operation, setOperation] = useState<string>("upload-pdf");
 
     useEffect(() => {
 
@@ -49,6 +68,13 @@ const Load : React.FC <LoadProps> = ({
                 value={keywords}
                 setValue={setKeywords}
             />
+
+            <Operation
+                value={operation}
+                setValue={setOperation}
+            />
+
+            <Content operation={operation}/>
 
 {/*
             <Box>
