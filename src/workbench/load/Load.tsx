@@ -1,9 +1,10 @@
 
 import React, { useState, useEffect } from 'react';
+import { styled } from '@mui/material/styles';
 
-import { Typography, Box, Stack, Button, TextField } from '@mui/material';
+import { Typography, Box, Button, Stack, TextField } from '@mui/material';
 
-import { ArrowForward } from '@mui/icons-material';
+import { ArrowForward, CloudUpload } from '@mui/icons-material';
 
 import { useSocket } from '../socket/socket';
 import { useWorkbenchStateStore } from '../state/WorkbenchState';
@@ -14,9 +15,58 @@ import Url from './Url';
 import Keywords from './Keywords';
 import Operation from './Operation';
 
+const VisuallyHiddenInput = styled('input')({
+  clip: 'rect(0 0 0 0)',
+  clipPath: 'inset(50%)',
+  height: 1,
+  overflow: 'hidden',
+  position: 'absolute',
+  bottom: 0,
+  left: 0,
+  whiteSpace: 'nowrap',
+  width: 1,
+});
+
 const Content : React.FC<{operation : string}> = ({ operation }) => {
 
-    if (operation == "upload-pdf") return null;
+    if (operation == "upload-pdf") {
+        return (
+            <Button
+              component="label"
+              role={undefined}
+              variant="contained"
+              tabIndex={-1}
+              startIcon={<CloudUpload />}
+            >
+              Upload PDF files
+              <VisuallyHiddenInput
+                type="file"
+                onChange={(event) => console.log(event.target.files)}
+                multiple
+              />
+            </Button>            
+        );
+    }
+
+    if (operation == "upload-text") {
+        return (
+            <Button
+              component="label"
+              role={undefined}
+              variant="contained"
+              tabIndex={-1}
+              startIcon={<CloudUpload />}
+            >
+              Upload text files
+              <VisuallyHiddenInput
+                type="file"
+                onChange={(event) => console.log(event.target.files)}
+                multiple
+              />
+            </Button>            
+        );
+    }
+
     if (operation == "upload-text") return null;
     
     return (
