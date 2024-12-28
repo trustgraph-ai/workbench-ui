@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 
 import { Box } from '@mui/material';
 import { Autocomplete, Chip, TextField } from "@mui/material"
@@ -24,7 +24,7 @@ const Keywords : React.FC<KeywordsProps> = ({
                     multiple
                     options={[]}
                     freeSolo
-                    onChange={ (e, value) => setValue(value) }
+                    onChange={ (_e, value) => setValue(value) }
                     value={value || null}
                     renderTags={
                         (value, getTagProps) =>

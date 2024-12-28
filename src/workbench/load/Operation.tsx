@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 
 import { ToggleButton, ToggleButtonGroup, Box } from '@mui/material';
 
@@ -21,7 +21,7 @@ const Operation : React.FC<OperationProps> = ({
                   color="primary"
                   value={value}
                   exclusive
-                  onChange={(e) => setValue(e.target.value)}
+                  onChange={(e, value) => setValue(value)}
                   aria-label="Operation"
                 >
                   <ToggleButton value="upload-pdf">

@@ -2,13 +2,11 @@
 import React, { useState, useEffect } from 'react';
 import { styled } from '@mui/material/styles';
 
-import { Typography, Box, Button, Stack, TextField } from '@mui/material';
+import { Typography, Box, Button, TextField } from '@mui/material';
 
-import { ArrowForward, CloudUpload } from '@mui/icons-material';
+import { CloudUpload } from '@mui/icons-material';
 
-import { useSocket } from '../socket/socket';
-import { useWorkbenchStateStore } from '../state/WorkbenchState';
-//import { getTriples } from '../state/knowledge-graph';
+//import { useSocket } from '../socket/socket';
 
 import Title from './Title';
 import Url from './Url';
@@ -27,25 +25,37 @@ const VisuallyHiddenInput = styled('input')({
   width: 1,
 });
 
-const Content : React.FC<{operation : string}> = ({ operation }) => {
+const Content : React.FC<{
+    operation : string,
+    files : File[],
+    setFiles : (f : File[]) => void;
+    submit : () => void;
+}> = ({
+    operation, files, setFiles, submit,
+}) => {
 
     if (operation == "upload-pdf") {
-        return (
+        return ( <>
+            
             <Button
               component="label"
               role={undefined}
               variant="contained"
               tabIndex={-1}
               startIcon={<CloudUpload />}
+              sx={{ m: 1 }}
             >
               Upload PDF files
               <VisuallyHiddenInput
                 type="file"
-                onChange={(event) => console.log(event.target.files)}
+                onChange={(event) => setFiles(event.target.files)}
                 multiple
               />
-            </Button>            
-        );
+            </Button>
+            <Button variant="contained" sx={{ m: 1 }} onClick={submit}>
+                Submit
+            </Button>
+        </> );
     }
 
     if (operation == "upload-text") {
@@ -87,12 +97,36 @@ interface LoadProps {
 const Load : React.FC <LoadProps> = ({
 }) => {
 
-    const socket = useSocket();
+//    const socket = useSocket();
 
     const [title, setTitle] = useState<string>("");
     const [url, setUrl] = useState<string>("");
     const [keywords, setKeywords] = useState<string[]>([]);
     const [operation, setOperation] = useState<string>("upload-pdf");
+    const [files, setFiles] = useState<File[]>([]);
+
+//    useEffect(() => {
+
+        const submit = () => {
+
+            let reader = new FileReader();
+
+            reader.onload = function() {
+                const arrayBuffer = this.result;
+                const array = new Uint8Array(arrayBuffer);
+                const binaryString = String.fromCharCode.apply(null, array);
+                console.log(binaryString);
+            }
+
+            reader.readAsArrayBuffer(files[0]);
+
+            console.log("SUBMIT");
+
+        }
+
+//    }, []);
+
+console.log("F", files);
 
     useEffect(() => {
 
@@ -124,7 +158,24 @@ const Load : React.FC <LoadProps> = ({
                 setValue={setOperation}
             />
 
-            <Content operation={operation}/>
+            <Content
+                operation={operation}
+                files={files}
+                setFiles={setFiles}
+                submit={submit}
+            />
+
+            <Box>
+                {
+                    Array.from(files).map(
+                        (file, ix) => (
+                            <Box key={ix} sx={{m:2}}>
+                            File: {file.name}
+                            </Box>
+                        )
+                    )
+                }
+            </Box>
 
 {/*
             <Box>
