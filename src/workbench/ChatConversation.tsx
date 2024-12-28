@@ -36,7 +36,7 @@ const ChatConversation : React.FC <ChatConversationProps> = ({
         addMessage("human", input);
 
         incWorking();
-//        incWorking();
+        incWorking();
 
 /*
         socket.agent(
