@@ -1,5 +1,5 @@
 
-FROM alpine:3.20 AS build
+FROM alpine:3.21 AS build
 
 RUN apk add --update --no-cache --no-progress make g++ gcc linux-headers
 
@@ -12,7 +12,7 @@ COPY workbench-ui /root/workbench-ui/
 
 RUN (cd /root/workbench-ui && pip wheel -w /root/wheels --no-deps .)
 
-FROM alpine:3.20
+FROM alpine:3.21
 
 ENV PIP_BREAK_SYSTEM_PACKAGES=1
 
