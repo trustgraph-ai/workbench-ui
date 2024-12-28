@@ -10,7 +10,7 @@ import { useSocket } from './socket/socket';
 import { useWorkbenchStateStore } from './state/WorkbenchState';
 import {
     createSubgraph, updateSubgraph
-} from './state/graph-algos';
+} from './state/knowledge-graph';
 
 interface GraphViewProps {
 }

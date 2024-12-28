@@ -7,25 +7,23 @@ import { ArrowForward } from '@mui/icons-material';
 
 import { useSocket } from './socket/socket';
 import { useWorkbenchStateStore } from './state/WorkbenchState';
-import { getView } from './state/graph-algos';
+import { getTriples } from './state/knowledge-graph';
+
+import { Entity } from './state/Entity';
 
 interface EntityDetailProps {
 }
 
-const Literal : React.FC<{value : any}> = ({value}) => {
+const LiteralNode : React.FC<{value : Entity}> = ({value}) => {
     return (
-        <Typography variant="body1">
-            {value.label}
-        </Typography>
-    );
-};
-
-const Selected : React.FC<{value : any}> = ({value}) => {
-
-    return (
-        <Typography variant="body1" color="#802030"
+        <Typography
+            variant="body1"
             sx={{
-                maxWidth: '20rem',
+                ml: '0.5rem',
+                mr: '0.5rem',
+                mt: '0.01rem',
+                mb: '0.01rem',
+                p: '0.01rem',
             }}
         >
             {value.label}
@@ -33,7 +31,23 @@ const Selected : React.FC<{value : any}> = ({value}) => {
     );
 };
 
-const Entity : React.FC<{value : any}> = ({value}) => {
+const SelectedNode : React.FC<{value : Entity}> = ({value}) => {
+
+    return (
+        <Typography
+            variant="body1" color="#802030"
+            sx={{
+                ml: '0.5rem',
+                mr: '0.5rem',
+                p: '0',
+            }}
+        >
+            {value.label}
+        </Typography>
+    );
+};
+
+const EntityNode : React.FC<{value : Entity}> = ({value}) => {
 
     const setSelected = useWorkbenchStateStore((state) => state.setSelected);
 
@@ -41,7 +55,14 @@ const Entity : React.FC<{value : any}> = ({value}) => {
         <Button
             sx={{
                 textTransform: 'initial',
-                maxWidth: '20rem',
+                ml: '0.1rem',
+                mr: '0.1rem',
+                mt: '0.05rem',
+                mb: '0.05rem',
+                pl: '0.8rem',
+                pr: '0.8rem',
+                pt: '0.4rem',
+                pb: '0.4rem',
             }}
             onClick={ () => setSelected({ uri: value.v, label: value.label }) }
         >
@@ -62,7 +83,7 @@ const EntityDetail : React.FC <EntityDetailProps> = ({
         return ( <div>No node selected.</div> );
     }
 
-    const [view, setView] = useState<any>(undefined);
+    const [detail, setDetail] = useState<any>(undefined);
 
     const graphView = () => {
         setTool("graph");
@@ -70,20 +91,16 @@ const EntityDetail : React.FC <EntityDetailProps> = ({
 
     useEffect(() => {
 
-        getView(socket, selected.uri).then(
+        getTriples(socket, selected.uri).then(
             (d) => {
-                setView(d);
+                setDetail(d);
             }
         );
 
     }, [selected]);
 
-    if (!view)
+    if (!detail)
         return ( <div>No data.</div> );
-
-////////////////////////////////////////////////////////////////////////////
-// FIXME: These keys won't track change!
-////////////////////////////////////////////////////////////////////////////
 
     return (
         <>
@@ -100,80 +117,42 @@ const EntityDetail : React.FC <EntityDetailProps> = ({
 
             <Box>
 
-                { view.props.map(
-                     (prop : any, ix : number) => {
+                { detail.triples.map(
+                     (t : any, ix : number) => {
                          return (
-                             <Box key={'prop' + ix.toString()}>
+                             <Box key={t.s.v + '//' + t.p.v + '//' + t.o.v}>
                                  <Stack
                                      direction="row"
                                      alignItems="center"
                                      gap={0}
                                  >
-                                     <Selected value={selected}/>
-                                     <ArrowForward/>
-                                     <Entity value={prop.prop}/>
-                                     <ArrowForward/>
-                                     <Literal value={prop.value}/>
-                                 </Stack>
-                             </Box>
-                         );
-                     }
-                )}
 
-                { view.in.map(
-                     (rel : any, ix : number) => {
-                         return (
-                             <Box key={'rel' + ix.toString()}>
-                                 <Stack
-                                     direction="row"
-                                     alignItems="center"
-                                     gap={0}
-                                 >
-                                     <Selected value={selected}/>
-                                     <ArrowForward/>
-                                     <Entity value={rel.entity}/>
-                                     <ArrowForward/>
-                                     <Entity value={rel.rel}/>
-                                 </Stack>
-                             </Box>
-                         );
-                     }
-                )}
+                                     {
+                                         (t.s.v == selected.uri) ?
+                                         <SelectedNode value={t.s}/> :
+                                         <EntityNode value={t.s}/>
+                                     }
 
-                { view.out.map(
-                     (rel : any, ix : number) => {
-                         return (
-                             <Box key={'out' + ix.toString()}>
-                                 <Stack
-                                     direction="row"
-                                     alignItems="center"
-                                     gap={0}
-                                 >
-                                     <Selected value={selected}/>
                                      <ArrowForward/>
-                                     <Entity value={rel.rel}/>
-                                     <ArrowForward/>
-                                     <Entity value={rel.entity}/>
-                                 </Stack>
-                             </Box>
-                         );
-                     }
-                )}
 
-                { view.pred.map(
-                     (rel : any, ix : number) => {
-                         return (
-                             <Box key={'pred' + ix.toString()}>
-                                 <Stack
-                                     direction="row"
-                                     alignItems="center"
-                                     gap={0}
-                                 >
-                                     <Entity value={rel.src}/>
+                                     {
+                                         (t.p.v == selected.uri) ?
+                                         <SelectedNode value={t.p}/> :
+                                         <EntityNode value={t.p}/>
+                                     }
+
                                      <ArrowForward/>
-                                     <Selected value={rel.rel}/>
-                                     <ArrowForward/>
-                                     <Entity value={rel.dest}/>
+
+                                     {
+                                         t.o.e ?
+                                         (
+                                             (t.o.v == selected.uri) ?
+                                             <SelectedNode value={t.o}/> :
+                                             <EntityNode value={t.o}/>
+                                         ) :
+                                         <LiteralNode value={t.o}/>
+                                     }
+
                                  </Stack>
                              </Box>
                          );
