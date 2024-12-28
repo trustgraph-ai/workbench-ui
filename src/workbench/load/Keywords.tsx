@@ -16,11 +16,10 @@ const Keywords : React.FC<KeywordsProps> = ({
     return (
         <>
 
-            <Box>
+            <Box sx={{ m: 2 }}>
                 <Autocomplete
                     sx={{
                         width: '50rem',
-                        m: 1,
                     }}
                     multiple
                     options={[]}
