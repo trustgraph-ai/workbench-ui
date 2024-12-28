@@ -42,20 +42,20 @@ const ChatConversation : React.FC <ChatConversationProps> = ({
         socket.agent(
             input,
             (m) => addMessage("ai", "\u{1f914} " + m),
-            (m) => addMessage("ai, "\u{1f575}\u{fe0f} " + m),
+            (m) => addMessage("ai", "\u{1f575}\u{fe0f} " + m),
             (m) => addMessage("ai", m)
         );
 */
 
 /*
-        socket.textCompletion(system, input).then(
+        socket.textCompletion("You are a helpful agent", input).then(
             (text : string) => {
                 addMessage("ai", text);
                 setInput("");
                 decWorking();
             }
         );
-        */
+*/
 
         socket.graphRag(
             input
