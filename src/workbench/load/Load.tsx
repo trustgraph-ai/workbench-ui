@@ -1,9 +1,12 @@
 
+import {v4 as uuidv4} from 'uuid';
+
 import React, { useState, useEffect } from 'react';
 
 import { Typography, Box, Button, TextField } from '@mui/material';
 
 import { useSocket } from '../socket/socket';
+import { Triple } from '../state/Triple';
 
 import Title from './Title';
 import Url from './Url';
@@ -11,6 +14,12 @@ import Keywords from './Keywords';
 import Operation from './Operation';
 import TextBuffer from './TextBuffer';
 import FileUpload from './FileUpload';
+
+const RDF_TYPE = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
+const RDFS_LABEL = "http://www.w3.org/2000/01/rdf-schema#label";
+const DIGITAL_DOCUMENT = "https://schema.org/DigitalDocument";
+const SCHEMA_URL = "https://schema.org/url";
+const SCHEMA_KEYWORDS = "https://schema.org/keywords";
 
 const Content : React.FC<{
     operation : string,
@@ -82,11 +91,51 @@ const Load : React.FC <LoadProps> = ({
 
             reader.onloadend = function() {
 
+                const doc_id = uuidv4();
+
                 const base64String = reader.result
                     .replace('data:', '')
                     .replace(/^.+,/, '');
 
+                console.log(doc_id);
                 console.log(base64String);
+
+                let doc_meta : Triple[] = [
+                    {
+                        s: { v: doc_id, e: true },
+                        p: { v: RDF_TYPE, e: true },
+                        o: { v: DIGITAL_DOCUMENT, e: true },
+                    }
+                ];
+
+                if (title != "")
+                    doc_meta.push(
+                        {
+                            s: { v: doc_id, e: true },
+                            p: { v: RDFS_LABEL, e: true },
+                            o: { v: title, e: false },
+                        }
+                    );
+
+                if (url != "")
+                    doc_meta.push(
+                        {
+                            s: { v: doc_id, e: true },
+                            p: { v: SCHEMA_URL, e: true },
+                            o: { v: url, e: true },
+                        }
+                    );
+
+                for (let keyword of keywords)
+                    doc_meta.push(
+                        {
+                            s: { v: doc_id, e: true },
+                            p: { v: SCHEMA_KEYWORDS, e: true },
+                            o: { v: keyword, e: false },
+                        }
+                    );
+
+                console.log(doc_meta);
 
             }
 
@@ -94,12 +143,13 @@ const Load : React.FC <LoadProps> = ({
 
             console.log("SUBMIT");
 
+/*
             setUploaded([
                 ...uploaded,
                 ...Array.from(files).map((f) => f.name)
             ]);
             setFiles([]);
-
+*/
         }
 
 //    }, []);
