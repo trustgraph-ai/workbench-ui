@@ -15,6 +15,5 @@ export interface Triple {
     s : Value,
     p : Value,
     o : Value,
-    direc? : string,
 };
 

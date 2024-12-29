@@ -118,7 +118,6 @@ function makeid(length : number) {
 
 }
 
-
 export class SocketImplementation {
 
     ws? : WebSocket;
@@ -423,6 +422,54 @@ export class SocketImplementation {
             },
             30000,
         ).then(r => r.response);
+    }
+
+    loadDocument(
+
+        // base64-encoded doc
+        document : string,
+
+        id? : string,
+        metadata? : Triple[],
+
+    ) {
+
+        const mid = this.getNextId();
+
+        const msg = JSON.stringify({
+            "id": mid,
+            "service": "agent",
+            "request": {
+                "id": id,
+                "metadata": metadata,
+                "data": document,
+            }
+
+        });
+
+/*
+        const timeout = 60000;
+        const retries = 2;
+        const expiry = Date.now() + timeout;
+
+        this.inflight[mid] = {
+            success: ok,
+            error: err,
+            timeoutId: setTimeout(
+                () => this.timeout(mid),
+                timeout,
+            ),
+            timeout: timeout,
+            expiry: expiry,
+            retries: retries,
+        };
+*/
+
+        if (this.ws) {
+            this.ws.send(msg);
+        } else {
+            // Arrange for send later
+        }
     }
 
 };
