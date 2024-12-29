@@ -134,10 +134,6 @@ console.log("F", files);
 
     return (
         <>
-            <Typography variant="h5" component="div" gutterBottom>
-                Load
-            </Typography>
-
             <Title
                 value={title}
                 setValue={setTitle}

@@ -1,5 +1,5 @@
 
-# Workbench util MVP
+# Data Workbench for TrustGraph
 
 ## Setup for Python
 
@@ -55,10 +55,3 @@ Go to http://localhost:8080
 Deployment is Github actions, automatic to Cloud Run.  Deployment kicks in
 automatically on anything with a version tag.  Version tags should be of
 form v1.2.3.
-
-
-
-
-
-
-

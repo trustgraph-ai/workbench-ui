@@ -152,9 +152,6 @@ const ChatConversation : React.FC <ChatConversationProps> = ({
             >
 
                 <CardContent>
-                    <Typography variant="h5" component="div" gutterBottom>
-                        AI Chat History
-                    </Typography>
                     <ChatHistory/>
                     <InputArea
                         onSubmit={onSubmit}
