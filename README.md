@@ -50,8 +50,17 @@ podman run -i -t -p 8080:8080 localhost/workbench-ui:0.0.0
 
 Go to http://localhost:8080
 
-## Deploy it
+## Release it
 
-Deployment is Github actions, automatic to Cloud Run.  Deployment kicks in
+Deployment is Github actions, automatic to Docker Hub.  Deployment kicks in
 automatically on anything with a version tag.  Version tags should be of
-form v1.2.3.
+form v1.2.3.  Convention is to have a branch name something like
+`release/vX.Y` for version tags of the form `vX.Y.Z`.  So,
+version `v0.1.10` would be release on branch `release/v0.1`.
+
+On release, container images are pushed to docker hub.
+
+To release with TrustGraph, change the version number of the container
+in the trustgraph repo, `templates/values/images.jsonnet` and also
+in the config portal repo, same filename, `templates/values/images.jsonnet`.
+
