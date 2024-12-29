@@ -109,14 +109,16 @@ class Api:
 
     async def socket(self, request):
 
-        ws_server = web.WebSocketResponse()
+        # Max message size is 50MB
+        ws_server = web.WebSocketResponse(max_msg_size=52428800)
+
         await ws_server.prepare(request)
 
         url = self.gateway + "api/v1/socket"
 
         running = Running()
 
-        async with wsclient.connect(url) as ws_client:
+        async with wsclient.connect(url, max_size=52428800) as ws_client:
 
             async def outbound(ws_from, ws_to, running):
 
