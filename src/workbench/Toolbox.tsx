@@ -4,6 +4,9 @@ import React from 'react';
 import { List, ListItemButton, ListItemText } from '@mui/material';
 import { ListItemIcon } from '@mui/material';
 import { ChatBubble } from '@mui/icons-material';
+import ExploreIcon from '@mui/icons-material/Explore';
+import ThreeDRotationIcon from '@mui/icons-material/ThreeDRotation';
+import UploadFileIcon from '@mui/icons-material/UploadFile';
 
 import { useWorkbenchStateStore } from './state/WorkbenchState';
 
@@ -34,7 +37,7 @@ const Toolbox : React.FC <ToolboxProps> = ({
                     <ListItemIcon>
                         <ChatBubble/>
                     </ListItemIcon>
-                    <ListItemText primary={'Chat'}/>
+                    <ListItemText primary={'System Chat'}/>
                 </ListItemButton>
 
                 <ListItemButton
@@ -43,9 +46,9 @@ const Toolbox : React.FC <ToolboxProps> = ({
                     onClick={() => { setTool('entity') }}
                 >
                     <ListItemIcon>
-                        <ChatBubble/>
+                        <ExploreIcon/>
                     </ListItemIcon>
-                    <ListItemText primary="Entity"/>
+                    <ListItemText primary="Data Explorer"/>
                 </ListItemButton>
 
                 <ListItemButton
@@ -54,9 +57,20 @@ const Toolbox : React.FC <ToolboxProps> = ({
                     onClick={() => { setTool('graph') }}
                 >
                     <ListItemIcon>
-                        <ChatBubble/>
+                        <ThreeDRotationIcon/>
                     </ListItemIcon>
-                    <ListItemText primary="Graph"/>
+                    <ListItemText primary="Data Visualizer"/>
+                </ListItemButton>
+
+                <ListItemButton
+                    key={'load'}
+                    selected={tool == 'load'}
+                    onClick={() => { setTool('load') }}
+                >
+                    <ListItemIcon>
+                        <UploadFileIcon/>
+                    </ListItemIcon>
+                    <ListItemText primary="Data Loader"/>
                 </ListItemButton>
 
             </List>

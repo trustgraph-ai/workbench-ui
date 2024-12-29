@@ -1,7 +1,7 @@
 
 import React from 'react';
 
-import { Card, CardContent, Typography } from '@mui/material';
+import { Card, CardContent } from '@mui/material';
 
 import ChatHistory from './ChatHistory';
 import InputArea from './InputArea';
@@ -42,20 +42,20 @@ const ChatConversation : React.FC <ChatConversationProps> = ({
         socket.agent(
             input,
             (m) => addMessage("ai", "\u{1f914} " + m),
-            (m) => addMessage("ai, "\u{1f575}\u{fe0f} " + m),
+            (m) => addMessage("ai", "\u{1f575}\u{fe0f} " + m),
             (m) => addMessage("ai", m)
         );
 */
 
 /*
-        socket.textCompletion(system, input).then(
+        socket.textCompletion("You are a helpful agent", input).then(
             (text : string) => {
                 addMessage("ai", text);
                 setInput("");
                 decWorking();
             }
         );
-        */
+*/
 
         socket.graphRag(
             input
@@ -152,9 +152,6 @@ const ChatConversation : React.FC <ChatConversationProps> = ({
             >
 
                 <CardContent>
-                    <Typography variant="h5" component="div" gutterBottom>
-                        AI Chat History
-                    </Typography>
                     <ChatHistory/>
                     <InputArea
                         onSubmit={onSubmit}

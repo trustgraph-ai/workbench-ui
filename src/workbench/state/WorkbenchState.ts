@@ -34,7 +34,7 @@ export const useWorkbenchStateStore = create<WorkbenchState>()(
         messages: [
             {
                 role: "ai",
-                text: "Hello and welcome!",
+                text: "Welcome to TrustGraph system chat. What data would you like to explore?",
             },
         ],
 

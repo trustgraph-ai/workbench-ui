@@ -64,7 +64,9 @@ const EntityNode : React.FC<{value : Entity}> = ({value}) => {
                 pt: '0.4rem',
                 pb: '0.4rem',
             }}
-            onClick={ () => setSelected({ uri: value.v, label: value.label }) }
+            onClick={
+                () => setSelected({ uri: value.uri, label: value.label })
+            }
         >
             {value.label}
         </Button>
@@ -118,7 +120,7 @@ const EntityDetail : React.FC <EntityDetailProps> = ({
             <Box>
 
                 { detail.triples.map(
-                     (t : any, ix : number) => {
+                     (t : any) => {
                          return (
                              <Box key={t.s.v + '//' + t.p.v + '//' + t.o.v}>
                                  <Stack

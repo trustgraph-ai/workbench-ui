@@ -69,7 +69,7 @@ const ChatHistory : React.FC <ChatHistoryProps> = ({
                         </Avatar>
 
                         <ListItemText
-                            primary={message.role === 'ai' ? 'AI' : 'You'}
+                            primary={message.role === 'ai' ? 'TrustGraph' : 'User'}
                             secondary={
                               <Typography
                                   sx={{ display: 'inline' }}

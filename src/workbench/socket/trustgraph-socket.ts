@@ -32,6 +32,14 @@ export interface Socket {
         s? : Value, p? : Value, o? : Value, limit? : number
     ) => Promise<Triple[]>;
 
+    loadDocument : (
+        document : string, id? : string, metadata? : Triple[],
+    ) => Promise<any>;
+
+    loadText : (
+        text : string, id? : string, metadata? : Triple[],
+    ) => Promise<any>;
+
 };
 
 export interface ApiResponse {
@@ -104,6 +112,29 @@ export interface TriplesQueryResponse {
     response : Triple[];
 };
 
+export interface LoadDocumentRequest {
+    id? : string;
+    data : string;
+    metadata? : Triple[];
+};
+
+export interface LoadDocumentResponse {
+};
+
+export interface LoadTextRequest {
+    id? : string;
+    text : string;
+    charset? : string;
+    metadata? : Triple[];
+};
+
+export interface LoadTextResponse {
+};
+
+export interface TextCompletionResponse {
+    response : string;
+};
+
 function makeid(length : number) {
 
     const array = new Uint32Array(length);
@@ -117,7 +148,6 @@ function makeid(length : number) {
     );
 
 }
-
 
 export class SocketImplementation {
 
@@ -285,7 +315,7 @@ export class SocketImplementation {
 
             (obj) => {
 
-//            console.log("Success at attempt", this.inflight[mid].retries);
+//                console.log("Success at attempt", this.inflight[mid].retries);
 
 
                 clearTimeout(this.inflight[mid].timeoutId);
@@ -423,6 +453,49 @@ export class SocketImplementation {
             },
             30000,
         ).then(r => r.response);
+    }
+
+    loadDocument(
+
+        // base64-encoded doc
+        document : string,
+
+        id? : string,
+        metadata? : Triple[],
+
+    ) {
+        return this.makeRequest<LoadDocumentRequest, LoadDocumentResponse>(
+            "document-load",
+            {
+                "id": id,
+                "metadata": metadata,
+                "data": document,
+            },
+            30000,
+        );
+    }
+
+    loadText(
+
+        // base64-encoded doc
+        text : string,
+
+        id? : string,
+        metadata? : Triple[],
+
+        charset? : string,
+
+    ) {
+        return this.makeRequest<LoadTextRequest, LoadTextResponse>(
+            "text-load",
+            {
+                "id": id,
+                "metadata": metadata,
+                "text": text,
+                "charset": charset,
+            },
+            30000,
+        );
     }
 
 };
