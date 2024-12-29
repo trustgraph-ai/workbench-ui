@@ -93,9 +93,13 @@ const Load : React.FC <LoadProps> = ({
 
     }
 
+    const create_doc_id = () => {
+        return "" + uuidv4();
+    }
+
     const submitFiles = () => {
 
-        const doc_id = uuidv4();
+        const doc_id = create_doc_id();
         const doc_meta = prepareMetadata(doc_id);
 
         for (const file of files) {
@@ -151,14 +155,35 @@ const Load : React.FC <LoadProps> = ({
 
     }
 
+
+    const b64encode = (input : any) => {
+        return btoa(encodeURIComponent(input).replace(
+            /%([0-9A-F]{2})/g,
+            (_match, p1) => {
+                return String.fromCharCode(("0x" + p1) as any);
+            }
+        ));
+    }
+
     const submitText = () => {
 
-        const doc_id = uuidv4();
+        const doc_id = "https://trustgraph.ai/doc/" + create_doc_id();
         const doc_meta = prepareMetadata(doc_id);
-        console.log(doc_meta);
 
-        const encoded = btoa(text);
-        console.log(encoded);
+        const encoded = b64encode(text);
+
+        // Must be upload-text
+        socket.loadText(
+            encoded, doc_id, doc_meta
+        ).then(
+            (_x) => {
+                setText("");
+            }
+        ).catch(
+            (e) => {
+                console.log("Error:", e);
+            }
+        );
 
     }
 

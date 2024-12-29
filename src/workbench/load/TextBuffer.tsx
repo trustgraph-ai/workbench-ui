@@ -29,7 +29,7 @@ const TextBuffer : React.FC<TextBufferProps> = ({
 
             <TextField
                 fullWidth
-                defaultValue={value}
+                value={value}
                 onChange={(e) => setValue(e.target.value)}
                 label="Text content"
                 multiline
