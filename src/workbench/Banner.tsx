@@ -19,7 +19,7 @@ const Banner : React.FC = () => {
                         height="45"/>
                 </Box>
                 <Typography variant="h4" component="h1">
-                    TrustGraph Workbench
+                    TrustGraph Data Workbench
                 </Typography>
         </Stack>
     );
