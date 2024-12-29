@@ -15,9 +15,18 @@ const TextBuffer : React.FC<TextBufferProps> = ({
 
     return (
         <Box sx={{ m: 2 }}>
-            <Button variant="contained" sx={{ m: 1 }} onClick={submit}>
+
+            <Button
+                variant="contained"
+                sx={{
+                    ml: 1, mt: 1, mb: 4,
+                }}
+                disabled={value.length < 1}
+                onClick={submit}
+            >
                 Submit
             </Button>
+
             <TextField
                 fullWidth
                 defaultValue={value}
@@ -26,6 +35,7 @@ const TextBuffer : React.FC<TextBufferProps> = ({
                 multiline
                 rows={15}
             />
+
         </Box>
     );
 

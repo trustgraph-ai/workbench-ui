@@ -54,7 +54,12 @@ const FileUpload : React.FC<FileUploadProps> = ({
                     />
                 </Button>
 
-                <Button variant="contained" sx={{ m: 1 }} onClick={submit}>
+                <Button
+                    variant="contained"
+                    sx={{ m: 1 }}
+                    onClick={submit}
+                    disabled={files.length < 1}
+                >
                     Submit
                 </Button>
 

@@ -27,12 +27,17 @@ const Content : React.FC<{
     setFiles : (f : string[]) => void;
     uploaded : File[],
     setUploaded : (f : string[]) => void;
-    submit : () => void;
+    submitFiles : () => void;
+    submitText : () => void;
     text : string,
     setText : (s : string) => void;
 }> = ({
-    operation, files, setFiles, submit, text, setText,
+    operation,
+    files, setFiles,
+    text, setText,
     uploaded, setUploaded,
+    submitFiles,
+    submitText,
 }) => {
 
     if (operation == "upload-pdf") {
@@ -40,7 +45,7 @@ const Content : React.FC<{
             <FileUpload
                 files={files} setFiles={setFiles}
                 uploaded={uploaded} setUploaded={setUploaded}
-                submit={submit}
+                submit={submitFiles}
                 kind="PDF"
             />
         );
@@ -51,7 +56,7 @@ const Content : React.FC<{
             <FileUpload
                 files={files} setFiles={setFiles}
                 uploaded={uploaded} setUploaded={setUploaded}
-                submit={submit}
+                submit={submitFiles}
                 kind="text"
             />
         );
@@ -61,7 +66,7 @@ const Content : React.FC<{
         <TextBuffer
             value={text}
             setValue={setText}
-            submit={submit}
+            submit={submitText}
         />
     );
 
@@ -83,76 +88,88 @@ const Load : React.FC <LoadProps> = ({
     const [uploaded, setUploaded] = useState<string[]>([]);
     const [text, setText] = useState<string>("");
 
-//    useEffect(() => {
+    const prepareMetadata = () => {
 
-        const submit = () => {
+        const doc_id = uuidv4();
 
-            let reader = new FileReader();
-
-            reader.onloadend = function() {
-
-                const doc_id = uuidv4();
-
-                const base64String = reader.result
-                    .replace('data:', '')
-                    .replace(/^.+,/, '');
-
-                console.log(doc_id);
-                console.log(base64String);
-
-                let doc_meta : Triple[] = [
-                    {
-                        s: { v: doc_id, e: true },
-                        p: { v: RDF_TYPE, e: true },
-                        o: { v: DIGITAL_DOCUMENT, e: true },
-                    }
-                ];
-
-                if (title != "")
-                    doc_meta.push(
-                        {
-                            s: { v: doc_id, e: true },
-                            p: { v: RDFS_LABEL, e: true },
-                            o: { v: title, e: false },
-                        }
-                    );
-
-                if (url != "")
-                    doc_meta.push(
-                        {
-                            s: { v: doc_id, e: true },
-                            p: { v: SCHEMA_URL, e: true },
-                            o: { v: url, e: true },
-                        }
-                    );
-
-                for (let keyword of keywords)
-                    doc_meta.push(
-                        {
-                            s: { v: doc_id, e: true },
-                            p: { v: SCHEMA_KEYWORDS, e: true },
-                            o: { v: keyword, e: false },
-                        }
-                    );
-
-                console.log(doc_meta);
-
+        let doc_meta : Triple[] = [
+            {
+                s: { v: doc_id, e: true },
+                p: { v: RDF_TYPE, e: true },
+                o: { v: DIGITAL_DOCUMENT, e: true },
             }
+        ];
 
-            reader.readAsDataURL(files[0]);
+        if (title != "")
+            doc_meta.push(
+                {
+                    s: { v: doc_id, e: true },
+                    p: { v: RDFS_LABEL, e: true },
+                    o: { v: title, e: false },
+                }
+            );
 
-            console.log("SUBMIT");
+        if (url != "")
+            doc_meta.push(
+                {
+                    s: { v: doc_id, e: true },
+                    p: { v: SCHEMA_URL, e: true },
+                    o: { v: url, e: true },
+                }
+            );
 
-/*
-            setUploaded([
-                ...uploaded,
-                ...Array.from(files).map((f) => f.name)
-            ]);
-            setFiles([]);
-*/
+        for (let keyword of keywords)
+            doc_meta.push(
+                {
+                    s: { v: doc_id, e: true },
+                    p: { v: SCHEMA_KEYWORDS, e: true },
+                    o: { v: keyword, e: false },
+                }
+            );
+
+        return doc_meta;
+
+    }
+
+    const submitFiles = () => {
+
+        let reader = new FileReader();
+
+        reader.onloadend = function() {
+
+            const base64String = reader.result
+                .replace('data:', '')
+                .replace(/^.+,/, '');
+
+            console.log(base64String);
+
+            const doc_meta = prepareMetadata();
+            console.log(doc_meta);
+
         }
 
-//    }, []);
+        reader.readAsDataURL(files[0]);
+
+        console.log("SUBMIT");
+
+/*
+        setUploaded([
+            ...uploaded,
+            ...Array.from(files).map((f) => f.name)
+        ]);
+        setFiles([]);
+*/
+    }
+
+    const submitText = () => {
+
+        const doc_meta = prepareMetadata();
+        console.log(doc_meta);
+
+        const encoded = btoa(text);
+        console.log(encoded);
+
+    }
 
     useEffect(() => {
 
@@ -185,7 +202,8 @@ const Load : React.FC <LoadProps> = ({
                 text={text} setText={setText}
                 files={files} setFiles={setFiles}
                 uploaded={uploaded} setUploaded={setUploaded}
-                submit={submit}
+                submitFiles={submitFiles}
+                submitText={submitText}
             />
 
         </>
