@@ -21,7 +21,7 @@ const Operation : React.FC<OperationProps> = ({
                   color="primary"
                   value={value}
                   exclusive
-                  onChange={(e, value) => setValue(value)}
+                  onChange={(_e, value) => setValue(value)}
                   aria-label="Operation"
                 >
                   <ToggleButton value="upload-pdf">

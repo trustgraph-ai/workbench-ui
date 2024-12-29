@@ -2,20 +2,21 @@
 import React from 'react';
 
 import {
-    Box, Button, List, ListItem, IconButton, ListItemText
+    Box, List, ListItem, IconButton, ListItemText
 } from '@mui/material';
 import { DeleteForever } from '@mui/icons-material';
 
 interface SelectedFilesProps {
     files : File[],
+    setFiles : (v : File[]) => void;
 }
 
 const SelectedFiles : React.FC<SelectedFilesProps> = ({
-    files, setFiles, submit,
+    files, setFiles,
 }) => {
 
     const remove = (ix : number) => {
-        const updated = Array.from(files).filter((e,n) => (ix != n));
+        const updated = Array.from(files).filter((_e,n) => (ix != n));
         setFiles(updated);
     }
 

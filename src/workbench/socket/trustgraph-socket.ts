@@ -113,7 +113,7 @@ export interface TriplesQueryResponse {
 };
 
 export interface LoadDocumentRequest {
-    id : string;
+    id? : string;
     data : string;
     metadata? : Triple[];
 };
@@ -122,9 +122,9 @@ export interface LoadDocumentResponse {
 };
 
 export interface LoadTextRequest {
-    id : string;
+    id? : string;
     text : string;
-    charset : string;
+    charset? : string;
     metadata? : Triple[];
 };
 
@@ -472,7 +472,7 @@ export class SocketImplementation {
                 "data": document,
             },
             30000,
-        ).then(r => r.response);
+        );
     }
 
     loadText(
@@ -495,8 +495,6 @@ export class SocketImplementation {
                 "charset": charset,
             },
             30000,
-        ).then(
-            r => r.response
         );
     }
 

@@ -1,7 +1,7 @@
 
 import React from 'react';
 
-import { Button, Box, TextField } from '@mui/material';
+import { Button, Box } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { CloudUpload } from '@mui/icons-material';
 
@@ -23,14 +23,13 @@ const VisuallyHiddenInput = styled('input')({
 interface FileUploadProps {
     files : File[],
     setFiles : (value : File[]) => void;
-    uploaded : File[],
-    setUploaded : (f : string[]) => void;
+    uploaded : string[],
     submit : () => void;
     kind : string;
 }
 
 const FileUpload : React.FC<FileUploadProps> = ({
-    files, setFiles, submit, kind, uploaded, setUploaded,
+    files, setFiles, submit, kind, uploaded,
 }) => {
 
     return (

@@ -2,7 +2,7 @@
 import React from 'react';
 
 import {
-    Box, Button, List, ListItem, IconButton, ListItemText, ListItemIcon,
+    Box, List, ListItem, ListItemText, ListItemIcon,
 } from '@mui/material';
 import { Check } from '@mui/icons-material';
 

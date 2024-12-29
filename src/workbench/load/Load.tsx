@@ -1,9 +1,7 @@
 
 import {v4 as uuidv4} from 'uuid';
 
-import React, { useState, useEffect } from 'react';
-
-import { Typography, Box, Button, TextField } from '@mui/material';
+import React, { useState } from 'react';
 
 import { useSocket } from '../socket/socket';
 import { Triple } from '../state/Triple';
@@ -77,6 +75,24 @@ const Load : React.FC <LoadProps> = ({
 
     }
 
+    const handleFileSuccess = (file : File) => {
+
+        // Add file to 'uploaded' list
+        setUploaded(
+            (state) => [
+                ...state,
+                file.name
+            ]
+        );
+
+        // Remove file from 'selected' list
+        setFiles(
+            (state) => 
+                Array.from(state).filter((f) => f != file)
+        );
+
+    }
+
     const submitFiles = () => {
 
         const doc_id = uuidv4();
@@ -89,33 +105,43 @@ const Load : React.FC <LoadProps> = ({
             let reader = new FileReader();
             reader.onloadend = function() {
 
-                const data = reader.result
+                // FIXME: Type is 'string | ArrayBuffer'?  is this safe?
+
+                const data = (reader.result as string)
                     .replace('data:', '')
                     .replace(/^.+,/, '');
 
-                socket.loadText(
-                    data, doc_id, doc_meta
-                ).then(
-                    (x) => {
+                if (operation == "upload-pdf") {
 
-                        setUploaded(
-                            (state) => [
-                                ...state,
-                                file.name
-                            ]
-                        );
+                    socket.loadDocument(
+                        data, doc_id, doc_meta
+                    ).then(
+                        (_x) => {
+                            handleFileSuccess(file);
+                        }
+                    ).catch(
+                        (e) => {
+                            console.log("Error:", e);
+                        }
+                    );
 
-                        setFiles(
-                            (state) => 
-                                Array.from(state).filter((f) => f != file)
-                        );
+                } else {
 
-                    }
-                ).catch(
-                    (e) => {
-                        console.log("Error:", e);
-                    }
-                );
+                    // Must be upload-text
+
+                    socket.loadText(
+                        data, doc_id, doc_meta
+                    ).then(
+                        (_x) => {
+                            handleFileSuccess(file);
+                        }
+                    ).catch(
+                        (e) => {
+                            console.log("Error:", e);
+                        }
+                    );
+
+                }
 
             }
 
@@ -127,7 +153,8 @@ const Load : React.FC <LoadProps> = ({
 
     const submitText = () => {
 
-        const doc_meta = prepareMetadata();
+        const doc_id = uuidv4();
+        const doc_meta = prepareMetadata(doc_id);
         console.log(doc_meta);
 
         const encoded = btoa(text);
@@ -161,7 +188,7 @@ const Load : React.FC <LoadProps> = ({
                 operation={operation}
                 text={text} setText={setText}
                 files={files} setFiles={setFiles}
-                uploaded={uploaded} setUploaded={setUploaded}
+                uploaded={uploaded}
                 submitFiles={submitFiles}
                 submitText={submitText}
             />

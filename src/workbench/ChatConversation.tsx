@@ -1,7 +1,7 @@
 
 import React from 'react';
 
-import { Card, CardContent, Typography } from '@mui/material';
+import { Card, CardContent } from '@mui/material';
 
 import ChatHistory from './ChatHistory';
 import InputArea from './InputArea';

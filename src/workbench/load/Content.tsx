@@ -7,9 +7,8 @@ import FileUpload from './FileUpload';
 const Content : React.FC<{
     operation : string,
     files : File[],
-    setFiles : (f : string[]) => void;
-    uploaded : File[],
-    setUploaded : (f : string[]) => void;
+    setFiles : (f : File[]) => void;
+    uploaded : string[],
     submitFiles : () => void;
     submitText : () => void;
     text : string,
@@ -18,7 +17,7 @@ const Content : React.FC<{
     operation,
     files, setFiles,
     text, setText,
-    uploaded, setUploaded,
+    uploaded,
     submitFiles,
     submitText,
 }) => {
@@ -27,7 +26,7 @@ const Content : React.FC<{
         return (
             <FileUpload
                 files={files} setFiles={setFiles}
-                uploaded={uploaded} setUploaded={setUploaded}
+                uploaded={uploaded}
                 submit={submitFiles}
                 kind="PDF"
             />
@@ -38,7 +37,7 @@ const Content : React.FC<{
         return (
             <FileUpload
                 files={files} setFiles={setFiles}
-                uploaded={uploaded} setUploaded={setUploaded}
+                uploaded={uploaded}
                 submit={submitFiles}
                 kind="text"
             />
