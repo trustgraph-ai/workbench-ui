@@ -32,6 +32,13 @@ const FileUpload : React.FC<FileUploadProps> = ({
     files, setFiles, submit, kind, uploaded,
 }) => {
 
+    const fl2a = (x : FileList | null) : File[] => {
+        if (x)
+            return Array.from(x);
+        else
+            return [];
+    }
+
     return (
         <>
 
@@ -48,7 +55,10 @@ const FileUpload : React.FC<FileUploadProps> = ({
                     Upload {kind} files
                     <VisuallyHiddenInput
                       type="file"
-                      onChange={(event) => setFiles(event.target.files)}
+                      onChange={
+                          (event) =>
+                               setFiles(fl2a(event.target.files))
+                      }
                       multiple
                     />
                 </Button>
