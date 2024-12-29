@@ -11,6 +11,7 @@ export const SCHEMAORG_SUBJECT_OF = "https://schema.org/subjectOf";
 
 export const SCHEMAORG_DESCRIPTION = "https://schema.org/description";
 
+// Some pre-defined labels, don't need to be fetched from the graph
 const predefined : {[k : string] : string} = {
     [RDFS_LABEL]: "label",
     [SKOS_DEFINITION]: "definition",
@@ -25,54 +26,51 @@ const predefined : {[k : string] : string} = {
     "https://schema.org/startDate": "start date",
     "https://schema.org/endDate": "end date",
     "https://schema.org/name": "name",
+    "https://schema.org/copyrightNotice": "copyright notice",
+    "https://schema.org/copyrightHolder": "copyright holder",
+    "https://schema.org/copyrightYear": "copyright year",
+    "https://schema.org/keywords": "keywords",
 };
 
+// Default triple limit on queries
 export const LIMIT = 30;
 
-export const queryOut = (socket : Socket, uri : string, limit? : number) => {
+// Query triples which match URI on 's'
+export const queryS = (socket : Socket, uri : string, limit? : number) => {
     return socket.triplesQuery(
         { v: uri, e: true, },
         undefined,
         undefined,
         limit ? limit : LIMIT,
-    ).then(
-        (triples) => triples.map(
-            (t) => { return { ...t, direc: "out" } }
-        )
     );
 };
 
-export const queryIn = (socket : Socket, uri : string, limit? : number) => {
-    return socket.triplesQuery(
-        undefined,
-        undefined,
-        { v: uri, e: true, },
-        limit ? limit : LIMIT,
-    ).then(
-        (triples) => triples.map(
-            (t) => { return { ...t, direc: "in" } }
-        )
-    );
-};
-
-export const queryPred = (socket : Socket, uri : string, limit? : number) => {
+// Query triples which match URI on 'p'
+export const queryP = (socket : Socket, uri : string, limit? : number) => {
     return socket.triplesQuery(
         undefined,
         { v: uri, e: true, },
         undefined,
         limit ? limit : LIMIT,
-    ).then(
-        (triples) => triples.map(
-            (t) => { return { ...t, direc: "pred" } }
-        )
     );
 };
 
+// Query triples which match URI on 'o'
+export const queryO = (socket : Socket, uri : string, limit? : number) => {
+    return socket.triplesQuery(
+        undefined,
+        undefined,
+        { v: uri, e: true, },
+        limit ? limit : LIMIT,
+    );
+};
+
+// Query triples which match URI on 's', 'p' or 'o'.
 export const query = (socket : Socket, uri : string, limit? : number) => {
     return Promise.all([
-        queryOut(socket, uri, limit),
-        queryPred(socket, uri, limit),
-        queryIn(socket, uri, limit),
+        queryS(socket, uri, limit),
+        queryP(socket, uri, limit),
+        queryO(socket, uri, limit),
     ]).then(
         (resp) => {
             return resp[0].concat(resp[1]).concat(resp[2]);
@@ -80,12 +78,17 @@ export const query = (socket : Socket, uri : string, limit? : number) => {
     );
 };
 
+// Convert a URI to its label by querying the graph store, returns a
+// promise
 export const queryLabel =
     (socket : Socket, uri : string) : Promise<string> => {
+
+        // If the URI is in the pre-defined list, just return that
         if (uri in predefined) {
             return new Promise((s) => s(predefined[uri]));
-            }
+        }
 
+        // Search tthe graph for the URI->label relationship
         return socket.triplesQuery(
             { v: uri, e: true, },
             { v: RDFS_LABEL, e : true, },
@@ -93,6 +96,9 @@ export const queryLabel =
             1,
         ).then(
             (triples : Triple[]) => {
+
+                // If got a result, return the label, otherwise the URI
+                // can be its own label
                 if (triples.length > 0)
                     return triples[0].o.v;
                 else
@@ -102,6 +108,8 @@ export const queryLabel =
 
     };
 
+// Add 'label' elements to 's' elements in a list of triples.
+// Returns a promise
 export const labelS = (socket : Socket, triples : Triple[]) => {
     return Promise.all(
         triples.map(
@@ -122,6 +130,8 @@ export const labelS = (socket : Socket, triples : Triple[]) => {
     );
 };
 
+// Add 'label' elements to 'p' elements in a list of triples.
+// Returns a promise
 export const labelP = (socket : Socket, triples : Triple[]) => {
     return Promise.all(
         triples.map(
@@ -142,10 +152,15 @@ export const labelP = (socket : Socket, triples : Triple[]) => {
     );
 };
 
+// Add 'label' elements to 'o' elements in a list of triples.
+// Returns a promise
 export const labelO = (socket : Socket, triples : Triple[]) => {
     return Promise.all(
         triples.map(
             (t) => {
+
+                // If the 'o' element is a entity, do a label lookup, else
+                // just use the literal value for its label
                 if (t.o.e) 
                     return queryLabel(socket, t.o.v).then(
                         (label : string) => {
@@ -175,45 +190,8 @@ export const labelO = (socket : Socket, triples : Triple[]) => {
     );
 };
 
-export const divide =
-    (triples : any[]) => {
-        return {
-            props: selectProps(triples),
-            in: selectIn(triples),
-            out: selectOut(triples),
-            pred: selectPred(triples),
-        };
-    };
-
 export const filter =
     (triples : any[], fn : any) => triples.filter((t) => fn(t));
-
-export const selectRels =
-    (triples : any[]) => filter(triples, (t : Triple) => t.o.e);
-
-export const selectIn =
-    (triples : any[]) => filter(
-        triples,
-        (t : Triple) => (t.direc == "in"),
-    );
-
-export const selectOut =
-    (triples : any[]) => filter(
-        triples,
-        (t : Triple) => (t.o.e && t.direc == "out"),
-    );
-
-export const selectPred =
-    (triples : any[]) => filter(
-        triples,
-        (t : Triple) => (t.direc == "pred"),
-    );
-
-export const selectProps =
-    (triples : any[]) => filter(
-        triples,
-        (t : Triple) => (t.direc == "in" && !t.o.e)
-    );
 
 export const filterInternals =
     (triples : any[]) => triples.filter(
@@ -223,7 +201,8 @@ export const filterInternals =
         }
     );
 
-export const getView =
+export const getTriples =
+
     (socket : Socket, uri : string) => {
 
     // FIXME: Cache more
@@ -238,58 +217,11 @@ export const getView =
     ).then(
         (d) => filterInternals(d)
     ).then(
-        (d) => divide(d)
-    ).then(
-        (d) => {
-            return {
-                ...d,
-                props: d.props.map(
-                    (prop) => {
-                        return {
-                            prop: prop.p,
-                            value: prop.o,
-                        };
-                    }
-                ),
-            };
-        }
-    ).then(
-        (d) => {
-            return {
-                ...d,
-                in: d.in.map(
-                    (rel) => {
-                        return {
-                            rel: rel.p,
-                            entity: rel.s,
-                        };
-                    }
-                ),
-                out: d.out.map(
-                    (rel) => {
-                        return {
-                            rel: rel.p,
-                            entity: rel.o,
-                        };
-                    }
-                ),
-                pred: d.pred.map(
-                    (rel) => {
-                        return {
-                            src: rel.s,
-                            rel: rel.p,
-                            dest: rel.o,
-                        };
-                    }
-                ),
-            };
-        }
-    ).then(
         (d) => {
             return queryLabel(socket, uri).then(
                 (label : string) => {
                      return {
-                          ...d,
+                          triples: d,
                           uri: uri,
                           label: label,
                      };
