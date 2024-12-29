@@ -22,6 +22,7 @@ const Title : React.FC<TitleProps> = ({
                         width: '50rem',
                     }}
                     label="Title"
+                    helperText="document title (optional)"
                     defaultValue={value}
                     onChange={(e) => setValue(e.target.value)}
                 />

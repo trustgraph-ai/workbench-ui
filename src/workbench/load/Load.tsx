@@ -3,7 +3,6 @@ import React, { useState, useEffect } from 'react';
 
 import { Typography, Box, Button, TextField } from '@mui/material';
 
-
 import { useSocket } from '../socket/socket';
 
 import Title from './Title';
@@ -29,6 +28,7 @@ const Content : React.FC<{
             <FileUpload
                 files={files} setFiles={setFiles}
                 submit={submit}
+                kind="PDF"
             />
         );
     }
@@ -38,6 +38,7 @@ const Content : React.FC<{
             <FileUpload
                 files={files} setFiles={setFiles}
                 submit={submit}
+                kind="text"
             />
         );
     }
@@ -46,6 +47,7 @@ const Content : React.FC<{
         <TextBuffer
             value={text}
             setValue={setText}
+            submit={submit}
         />
     );
 

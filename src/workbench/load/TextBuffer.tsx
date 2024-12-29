@@ -1,19 +1,23 @@
 
 import React from 'react';
 
-import { Box, TextField } from '@mui/material';
+import { Box, TextField, Button } from '@mui/material';
 
 interface TextBufferProps {
     value : string,
     setValue : (value : string) => void;
+    submit : () => void;
 }
 
 const TextBuffer : React.FC<TextBufferProps> = ({
-    value, setValue,
+    value, setValue, submit,
 }) => {
 
     return (
         <Box sx={{ m: 2 }}>
+            <Button variant="contained" sx={{ m: 1 }} onClick={submit}>
+                Submit
+            </Button>
             <TextField
                 fullWidth
                 defaultValue={value}

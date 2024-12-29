@@ -21,7 +21,8 @@ const Url : React.FC<UrlProps> = ({
                     sx={{
                         width: '50rem',
                     }}
-                    label="Published at URL"
+                    label="URL"
+                    helperText="URL of publication (optional)"
                     defaultValue={value}
                     onChange={(e) => setValue(e.target.value)}
                 />

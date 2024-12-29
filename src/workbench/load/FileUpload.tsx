@@ -23,10 +23,11 @@ interface FileUploadProps {
     files : File[],
     setFiles : (value : File[]) => void;
     submit : () => void;
+    kind : string;
 }
 
 const FileUpload : React.FC<FileUploadProps> = ({
-    files, setFiles, submit,
+    files, setFiles, submit, kind
 }) => {
 
     return (
@@ -42,20 +43,22 @@ const FileUpload : React.FC<FileUploadProps> = ({
                   startIcon={<CloudUpload />}
                   sx={{ m: 1 }}
                 >
-                  Upload files
-                  <VisuallyHiddenInput
-                    type="file"
-                    onChange={(event) => setFiles(event.target.files)}
-                    multiple
-                  />
+                    Upload {kind} files
+                    <VisuallyHiddenInput
+                      type="file"
+                      onChange={(event) => setFiles(event.target.files)}
+                      multiple
+                    />
                 </Button>
+
                 <Button variant="contained" sx={{ m: 1 }} onClick={submit}>
                     Submit
                 </Button>
+
             </Box>
 
             <Box>
-                <SelectedFiles files={files}/>
+                <SelectedFiles files={files} setFiles={setFiles}/>
             </Box>
             
         </>

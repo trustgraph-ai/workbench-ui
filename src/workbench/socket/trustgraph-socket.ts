@@ -32,6 +32,14 @@ export interface Socket {
         s? : Value, p? : Value, o? : Value, limit? : number
     ) => Promise<Triple[]>;
 
+    loadDocument : (
+        document : string, id? : string, metadata? : Triple[],
+    ) => Promise<any>;
+
+    loadText : (
+        text : string, id? : string, metadata? : Triple[],
+    ) => Promise<any>;
+
 };
 
 export interface ApiResponse {
@@ -102,6 +110,29 @@ export interface TriplesQueryRequest {
 
 export interface TriplesQueryResponse {
     response : Triple[];
+};
+
+export interface LoadDocumentRequest {
+    id : string;
+    data : string;
+    metadata? : Triple[];
+};
+
+export interface LoadDocumentResponse {
+};
+
+export interface LoadTextRequest {
+    id : string;
+    text : string;
+    charset : string;
+    metadata? : Triple[];
+};
+
+export interface LoadTextResponse {
+};
+
+export interface TextCompletionResponse {
+    response : string;
 };
 
 function makeid(length : number) {
@@ -433,43 +464,37 @@ export class SocketImplementation {
         metadata? : Triple[],
 
     ) {
-
-        const mid = this.getNextId();
-
-        const msg = JSON.stringify({
-            "id": mid,
-            "service": "agent",
-            "request": {
+        return this.makeRequest<LoadDocumentRequest, LoadDocumentResponse>(
+            "document-load",
+            {
                 "id": id,
                 "metadata": metadata,
                 "data": document,
-            }
+            },
+            30000,
+        ).then(r => r.response);
+    }
 
-        });
+    loadText(
 
-/*
-        const timeout = 60000;
-        const retries = 2;
-        const expiry = Date.now() + timeout;
+        // base64-encoded doc
+        text : string,
+        charset : string,
 
-        this.inflight[mid] = {
-            success: ok,
-            error: err,
-            timeoutId: setTimeout(
-                () => this.timeout(mid),
-                timeout,
-            ),
-            timeout: timeout,
-            expiry: expiry,
-            retries: retries,
-        };
-*/
+        id? : string,
+        metadata? : Triple[],
 
-        if (this.ws) {
-            this.ws.send(msg);
-        } else {
-            // Arrange for send later
-        }
+    ) {
+        return this.makeRequest<LoadTextRequest, LoadTextResponse>(
+            "document-load",
+            {
+                "id": id,
+                "metadata": metadata,
+                "text": text,
+                "charset": charset,
+            },
+            30000,
+        ).then(r => r.response);
     }
 
 };

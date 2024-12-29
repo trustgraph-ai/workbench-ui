@@ -42,7 +42,13 @@ const Keywords : React.FC<KeywordsProps> = ({
                             })
                     }
                     renderInput={
-                        (params) => <TextField label="Keywords" {...params} />
+                        (params) =>
+                            <TextField
+                                label="Keywords"
+                                helperText="Topic keywords (optional)"
+                                
+                                {...params}
+                            />
                     }
                 />
 
