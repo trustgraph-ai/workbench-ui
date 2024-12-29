@@ -315,7 +315,7 @@ export class SocketImplementation {
 
             (obj) => {
 
-//            console.log("Success at attempt", this.inflight[mid].retries);
+//                console.log("Success at attempt", this.inflight[mid].retries);
 
 
                 clearTimeout(this.inflight[mid].timeoutId);
@@ -479,14 +479,15 @@ export class SocketImplementation {
 
         // base64-encoded doc
         text : string,
-        charset : string,
 
         id? : string,
         metadata? : Triple[],
 
+        charset? : string,
+
     ) {
         return this.makeRequest<LoadTextRequest, LoadTextResponse>(
-            "document-load",
+            "text-load",
             {
                 "id": id,
                 "metadata": metadata,
@@ -494,7 +495,9 @@ export class SocketImplementation {
                 "charset": charset,
             },
             30000,
-        ).then(r => r.response);
+        ).then(
+            r => r.response
+        );
     }
 
 };

@@ -88,9 +88,7 @@ const Load : React.FC <LoadProps> = ({
     const [uploaded, setUploaded] = useState<string[]>([]);
     const [text, setText] = useState<string>("");
 
-    const prepareMetadata = () => {
-
-        const doc_id = uuidv4();
+    const prepareMetadata = (doc_id : string) => {
 
         let doc_meta : Triple[] = [
             {
@@ -133,24 +131,71 @@ const Load : React.FC <LoadProps> = ({
 
     const submitFiles = () => {
 
-        let reader = new FileReader();
+        const doc_id = uuidv4();
+        const doc_meta = prepareMetadata(doc_id);
 
-        reader.onloadend = function() {
+        for (const file of files) {
 
-            const base64String = reader.result
-                .replace('data:', '')
-                .replace(/^.+,/, '');
+            console.log(file, "...");
 
-            console.log(base64String);
+            let reader = new FileReader();
+            reader.onloadend = function() {
 
-            const doc_meta = prepareMetadata();
-            console.log(doc_meta);
+                const data = reader.result
+                    .replace('data:', '')
+                    .replace(/^.+,/, '');
+
+                console.log(data);
+                console.log(doc_meta);
+
+                console.log("load doc");
+
+                socket.loadText(
+                    data, doc_id, doc_meta
+                ).then(
+                    (x) => {
+
+                        console.log(file.name, "submitted");
+
+
+                        console.log("BEFORE");
+                        console.log(uploaded);
+                        console.log(files);
+
+                        setUploaded([
+                            ...uploaded,
+                            file.name,
+                        ]);
+
+                        setFiles(
+                            Array.from(files).filter((f) => f != file)
+                        );
+
+                        console.log("AFTER");
+                        console.log([
+                            ...uploaded,
+                            file.name,
+                        ]);
+                        console.log(Array.from(files).filter((f) => f != file));
+
+                    }
+                ).catch(
+                    (e) => {
+                        console.log("Error:", e);
+                    }
+                );
+
+            }
+
+            reader.readAsDataURL(file);
 
         }
 
-        reader.readAsDataURL(files[0]);
+        console.log("Submit");
 
-        console.log("SUBMIT");
+
+//        reader.readAsDataURL(files[0]);
+
 
 /*
         setUploaded([
