@@ -6,6 +6,7 @@ import { styled } from '@mui/material/styles';
 import { CloudUpload } from '@mui/icons-material';
 
 import SelectedFiles from './SelectedFiles';
+import ProcessedFiles from './ProcessedFiles';
 
 const VisuallyHiddenInput = styled('input')({
   clip: 'rect(0 0 0 0)',
@@ -22,12 +23,14 @@ const VisuallyHiddenInput = styled('input')({
 interface FileUploadProps {
     files : File[],
     setFiles : (value : File[]) => void;
+    uploaded : File[],
+    setUploaded : (f : string[]) => void;
     submit : () => void;
     kind : string;
 }
 
 const FileUpload : React.FC<FileUploadProps> = ({
-    files, setFiles, submit, kind
+    files, setFiles, submit, kind, uploaded, setUploaded,
 }) => {
 
     return (
@@ -58,7 +61,15 @@ const FileUpload : React.FC<FileUploadProps> = ({
             </Box>
 
             <Box>
-                <SelectedFiles files={files} setFiles={setFiles}/>
+                <SelectedFiles
+                    files={files} setFiles={setFiles}
+                />
+            </Box>
+
+            <Box>
+                <ProcessedFiles
+                    uploaded={uploaded}
+                />
             </Box>
             
         </>

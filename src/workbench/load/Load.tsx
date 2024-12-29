@@ -15,18 +15,22 @@ import FileUpload from './FileUpload';
 const Content : React.FC<{
     operation : string,
     files : File[],
-    setFiles : (f : File[]) => void;
+    setFiles : (f : string[]) => void;
+    uploaded : File[],
+    setUploaded : (f : string[]) => void;
     submit : () => void;
     text : string,
     setText : (s : string) => void;
 }> = ({
     operation, files, setFiles, submit, text, setText,
+    uploaded, setUploaded,
 }) => {
 
     if (operation == "upload-pdf") {
         return (
             <FileUpload
                 files={files} setFiles={setFiles}
+                uploaded={uploaded} setUploaded={setUploaded}
                 submit={submit}
                 kind="PDF"
             />
@@ -37,6 +41,7 @@ const Content : React.FC<{
         return (
             <FileUpload
                 files={files} setFiles={setFiles}
+                uploaded={uploaded} setUploaded={setUploaded}
                 submit={submit}
                 kind="text"
             />
@@ -66,6 +71,7 @@ const Load : React.FC <LoadProps> = ({
     const [keywords, setKeywords] = useState<string[]>([]);
     const [operation, setOperation] = useState<string>("upload-pdf");
     const [files, setFiles] = useState<File[]>([]);
+    const [uploaded, setUploaded] = useState<string[]>([]);
     const [text, setText] = useState<string>("");
 
 //    useEffect(() => {
@@ -87,6 +93,12 @@ const Load : React.FC <LoadProps> = ({
             reader.readAsDataURL(files[0]);
 
             console.log("SUBMIT");
+
+            setUploaded([
+                ...uploaded,
+                ...Array.from(files).map((f) => f.name)
+            ]);
+            setFiles([]);
 
         }
 
@@ -121,36 +133,10 @@ const Load : React.FC <LoadProps> = ({
             <Content
                 operation={operation}
                 text={text} setText={setText}
-                files={files}
-                setFiles={setFiles}
+                files={files} setFiles={setFiles}
+                uploaded={uploaded} setUploaded={setUploaded}
                 submit={submit}
             />
-
-{/*
-            <Box>
-
-                <TextField
-                    sx={{
-                        width: '30rem'
-                    }}
-                    id="publication"
-                    label="Publication event"
-                />
-
-            </Box>
-
-            <Box>
-
-                <TextField
-                    sx={{
-                        width: '30rem'
-                    }}
-                    id="org"
-                    label="Publishing organization"
-                />
-
-            </Box>
-*/}
 
         </>
 
