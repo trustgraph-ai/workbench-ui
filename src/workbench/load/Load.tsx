@@ -12,65 +12,13 @@ import Title from './Title';
 import Url from './Url';
 import Keywords from './Keywords';
 import Operation from './Operation';
-import TextBuffer from './TextBuffer';
-import FileUpload from './FileUpload';
+import Content from './Content';
 
 const RDF_TYPE = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
 const RDFS_LABEL = "http://www.w3.org/2000/01/rdf-schema#label";
 const DIGITAL_DOCUMENT = "https://schema.org/DigitalDocument";
 const SCHEMA_URL = "https://schema.org/url";
 const SCHEMA_KEYWORDS = "https://schema.org/keywords";
-
-const Content : React.FC<{
-    operation : string,
-    files : File[],
-    setFiles : (f : string[]) => void;
-    uploaded : File[],
-    setUploaded : (f : string[]) => void;
-    submitFiles : () => void;
-    submitText : () => void;
-    text : string,
-    setText : (s : string) => void;
-}> = ({
-    operation,
-    files, setFiles,
-    text, setText,
-    uploaded, setUploaded,
-    submitFiles,
-    submitText,
-}) => {
-
-    if (operation == "upload-pdf") {
-        return (
-            <FileUpload
-                files={files} setFiles={setFiles}
-                uploaded={uploaded} setUploaded={setUploaded}
-                submit={submitFiles}
-                kind="PDF"
-            />
-        );
-    }
-
-    if (operation == "upload-text") {
-        return (
-            <FileUpload
-                files={files} setFiles={setFiles}
-                uploaded={uploaded} setUploaded={setUploaded}
-                submit={submitFiles}
-                kind="text"
-            />
-        );
-    }
-
-    return (
-        <TextBuffer
-            value={text}
-            setValue={setText}
-            submit={submitText}
-        />
-    );
-
-}
 
 interface LoadProps {
 }
@@ -136,7 +84,7 @@ const Load : React.FC <LoadProps> = ({
 
         for (const file of files) {
 
-            console.log(file, "...");
+            console.log(file.name, "...");
 
             let reader = new FileReader();
             reader.onloadend = function() {
@@ -145,38 +93,22 @@ const Load : React.FC <LoadProps> = ({
                     .replace('data:', '')
                     .replace(/^.+,/, '');
 
-                console.log(data);
-                console.log(doc_meta);
-
-                console.log("load doc");
-
                 socket.loadText(
                     data, doc_id, doc_meta
                 ).then(
                     (x) => {
 
-                        console.log(file.name, "submitted");
-
-
-                        console.log("BEFORE");
-                        console.log(uploaded);
-                        console.log(files);
-
-                        setUploaded([
-                            ...uploaded,
-                            file.name,
-                        ]);
-
-                        setFiles(
-                            Array.from(files).filter((f) => f != file)
+                        setUploaded(
+                            (state) => [
+                                ...state,
+                                file.name
+                            ]
                         );
 
-                        console.log("AFTER");
-                        console.log([
-                            ...uploaded,
-                            file.name,
-                        ]);
-                        console.log(Array.from(files).filter((f) => f != file));
+                        setFiles(
+                            (state) => 
+                                Array.from(state).filter((f) => f != file)
+                        );
 
                     }
                 ).catch(
@@ -191,19 +123,6 @@ const Load : React.FC <LoadProps> = ({
 
         }
 
-        console.log("Submit");
-
-
-//        reader.readAsDataURL(files[0]);
-
-
-/*
-        setUploaded([
-            ...uploaded,
-            ...Array.from(files).map((f) => f.name)
-        ]);
-        setFiles([]);
-*/
     }
 
     const submitText = () => {
@@ -215,10 +134,6 @@ const Load : React.FC <LoadProps> = ({
         console.log(encoded);
 
     }
-
-    useEffect(() => {
-
-    }, []);
 
     return (
         <>
