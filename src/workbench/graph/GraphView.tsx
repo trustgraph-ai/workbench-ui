@@ -6,11 +6,11 @@ import { Typography, Box } from '@mui/material';
 import { ForceGraph3D } from 'react-force-graph';
 import SpriteText from 'three-spritetext'
 
-import { useSocket } from './socket/socket';
-import { useWorkbenchStateStore } from './state/WorkbenchState';
+import { useSocket } from '../socket/socket';
+import { useWorkbenchStateStore } from '../state/WorkbenchState';
 import {
     createSubgraph, updateSubgraph
-} from './state/knowledge-graph';
+} from '../state/knowledge-graph';
 
 interface GraphViewProps {
 }

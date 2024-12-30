@@ -4,7 +4,7 @@ import React, { useRef } from 'react';
 import { Box, Button, TextField, CircularProgress } from '@mui/material';
 
 import { Send } from '@mui/icons-material';
-import { useWorkbenchStateStore } from './state/WorkbenchState';
+import { useWorkbenchStateStore } from '../state/WorkbenchState';
 
 interface InputAreaProps {
     onSubmit : () => void;

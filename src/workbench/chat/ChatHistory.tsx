@@ -7,7 +7,7 @@ import {
 
 import { SmartToy, Person } from '@mui/icons-material';
 
-import { useWorkbenchStateStore } from './state/WorkbenchState';
+import { useWorkbenchStateStore } from '../state/WorkbenchState';
 
 interface ChatHistoryProps {
 }

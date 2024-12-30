@@ -6,10 +6,10 @@ import { Card, CardContent } from '@mui/material';
 import ChatHistory from './ChatHistory';
 import InputArea from './InputArea';
 
-import { useSocket } from './socket/socket';
-import { Entity } from './state/Entity';
-import { Triple, Value } from './state/Triple';
-import { useWorkbenchStateStore } from './state/WorkbenchState';
+import { useSocket } from '../socket/socket';
+import { Entity } from '../state/Entity';
+import { Triple, Value } from '../state/Triple';
+import { useWorkbenchStateStore } from '../state/WorkbenchState';
 
 interface ChatConversationProps {
 };
