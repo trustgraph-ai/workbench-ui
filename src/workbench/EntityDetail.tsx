@@ -65,7 +65,7 @@ const EntityNode : React.FC<{value : Entity}> = ({value}) => {
                 pb: '0.4rem',
             }}
             onClick={
-                () => setSelected({ uri: value.uri, label: value.label })
+                () => setSelected({ uri: value.v, label: value.label })
             }
         >
             {value.label}
@@ -106,16 +106,19 @@ const EntityDetail : React.FC <EntityDetailProps> = ({
 
     return (
         <>
+
             <Typography variant="h5" component="div" gutterBottom>
                 {selected.label}
             </Typography>
 
-            <Button
-                variant="outlined"
-                onClick={()=> graphView()}
-            >
-                Graph view
-            </Button>
+            <Box sx={{mt:2,mb:2}}>
+                <Button
+                    variant="outlined"
+                    onClick={()=> graphView()}
+                >
+                    Graph view
+                </Button>
+            </Box>
 
             <Box>
 

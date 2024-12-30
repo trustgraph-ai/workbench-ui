@@ -94,7 +94,7 @@ const Load : React.FC <LoadProps> = ({
     }
 
     const create_doc_id = () => {
-        return "" + uuidv4();
+        return "https://trustgraph.ai/doc/" + uuidv4();
     }
 
     const submitFiles = () => {
@@ -167,7 +167,7 @@ const Load : React.FC <LoadProps> = ({
 
     const submitText = () => {
 
-        const doc_id = "https://trustgraph.ai/doc/" + create_doc_id();
+        const doc_id = create_doc_id();
         const doc_meta = prepareMetadata(doc_id);
 
         const encoded = b64encode(text);
