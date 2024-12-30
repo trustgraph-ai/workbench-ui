@@ -9,12 +9,12 @@ import { useSocket } from './socket/socket';
 import { useWorkbenchStateStore } from './state/WorkbenchState';
 import { getTriples } from './state/knowledge-graph';
 
-import { Entity } from './state/Entity';
+import { Value } from './state/Triple';
 
 interface EntityDetailProps {
 }
 
-const LiteralNode : React.FC<{value : Entity}> = ({value}) => {
+const LiteralNode : React.FC<{value : Value}> = ({value}) => {
     return (
         <Typography
             variant="body1"
@@ -31,7 +31,7 @@ const LiteralNode : React.FC<{value : Entity}> = ({value}) => {
     );
 };
 
-const SelectedNode : React.FC<{value : Entity}> = ({value}) => {
+const SelectedNode : React.FC<{value : Value}> = ({value}) => {
 
     return (
         <Typography
@@ -47,7 +47,7 @@ const SelectedNode : React.FC<{value : Entity}> = ({value}) => {
     );
 };
 
-const EntityNode : React.FC<{value : Entity}> = ({value}) => {
+const EntityNode : React.FC<{value : Value}> = ({value}) => {
 
     const setSelected = useWorkbenchStateStore((state) => state.setSelected);
 
@@ -65,7 +65,10 @@ const EntityNode : React.FC<{value : Entity}> = ({value}) => {
                 pb: '0.4rem',
             }}
             onClick={
-                () => setSelected({ uri: value.v, label: value.label })
+                () => setSelected({
+                    uri: value.v,
+                    label: value.label ? value.label : value.v
+                })
             }
         >
             {value.label}
