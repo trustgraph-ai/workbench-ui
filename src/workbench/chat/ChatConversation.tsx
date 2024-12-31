@@ -80,7 +80,6 @@ const ChatConversation : React.FC <ChatConversationProps> = ({
                 addMessage("ai", err.toString());
                 setInput("");
                 removeActivity(ragActivity);
-
             }
         );
 

@@ -19,26 +19,39 @@ const Banner : React.FC = () => {
             sx={{ mb: 3 }}
         >
                 <Box>
-                    <img src="/tg.svg" alt="Trustgraph logo"
-                        height="45"/>
+                    <img
+                        src="/tg.svg"
+                        alt="Trustgraph logo"
+                        height="45"
+                    />
+                    <Box
+                        sx={{
+                            position: 'relative',
+                            top: '0',
+                            left: '0',
+                        }}
+                    >
+                        <Box
+                            sx={{
+                                position: 'absolute',
+                                top: '-2.8rem',
+                                left: '0.41rem',
+                            }}
+                           
+                        >
+                        {
+                            (activity.size > 0) &&
+                            <CircularProgress
+                                size="2rem"
+                                sx={{ color: 'white' }}
+                            />
+                        }
+                        </Box>
+                    </Box>
                 </Box>
                 <Typography variant="h4" component="h1">
                     TrustGraph Data Workbench
                 </Typography>
-                <Box>
-                { (activity.size > 0) &&
-                    <Box>
-                    stuff happening
-                    <br/>
-                    { Array.from(activity).join(" + ") }
-                    </Box>
-                }
-                </Box>
-                <Box>
-                { (activity.size > 0) &&
-                    <CircularProgress size="2rem"/>
-                }
-                </Box>
         </Stack>
     );
 

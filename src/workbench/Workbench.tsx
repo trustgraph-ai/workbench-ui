@@ -1,20 +1,46 @@
 
 import React from 'react';
 
-import { Box } from '@mui/material';
+import { Box, CircularProgress } from '@mui/material';
 
 import Banner from './Banner.tsx';
 import Workspace from './Workspace.tsx';
+
+import { useProgressStateStore } from './state/ProgressState';
 
 import './Workbench.scss';
 import { SocketProvider } from './socket/SocketProvider';
 
 const Workbench : React.FC = () => {
 
+    const addActivity = useProgressStateStore(
+        (state) => state.addActivity
+    );
+    const removeActivity = useProgressStateStore(
+        (state) => state.removeActivity
+    );
+
+    const activity = useProgressStateStore((state) => state.activity);
+
     return (
 
         <SocketProvider>
             <Box className="workbench">
+            {
+                (activity.size > 0) && 
+                <Box
+                    sx={{
+                        position: 'absolute',
+                        top: 'calc(50% - 3rem)',
+                        left: 'calc(50% - 3rem)',
+                        m: 0,
+                        p: 0,
+                    }}
+                >
+                        <CircularProgress size="6rem"/>
+                </Box>
+            }
+
                 <Banner/>
                 <Workspace/>
             </Box>
