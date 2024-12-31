@@ -10,7 +10,7 @@ import { useSocket } from '../socket/socket';
 import { useWorkbenchStateStore } from '../state/WorkbenchState';
 import {
     createSubgraph, updateSubgraph
-} from '../state/knowledge-graph';
+} from '../state/knowledge-graph-viz';
 
 interface GraphViewProps {
 }
@@ -91,15 +91,6 @@ const GraphView : React.FC <GraphViewProps> = ({
                     return sprite;
                 }}
                 linkPositionUpdate={(sprite, { start, end }) => {
-/*
-                    const middlePos = Object.assign(
-                        ...['x', 'y', 'z'].map(
-                            c => ({
-                                [c]: start[c] + (end[c] - start[c]) / 2
-                            })
-                        )
-                    )
-*/
                     const middlePos = {
                         x: start.x + (end.x - start.x) / 2,
                         y: start.y + (end.y - start.y) / 2,
