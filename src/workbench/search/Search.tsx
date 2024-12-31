@@ -17,13 +17,12 @@ import { Value } from '../state/Triple';
 
 import similarity from 'compute-cosine-similarity';
 
-//import {TSNE} from '@keckelt/tsne';
-
 interface Row {
     uri : string,
-    label : string,
+    label? : string,
     description? : string,
     embeddings? : number[],
+    target? : number[],
     similarity? : number,
 };
 
@@ -38,12 +37,12 @@ const Search : React.FC <SearchProps> = ({
     const setSelected = useWorkbenchStateStore((state) => state.setSelected);
     const setTool = useWorkbenchStateStore((state) => state.setTool);
 
-    const [view, setView] = useState<any>({nodes:[], links: []});
+    const [view, setView] = useState<Row[]>([]);
 
     const [search, setSearch] = useState<string>("");
 
-    const select = (row : any) => {
-        setSelected({ uri: row.uri, label: row.label });
+    const select = (row : Row) => {
+        setSelected({ uri: row.uri, label: row.label ? row.label : "n/a" });
         setTool("entity");
     }
 
@@ -53,37 +52,39 @@ const Search : React.FC <SearchProps> = ({
 
             // Take the embeddings, and lookup entities using graph
             // embeddings
-            (vecs : number[][]) => {
+            (vecs : number[][]) : Promise<Row[]> => {
                 return socket.graphEmbeddingsQuery(vecs, 10).then(
-                    (e) => { return { entities: e, target: vecs[0] }; }
+                    (ents : Value[]) : Row[] => ents.map((ent) => {
+                        return { uri: ent.v, target: vecs[0] }
+                    })
                 );
             }
 
         ).then(
 
             // For entities, lookup labels
-            (ge : any) => {
-                return Promise.all<any[]>(
-                    ge.entities.map(
-                        (ent : Value) =>
+            (entities : Row[]) : Promise<Row[]> => {
+                return Promise.all<Row>(
+                    entities.map(
+                        (ent : Row) =>
                             socket.triplesQuery(
-                                ent,
+                                { v: ent.uri, e: true },
                                 { v: RDFS_LABEL, e: true, },
                                 undefined,
                                 1
                             ).then(
-                                (t) => {
+                                (t): Row => {
                                     if (t.length < 1) {
                                         return {
-                                            uri: ent.v,
+                                            uri: ent.uri,
                                             label: "",
-                                            target: ge.target,
+                                            target: ent.target,
                                         };
                                     } else {
                                         return {
-                                            uri: ent.v,
+                                            uri: ent.uri,
                                             label: t[0].o.v,
-                                            target: ge.target,
+                                            target: ent.target,
                                         };
                                     }
                                 }
@@ -95,8 +96,8 @@ const Search : React.FC <SearchProps> = ({
         ).then(
 
             // For entities, lookup labels
-            (entities : any[]) => {
-                return Promise.all<any>(
+            (entities : Row[]) => {
+                return Promise.all<Row>(
                     entities.map(
                         (ent) =>
                             socket.triplesQuery(
@@ -123,16 +124,16 @@ const Search : React.FC <SearchProps> = ({
         ).then(
 
             // Compute an embedding for each entity based on its label
-            (entities : any[]) => {
-                return Promise.all<any[]>(
+            (entities : Row[]) => {
+                return Promise.all<Row>(
                     entities.map(
                         (ent) => {
 
-                            let text = "";
-                            if (ent.description != "")
+                            let text : string = "";
+                            if (ent.description && ent.description != "")
                                 text = ent.description;
                             else
-                                text = ent.label;
+                                text = ent.label!;
                             
                             return socket.embeddings(text).then(
                                  (x) => {
@@ -155,25 +156,25 @@ const Search : React.FC <SearchProps> = ({
             }
 
         ).then(
-            (entities : any[]) =>
+            (entities : Row[]) : Row[] =>
                 entities.map(
                     (ent) => {
                         const sim = similarity(
-                            ent.target, ent.embeddings
+                            ent.target!, ent.embeddings!
                         );
                         return {
                             uri: ent.uri,
                             label: ent.label,
                             description: ent.description,
-                            similarity: (sim ? sim : -1).toFixed(2),
+                            similarity: sim ? sim : -1,
                         };
                     }
                 )
         ).then(
-            (entities : any[]) => {
+            (entities : Row[]) => {
                 let arr = Array.from(entities);
                 arr.sort(
-                   (a, b) => (b.similarity - a.similarity)
+                   (a, b) => (b.similarity! - a.similarity!)
                 );
                 return arr;
             }
