@@ -4,10 +4,10 @@ import React from 'react';
 import { Stack, Divider, Box } from '@mui/material';
 
 import Toolbox from './Toolbox';
-import Chat from './Chat';
-import EntityDetail from './EntityDetail';
+import Chat from './chat/Chat';
+import EntityDetail from './entity/EntityDetail';
 import EntityList from './EntityList';
-import GraphView from './GraphView';
+import GraphView from './graph/GraphView';
 import Load from './load/Load';
 
 import { useWorkbenchStateStore } from './state/WorkbenchState';

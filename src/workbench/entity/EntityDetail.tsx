@@ -5,11 +5,11 @@ import { Typography, Box, Stack, Button } from '@mui/material';
 
 import { ArrowForward } from '@mui/icons-material';
 
-import { useSocket } from './socket/socket';
-import { useWorkbenchStateStore } from './state/WorkbenchState';
-import { getTriples } from './state/knowledge-graph';
+import { useSocket } from '../socket/socket';
+import { useWorkbenchStateStore } from '../state/WorkbenchState';
+import { getTriples } from '../state/knowledge-graph';
 
-import { Value } from './state/Triple';
+import { Value } from '../state/Triple';
 
 interface EntityDetailProps {
 }
