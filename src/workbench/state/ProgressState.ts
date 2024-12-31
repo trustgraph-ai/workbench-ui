@@ -19,7 +19,7 @@ export const useProgressStateStore = create<ProgressState>()(
 
     (set) => ({
 
-        activity : new Set<string>(),
+        activity : new Set<string>([]),
 
         addActivity: (act) => set((state) => {
             let n = new Set(state.activity);

@@ -41,7 +41,35 @@ const Workbench : React.FC = () => {
                         <CircularProgress size="6rem"/>
                 </Box>
             }
-
+            {
+                (activity.size > 0) && 
+                <Box
+                    sx={{
+                        position: 'absolute',
+                        bottom: '2rem',
+                        left: '2rem',
+                        zIndex: 999,
+                        m: 0,
+                        pt: '0.8rem',
+                        pb: '0.8rem',
+                        pl: '1.2rem',
+                        pr: '1.2rem',
+                        backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                        color: 'secondary',
+                        border: '1px solid #c0c080',
+                    }}
+                >
+                        {
+                            Array.from(activity).slice(0, 3).map(
+                                (a) =>
+                                    <>
+                                         {a}...
+                                         <br/>
+                                    </>
+                            )
+                        }
+                </Box>
+            }
                 <Banner/>
                 <Workspace/>
             </Box>
