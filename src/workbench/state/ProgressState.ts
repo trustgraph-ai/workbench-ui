@@ -3,10 +3,15 @@ import { create } from 'zustand'
 
 export interface ProgressState {
 
-    working : number;
+    activity : Set<string>;
 
-    incWorking : () => void;
-    decWorking : () => void;
+//    working : () => number;
+
+//    incWorking : () => void;
+//    decWorking : () => void;
+
+    addActivity : (act : string) => void;
+    removeActivity : (act : string) => void;
 
 }
 
@@ -14,15 +19,25 @@ export const useProgressStateStore = create<ProgressState>()(
 
     (set) => ({
 
-        working: 0,
+        activity : new Set<string>(),
 
-        incWorking: () => set((state) => ({
-	    working: state.working + 1,
-	})),
+        addActivity: (act) => set((state) => {
+            let n = new Set(state.activity);
+            n.add(act);
+            return {
+                ...state,
+                activity: n,
+            };
+        }),
 
-        decWorking: () => set((state) => ({
-	    working: state.working - 1,
-	})),
+        removeActivity: (act) => set((state) => {
+            let n = new Set(state.activity);
+            n.delete(act);
+            return {
+                ...state,
+                activity: n,
+            };
+        })
 
     })
 

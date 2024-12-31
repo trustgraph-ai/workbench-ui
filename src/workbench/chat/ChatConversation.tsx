@@ -27,8 +27,12 @@ const ChatConversation : React.FC <ChatConversationProps> = ({
     const input = useChatStateStore((state) => state.input);
     const setInput = useChatStateStore((state) => state.setInput);
 
-    const incWorking = useProgressStateStore((state) => state.incWorking);
-    const decWorking = useProgressStateStore((state) => state.decWorking);
+    const addActivity = useProgressStateStore(
+        (state) => state.addActivity
+    );
+    const removeActivity = useProgressStateStore(
+        (state) => state.removeActivity
+    );
 
     const setEntities = useWorkbenchStateStore((state) => state.setEntities);
       
@@ -36,8 +40,11 @@ const ChatConversation : React.FC <ChatConversationProps> = ({
 
         addMessage("human", input);
 
-        incWorking();
-        incWorking();
+        const ragActivity = "Graph RAG: " + input;
+        const embActivity = "Find entities: " + input;
+
+        addActivity(ragActivity);
+        addActivity(embActivity);
 
 /*
         socket.agent(
@@ -64,7 +71,7 @@ const ChatConversation : React.FC <ChatConversationProps> = ({
             (text : string) => {
                 addMessage("ai", text);
                 setInput("");
-                decWorking();
+                removeActivity(ragActivity);
             }
         ).catch(
             (err) => {
@@ -72,7 +79,7 @@ const ChatConversation : React.FC <ChatConversationProps> = ({
 
                 addMessage("ai", err.toString());
                 setInput("");
-                decWorking();
+                removeActivity(ragActivity);
 
             }
         );
@@ -126,7 +133,7 @@ const ChatConversation : React.FC <ChatConversationProps> = ({
 
                 setEntities(entities);
 
-                decWorking();
+                removeActivity(embActivity);
 
             }
 
@@ -135,7 +142,7 @@ const ChatConversation : React.FC <ChatConversationProps> = ({
                 console.log("Graph embeddings error:", err);
 
                 addMessage("ai", err.toString());
-                decWorking();
+                removeActivity(embActivity);
             }
         );
 

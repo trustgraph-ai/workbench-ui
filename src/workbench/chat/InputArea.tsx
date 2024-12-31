@@ -17,7 +17,7 @@ const InputArea : React.FC <InputAreaProps> = ({
 
     const input = useChatStateStore((state) => state.input);
     const setInput = useChatStateStore((state) => state.setInput);
-    const working = useProgressStateStore((state) => state.working);
+    const activity = useProgressStateStore((state) => state.activity);
 
     const inputRef = useRef<HTMLInputElement>(null);
 
@@ -50,7 +50,7 @@ const InputArea : React.FC <InputAreaProps> = ({
                             <Button
                                 type="submit"
                                 variant="contained"
-                                disabled={working > 0}
+                                disabled={activity.size > 0}
                                 endIcon={<Send/>}
                                 sx={{ ml: 1 }}
                             >
@@ -59,7 +59,7 @@ const InputArea : React.FC <InputAreaProps> = ({
                         </Box>
                         <Box sx={{ m: 1, position: 'relative' }}>
 
-                            {(working > 0) && <CircularProgress
+                            {(activity.size > 0) && <CircularProgress
                                 size={24}
                                 sx={{
                                     color: 'gray',

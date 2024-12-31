@@ -1,6 +1,5 @@
 
 import { create } from 'zustand'
-import { Message } from './Message';
 import { Row } from './row';
 
 export interface SearchState {

@@ -1,9 +1,13 @@
 
 import React from 'react';
 
-import { Typography, Box, Stack } from '@mui/material';
+import { Typography, Box, Stack, CircularProgress } from '@mui/material';
+
+import { useProgressStateStore } from './state/ProgressState';
 
 const Banner : React.FC = () => {
+
+    const activity = useProgressStateStore((state) => state.activity);
 
     return (
 
@@ -21,6 +25,20 @@ const Banner : React.FC = () => {
                 <Typography variant="h4" component="h1">
                     TrustGraph Data Workbench
                 </Typography>
+                <Box>
+                { (activity.size > 0) &&
+                    <Box>
+                    stuff happening
+                    <br/>
+                    { Array.from(activity).join(" + ") }
+                    </Box>
+                }
+                </Box>
+                <Box>
+                { (activity.size > 0) &&
+                    <CircularProgress size="2rem"/>
+                }
+                </Box>
         </Stack>
     );
 
