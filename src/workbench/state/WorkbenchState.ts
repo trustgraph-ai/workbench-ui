@@ -1,20 +1,13 @@
 
 import { create } from 'zustand'
-import { Message } from './Message';
 import { Entity } from './Entity';
 
 export interface WorkbenchState {
 
-    messages : Message[];
-    input : string;
     working : number;
     selected? : Entity;
     tool : string;
     entities : Entity[];
-
-    setMessages : (v : Message[]) => void;
-    addMessage : (role : string, text : string) => void;
-    setInput : (v : string) => void;
 
     incWorking : () => void;
     decWorking : () => void;
@@ -31,15 +24,6 @@ export const useWorkbenchStateStore = create<WorkbenchState>()(
 
     (set) => ({
 
-        messages: [
-            {
-                role: "ai",
-                text: "Welcome to TrustGraph system chat. What data would you like to explore?",
-            },
-        ],
-
-        input: "",
-
         working: 0,
 
         selected : undefined,
@@ -47,24 +31,6 @@ export const useWorkbenchStateStore = create<WorkbenchState>()(
         tool : "chat",
 
         entities : [],
-
-        setMessages: (v) => set(() => ({
-	    messages: v,
-	})),
-
-        addMessage: (role: string, text : string) => set((state) => ({
-	    messages: [
-                ...state.messages, 
-                {
-                    role: role,
-                    text: text,
-                }
-            ]
-	})),
-
-        setInput: (v) => set(() => ({
-	    input: v,
-	})),
 
         incWorking: () => set((state) => ({
 	    working: state.working + 1,

@@ -5,6 +5,7 @@ import { Box, Button, TextField, CircularProgress } from '@mui/material';
 
 import { Send } from '@mui/icons-material';
 import { useWorkbenchStateStore } from '../state/WorkbenchState';
+import { useChatStateStore } from '../state/ChatState';
 
 interface InputAreaProps {
     onSubmit : () => void;
@@ -14,8 +15,8 @@ const InputArea : React.FC <InputAreaProps> = ({
     onSubmit
 }) => {
 
-    const input = useWorkbenchStateStore((state) => state.input);
-    const setInput = useWorkbenchStateStore((state) => state.setInput);
+    const input = useChatStateStore((state) => state.input);
+    const setInput = useChatStateStore((state) => state.setInput);
     const working = useWorkbenchStateStore((state) => state.working);
 
     const inputRef = useRef<HTMLInputElement>(null);
