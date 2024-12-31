@@ -10,6 +10,7 @@ import { useSocket } from '../socket/socket';
 import { Entity } from '../state/Entity';
 import { Triple, Value } from '../state/Triple';
 import { useWorkbenchStateStore } from '../state/WorkbenchState';
+import { useProgressStateStore } from '../state/ProgressState';
 import { useChatStateStore } from '../state/ChatState';
 import { RDFS_LABEL } from '../state/knowledge-graph';
 
@@ -26,8 +27,8 @@ const ChatConversation : React.FC <ChatConversationProps> = ({
     const input = useChatStateStore((state) => state.input);
     const setInput = useChatStateStore((state) => state.setInput);
 
-    const incWorking = useWorkbenchStateStore((state) => state.incWorking);
-    const decWorking = useWorkbenchStateStore((state) => state.decWorking);
+    const incWorking = useProgressStateStore((state) => state.incWorking);
+    const decWorking = useProgressStateStore((state) => state.decWorking);
 
     const setEntities = useWorkbenchStateStore((state) => state.setEntities);
       
