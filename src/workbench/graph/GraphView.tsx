@@ -6,6 +6,8 @@ import { Typography, Box } from '@mui/material';
 import { ForceGraph3D } from 'react-force-graph';
 import SpriteText from 'three-spritetext'
 
+import { useProgressStateStore } from '../state/ProgressState';
+
 import { useSocket } from '../socket/socket';
 import { useWorkbenchStateStore } from '../state/WorkbenchState';
 import {
@@ -17,6 +19,13 @@ interface GraphViewProps {
 
 const GraphView : React.FC <GraphViewProps> = ({
 }) => {
+
+    const addActivity = useProgressStateStore(
+        (state) => state.addActivity
+    );
+    const removeActivity = useProgressStateStore(
+        (state) => state.removeActivity
+    );
 
     const socket = useSocket();
 
@@ -32,11 +41,22 @@ const GraphView : React.FC <GraphViewProps> = ({
 
     useEffect(() => {
 
+        const act = "Build subgraph: " + selected.label;
+        addActivity(act);
+
         const sg = createSubgraph();
 
-        updateSubgraph(socket, selected.uri, sg).then(
+        updateSubgraph(
+            socket, selected.uri, sg, addActivity, removeActivity
+        ).then(
             (sg) => {
                 setView(sg);
+                removeActivity(act);
+            }
+        ).catch(
+            (err) => {
+                console.log("Error: ", err);
+                removeActivity(act);
             }
         );
 
@@ -51,9 +71,20 @@ const GraphView : React.FC <GraphViewProps> = ({
 
     const nodeClick = (node : any) => {
 
-        updateSubgraph(socket, node.id, view).then(
+        const act = "Update subgraph: " + node.label;
+        addActivity(act);
+
+        updateSubgraph(
+            socket, node.id, view, addActivity, removeActivity
+        ).then(
             (sg) => {
                 setView(sg);
+                removeActivity(act);
+            }
+        ).catch(
+            (err) => {
+                console.log("Error: ", err);
+                removeActivity(act);
             }
         );
         

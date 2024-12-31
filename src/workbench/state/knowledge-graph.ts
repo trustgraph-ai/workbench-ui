@@ -36,57 +36,144 @@ const predefined : {[k : string] : string} = {
 export const LIMIT = 30;
 
 // Query triples which match URI on 's'
-export const queryS = (socket : Socket, uri : string, limit? : number) => {
-    return socket.triplesQuery(
-        { v: uri, e: true, },
-        undefined,
-        undefined,
-        limit ? limit : LIMIT,
-    );
-};
+export const queryS =
+    (
+        socket : Socket, uri : string,
+        add : (s : string) => void, remove : (s : string) => void,
+        limit? : number
+    ) => {
+
+        const act = "Query S: " + uri;
+        add(act);
+
+        return socket.triplesQuery(
+            { v: uri, e: true, },
+            undefined,
+            undefined,
+            limit ? limit : LIMIT,
+        ).then(
+            (x) => {
+                remove(act);
+                return x;
+            }
+        ).catch(
+            (err) => {
+                remove(act);
+                throw err;
+            }
+        );
+        
+
+    };
 
 // Query triples which match URI on 'p'
-export const queryP = (socket : Socket, uri : string, limit? : number) => {
-    return socket.triplesQuery(
-        undefined,
-        { v: uri, e: true, },
-        undefined,
-        limit ? limit : LIMIT,
-    );
-};
+export const queryP =
+    (
+        socket : Socket, uri : string,
+        add : (s : string) => void, remove : (s : string) => void,
+        limit? : number
+    ) => {
+
+        const act = "Query P: " + uri;
+        add(act);
+
+        return socket.triplesQuery(
+            undefined,
+            { v: uri, e: true, },
+            undefined,
+            limit ? limit : LIMIT,
+        ).then(
+            (x) => {
+                remove(act);
+                return x;
+            }
+        ).catch(
+            (err) => {
+                remove(act);
+                throw err;
+            }
+        );
+    };
 
 // Query triples which match URI on 'o'
-export const queryO = (socket : Socket, uri : string, limit? : number) => {
-    return socket.triplesQuery(
-        undefined,
-        undefined,
-        { v: uri, e: true, },
-        limit ? limit : LIMIT,
-    );
-};
+export const queryO =
+    (
+        socket : Socket, uri : string,
+        add : (s : string) => void, remove : (s : string) => void,
+        limit? : number
+    ) => {
+
+        const act = "Query O: " + uri;
+        add(act);
+
+        return socket.triplesQuery(
+            undefined,
+            undefined,
+            { v: uri, e: true, },
+            limit ? limit : LIMIT,
+        ).then(
+            (x) => {
+                remove(act);
+                return x;
+            }
+        ).catch(
+            (err) => {
+                remove(act);
+                throw err;
+            }
+        );
+
+    };
 
 // Query triples which match URI on 's', 'p' or 'o'.
-export const query = (socket : Socket, uri : string, limit? : number) => {
-    return Promise.all([
-        queryS(socket, uri, limit),
-        queryP(socket, uri, limit),
-        queryO(socket, uri, limit),
-    ]).then(
-        (resp) => {
-            return resp[0].concat(resp[1]).concat(resp[2]);
-        }
-    );
-};
+export const query =
+    (
+        socket : Socket, uri : string,
+        add : (s : string) => void, remove : (s : string) => void,
+        limit? : number
+    ) => {
+
+        const act = "Query: " + uri;
+        add(act);
+
+        return Promise.all([
+            queryS(socket, uri, add, remove, limit),
+            queryP(socket, uri, add, remove, limit),
+            queryO(socket, uri, add, remove, limit),
+        ]).then(
+            (resp) => {
+                return resp[0].concat(resp[1]).concat(resp[2]);
+            }
+        ).then(
+            (x) => {
+                remove(act);
+                return x;
+            }
+        ).catch(
+            (err) => {
+                remove(act);
+                throw err;
+            }
+        );
+
+    };
 
 // Convert a URI to its label by querying the graph store, returns a
 // promise
 export const queryLabel =
-    (socket : Socket, uri : string) : Promise<string> => {
+    (
+        socket : Socket, uri : string,
+        add : (s : string) => void, remove : (s : string) => void
+    ) : Promise<string> => {
+
+        const act = "Label " + uri;
 
         // If the URI is in the pre-defined list, just return that
         if (uri in predefined) {
             return new Promise((s) => s(predefined[uri]));
         }
+
+        add(act);
 
         // Search tthe graph for the URI->label relationship
         return socket.triplesQuery(
@@ -104,91 +191,113 @@ export const queryLabel =
                 else
                     return uri;
             }
+        ).then(
+            (x) => {
+                remove(act);
+                return x;
+            }
+        ).catch(
+            (err) => {
+                remove(act);
+                throw err;
+            }
         );
 
     };
 
 // Add 'label' elements to 's' elements in a list of triples.
 // Returns a promise
-export const labelS = (socket : Socket, triples : Triple[]) => {
-    return Promise.all(
-        triples.map(
-            (t) => {
-                return queryLabel(socket, t.s.v).then(
-                    (label : string) => {
-                        return {
-                            ...t,
-                            s: {
-                                ...t.s,
-                                label: label,
-                            },
-                        };
-                    }
-                )
-            }
-        )
-    );
-};
-
-// Add 'label' elements to 'p' elements in a list of triples.
-// Returns a promise
-export const labelP = (socket : Socket, triples : Triple[]) => {
-    return Promise.all(
-        triples.map(
-            (t) => {
-                return queryLabel(socket, t.p.v).then(
-                    (label : string) => {
-                        return {
-                            ...t,
-                            p: {
-                                ...t.p,
-                                label: label,
-                            },
-                        };
-                    }
-                )
-            }
-        )
-    );
-};
-
-// Add 'label' elements to 'o' elements in a list of triples.
-// Returns a promise
-export const labelO = (socket : Socket, triples : Triple[]) => {
-    return Promise.all(
-        triples.map(
-            (t) => {
-
-                // If the 'o' element is a entity, do a label lookup, else
-                // just use the literal value for its label
-                if (t.o.e) 
-                    return queryLabel(socket, t.o.v).then(
+export const labelS =
+    (
+        socket : Socket, triples : Triple[],
+        add : (s : string) => void, remove : (s : string) => void
+    ) => {
+        return Promise.all(
+            triples.map(
+                (t) => {
+                    return queryLabel(socket, t.s.v, add, remove).then(
                         (label : string) => {
                             return {
                                 ...t,
-                                o: {
-                                    ...t.o,
+                                s: {
+                                    ...t.s,
                                     label: label,
                                 },
                             };
                         }
-                    );
-                else
-                    return new Promise(
-                        (resolve) => {
-                            resolve({
+                    )
+                }
+            )
+        );
+    };
+
+// Add 'label' elements to 'p' elements in a list of triples.
+// Returns a promise
+export const labelP =
+    (
+        socket : Socket, triples : Triple[],
+        add : (s : string) => void, remove : (s : string) => void
+    ) => {
+        return Promise.all(
+            triples.map(
+                (t) => {
+                    return queryLabel(socket, t.p.v, add, remove).then(
+                        (label : string) => {
+                            return {
                                 ...t,
-                                o: {
-                                    ...t.o,
-                                    label: t.o.v,
+                                p: {
+                                    ...t.p,
+                                    label: label,
                                 },
-                            });
+                            };
                         }
-                    );
-            }
-        )
-    );
-};
+                    )
+                }
+            )
+        );
+    };
+
+// Add 'label' elements to 'o' elements in a list of triples.
+// Returns a promise
+export const labelO =
+    (
+        socket : Socket, triples : Triple[],
+        add : (s : string) => void, remove : (s : string) => void,
+    ) => {
+        return Promise.all(
+            triples.map(
+                (t) => {
+
+                    // If the 'o' element is a entity, do a label lookup, else
+                    // just use the literal value for its label
+                    if (t.o.e) 
+                        return queryLabel(socket, t.o.v, add, remove).then(
+                            (label : string) => {
+                                return {
+                                    ...t,
+                                    o: {
+                                        ...t.o,
+                                        label: label,
+                                    },
+                                };
+                            }
+                        );
+                    else
+                        return new Promise(
+                            (resolve) => {
+                                resolve({
+                                    ...t,
+                                    o: {
+                                        ...t.o,
+                                        label: t.o.v,
+                                    },
+                                });
+                            }
+                        );
+                }
+            )
+        );
+    };
 
 // Triple filter
 export const filter =
@@ -207,22 +316,26 @@ export const filterInternals =
 // and provides over-arching uri/label props for the input URI
 export const getTriples =
 
-    (socket : Socket, uri : string) => {
+    (
+        socket : Socket, uri : string,
+        add : (s : string) => void, remove : (s : string) => void,
+        limit? : number
+    ) => {
 
     // FIXME: Cache more
     // FIXME: Too many queries
 
-    return query(socket, uri).then(
-        (d) => labelS(socket, d)
+    return query(socket, uri, add, remove, limit).then(
+        (d) => labelS(socket, d, add, remove)
     ).then(
-        (d) => labelP(socket, d)
+        (d) => labelP(socket, d, add, remove)
     ).then(
-        (d) => labelO(socket, d)
+        (d) => labelO(socket, d, add, remove)
     ).then(
         (d) => filterInternals(d)
     ).then(
         (d) => {
-            return queryLabel(socket, uri).then(
+            return queryLabel(socket, uri, add, remove).then(
                 (label : string) => {
                      return {
                           triples: d,

@@ -4,7 +4,8 @@ import React, { useRef } from 'react';
 import { Box, Button, TextField, CircularProgress } from '@mui/material';
 
 import { Send } from '@mui/icons-material';
-import { useWorkbenchStateStore } from '../state/WorkbenchState';
+import { useProgressStateStore } from '../state/ProgressState';
+import { useChatStateStore } from '../state/ChatState';
 
 interface InputAreaProps {
     onSubmit : () => void;
@@ -14,9 +15,9 @@ const InputArea : React.FC <InputAreaProps> = ({
     onSubmit
 }) => {
 
-    const input = useWorkbenchStateStore((state) => state.input);
-    const setInput = useWorkbenchStateStore((state) => state.setInput);
-    const working = useWorkbenchStateStore((state) => state.working);
+    const input = useChatStateStore((state) => state.input);
+    const setInput = useChatStateStore((state) => state.setInput);
+    const activity = useProgressStateStore((state) => state.activity);
 
     const inputRef = useRef<HTMLInputElement>(null);
 
@@ -49,7 +50,7 @@ const InputArea : React.FC <InputAreaProps> = ({
                             <Button
                                 type="submit"
                                 variant="contained"
-                                disabled={working > 0}
+                                disabled={activity.size > 0}
                                 endIcon={<Send/>}
                                 sx={{ ml: 1 }}
                             >
@@ -58,7 +59,7 @@ const InputArea : React.FC <InputAreaProps> = ({
                         </Box>
                         <Box sx={{ m: 1, position: 'relative' }}>
 
-                            {(working > 0) && <CircularProgress
+                            {(activity.size > 0) && <CircularProgress
                                 size={24}
                                 sx={{
                                     color: 'gray',

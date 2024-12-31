@@ -11,6 +11,7 @@ import Url from './Url';
 import Keywords from './Keywords';
 import Operation from './Operation';
 import Content from './Content';
+import { useProgressStateStore } from '../state/ProgressState';
 
 const RDF_TYPE = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
 const RDFS_LABEL = "http://www.w3.org/2000/01/rdf-schema#label";
@@ -23,6 +24,13 @@ interface LoadProps {
 
 const Load : React.FC <LoadProps> = ({
 }) => {
+
+    const addActivity = useProgressStateStore(
+        (state) => state.addActivity
+    );
+    const removeActivity = useProgressStateStore(
+        (state) => state.removeActivity
+    );
 
     const socket = useSocket();
 
@@ -115,6 +123,14 @@ const Load : React.FC <LoadProps> = ({
                     .replace('data:', '')
                     .replace(/^.+,/, '');
 
+                let act;
+                if (title != "")
+                    act = "Upload document: " + title;
+                else
+                    act = "Upload document";
+
+                addActivity(act);
+
                 if (operation == "upload-pdf") {
 
                     socket.loadDocument(
@@ -122,9 +138,11 @@ const Load : React.FC <LoadProps> = ({
                     ).then(
                         (_x) => {
                             handleFileSuccess(file);
+                            removeActivity(act);
                         }
                     ).catch(
                         (e) => {
+                            removeActivity(act);
                             console.log("Error:", e);
                         }
                     );
@@ -138,9 +156,11 @@ const Load : React.FC <LoadProps> = ({
                     ).then(
                         (_x) => {
                             handleFileSuccess(file);
+                            removeActivity(act);
                         }
                     ).catch(
                         (e) => {
+                            removeActivity(act);
                             console.log("Error:", e);
                         }
                     );
@@ -154,7 +174,6 @@ const Load : React.FC <LoadProps> = ({
         }
 
     }
-
 
     const b64encode = (input : any) => {
         return btoa(encodeURIComponent(input).replace(
@@ -172,15 +191,25 @@ const Load : React.FC <LoadProps> = ({
 
         const encoded = b64encode(text);
 
+        let act;
+        if (title != "")
+            act = "Upload text: " + title;
+        else
+            act = "Upload text";
+
+        addActivity(act);
+
         // Must be upload-text
         socket.loadText(
             encoded, doc_id, doc_meta
         ).then(
             (_x) => {
+                removeActivity(act);
                 setText("");
             }
         ).catch(
             (e) => {
+                removeActivity(act);
                 console.log("Error:", e);
             }
         );

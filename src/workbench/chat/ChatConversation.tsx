@@ -10,6 +10,8 @@ import { useSocket } from '../socket/socket';
 import { Entity } from '../state/Entity';
 import { Triple, Value } from '../state/Triple';
 import { useWorkbenchStateStore } from '../state/WorkbenchState';
+import { useProgressStateStore } from '../state/ProgressState';
+import { useChatStateStore } from '../state/ChatState';
 import { RDFS_LABEL } from '../state/knowledge-graph';
 
 interface ChatConversationProps {
@@ -20,13 +22,17 @@ const ChatConversation : React.FC <ChatConversationProps> = ({
 
     const socket = useSocket();
 
-    const addMessage = useWorkbenchStateStore((state) => state.addMessage);
+    const addMessage = useChatStateStore((state) => state.addMessage);
 
-    const input = useWorkbenchStateStore((state) => state.input);
-    const setInput = useWorkbenchStateStore((state) => state.setInput);
+    const input = useChatStateStore((state) => state.input);
+    const setInput = useChatStateStore((state) => state.setInput);
 
-    const incWorking = useWorkbenchStateStore((state) => state.incWorking);
-    const decWorking = useWorkbenchStateStore((state) => state.decWorking);
+    const addActivity = useProgressStateStore(
+        (state) => state.addActivity
+    );
+    const removeActivity = useProgressStateStore(
+        (state) => state.removeActivity
+    );
 
     const setEntities = useWorkbenchStateStore((state) => state.setEntities);
       
@@ -34,8 +40,11 @@ const ChatConversation : React.FC <ChatConversationProps> = ({
 
         addMessage("human", input);
 
-        incWorking();
-        incWorking();
+        const ragActivity = "Graph RAG: " + input;
+        const embActivity = "Find entities: " + input;
+
+        addActivity(ragActivity);
+        addActivity(embActivity);
 
 /*
         socket.agent(
@@ -62,7 +71,7 @@ const ChatConversation : React.FC <ChatConversationProps> = ({
             (text : string) => {
                 addMessage("ai", text);
                 setInput("");
-                decWorking();
+                removeActivity(ragActivity);
             }
         ).catch(
             (err) => {
@@ -70,8 +79,7 @@ const ChatConversation : React.FC <ChatConversationProps> = ({
 
                 addMessage("ai", err.toString());
                 setInput("");
-                decWorking();
-
+                removeActivity(ragActivity);
             }
         );
 
@@ -124,7 +132,7 @@ const ChatConversation : React.FC <ChatConversationProps> = ({
 
                 setEntities(entities);
 
-                decWorking();
+                removeActivity(embActivity);
 
             }
 
@@ -133,7 +141,7 @@ const ChatConversation : React.FC <ChatConversationProps> = ({
                 console.log("Graph embeddings error:", err);
 
                 addMessage("ai", err.toString());
-                decWorking();
+                removeActivity(embActivity);
             }
         );
 

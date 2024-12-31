@@ -113,15 +113,16 @@ export const updateSubgraphTriples = (
 };
 
 export const updateSubgraph = (
-    socket : Socket, uri : string, sg : Subgraph
+    socket : Socket, uri : string, sg : Subgraph,
+    add : (s : string) => void, remove : (s : string) => void
 ) => {
 
-    return query(socket, uri).then(
-        (d) => labelS(socket, d)
+    return query(socket, uri, add, remove).then(
+        (d) => labelS(socket, d, add, remove)
     ).then(
-        (d) => labelP(socket, d)
+        (d) => labelP(socket, d, add, remove)
     ).then(
-        (d) => labelO(socket, d)
+        (d) => labelO(socket, d, add, remove)
     ).then(
         (d) => filterInternals(d)
     ).then(
