@@ -1,7 +1,7 @@
 
 import React from 'react';
 
-import { Box, CircularProgress } from '@mui/material';
+import { Box, CircularProgress, Typography } from '@mui/material';
 
 import Banner from './Banner.tsx';
 import Workspace from './Workspace.tsx';
@@ -62,9 +62,14 @@ const Workbench : React.FC = () => {
                         {
                             Array.from(activity).slice(0, 4).map(
                                 (a, ix) =>
-                                    <Box key={ix}>
+                                    <Typography
+                                        key={ix}
+                                        variant="body1"
+                                        sx={{ fontSize: 12 }}
+                                        size="small"
+                                    >
                                          {a}...
-                                    </Box>
+                                    </Typography>
                             )
                         }
                 </Box>
