@@ -3,6 +3,8 @@ import React from 'react';
 
 import { Box, Button, Link, TextField, Paper } from '@mui/material';
 
+import { useProgressStateStore } from '../state/ProgressState';
+
 import {
     Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
 } from '@mui/material';
@@ -24,6 +26,15 @@ interface SearchProps {
 const Search : React.FC <SearchProps> = ({
 }) => {
 
+    const addActivity = useProgressStateStore(
+        (state) => state.addActivity
+    );
+    const removeActivity = useProgressStateStore(
+        (state) => state.removeActivity
+    );
+
+    const activity = useProgressStateStore((state) => state.activity);
+
     const socket = useSocket();
 
     const setSelected = useWorkbenchStateStore((state) => state.setSelected);
@@ -42,6 +53,9 @@ const Search : React.FC <SearchProps> = ({
 
     const submit : React.FormEventHandler<HTMLFormElement> = (e) => {
 
+        const searchAct = "Search: " + search;
+        addActivity(searchAct);
+
         socket.embeddings(search).then(
             getGraphEmbeddings(socket, 10)
         ).then(
@@ -55,7 +69,15 @@ const Search : React.FC <SearchProps> = ({
         ).then(
             sortSimilarity()
         ).then(
-            (x) => { setView(x); }
+            (x) => {
+                setView(x);
+                removeActivity(searchAct);
+            }
+        ).catch(
+            (err) => {
+                console.log("Error: ", err);
+                removeActivity(searchAct);
+            }
         );
 
         e.preventDefault();

@@ -11,6 +11,8 @@ import { getTriples } from '../state/knowledge-graph';
 
 import { Value } from '../state/Triple';
 
+import { useProgressStateStore } from '../state/ProgressState';
+
 interface EntityDetailProps {
 }
 
@@ -79,6 +81,15 @@ const EntityNode : React.FC<{value : Value}> = ({value}) => {
 const EntityDetail : React.FC <EntityDetailProps> = ({
 }) => {
 
+    const addActivity = useProgressStateStore(
+        (state) => state.addActivity
+    );
+    const removeActivity = useProgressStateStore(
+        (state) => state.removeActivity
+    );
+
+    const activity = useProgressStateStore((state) => state.activity);
+
     const socket = useSocket();
 
     const selected = useWorkbenchStateStore((state) => state.selected);
@@ -96,9 +107,18 @@ const EntityDetail : React.FC <EntityDetailProps> = ({
 
     useEffect(() => {
 
+        const act = "Knowledge graph search: " + selected.label;
+        addActivity(act);
+
         getTriples(socket, selected.uri).then(
             (d) => {
                 setDetail(d);
+                removeActivity(act);
+            }
+        ).catch(
+            (err) => {
+                console.log("Error: ", err);
+                removeActivity(searchAct);
             }
         );
 
