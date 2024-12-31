@@ -10,11 +10,10 @@ import { useSocket } from '../socket/socket';
 import { Entity } from '../state/Entity';
 import { Triple, Value } from '../state/Triple';
 import { useWorkbenchStateStore } from '../state/WorkbenchState';
+import { RDFS_LABEL } from '../state/knowledge-graph';
 
 interface ChatConversationProps {
 };
-
-const RDFS_LABEL = "http://www.w3.org/2000/01/rdf-schema#label"
 
 const ChatConversation : React.FC <ChatConversationProps> = ({
 }) => {
