@@ -1,8 +1,5 @@
 
-import React, { useState, useRef, useEffect } from 'react';
-
-import { ForceGraph2D } from 'react-force-graph';
-import SpriteText from 'three-spritetext'
+import React, { useState } from 'react';
 
 import { Box, Button, Link, TextField, Paper } from '@mui/material';
 
@@ -16,12 +13,19 @@ import { useSocket } from '../socket/socket';
 import { useWorkbenchStateStore } from '../state/WorkbenchState';
 import { RDFS_LABEL, SKOS_DEFINITION } from '../state/knowledge-graph';
 
-import { Value, Triple } from '../state/Triple';
-import { Entity } from '../state/Entity';
+import { Value } from '../state/Triple';
 
 import similarity from 'compute-cosine-similarity';
 
 //import {TSNE} from '@keckelt/tsne';
+
+interface Row {
+    uri : string,
+    label : string,
+    description? : string,
+    embeddings? : number[],
+    similarity? : number,
+};
 
 interface SearchProps {
 }
@@ -94,7 +98,7 @@ const Search : React.FC <SearchProps> = ({
             (entities : any[]) => {
                 return Promise.all<any>(
                     entities.map(
-                        (ent : Value) =>
+                        (ent) =>
                             socket.triplesQuery(
                                 { v: ent.uri, e : true },
                                 { v: SKOS_DEFINITION, e: true, },
@@ -122,7 +126,7 @@ const Search : React.FC <SearchProps> = ({
             (entities : any[]) => {
                 return Promise.all<any[]>(
                     entities.map(
-                        (ent : Entity) => {
+                        (ent) => {
 
                             let text = "";
                             if (ent.description != "")
@@ -161,7 +165,7 @@ const Search : React.FC <SearchProps> = ({
                             uri: ent.uri,
                             label: ent.label,
                             description: ent.description,
-                            similarity: sim.toFixed(2),
+                            similarity: (sim ? sim : -1).toFixed(2),
                         };
                     }
                 )
@@ -237,7 +241,7 @@ const Search : React.FC <SearchProps> = ({
                         </TableHead>
                         <TableBody>
                             {
-                                view.map((row) => (
+                                view.map((row : Row) => (
                                     <TableRow
                                       key={row.uri}
                                       sx={{
