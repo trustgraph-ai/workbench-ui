@@ -9,7 +9,7 @@ import { useSocket } from '../socket/socket';
 import { useWorkbenchStateStore } from '../state/WorkbenchState';
 import { getTriples } from '../state/knowledge-graph';
 
-import { Value } from './state/Triple';
+import { Value } from '../state/Triple';
 
 interface EntityDetailProps {
 }
