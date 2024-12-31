@@ -110,7 +110,7 @@ const EntityDetail : React.FC <EntityDetailProps> = ({
         const act = "Knowledge graph search: " + selected.label;
         addActivity(act);
 
-        getTriples(socket, selected.uri).then(
+        getTriples(socket, selected.uri, addActivity, removeActivity).then(
             (d) => {
                 setDetail(d);
                 removeActivity(act);
@@ -118,7 +118,7 @@ const EntityDetail : React.FC <EntityDetailProps> = ({
         ).catch(
             (err) => {
                 console.log("Error: ", err);
-                removeActivity(searchAct);
+                removeActivity(act);
             }
         );
 

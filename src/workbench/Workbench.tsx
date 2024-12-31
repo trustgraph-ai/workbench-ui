@@ -60,7 +60,7 @@ const Workbench : React.FC = () => {
                     }}
                 >
                         {
-                            Array.from(activity).slice(0, 3).map(
+                            Array.from(activity).slice(0, 4).map(
                                 (a, ix) =>
                                     <Box key={ix}>
                                          {a}...
