@@ -48,7 +48,9 @@ const GraphView : React.FC <GraphViewProps> = ({
 
         const sg = createSubgraph();
 
-        updateSubgraph(socket, selected.uri, sg).then(
+        updateSubgraph(
+            socket, selected.uri, sg, addActivity, removeActivity
+        ).then(
             (sg) => {
                 setView(sg);
                 removeActivity(act);
@@ -74,7 +76,9 @@ const GraphView : React.FC <GraphViewProps> = ({
         const act = "Update subgraph: " + node.label;
         addActivity(act);
 
-        updateSubgraph(socket, node.id, view).then(
+        updateSubgraph(
+            socket, node.id, view, addActivity, removeActivity
+        ).then(
             (sg) => {
                 setView(sg);
                 removeActivity(act);

@@ -300,7 +300,7 @@ export const getTriples =
     ).then(
         (d) => labelO(socket, d, add, remove)
     ).then(
-        (d) => filterInternals(d, add, remove)
+        (d) => filterInternals(d)
     ).then(
         (d) => {
             return queryLabel(socket, uri, add, remove).then(
