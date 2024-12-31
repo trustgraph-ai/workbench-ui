@@ -11,8 +11,6 @@ import { Send } from '@mui/icons-material';
 
 import { useSocket } from '../socket/socket';
 import { useWorkbenchStateStore } from '../state/WorkbenchState';
-import { RDFS_LABEL, SKOS_DEFINITION } from '../state/knowledge-graph';
-import { Value } from '../state/Triple';
 import {
     Row, getGraphEmbeddings, addRowLabels, addRowDefinitions,
     addRowEmbeddings, computeCosineSimilarity, sortSimilarity,
@@ -138,7 +136,7 @@ const Search : React.FC <SearchProps> = ({
                                             {row.description}
                                         </TableCell>
                                         <TableCell>
-                                            {row.similarity.toFixed(2)}
+                                            {row.similarity!.toFixed(2)}
                                         </TableCell>
                                     </TableRow>
                                 ))

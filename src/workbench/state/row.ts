@@ -1,6 +1,8 @@
 
 import similarity from 'compute-cosine-similarity';
 
+import { Value } from '../state/Triple';
+import { Socket } from '../socket/trustgraph-socket';
 import { RDFS_LABEL, SKOS_DEFINITION } from '../state/knowledge-graph';
 
 export interface Row {
