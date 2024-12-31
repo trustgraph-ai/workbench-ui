@@ -57,17 +57,17 @@ const Search : React.FC <SearchProps> = ({
         addActivity(searchAct);
 
         socket.embeddings(search).then(
-            getGraphEmbeddings(socket, 10)
+            getGraphEmbeddings(socket, 10, addActivity, removeActivity)
         ).then(
-            addRowLabels(socket)
+            addRowLabels(socket, addActivity, removeActivity)
         ).then(
-            addRowDefinitions(socket)
+            addRowDefinitions(socket, addActivity, removeActivity)
         ).then(
-            addRowEmbeddings(socket)
+            addRowEmbeddings(socket, addActivity, removeActivity)
         ).then(
-            computeCosineSimilarity()
+            computeCosineSimilarity(addActivity, removeActivity)
         ).then(
-            sortSimilarity()
+            sortSimilarity(addActivity, removeActivity)
         ).then(
             (x) => {
                 setView(x);
