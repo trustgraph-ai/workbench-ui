@@ -71,9 +71,18 @@ const GraphView : React.FC <GraphViewProps> = ({
 
     const nodeClick = (node : any) => {
 
+        const act = "Update subgraph: " + node.label;
+        addActivity(act);
+
         updateSubgraph(socket, node.id, view).then(
             (sg) => {
                 setView(sg);
+                removeActivity(act);
+            }
+        ).catch(
+            (err) => {
+                console.log("Error: ", err);
+                removeActivity(act);
             }
         );
         

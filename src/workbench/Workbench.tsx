@@ -33,6 +33,7 @@ const Workbench : React.FC = () => {
                         position: 'absolute',
                         top: 'calc(50% - 3rem)',
                         left: 'calc(50% - 3rem)',
+                        zIndex: 999,
                         m: 0,
                         p: 0,
                     }}
