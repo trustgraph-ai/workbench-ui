@@ -37,7 +37,11 @@ export const LIMIT = 30;
 
 // Query triples which match URI on 's'
 export const queryS =
-    (socket : Socket, uri : string, add, remove, limit? : number) => {
+    (
+        socket : Socket, uri : string,
+        add : (s : string) => void, remove : (s : string) => void,
+        limit? : number
+    ) => {
 
         const act = "Query S: " + uri;
         add(act);
@@ -64,7 +68,11 @@ export const queryS =
 
 // Query triples which match URI on 'p'
 export const queryP =
-    (socket : Socket, uri : string, add, remove, limit? : number) => {
+    (
+        socket : Socket, uri : string,
+        add : (s : string) => void, remove : (s : string) => void,
+        limit? : number
+    ) => {
 
         const act = "Query P: " + uri;
         add(act);
@@ -89,7 +97,11 @@ export const queryP =
 
 // Query triples which match URI on 'o'
 export const queryO =
-    (socket : Socket, uri : string, add, remove, limit? : number) => {
+    (
+        socket : Socket, uri : string,
+        add : (s : string) => void, remove : (s : string) => void,
+        limit? : number
+    ) => {
 
         const act = "Query O: " + uri;
         add(act);
@@ -115,7 +127,11 @@ export const queryO =
 
 // Query triples which match URI on 's', 'p' or 'o'.
 export const query =
-    (socket : Socket, uri : string, add, remove, limit? : number) => {
+    (
+        socket : Socket, uri : string,
+        add : (s : string) => void, remove : (s : string) => void,
+        limit? : number
+    ) => {
 
         const act = "Query: " + uri;
         add(act);
@@ -145,7 +161,10 @@ export const query =
 // Convert a URI to its label by querying the graph store, returns a
 // promise
 export const queryLabel =
-    (socket : Socket, uri : string, add, remove) : Promise<string> => {
+    (
+        socket : Socket, uri : string,
+        add : (s : string) => void, remove : (s : string) => void
+    ) : Promise<string> => {
 
         const act = "Label " + uri;
 
@@ -189,7 +208,10 @@ export const queryLabel =
 // Add 'label' elements to 's' elements in a list of triples.
 // Returns a promise
 export const labelS =
-    (socket : Socket, triples : Triple[], add, remove) => {
+    (
+        socket : Socket, triples : Triple[],
+        add : (s : string) => void, remove : (s : string) => void
+    ) => {
         return Promise.all(
             triples.map(
                 (t) => {
@@ -212,7 +234,10 @@ export const labelS =
 // Add 'label' elements to 'p' elements in a list of triples.
 // Returns a promise
 export const labelP =
-    (socket : Socket, triples : Triple[], add, remove) => {
+    (
+        socket : Socket, triples : Triple[],
+        add : (s : string) => void, remove : (s : string) => void
+    ) => {
         return Promise.all(
             triples.map(
                 (t) => {
@@ -235,7 +260,10 @@ export const labelP =
 // Add 'label' elements to 'o' elements in a list of triples.
 // Returns a promise
 export const labelO =
-    (socket : Socket, triples : Triple[], add, remove) => {
+    (
+        socket : Socket, triples : Triple[],
+        add : (s : string) => void, remove : (s : string) => void,
+    ) => {
         return Promise.all(
             triples.map(
                 (t) => {
@@ -288,7 +316,11 @@ export const filterInternals =
 // and provides over-arching uri/label props for the input URI
 export const getTriples =
 
-    (socket : Socket, uri : string, add, remove, limit? : number) => {
+    (
+        socket : Socket, uri : string,
+        add : (s : string) => void, remove : (s : string) => void,
+        limit? : number
+    ) => {
 
     // FIXME: Cache more
     // FIXME: Too many queries

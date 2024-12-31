@@ -88,8 +88,6 @@ const EntityDetail : React.FC <EntityDetailProps> = ({
         (state) => state.removeActivity
     );
 
-    const activity = useProgressStateStore((state) => state.activity);
-
     const socket = useSocket();
 
     const selected = useWorkbenchStateStore((state) => state.selected);

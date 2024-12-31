@@ -32,8 +32,6 @@ const Load : React.FC <LoadProps> = ({
         (state) => state.removeActivity
     );
 
-    const activity = useProgressStateStore((state) => state.activity);
-
     const socket = useSocket();
 
     const [title, setTitle] = useState<string>("");

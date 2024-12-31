@@ -113,7 +113,8 @@ export const updateSubgraphTriples = (
 };
 
 export const updateSubgraph = (
-    socket : Socket, uri : string, sg : Subgraph, add, remove
+    socket : Socket, uri : string, sg : Subgraph,
+    add : (s : string) => void, remove : (s : string) => void
 ) => {
 
     return query(socket, uri, add, remove).then(

@@ -18,7 +18,11 @@ export interface Row {
 // embeddings, add embedding to each entity row, just an easy
 // place to put it
 export const getGraphEmbeddings =
-    (socket : Socket, limit? : number, add, remove) => {
+    (
+        socket : Socket,
+        add : (s : string) => void, remove : (s : string) => void,
+        limit? : number
+    ) => {
 
     // Take the embeddings, and lookup entities using graph
     // embeddings, add embedding to each entity row, just an easy
@@ -47,7 +51,10 @@ export const getGraphEmbeddings =
 
 // For entities, lookup labels
 export const addRowLabels =
-    (socket : Socket, add, remove) =>
+    (
+        socket : Socket,
+        add : (s : string) => void, remove : (s : string) => void
+    ) =>
 
         (entities : Row[]) : Promise<Row[]> => {
 
@@ -93,7 +100,10 @@ export const addRowLabels =
 
 // For entities, lookup definitions
 export const addRowDefinitions =
-    (socket : Socket, add, remove) =>
+    (
+        socket : Socket,
+        add : (s : string) => void, remove : (s : string) => void,
+    ) =>
 
         // For entities, lookup labels
         (entities : Row[]) => {
@@ -135,7 +145,10 @@ export const addRowDefinitions =
 
 // Compute an embedding for each entity based on its definition or label
 export const addRowEmbeddings =
-    (socket : Socket, add, remove) =>
+    (
+        socket : Socket,
+        add : (s : string) => void, remove : (s : string) => void,
+    ) =>
         (entities : Row[]) => {
             return Promise.all<Row>(
                 entities.map(
@@ -181,7 +194,7 @@ export const addRowEmbeddings =
 // Rest of the procecess is not async, so not adding progress
 
 export const computeCosineSimilarity =
-    (add, remove) =>
+    (_add : (s : string) => void, _remove : (s : string) => void) =>
         (entities : Row[]) : Row[] =>
             entities.map(
                 (ent) => {
@@ -198,7 +211,7 @@ export const computeCosineSimilarity =
             );
 
 export const sortSimilarity =
-    (add, remove) =>
+    (_add : (s : string) => void, _remove : (s : string) => void) =>
         (entities : Row[]) => {
             let arr = Array.from(entities);
             arr.sort(

@@ -13,13 +13,6 @@ import { SocketProvider } from './socket/SocketProvider';
 
 const Workbench : React.FC = () => {
 
-    const addActivity = useProgressStateStore(
-        (state) => state.addActivity
-    );
-    const removeActivity = useProgressStateStore(
-        (state) => state.removeActivity
-    );
-
     const activity = useProgressStateStore((state) => state.activity);
 
     return (
@@ -66,7 +59,6 @@ const Workbench : React.FC = () => {
                                         key={ix}
                                         variant="body1"
                                         sx={{ fontSize: 12 }}
-                                        size="small"
                                     >
                                          {a}...
                                     </Typography>

@@ -33,8 +33,6 @@ const Search : React.FC <SearchProps> = ({
         (state) => state.removeActivity
     );
 
-    const activity = useProgressStateStore((state) => state.activity);
-
     const socket = useSocket();
 
     const setSelected = useWorkbenchStateStore((state) => state.setSelected);
@@ -57,7 +55,7 @@ const Search : React.FC <SearchProps> = ({
         addActivity(searchAct);
 
         socket.embeddings(search).then(
-            getGraphEmbeddings(socket, 10, addActivity, removeActivity)
+            getGraphEmbeddings(socket, addActivity, removeActivity, 10)
         ).then(
             addRowLabels(socket, addActivity, removeActivity)
         ).then(

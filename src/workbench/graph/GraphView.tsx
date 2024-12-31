@@ -27,8 +27,6 @@ const GraphView : React.FC <GraphViewProps> = ({
         (state) => state.removeActivity
     );
 
-    const activity = useProgressStateStore((state) => state.activity);
-
     const socket = useSocket();
 
     const selected = useWorkbenchStateStore((state) => state.selected);
