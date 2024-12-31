@@ -11,6 +11,7 @@ import { Send } from '@mui/icons-material';
 
 import { useSocket } from '../socket/socket';
 import { useWorkbenchStateStore } from '../state/WorkbenchState';
+import { useSearchStateStore } from '../state/SearchState';
 import {
     Row, getGraphEmbeddings, addRowLabels, addRowDefinitions,
     addRowEmbeddings, computeCosineSimilarity, sortSimilarity,
@@ -28,9 +29,11 @@ const Search : React.FC <SearchProps> = ({
     const setSelected = useWorkbenchStateStore((state) => state.setSelected);
     const setTool = useWorkbenchStateStore((state) => state.setTool);
 
-    const [view, setView] = useState<Row[]>([]);
+    const view = useSearchStateStore((state) => state.rows);
+    const setView = useSearchStateStore((state) => state.setRows);
 
-    const [search, setSearch] = useState<string>("");
+    const search = useSearchStateStore((state) => state.input);
+    const setSearch = useSearchStateStore((state) => state.setInput);
 
     const select = (row : Row) => {
         setSelected({ uri: row.uri, label: row.label ? row.label : "n/a" });
