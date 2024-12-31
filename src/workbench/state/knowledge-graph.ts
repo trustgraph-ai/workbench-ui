@@ -190,9 +190,11 @@ export const labelO = (socket : Socket, triples : Triple[]) => {
     );
 };
 
+// Triple filter
 export const filter =
     (triples : any[], fn : any) => triples.filter((t) => fn(t));
 
+// Filter out 'structural' edges nobody needs to see
 export const filterInternals =
     (triples : any[]) => triples.filter(
         (t) => {
@@ -201,6 +203,8 @@ export const filterInternals =
         }
     );
 
+// Generic triple fetcher, fetches triples related to a URI, adds labels
+// and provides over-arching uri/label props for the input URI
 export const getTriples =
 
     (socket : Socket, uri : string) => {
@@ -231,126 +235,3 @@ export const getTriples =
     );
 
 };
-
-interface Node {
-    id : string,
-    label : string,
-    group : number,
-};
-
-interface Link {
-    id : string;
-    source : string;
-    target : string;
-    label : string;
-    value : number;
-};
-
-export interface Subgraph {
-    nodes : Node[];
-    links : Link[];
-};
-
-export const createSubgraph = () : Subgraph => {
-    return {
-        nodes: [],
-        links: [],
-    };
-};
-
-export const updateSubgraphTriples = (
-    sg : Subgraph, triples : Triple[]
-) => {
-
-    const groupId = 1;
-
-    let nodeIds = new Set<string>(sg.nodes.map(n => n.id));
-    let linkIds = new Set<string>(sg.links.map(n => n.id));
-
-    for (let t of triples) {
-
-        // Source has a URI, that can be its unique ID
-        const sourceId = t.s.v;
-
-        // Same for target, unless it's a literal, in which case
-        // use an ID which is unique to this edge so that it gets its
-        // own node
-        const targetId = t.o.e ? t.o.v : (t.s.v + "@@" + t.p.v + "@@" + t.o.e);
-
-        // Links have an ID so that this edge is unique
-        const linkId = (t.s.v + "@@" + t.p.v + "@@" + t.o.e);
-
-        if (!nodeIds.has(sourceId)) {
-            const n : Node = {
-                id: sourceId,
-                label: t.s.label ? t.s.label : "unknown",
-                group: groupId,
-            };
-            nodeIds.add(sourceId);
-            sg = {
-                ...sg,
-                nodes: [
-                    ...sg.nodes,
-                    n,
-                ]
-            }
-        }
-
-        if (!nodeIds.has(targetId)) {
-            const n : Node = {
-                id: targetId,
-                label: t.o.label ? t.o.label : "unknown",
-                group: groupId,
-            };
-            nodeIds.add(targetId);
-            sg = {
-                ...sg,
-                nodes: [
-                    ...sg.nodes,
-                    n,
-                ]
-            }
-        }
-
-        if (!linkIds.has(linkId)) {
-            const l : Link = {
-                source: sourceId,
-                target: targetId,
-                id: linkId,
-                label: t.p.label ? t.p.label : "unknown",
-                value: 1,
-            };
-            linkIds.add(linkId);
-            sg = {
-                ...sg,
-                links: [
-                    ...sg.links,
-                    l,
-                ]
-            }
-        }
-
-    }
-
-    return sg;
-
-};
-
-export const updateSubgraph = (
-    socket : Socket, uri : string, sg : Subgraph
-) => {
-
-    return query(socket, uri).then(
-        (d) => labelS(socket, d)
-    ).then(
-        (d) => labelP(socket, d)
-    ).then(
-        (d) => labelO(socket, d)
-    ).then(
-        (d) => filterInternals(d)
-    ).then(
-        (d) => updateSubgraphTriples(sg, d)
-    );
-
-};
-
