@@ -4,13 +4,17 @@ import React, { useState, useRef, useEffect } from 'react';
 import { ForceGraph2D } from 'react-force-graph';
 import SpriteText from 'three-spritetext'
 
-import { Box, Button, TextField } from '@mui/material';
+import { Box, Button, Link, TextField, Paper } from '@mui/material';
+
+import {
+    Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
+} from '@mui/material';
 
 import { Send } from '@mui/icons-material';
 
 import { useSocket } from '../socket/socket';
 //import { useWorkbenchStateStore } from '../state/WorkbenchState';
-import { RDFS_LABEL } from '../state/knowledge-graph';
+import { RDFS_LABEL, SKOS_DEFINITION } from '../state/knowledge-graph';
 
 import { Value, Triple } from '../state/Triple';
 import { Entity } from '../state/Entity';
@@ -25,8 +29,6 @@ interface DiscoverProps {
 const Discover : React.FC <DiscoverProps> = ({
 }) => {
 
-    const fgRef = useRef<any>();
-
     const socket = useSocket();
 
 //    const selected = useWorkbenchStateStore((state) => state.selected);
@@ -34,18 +36,15 @@ const Discover : React.FC <DiscoverProps> = ({
 
     const [view, setView] = useState<any>({nodes:[], links: []});
 
-    const [search, setSearch] = useState<string>("");
+    const [search, setSearch] = useState<string>("Shuttle");
 
 //    const graphView = () => {
 //        setTool("graph");
 //    };
 
-    useEffect(() => {
-        if (fgRef.current) {
-            fgRef.current.d3Force('charge').strength(-35);
-            fgRef.current.d3Force('center').strength(0.9);
-        }
-    }, []);
+    const select = (x : string) => {
+        console.log(x);
+    }
 
     const submit : React.FormEventHandler<HTMLFormElement> = (e) => {
 
@@ -54,21 +53,39 @@ const Discover : React.FC <DiscoverProps> = ({
             // Take the embeddings, and lookup entities using graph
             // embeddings
             (vecs : number[][]) => {
-                return socket.graphEmbeddingsQuery(vecs, 15);
+                return socket.graphEmbeddingsQuery(vecs, 14).then(
+                    (e) => { return { entities: e, target: vecs[0] }; }
+                );
             }
 
         ).then(
 
             // For entities, lookup labels
-            (entities : Value[]) => {
-                return Promise.all<Triple[]>(
-                    entities.map(
+            (ge : any) => {
+                return Promise.all<any[]>(
+                    ge.entities.map(
                         (ent : Value) =>
                             socket.triplesQuery(
                                 ent,
                                 { v: RDFS_LABEL, e: true, },
                                 undefined,
                                 1
+                            ).then(
+                                (t) => {
+                                    if (t.length < 1) {
+                                        return {
+                                            uri: ent.v,
+                                            label: "",
+                                            target: ge.target,
+                                        };
+                                    } else {
+                                        return {
+                                            uri: ent.v,
+                                            label: t[0].o.v,
+                                            target: ge.target,
+                                        };
+                                    }
+                                }
                             )
                     )
                 );
@@ -76,112 +93,85 @@ const Discover : React.FC <DiscoverProps> = ({
 
         ).then(
 
-            // Convert graph labels to an entity list
-            (responses : Triple[][]) : Entity[] => {
-
-                let entities : Entity[] = [];
-
-                for(let resp of responses) {
-
-                    if (!resp) continue;
-                    if (resp.length < 1) continue;
-
-                    const ent : Entity = {
-                        label: resp[0].o.v,
-                        uri: resp[0].s.v,
-                    };
-
-                    entities.push(ent);
-
-                }
-
-                return entities;
-
+            // For entities, lookup labels
+            (entities : any[]) => {
+                return Promise.all<any>(
+                    entities.map(
+                        (ent : Value) =>
+                            socket.triplesQuery(
+                                { v: ent.uri, e : true },
+                                { v: SKOS_DEFINITION, e: true, },
+                                undefined,
+                                1
+                            ).then(
+                                (t) => {
+                                    if (t.length < 1) {
+                                        return { ...ent, description: "" };
+                                    } else {
+                                        return {
+                                            ...ent,
+                                            description: t[0].o.v,
+                                        };
+                                    }
+                                }
+                            )
+                    )
+                );
             }
 
         ).then(
 
-            (t : Entity[]) => {
+            // Compute an embedding for each entity based on its label
+            (entities : any[]) => {
                 return Promise.all<any[]>(
-                    t.map(
-                        (ent : Entity) =>
-                            socket.embeddings(ent.label).then(
+                    entities.map(
+                        (ent : Entity) => {
+
+                            let text = "";
+                            if (ent.description != "")
+                                text = ent.description;
+                            else
+                                text = ent.label;
+                            
+                            return socket.embeddings(text).then(
                                  (x) => {
                                      if (x && (x.length > 0)) {
                                          return {
-                                             uri: ent.uri,
-                                             label: ent.label,
+                                             ...ent,
                                              embeddings: x[0]
                                          }
                                      } else {
                                          return {
-                                             uri: ent.uri,
-                                             label: ent.label,
+                                             ...ent,
+                                             embeddings: [],
                                          }
                                      };
                                  }
                             )
+                        }
                     )
                 );
             }
 
         ).then(
-            (entities) => {
-
-                console.log(entities);
-
-                let nearest : { [k : number] : number } = {};
-
-                entities.forEach(
-                    (ent, ix) => {
-
-                        let candidate = -1;
-                        let near = 1000000;
-
-                        entities.forEach(
-                            (ent2, ix2) => {
-
-                                const sim = similarity(
-                                    ent.embeddings, ent2.embeddings
-                                );
-
-                                if (sim < near) {
-                                    near = sim;
-                                    candidate = ix2;
-                                }
-
-                            }
-                        );
-
-                        nearest[ix] = candidate;
-
-                    }
-                );
-
-                console.log(nearest);
-
-                const nodes = entities.map(
+            (entities : any[]) =>
+                entities.map(
                     (ent) => {
-                        return { id: ent.uri, label: ent.label };
-                    }
-                );
-
-                const edges = Object.keys(nearest).map(
-                    (src) => {
+                        const sim = similarity(
+                            ent.target, ent.embeddings
+                        );
                         return {
-                            source: entities[src].uri,
-                            target: entities[nearest[src]].uri,
-                            value: 1,
-                            group: 1,
+                            uri: ent.uri,
+                            label: ent.label,
+                            description: ent.description,
+                            similarity: sim.toFixed(2),
                         };
                     }
-                );
-
-                console.log("N", nodes);
-                console.log("E", edges);
-
-                setView({ nodes: nodes, links: edges });
-
+                )
+        ).then(
+            (x) => {
+                console.log(x);
+                setView(x);
             }
         );
 
@@ -228,56 +218,44 @@ const Discover : React.FC <DiscoverProps> = ({
             </Box>
 
             {
-                view &&
-                <Box>
-
-            <ForceGraph2D
-                ref={fgRef}
-                width={900}
-                height={600}
-                graphData={view}
-                nodeLabel="label"
-                nodeAutoColorBy="group"
-
-              nodeCanvasObject={(node, ctx, globalScale) => {
-                const label = node.label;
-                const fontSize = 16/globalScale;
-                ctx.font = `${fontSize}px Sans-Serif`;
-                const textWidth = ctx.measureText(label).width;
-                const bckgDimensions = [textWidth, fontSize].map(
-                    n => n + fontSize * 0.2
-                );
-
-                ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
-                ctx.fillRect(
-                    node.x - bckgDimensions[0] / 2,
-                    node.y - bckgDimensions[1] / 2,
-                    ...bckgDimensions
-                );
-
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                ctx.fillStyle = 'rgba(40, 80, 180, 1)';
-                ctx.fillText(label, node.x, node.y);
-
-                node.__bckgDimensions = bckgDimensions;
-              }}
-
-                onNodeClick={nodeClick}
-
-                linkDirectionalArrowLength={1.5}
-                linkDirectionalArrowRelPos={1}
-                linkPositionUpdate={(sprite, { start, end }) => {
-                    const middlePos = {
-                        x: start.x + (end.x - start.x) / 2,
-                        y: start.y + (end.y - start.y) / 2,
-                        z: start.z + (end.z - start.z) / 2,
-                    };
-                    Object.assign(sprite.position, middlePos);
-                }}
-            />
-
-                </Box>
+                view.length > 0 &&
+    <TableContainer component={Paper}>
+      <Table sx={{ minWidth: 450 }} aria-label="simple table">
+        <TableHead>
+          <TableRow>
+            <TableCell>Entity</TableCell>
+            <TableCell>Description</TableCell>
+            <TableCell>Similarity</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+            {
+                view.map((row) => (
+                    <TableRow
+                      key={row.name}
+                      sx={{
+                          '&:last-child td, &:last-child th': { border: 0 }
+                      }}
+                    >
+                        <TableCell component="th" scope="row">
+                          <Link
+                              align="left"
+                              component="button"
+                              onClick={
+                                  () => select(row.uri)
+                              }
+                          >
+                              {row.label}
+                          </Link>
+                        </TableCell>
+                        <TableCell>{row.description}</TableCell>
+                        <TableCell>{row.similarity}</TableCell>
+                    </TableRow>
+                ))
+            }
+        </TableBody>
+      </Table>
+    </TableContainer>                
             }
 
         </>
