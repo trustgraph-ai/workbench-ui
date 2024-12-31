@@ -5,11 +5,6 @@ export interface ProgressState {
 
     activity : Set<string>;
 
-//    working : () => number;
-
-//    incWorking : () => void;
-//    decWorking : () => void;
-
     addActivity : (act : string) => void;
     removeActivity : (act : string) => void;
 

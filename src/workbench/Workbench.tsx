@@ -61,11 +61,10 @@ const Workbench : React.FC = () => {
                 >
                         {
                             Array.from(activity).slice(0, 3).map(
-                                (a) =>
-                                    <>
+                                (a, ix) =>
+                                    <Box key={ix}>
                                          {a}...
-                                         <br/>
-                                    </>
+                                    </Box>
                             )
                         }
                 </Box>
