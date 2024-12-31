@@ -13,7 +13,7 @@ import {
 import { Send } from '@mui/icons-material';
 
 import { useSocket } from '../socket/socket';
-//import { useWorkbenchStateStore } from '../state/WorkbenchState';
+import { useWorkbenchStateStore } from '../state/WorkbenchState';
 import { RDFS_LABEL, SKOS_DEFINITION } from '../state/knowledge-graph';
 
 import { Value, Triple } from '../state/Triple';
@@ -31,19 +31,16 @@ const Discover : React.FC <DiscoverProps> = ({
 
     const socket = useSocket();
 
-//    const selected = useWorkbenchStateStore((state) => state.selected);
-//    const setTool = useWorkbenchStateStore((state) => state.setTool);
+    const setSelected = useWorkbenchStateStore((state) => state.setSelected);
+    const setTool = useWorkbenchStateStore((state) => state.setTool);
 
     const [view, setView] = useState<any>({nodes:[], links: []});
 
-    const [search, setSearch] = useState<string>("Shuttle");
+    const [search, setSearch] = useState<string>("");
 
-//    const graphView = () => {
-//        setTool("graph");
-//    };
-
-    const select = (x : string) => {
-        console.log(x);
+    const select = (row : any) => {
+        setSelected({ uri: row.uri, label: row.label });
+        setTool("entity");
     }
 
     const submit : React.FormEventHandler<HTMLFormElement> = (e) => {
@@ -53,7 +50,7 @@ const Discover : React.FC <DiscoverProps> = ({
             // Take the embeddings, and lookup entities using graph
             // embeddings
             (vecs : number[][]) => {
-                return socket.graphEmbeddingsQuery(vecs, 14).then(
+                return socket.graphEmbeddingsQuery(vecs, 10).then(
                     (e) => { return { entities: e, target: vecs[0] }; }
                 );
             }
@@ -169,8 +166,15 @@ const Discover : React.FC <DiscoverProps> = ({
                     }
                 )
         ).then(
+            (entities : any[]) => {
+                let arr = Array.from(entities);
+                arr.sort(
+                   (a, b) => (b.similarity - a.similarity)
+                );
+                return arr;
+            }
+        ).then(
             (x) => {
-                console.log(x);
                 setView(x);
             }
         );
@@ -180,14 +184,6 @@ const Discover : React.FC <DiscoverProps> = ({
     }
 
     const working = 0;
-
-    const wrap = (s : string, w : number) => s.replace(
-        new RegExp(`(?![^\\n]{1,${w}}$)([^\\n]{1,${w}})\\s`, 'g'), '$1\n'
-    );
-
-    const nodeClick = (node : any) => {
-    console.log(node);
-    };
 
     return (
         <>
@@ -220,7 +216,10 @@ const Discover : React.FC <DiscoverProps> = ({
             {
                 view.length > 0 &&
     <TableContainer component={Paper}>
-      <Table sx={{ minWidth: 450 }} aria-label="simple table">
+      <Table sx={{ minWidth: 450 }}
+          size="small"
+          aria-label="table of entities"
+      >
         <TableHead>
           <TableRow>
             <TableCell>Entity</TableCell>
@@ -232,7 +231,7 @@ const Discover : React.FC <DiscoverProps> = ({
             {
                 view.map((row) => (
                     <TableRow
-                      key={row.name}
+                      key={row.uri}
                       sx={{
                           '&:last-child td, &:last-child th': { border: 0 }
                       }}
@@ -242,7 +241,7 @@ const Discover : React.FC <DiscoverProps> = ({
                               align="left"
                               component="button"
                               onClick={
-                                  () => select(row.uri)
+                                  () => select(row)
                               }
                           >
                               {row.label}
