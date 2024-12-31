@@ -174,7 +174,7 @@ export class SocketImplementation {
 
             const obj = JSON.parse(message.data);
 
-            console.log("<--", obj);
+//            console.log("<--", obj);
 
             if (!obj.id) return;
 
@@ -303,7 +303,7 @@ export class SocketImplementation {
                 retries: retries,
             };
 
-            console.log("-->", msg);
+//            console.log("-->", msg);
 
             if (this.ws) {
                 this.ws.send(JSON.stringify(msg));

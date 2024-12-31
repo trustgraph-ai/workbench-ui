@@ -3,10 +3,9 @@ import React from 'react';
 
 import { List, ListItemButton, ListItemText } from '@mui/material';
 import { ListItemIcon } from '@mui/material';
-import { ChatBubble } from '@mui/icons-material';
-import ExploreIcon from '@mui/icons-material/Explore';
-import ThreeDRotationIcon from '@mui/icons-material/ThreeDRotation';
-import UploadFileIcon from '@mui/icons-material/UploadFile';
+import {
+    ChatBubble, Explore, ThreeDRotation, UploadFile, Search,
+} from '@mui/icons-material';
 
 import { useWorkbenchStateStore } from './state/WorkbenchState';
 
@@ -37,7 +36,18 @@ const Toolbox : React.FC <ToolboxProps> = ({
                     <ListItemIcon>
                         <ChatBubble/>
                     </ListItemIcon>
-                    <ListItemText primary={'System Chat'}/>
+                    <ListItemText primary={'Chat'}/>
+                </ListItemButton>
+
+                <ListItemButton
+                    key={'search'}
+                    selected={tool == 'search'}
+                    onClick={() => { setTool('search') }}
+                >
+                    <ListItemIcon>
+                        <Search/>
+                    </ListItemIcon>
+                    <ListItemText primary={'Search'}/>
                 </ListItemButton>
 
                 <ListItemButton
@@ -46,9 +56,9 @@ const Toolbox : React.FC <ToolboxProps> = ({
                     onClick={() => { setTool('entity') }}
                 >
                     <ListItemIcon>
-                        <ExploreIcon/>
+                        <Explore/>
                     </ListItemIcon>
-                    <ListItemText primary="Data Explorer"/>
+                    <ListItemText primary="Explore"/>
                 </ListItemButton>
 
                 <ListItemButton
@@ -57,9 +67,9 @@ const Toolbox : React.FC <ToolboxProps> = ({
                     onClick={() => { setTool('graph') }}
                 >
                     <ListItemIcon>
-                        <ThreeDRotationIcon/>
+                        <ThreeDRotation/>
                     </ListItemIcon>
-                    <ListItemText primary="Data Visualizer"/>
+                    <ListItemText primary="Visualize"/>
                 </ListItemButton>
 
                 <ListItemButton
@@ -68,9 +78,9 @@ const Toolbox : React.FC <ToolboxProps> = ({
                     onClick={() => { setTool('load') }}
                 >
                     <ListItemIcon>
-                        <UploadFileIcon/>
+                        <UploadFile/>
                     </ListItemIcon>
-                    <ListItemText primary="Data Loader"/>
+                    <ListItemText primary="Load"/>
                 </ListItemButton>
 
             </List>
