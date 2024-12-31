@@ -23,10 +23,10 @@ import similarity from 'compute-cosine-similarity';
 
 //import {TSNE} from '@keckelt/tsne';
 
-interface DiscoverProps {
+interface SearchProps {
 }
 
-const Discover : React.FC <DiscoverProps> = ({
+const Search : React.FC <SearchProps> = ({
 }) => {
 
     const socket = useSocket();
@@ -192,22 +192,31 @@ const Discover : React.FC <DiscoverProps> = ({
 
                 <form onSubmit={submit} >
 
-                    <TextField
-                      fullWidth
-                      variant="outlined"
-                      placeholder="Search term..."
-                      value={search}
-                      onChange={(e) => setSearch(e.target.value)}
-                    />
-                    <Button
-                        type="submit"
-                        variant="contained"
-                        disabled={working > 0}
-                        endIcon={<Send/>}
-                        sx={{ ml: 1 }}
-                    >
-                        Search
-                    </Button>
+                    <Box sx={{ display: "flex", mt: 2, maxWidth: 800 }} >
+
+                        <TextField
+                          fullWidth
+                          variant="outlined"
+                          placeholder="Search term..."
+                          value={search}
+                          onChange={(e) => setSearch(e.target.value)}
+                        />
+
+                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+
+                            <Button
+                                type="submit"
+                                variant="contained"
+                                disabled={working > 0}
+                                endIcon={<Send/>}
+                                sx={{ ml: 1 }}
+                            >
+                                Search
+                            </Button>
+
+                        </Box>
+
+                    </Box>
 
                 </form>
 
@@ -215,46 +224,45 @@ const Discover : React.FC <DiscoverProps> = ({
 
             {
                 view.length > 0 &&
-    <TableContainer component={Paper}>
-      <Table sx={{ minWidth: 450 }}
-          size="small"
-          aria-label="table of entities"
-      >
-        <TableHead>
-          <TableRow>
-            <TableCell>Entity</TableCell>
-            <TableCell>Description</TableCell>
-            <TableCell>Similarity</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-            {
-                view.map((row) => (
-                    <TableRow
-                      key={row.uri}
-                      sx={{
-                          '&:last-child td, &:last-child th': { border: 0 }
-                      }}
-                    >
-                        <TableCell component="th" scope="row">
-                          <Link
-                              align="left"
-                              component="button"
-                              onClick={
-                                  () => select(row)
-                              }
-                          >
-                              {row.label}
-                          </Link>
-                        </TableCell>
-                        <TableCell>{row.description}</TableCell>
-                        <TableCell>{row.similarity}</TableCell>
-                    </TableRow>
-                ))
-            }
-        </TableBody>
-      </Table>
-    </TableContainer>                
+                    <TableContainer component={Paper} sx={{ mt: 4 }}>
+                      <Table sx={{ minWidth: 450 }}
+                          aria-label="table of entities"
+                      >
+                        <TableHead>
+                          <TableRow>
+                            <TableCell>Entity</TableCell>
+                            <TableCell>Description</TableCell>
+                            <TableCell>Similarity</TableCell>
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {
+                                view.map((row) => (
+                                    <TableRow
+                                      key={row.uri}
+                                      sx={{
+                                          '&:last-child td, &:last-child th': { border: 0 }
+                                      }}
+                                    >
+                                        <TableCell component="th" scope="row">
+                                          <Link
+                                              align="left"
+                                              component="button"
+                                              onClick={
+                                                  () => select(row)
+                                              }
+                                          >
+                                              {row.label}
+                                          </Link>
+                                        </TableCell>
+                                        <TableCell>{row.description}</TableCell>
+                                        <TableCell>{row.similarity}</TableCell>
+                                    </TableRow>
+                                ))
+                            }
+                        </TableBody>
+                      </Table>
+                    </TableContainer>                
             }
 
         </>
@@ -263,5 +271,5 @@ const Discover : React.FC <DiscoverProps> = ({
 
 }
 
-export default Discover;
+export default Search;
 

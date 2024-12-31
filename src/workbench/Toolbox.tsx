@@ -40,14 +40,14 @@ const Toolbox : React.FC <ToolboxProps> = ({
                 </ListItemButton>
 
                 <ListItemButton
-                    key={'discover'}
-                    selected={tool == 'discover'}
-                    onClick={() => { setTool('discover') }}
+                    key={'search'}
+                    selected={tool == 'search'}
+                    onClick={() => { setTool('search') }}
                 >
                     <ListItemIcon>
                         <Search/>
                     </ListItemIcon>
-                    <ListItemText primary={'Discover'}/>
+                    <ListItemText primary={'Search'}/>
                 </ListItemButton>
 
                 <ListItemButton
@@ -58,7 +58,7 @@ const Toolbox : React.FC <ToolboxProps> = ({
                     <ListItemIcon>
                         <Explore/>
                     </ListItemIcon>
-                    <ListItemText primary="Explorer"/>
+                    <ListItemText primary="Explore"/>
                 </ListItemButton>
 
                 <ListItemButton
@@ -69,7 +69,7 @@ const Toolbox : React.FC <ToolboxProps> = ({
                     <ListItemIcon>
                         <ThreeDRotation/>
                     </ListItemIcon>
-                    <ListItemText primary="Visualizer"/>
+                    <ListItemText primary="Visualize"/>
                 </ListItemButton>
 
                 <ListItemButton
@@ -80,7 +80,7 @@ const Toolbox : React.FC <ToolboxProps> = ({
                     <ListItemIcon>
                         <UploadFile/>
                     </ListItemIcon>
-                    <ListItemText primary="Loader"/>
+                    <ListItemText primary="Load"/>
                 </ListItemButton>
 
             </List>
