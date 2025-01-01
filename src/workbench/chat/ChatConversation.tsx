@@ -98,13 +98,26 @@ const ChatConversation : React.FC <ChatConversationProps> = ({
             (entities : Value[]) => {
                 return Promise.all<Triple[]>(
                     entities.map(
-                        (ent : Value) =>
-                            socket.triplesQuery(
+                        (ent : Value) => {
+                            const act = "Label " + ent.v;
+                            addActivity(act);
+                            return socket.triplesQuery(
                                 ent,
                                 { v: RDFS_LABEL, e: true, },
                                 undefined,
                                 1
+                            ).then(
+                                (x) => {
+                                    removeActivity(act);
+                                    return x;
+                                }
+                            ).catch(
+                                (err) => {
+                                    removeActivity(act);
+                                    throw err;
+                                }
                             )
+                        }
                     )
                 );
             }

@@ -1,11 +1,16 @@
 
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 
-import { Box, Button, TextField, CircularProgress } from '@mui/material';
+import {
+    Box, TextField, IconButton
+} from '@mui/material';
 
-import { Send } from '@mui/icons-material';
+import { Help } from '@mui/icons-material';
 import { useProgressStateStore } from '../state/ProgressState';
 import { useChatStateStore } from '../state/ChatState';
+
+import ChatHelp from './ChatHelp';
+import ProgressSubmitButton from '../ProgressSubmitButton';
 
 interface InputAreaProps {
     onSubmit : () => void;
@@ -29,8 +34,11 @@ const InputArea : React.FC <InputAreaProps> = ({
         e.preventDefault();
     }
 
+    const [help, setHelp] = useState<boolean>(false);
+
     return (
         <>
+             
             <form onSubmit={submit} >
 
                 <Box sx={{ display: 'flex', mt: 2 }} >
@@ -44,39 +52,25 @@ const InputArea : React.FC <InputAreaProps> = ({
                       onChange={(e) => setInput(e.target.value)}
                     />
 
-                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <IconButton
+                        aria-label="help"
+                        color="primary"
+                        size="large"
+                        onClick={() => setHelp(true)}
+                    >
+                        <Help fontSize="inherit"/>
+                    </IconButton>
 
-                        <Box sx={{ m: 1, position: 'relative' }}>
-                            <Button
-                                type="submit"
-                                variant="contained"
-                                disabled={activity.size > 0}
-                                endIcon={<Send/>}
-                                sx={{ ml: 1 }}
-                            >
-                                Send
-                            </Button>
-                        </Box>
-                        <Box sx={{ m: 1, position: 'relative' }}>
+                    <ProgressSubmitButton
+                        disabled={activity.size > 0}
+                        working={activity.size > 0}
+                    />
 
-                            {(activity.size > 0) && <CircularProgress
-                                size={24}
-                                sx={{
-                                    color: 'gray',
-                                    position: 'absolute',
-                                    top: '50%',
-                                    left: '50%',
-                                    marginTop: '-12px',
-                                    marginLeft: '-75px',
-                                  }}
-                            />
-                            }
-                        </Box>
-
-                    </Box>
                 </Box>
             </form>
-
+            <ChatHelp
+                open={help} onClose={() => setHelp(false)}
+            />
         </>
 
     );

@@ -1,27 +1,44 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 
-import { ToggleButton, ToggleButtonGroup, Box } from '@mui/material';
+import {
+    ToggleButton, ToggleButtonGroup, Box, IconButton
+} from '@mui/material';
+import { Help } from '@mui/icons-material';
 
 interface OperationProps {
     value : string,
     setValue : (value : string) => void;
 }
 
+import LoadHelp from './Help';
+
 const Operation : React.FC<OperationProps> = ({
     value, setValue,
 }) => {
 
+    const [help, setHelp] = useState<boolean>(false);
+
+    const setOperation = (op : string) => {
+        if (op) setValue(op);
+    };
+
     return (
         <>
 
-            <Box sx={{ m: 2 }}>
+            <Box
+                sx={{
+                    m: 2,
+                    display: "flex",
+                    alignItems: "center",
+                }}
+            >
 
                 <ToggleButtonGroup
                   color="primary"
                   value={value}
                   exclusive
-                  onChange={(_e, value) => setValue(value)}
+                  onChange={(_e, value) => setOperation(value)}
                   aria-label="Operation"
                 >
                   <ToggleButton value="upload-pdf">
@@ -35,7 +52,19 @@ const Operation : React.FC<OperationProps> = ({
                   </ToggleButton>
                 </ToggleButtonGroup>
 
+                <IconButton
+                    aria-label="help"
+                    color="primary"
+                    size="large"
+                    onClick={() => setHelp(true)}
+                >
+                    <Help fontSize="inherit"/>
+                </IconButton>
+
             </Box>
+            <LoadHelp
+                open={help} onClose={() => setHelp(false)}
+            />
 
         </>
 

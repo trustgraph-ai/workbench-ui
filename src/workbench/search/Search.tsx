@@ -1,15 +1,13 @@
 
 import React from 'react';
 
-import { Box, Button, Link, TextField, Paper } from '@mui/material';
+import { Link, Paper } from '@mui/material';
 
 import { useProgressStateStore } from '../state/ProgressState';
 
 import {
     Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
 } from '@mui/material';
-
-import { Send } from '@mui/icons-material';
 
 import { useSocket } from '../socket/socket';
 import { useWorkbenchStateStore } from '../state/WorkbenchState';
@@ -19,6 +17,7 @@ import {
     addRowEmbeddings, computeCosineSimilarity, sortSimilarity,
 } from '../state/row';
 
+import SearchInput from './SearchInput';
 
 interface SearchProps {
 }
@@ -37,12 +36,12 @@ const Search : React.FC <SearchProps> = ({
 
     const setSelected = useWorkbenchStateStore((state) => state.setSelected);
     const setTool = useWorkbenchStateStore((state) => state.setTool);
+    const setEntities = useWorkbenchStateStore((state) => state.setEntities);
 
     const view = useSearchStateStore((state) => state.rows);
     const setView = useSearchStateStore((state) => state.setRows);
 
     const search = useSearchStateStore((state) => state.input);
-    const setSearch = useSearchStateStore((state) => state.setInput);
 
     const select = (row : Row) => {
         setSelected({ uri: row.uri, label: row.label ? row.label : "n/a" });
@@ -68,8 +67,20 @@ const Search : React.FC <SearchProps> = ({
             sortSimilarity(addActivity, removeActivity)
         ).then(
             (x) => {
+
                 setView(x);
+
+                setEntities(x.map(
+                    (row) => {
+                        return {
+                            uri: row.uri,
+                            label: row.label ? row.label : "n/a",
+                        };
+                    }
+                ));
+
                 removeActivity(searchAct);
+
             }
         ).catch(
             (err) => {
@@ -82,44 +93,10 @@ const Search : React.FC <SearchProps> = ({
     
     }
 
-    const working = 0;
-
     return (
         <>
 
-            <Box>
-
-                <form onSubmit={submit} >
-
-                    <Box sx={{ display: "flex", mt: 2, maxWidth: 800 }} >
-
-                        <TextField
-                          fullWidth
-                          variant="outlined"
-                          placeholder="Search term..."
-                          value={search}
-                          onChange={(e) => setSearch(e.target.value)}
-                        />
-
-                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-
-                            <Button
-                                type="submit"
-                                variant="contained"
-                                disabled={working > 0}
-                                endIcon={<Send/>}
-                                sx={{ ml: 1 }}
-                            >
-                                Search
-                            </Button>
-
-                        </Box>
-
-                    </Box>
-
-                </form>
-
-            </Box>
+            <SearchInput submit={submit}/>
 
             {
                 view.length > 0 &&

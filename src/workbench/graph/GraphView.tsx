@@ -1,7 +1,8 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 
-import { Typography, Box } from '@mui/material';
+import { Typography, Box, IconButton } from '@mui/material';
+import { Help } from '@mui/icons-material';
 
 import { ForceGraph3D } from 'react-force-graph';
 import SpriteText from 'three-spritetext'
@@ -13,6 +14,8 @@ import { useWorkbenchStateStore } from '../state/WorkbenchState';
 import {
     createSubgraph, updateSubgraph
 } from '../state/knowledge-graph-viz';
+
+import GraphHelp from './Help';
 
 interface GraphViewProps {
 }
@@ -26,6 +29,8 @@ const GraphView : React.FC <GraphViewProps> = ({
     const removeActivity = useProgressStateStore(
         (state) => state.removeActivity
     );
+
+    const [help, setHelp] = React.useState<boolean>(false);
 
     const socket = useSocket();
 
@@ -92,11 +97,26 @@ const GraphView : React.FC <GraphViewProps> = ({
 
     return (
         <>
-            <Typography variant="h5" component="div" gutterBottom>
+
+            <Box sx={{ display: "flex", alignItems: 'center', mt: 2}}>
+            <Typography variant="h5" component="div" sx={{m: 0, p: 0}}>
                 {selected.label}
             </Typography>
 
+                        <IconButton
+                            aria-label="help"
+                            color="primary"
+                            size="large"
+                            onClick={() => setHelp(true)}
+                        >
+                            <Help fontSize="inherit"/>
+                        </IconButton>
+            </Box>
             <Box>
+
+            <GraphHelp
+                open={help} onClose={() => setHelp(false)}
+            />
 
             <ForceGraph3D
                 width={1200}

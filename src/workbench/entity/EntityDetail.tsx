@@ -1,82 +1,21 @@
 
 import React, { useState, useEffect } from 'react';
 
-import { Typography, Box, Stack, Button } from '@mui/material';
+import { Typography, Box, Stack, Button, IconButton } from '@mui/material';
 
-import { ArrowForward } from '@mui/icons-material';
+import { ArrowForward, ThreeDRotation, Help } from '@mui/icons-material';
 
 import { useSocket } from '../socket/socket';
 import { useWorkbenchStateStore } from '../state/WorkbenchState';
 import { getTriples } from '../state/knowledge-graph';
 
-import { Value } from '../state/Triple';
-
 import { useProgressStateStore } from '../state/ProgressState';
+
+import EntityHelp from './Help';
+import ElementNode from './ElementNode';
 
 interface EntityDetailProps {
 }
-
-const LiteralNode : React.FC<{value : Value}> = ({value}) => {
-    return (
-        <Typography
-            variant="body1"
-            sx={{
-                ml: '0.5rem',
-                mr: '0.5rem',
-                mt: '0.01rem',
-                mb: '0.01rem',
-                p: '0.01rem',
-            }}
-        >
-            {value.label}
-        </Typography>
-    );
-};
-
-const SelectedNode : React.FC<{value : Value}> = ({value}) => {
-
-    return (
-        <Typography
-            variant="body1" color="#802030"
-            sx={{
-                ml: '0.5rem',
-                mr: '0.5rem',
-                p: '0',
-            }}
-        >
-            {value.label}
-        </Typography>
-    );
-};
-
-const EntityNode : React.FC<{value : Value}> = ({value}) => {
-
-    const setSelected = useWorkbenchStateStore((state) => state.setSelected);
-
-    return (
-        <Button
-            sx={{
-                textTransform: 'initial',
-                ml: '0.1rem',
-                mr: '0.1rem',
-                mt: '0.05rem',
-                mb: '0.05rem',
-                pl: '0.8rem',
-                pr: '0.8rem',
-                pt: '0.4rem',
-                pb: '0.4rem',
-            }}
-            onClick={
-                () => setSelected({
-                    uri: value.v,
-                    label: value.label ? value.label : value.v
-                })
-            }
-        >
-            {value.label}
-        </Button>
-    );
-};
 
 const EntityDetail : React.FC <EntityDetailProps> = ({
 }) => {
@@ -98,6 +37,8 @@ const EntityDetail : React.FC <EntityDetailProps> = ({
     }
 
     const [detail, setDetail] = useState<any>(undefined);
+
+    const [help, setHelp] = useState<boolean>(false);
 
     const graphView = () => {
         setTool("graph");
@@ -134,12 +75,25 @@ const EntityDetail : React.FC <EntityDetailProps> = ({
 
             <Box sx={{mt:2,mb:2}}>
                 <Button
-                    variant="outlined"
+                    variant="contained"
+                    startIcon={<ThreeDRotation/>}
                     onClick={()=> graphView()}
                 >
                     Graph view
                 </Button>
+                <IconButton
+                    aria-label="help"
+                    color="primary"
+                    size="large"
+                    onClick={() => setHelp(true)}
+                >
+                    <Help fontSize="inherit"/>
+                </IconButton>
             </Box>
+
+            <EntityHelp
+                open={help} onClose={() => setHelp(false)}
+            />
 
             <Box>
 
@@ -153,32 +107,17 @@ const EntityDetail : React.FC <EntityDetailProps> = ({
                                      gap={0}
                                  >
 
-                                     {
-                                         (t.s.v == selected.uri) ?
-                                         <SelectedNode value={t.s}/> :
-                                         <EntityNode value={t.s}/>
-                                     }
-
+                                     <ElementNode
+                                         value={t.s} selected={selected}
+                                     />
                                      <ArrowForward/>
-
-                                     {
-                                         (t.p.v == selected.uri) ?
-                                         <SelectedNode value={t.p}/> :
-                                         <EntityNode value={t.p}/>
-                                     }
-
+                                     <ElementNode
+                                         value={t.p} selected={selected}
+                                     />
                                      <ArrowForward/>
-
-                                     {
-                                         t.o.e ?
-                                         (
-                                             (t.o.v == selected.uri) ?
-                                             <SelectedNode value={t.o}/> :
-                                             <EntityNode value={t.o}/>
-                                         ) :
-                                         <LiteralNode value={t.o}/>
-                                     }
-
+                                     <ElementNode
+                                         value={t.o} selected={selected}
+                                     />
                                  </Stack>
                              </Box>
                          );
