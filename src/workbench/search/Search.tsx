@@ -83,7 +83,7 @@ const Search : React.FC <SearchProps> = ({
                     (row) => {
                         return {
                             uri: row.uri,
-                            label: row.label,
+                            label: row.label ? row.label : "n/a",
                         };
                     }
                 ));
