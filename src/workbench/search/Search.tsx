@@ -23,6 +23,7 @@ import {
 
 import SearchHelp from './SearchHelp';
 import ProgressSubmitButton from '../ProgressSubmitButton';
+import SearchInput from './SearchInput';
 
 interface SearchProps {
 }
@@ -105,42 +106,7 @@ const Search : React.FC <SearchProps> = ({
     return (
         <>
 
-            <Box>
-
-                <form onSubmit={submit} >
-
-                    <Box sx={{ display: "flex", mt: 2, maxWidth: 800 }} >
-
-                        <TextField
-                          fullWidth
-                          variant="outlined"
-                          placeholder="Search term..."
-                          value={search}
-                          onChange={(e) => setSearch(e.target.value)}
-                        />
-
-                        <IconButton
-                            aria-label="help"
-                            color="primary"
-                            size="large"
-                            onClick={() => setHelp(true)}
-                        >
-                            <Help fontSize="inherit"/>
-                        </IconButton>
-
-                        <ProgressSubmitButton
-                            disabled={activity.size > 0}
-                            working={activity.size > 0}
-                        />
-
-                    </Box>
-
-                </form>
-                <SearchHelp
-                    open={help} onClose={() => setHelp(false)}
-                />
-
-            </Box>
+            <SearchInput submit={submit}/>
 
             {
                 view.length > 0 &&
