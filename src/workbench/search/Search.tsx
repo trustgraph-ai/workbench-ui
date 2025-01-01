@@ -22,6 +22,7 @@ import {
 } from '../state/row';
 
 import SearchHelp from './SearchHelp';
+import ProgressSubmitButton from '../ProgressSubmitButton';
 
 interface SearchProps {
 }
@@ -35,6 +36,7 @@ const Search : React.FC <SearchProps> = ({
     const removeActivity = useProgressStateStore(
         (state) => state.removeActivity
     );
+    const activity = useProgressStateStore((state) => state.activity);
 
     const [help, setHelp] = useState<boolean>(false);
 
@@ -114,7 +116,7 @@ const Search : React.FC <SearchProps> = ({
                         >
                             <Help fontSize="inherit"/>
                         </IconButton>
-
+{/*
                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
 
                             <Button
@@ -128,6 +130,12 @@ const Search : React.FC <SearchProps> = ({
                             </Button>
 
                         </Box>
+*/}
+
+                        <ProgressSubmitButton
+                            disabled={activity.size > 0}
+                            working={activity.size > 0}
+                        />
 
                     </Box>
 

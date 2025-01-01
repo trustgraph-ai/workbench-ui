@@ -8,7 +8,9 @@ import {
 import { Send, Help } from '@mui/icons-material';
 import { useProgressStateStore } from '../state/ProgressState';
 import { useChatStateStore } from '../state/ChatState';
+
 import ChatHelp from './ChatHelp';
+import ProgressSubmitButton from '../ProgressSubmitButton';
 
 interface InputAreaProps {
     onSubmit : () => void;
@@ -59,6 +61,7 @@ const InputArea : React.FC <InputAreaProps> = ({
                         <Help fontSize="inherit"/>
                     </IconButton>
 
+{/*
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
 
                         <Box sx={{ m: 1, position: 'relative' }}>
@@ -74,21 +77,29 @@ const InputArea : React.FC <InputAreaProps> = ({
                         </Box>
                         <Box sx={{ m: 1, position: 'relative' }}>
 
-                            {(activity.size > 0) && <CircularProgress
-                                size={24}
-                                sx={{
-                                    color: 'gray',
-                                    position: 'absolute',
-                                    top: '50%',
-                                    left: '50%',
-                                    marginTop: '-12px',
-                                    marginLeft: '-75px',
-                                  }}
-                            />
+                            {
+                                (activity.size > 0) &&
+                                <CircularProgress
+                                    size={24}
+                                    sx={{
+                                        color: 'gray',
+                                        position: 'absolute',
+                                        top: '50%',
+                                        left: '50%',
+                                        marginTop: '-12px',
+                                        marginLeft: '-75px',
+                                    }}
+                                />
                             }
                         </Box>
 
                     </Box>
+*/}
+                    <ProgressSubmitButton
+                        disabled={activity.size > 0}
+                        working={activity.size > 0}
+                    />
+
                 </Box>
             </form>
             <ChatHelp
