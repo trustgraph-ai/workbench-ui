@@ -1,11 +1,14 @@
 
 import React, { useRef } from 'react';
 
-import { Box, Button, TextField, CircularProgress } from '@mui/material';
+import {
+    Box, Button, TextField, CircularProgress, IconButton
+} from '@mui/material';
 
-import { Send } from '@mui/icons-material';
+import { Send, Help } from '@mui/icons-material';
 import { useProgressStateStore } from '../state/ProgressState';
 import { useChatStateStore } from '../state/ChatState';
+import ChatHelp from './ChatHelp';
 
 interface InputAreaProps {
     onSubmit : () => void;
@@ -29,8 +32,11 @@ const InputArea : React.FC <InputAreaProps> = ({
         e.preventDefault();
     }
 
+    const [help, setHelp] = React.useState<boolean>(false);
+
     return (
         <>
+             
             <form onSubmit={submit} >
 
                 <Box sx={{ display: 'flex', mt: 2 }} >
@@ -43,6 +49,15 @@ const InputArea : React.FC <InputAreaProps> = ({
                       inputRef={inputRef}
                       onChange={(e) => setInput(e.target.value)}
                     />
+
+                    <IconButton
+                        aria-label="help"
+                        color="primary"
+                        size="large"
+                        onClick={() => setHelp(true)}
+                    >
+                        <Help fontSize="inherit"/>
+                    </IconButton>
 
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
 
@@ -76,7 +91,9 @@ const InputArea : React.FC <InputAreaProps> = ({
                     </Box>
                 </Box>
             </form>
-
+            <ChatHelp
+                open={help} onClose={() => setHelp(false)}
+            />
         </>
 
     );

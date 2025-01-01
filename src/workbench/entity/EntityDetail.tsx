@@ -1,9 +1,9 @@
 
 import React, { useState, useEffect } from 'react';
 
-import { Typography, Box, Stack, Button } from '@mui/material';
+import { Typography, Box, Stack, Button, IconButton } from '@mui/material';
 
-import { ArrowForward } from '@mui/icons-material';
+import { ArrowForward, ThreeDRotation, Help } from '@mui/icons-material';
 
 import { useSocket } from '../socket/socket';
 import { useWorkbenchStateStore } from '../state/WorkbenchState';
@@ -12,6 +12,8 @@ import { getTriples } from '../state/knowledge-graph';
 import { Value } from '../state/Triple';
 
 import { useProgressStateStore } from '../state/ProgressState';
+
+import EntityHelp from './Help';
 
 interface EntityDetailProps {
 }
@@ -99,6 +101,8 @@ const EntityDetail : React.FC <EntityDetailProps> = ({
 
     const [detail, setDetail] = useState<any>(undefined);
 
+    const [help, setHelp] = React.useState<boolean>(false);
+
     const graphView = () => {
         setTool("graph");
     };
@@ -134,12 +138,25 @@ const EntityDetail : React.FC <EntityDetailProps> = ({
 
             <Box sx={{mt:2,mb:2}}>
                 <Button
-                    variant="outlined"
+                    variant="contained"
+                    startIcon={<ThreeDRotation/>}
                     onClick={()=> graphView()}
                 >
                     Graph view
                 </Button>
+                <IconButton
+                    aria-label="help"
+                    color="primary"
+                    size="large"
+                    onClick={() => setHelp(true)}
+                >
+                    <Help fontSize="inherit"/>
+                </IconButton>
             </Box>
+
+            <EntityHelp
+                open={help} onClose={() => setHelp(false)}
+            />
 
             <Box>
 

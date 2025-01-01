@@ -1,7 +1,9 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 
-import { Box, Button, Link, TextField, Paper } from '@mui/material';
+import {
+    Box, Button, Link, TextField, Paper, IconButton
+} from '@mui/material';
 
 import { useProgressStateStore } from '../state/ProgressState';
 
@@ -9,7 +11,7 @@ import {
     Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
 } from '@mui/material';
 
-import { Send } from '@mui/icons-material';
+import { Send, Help } from '@mui/icons-material';
 
 import { useSocket } from '../socket/socket';
 import { useWorkbenchStateStore } from '../state/WorkbenchState';
@@ -19,6 +21,7 @@ import {
     addRowEmbeddings, computeCosineSimilarity, sortSimilarity,
 } from '../state/row';
 
+import SearchHelp from './SearchHelp';
 
 interface SearchProps {
 }
@@ -32,6 +35,8 @@ const Search : React.FC <SearchProps> = ({
     const removeActivity = useProgressStateStore(
         (state) => state.removeActivity
     );
+
+    const [help, setHelp] = React.useState<boolean>(false);
 
     const socket = useSocket();
 
@@ -101,6 +106,15 @@ const Search : React.FC <SearchProps> = ({
                           onChange={(e) => setSearch(e.target.value)}
                         />
 
+                        <IconButton
+                            aria-label="help"
+                            color="primary"
+                            size="large"
+                            onClick={() => setHelp(true)}
+                        >
+                            <Help fontSize="inherit"/>
+                        </IconButton>
+
                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
 
                             <Button
@@ -118,6 +132,9 @@ const Search : React.FC <SearchProps> = ({
                     </Box>
 
                 </form>
+                <SearchHelp
+                    open={help} onClose={() => setHelp(false)}
+                />
 
             </Box>
 
