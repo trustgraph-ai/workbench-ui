@@ -116,21 +116,6 @@ const Search : React.FC <SearchProps> = ({
                         >
                             <Help fontSize="inherit"/>
                         </IconButton>
-{/*
-                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-
-                            <Button
-                                type="submit"
-                                variant="contained"
-                                disabled={working > 0}
-                                endIcon={<Send/>}
-                                sx={{ ml: 1 }}
-                            >
-                                Search
-                            </Button>
-
-                        </Box>
-*/}
 
                         <ProgressSubmitButton
                             disabled={activity.size > 0}

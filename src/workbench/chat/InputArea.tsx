@@ -61,40 +61,6 @@ const InputArea : React.FC <InputAreaProps> = ({
                         <Help fontSize="inherit"/>
                     </IconButton>
 
-{/*
-                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
-
-                        <Box sx={{ m: 1, position: 'relative' }}>
-                            <Button
-                                type="submit"
-                                variant="contained"
-                                disabled={activity.size > 0}
-                                endIcon={<Send/>}
-                                sx={{ ml: 1 }}
-                            >
-                                Send
-                            </Button>
-                        </Box>
-                        <Box sx={{ m: 1, position: 'relative' }}>
-
-                            {
-                                (activity.size > 0) &&
-                                <CircularProgress
-                                    size={24}
-                                    sx={{
-                                        color: 'gray',
-                                        position: 'absolute',
-                                        top: '50%',
-                                        left: '50%',
-                                        marginTop: '-12px',
-                                        marginLeft: '-75px',
-                                    }}
-                                />
-                            }
-                        </Box>
-
-                    </Box>
-*/}
                     <ProgressSubmitButton
                         disabled={activity.size > 0}
                         working={activity.size > 0}
