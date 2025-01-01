@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 
 import {
-    Box, Button, Link, TextField, Paper, IconButton
+    Box, Link, TextField, Paper, IconButton
 } from '@mui/material';
 
 import { useProgressStateStore } from '../state/ProgressState';
@@ -11,7 +11,7 @@ import {
     Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
 } from '@mui/material';
 
-import { Send, Help } from '@mui/icons-material';
+import { Help } from '@mui/icons-material';
 
 import { useSocket } from '../socket/socket';
 import { useWorkbenchStateStore } from '../state/WorkbenchState';
@@ -88,8 +88,6 @@ const Search : React.FC <SearchProps> = ({
         e.preventDefault();
     
     }
-
-    const working = 0;
 
     return (
         <>

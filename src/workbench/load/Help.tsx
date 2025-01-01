@@ -41,7 +41,8 @@ const Help : React.FC <HelpProps> = ({
                     <Typography variant="body1" sx={{mb: 1}}>
                         The Load page lets you ingest new data into
                         TrustGraph processing.  There are 3 operations:
-                        <ul>
+                    </Typography>
+                    <Typography variant="body1" component="ul" sx={{mb: 1}}>
                             <li>Upload PDF - for PDF documents</li>
                             <li>
                                 Upload text - for text and markdown
@@ -51,7 +52,6 @@ const Help : React.FC <HelpProps> = ({
                                 Paste text - for copy/pasting or
                                 typing a snippet of text.
                             </li>
-                        </ul>
                     </Typography>
                     <Typography variant="body1">
                         Note that Upload simply initiates the processing;

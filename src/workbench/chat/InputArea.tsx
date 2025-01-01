@@ -2,10 +2,10 @@
 import React, { useRef, useState } from 'react';
 
 import {
-    Box, Button, TextField, CircularProgress, IconButton
+    Box, TextField, IconButton
 } from '@mui/material';
 
-import { Send, Help } from '@mui/icons-material';
+import { Help } from '@mui/icons-material';
 import { useProgressStateStore } from '../state/ProgressState';
 import { useChatStateStore } from '../state/ChatState';
 
