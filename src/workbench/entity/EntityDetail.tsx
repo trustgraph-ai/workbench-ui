@@ -10,6 +10,7 @@ import { useWorkbenchStateStore } from '../state/WorkbenchState';
 import { getTriples } from '../state/knowledge-graph';
 
 import { Value } from '../state/Triple';
+import { Entity } from '../state/Entity';
 
 import { useProgressStateStore } from '../state/ProgressState';
 
