@@ -15,85 +15,12 @@ import { Entity } from '../state/Entity';
 import { useProgressStateStore } from '../state/ProgressState';
 
 import EntityHelp from './Help';
+import LiteralNode from './LiteralNode';
+import EntityNode from './EntityNode';
+import SelectedNode from './SelectedNode';
 
 interface EntityDetailProps {
 }
-
-const LiteralNode : React.FC<{value : Value}> = ({value}) => {
-    return (
-        <Typography
-            variant="body1"
-            sx={{
-                ml: '0.5rem',
-                mr: '0.5rem',
-                mt: '0.01rem',
-                mb: '0.01rem',
-                p: '0.01rem',
-            }}
-        >
-            {value.label}
-        </Typography>
-    );
-};
-
-const SelectedNode : React.FC<{value : Value}> = ({value}) => {
-
-    return (
-        <Typography
-            variant="body1" color="#802030"
-            sx={{
-                ml: '0.5rem',
-                mr: '0.5rem',
-                p: '0',
-            }}
-        >
-            {value.label}
-        </Typography>
-    );
-};
-
-const EntityNode : React.FC<{value : Value}> = ({value}) => {
-
-    const setSelected = useWorkbenchStateStore((state) => state.setSelected);
-
-    return (
-        <Button
-            sx={{
-                textTransform: 'initial',
-                ml: '0.1rem',
-                mr: '0.1rem',
-                mt: '0.05rem',
-                mb: '0.05rem',
-                pl: '0.8rem',
-                pr: '0.8rem',
-                pt: '0.4rem',
-                pb: '0.4rem',
-            }}
-            onClick={
-                () => setSelected({
-                    uri: value.v,
-                    label: value.label ? value.label : value.v
-                })
-            }
-        >
-            {value.label}
-        </Button>
-    );
-};
-
-const Element : React.FC<{value : Value, selected : Entity}> = ({
-    value, selected
-}) => {
-
-    if (value.e)
-        if (selected && (value.v == selected.uri))
-            return <SelectedNode value={value}/>
-        else
-            return <EntityNode value={value}/>
-    else
-        return <LiteralNode value={value}/>
-
-};
 
 const EntityDetail : React.FC <EntityDetailProps> = ({
 }) => {
