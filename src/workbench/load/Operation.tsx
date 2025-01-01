@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import React, { useState } from 'react';
 
 import {
     ToggleButton, ToggleButtonGroup, Box, IconButton
@@ -17,7 +17,7 @@ const Operation : React.FC<OperationProps> = ({
     value, setValue,
 }) => {
 
-    const [help, setHelp] = React.useState<boolean>(false);
+    const [help, setHelp] = useState<boolean>(false);
 
     return (
         <>

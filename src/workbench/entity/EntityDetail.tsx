@@ -101,7 +101,7 @@ const EntityDetail : React.FC <EntityDetailProps> = ({
 
     const [detail, setDetail] = useState<any>(undefined);
 
-    const [help, setHelp] = React.useState<boolean>(false);
+    const [help, setHelp] = useState<boolean>(false);
 
     const graphView = () => {
         setTool("graph");

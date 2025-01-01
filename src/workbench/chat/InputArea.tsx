@@ -1,5 +1,5 @@
 
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 
 import {
     Box, Button, TextField, CircularProgress, IconButton
@@ -32,7 +32,7 @@ const InputArea : React.FC <InputAreaProps> = ({
         e.preventDefault();
     }
 
-    const [help, setHelp] = React.useState<boolean>(false);
+    const [help, setHelp] = useState<boolean>(false);
 
     return (
         <>

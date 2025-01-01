@@ -36,7 +36,7 @@ const Search : React.FC <SearchProps> = ({
         (state) => state.removeActivity
     );
 
-    const [help, setHelp] = React.useState<boolean>(false);
+    const [help, setHelp] = useState<boolean>(false);
 
     const socket = useSocket();
 
