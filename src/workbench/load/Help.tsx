@@ -34,21 +34,32 @@ const Help : React.FC <HelpProps> = ({
             >
                 <CardHeader
                     avatar={<Lightbulb color="primary"/>}
-                    title="Explore"
+                    title="Load"
                     titleTypographyProps={{ fontWeight: 600 }}
                 />
                 <CardContent>
                     <Typography variant="body1" sx={{mb: 1}}>
-                        The Explore page shows properties and
-                        relationships of entities in the knowledge graph.
-                        On this page, you can navigate by selecting other
-                        knowledge graph entities and seeing the properties
-                        and relationships related to those entities.
+                        The Load page lets you ingest new data into
+                        TrustGraph processing.  There are 3 operations:
+                        <ul>
+                            <li>Upload PDF - for PDF documents</li>
+                            <li>
+                                Upload text - for text and markdown
+                                documents
+                            </li>
+                            <li>
+                                Paste text - for copy/pasting or
+                                typing a snippet of text.
+                            </li>
+                        </ul>
                     </Typography>
                     <Typography variant="body1">
-                        Selecting the Graph View button shows you the
-                        same information, but presented in a 3D graphical
-                        form.
+                        Note that Upload simply initiates the processing;
+                        it may take many minutes / hours or even days to
+                        complete processing large documents.  You would
+                        see some elements of documents begin appearing
+                        in the workbench within a couple of minutes of
+                        document upload.
                     </Typography>
                 </CardContent>
             </Card>

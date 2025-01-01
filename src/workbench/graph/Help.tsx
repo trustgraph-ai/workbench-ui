@@ -27,7 +27,7 @@ const Help : React.FC <HelpProps> = ({
                     top: '50%',
                     left: '50%',
                     transform: 'translate(-50%, -50%)',
-                    width: 400,
+                    width: '40rem',
                     bgcolor: 'background.paper',
                     boxShadow: 24,
                 }}
@@ -44,11 +44,11 @@ const Help : React.FC <HelpProps> = ({
                         on a node that you select.  
                     </Typography>
                     <Typography variant="body1">
-                        You can use the mouse
-                        to drag and rotate the space to explore different
-                        parts of the graph.  Clicking on a graph node
-                        adds more properties and relationships to the
-                        graph centered on that node.
+                        You can use the mouse to zoom, pan and rotate
+                        the space to explore different parts of the
+                        graph.  Clicking on a graph node adds more
+                        properties and relationships to the graph
+                        centered on that node.
                     </Typography>
                 </CardContent>
             </Card>
