@@ -9,7 +9,7 @@ import LiteralNode from './LiteralNode';
 import EntityNode from './EntityNode';
 import SelectedNode from './SelectedNode';
 
-const Element : React.FC<{value : Value, selected : Entity}> = ({
+const ElementNode : React.FC<{value : Value, selected : Entity}> = ({
     value, selected
 }) => {
 
@@ -23,5 +23,5 @@ const Element : React.FC<{value : Value, selected : Entity}> = ({
 
 };
 
-export default Element;
+export default ElementNode;
 

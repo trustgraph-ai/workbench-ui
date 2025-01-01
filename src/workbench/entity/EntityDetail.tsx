@@ -18,6 +18,7 @@ import EntityHelp from './Help';
 import LiteralNode from './LiteralNode';
 import EntityNode from './EntityNode';
 import SelectedNode from './SelectedNode';
+import ElementNode from './ElementNode';
 
 interface EntityDetailProps {
 }
@@ -112,13 +113,17 @@ const EntityDetail : React.FC <EntityDetailProps> = ({
                                      gap={0}
                                  >
 
-                                     <Element value={t.s} selected={selected}/>
+                                     <ElementNode
+                                         value={t.s} selected={selected}
+                                     />
                                      <ArrowForward/>
-                                     <Element value={t.p} selected={selected}/>
+                                     <ElementNode
+                                         value={t.p} selected={selected}
+                                     />
                                      <ArrowForward/>
-                                     <Element value={t.o} selected={selected}/>
-
-
+                                     <ElementNode
+                                         value={t.o} selected={selected}
+                                     />
                                  </Stack>
                              </Box>
                          );
