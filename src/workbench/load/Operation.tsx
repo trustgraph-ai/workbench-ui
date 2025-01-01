@@ -19,6 +19,10 @@ const Operation : React.FC<OperationProps> = ({
 
     const [help, setHelp] = useState<boolean>(false);
 
+    const setOperation = (op : string) => {
+        if (op) setValue(op);
+    };
+
     return (
         <>
 
@@ -34,7 +38,7 @@ const Operation : React.FC<OperationProps> = ({
                   color="primary"
                   value={value}
                   exclusive
-                  onChange={(_e, value) => setValue(value)}
+                  onChange={(_e, value) => setOperation(value)}
                   aria-label="Operation"
                 >
                   <ToggleButton value="upload-pdf">
