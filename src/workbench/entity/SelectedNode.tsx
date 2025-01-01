@@ -1,9 +1,8 @@
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 
-import { Typography, Button } from '@mui/material';
+import { Typography } from '@mui/material';
 
-import { useWorkbenchStateStore } from '../state/WorkbenchState';
 import { Value } from '../state/Triple';
 
 const SelectedNode : React.FC<{value : Value}> = ({value}) => {

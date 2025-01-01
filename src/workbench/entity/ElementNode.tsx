@@ -1,10 +1,8 @@
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 
-import { Typography, Button } from '@mui/material';
-
-import { useWorkbenchStateStore } from '../state/WorkbenchState';
 import { Value } from '../state/Triple';
+import { Entity } from '../state/Entity';
 import LiteralNode from './LiteralNode';
 import EntityNode from './EntityNode';
 import SelectedNode from './SelectedNode';

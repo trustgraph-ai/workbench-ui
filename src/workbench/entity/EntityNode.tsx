@@ -1,7 +1,7 @@
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 
-import { Typography, Button } from '@mui/material';
+import { Button } from '@mui/material';
 
 import { useWorkbenchStateStore } from '../state/WorkbenchState';
 import { Value } from '../state/Triple';
