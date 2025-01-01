@@ -44,6 +44,7 @@ const Search : React.FC <SearchProps> = ({
 
     const setSelected = useWorkbenchStateStore((state) => state.setSelected);
     const setTool = useWorkbenchStateStore((state) => state.setTool);
+    const setEntities = useWorkbenchStateStore((state) => state.setEntities);
 
     const view = useSearchStateStore((state) => state.rows);
     const setView = useSearchStateStore((state) => state.setRows);
@@ -76,6 +77,17 @@ const Search : React.FC <SearchProps> = ({
         ).then(
             (x) => {
                 setView(x);
+                console.log(x);
+
+                setEntities(x.map(
+                    (row) => {
+                        return {
+                            uri: row.uri,
+                            label: row.label,
+                        };
+                    }
+                ));
+
                 removeActivity(searchAct);
             }
         ).catch(
