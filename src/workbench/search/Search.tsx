@@ -1,17 +1,13 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 
-import {
-    Box, Link, TextField, Paper, IconButton
-} from '@mui/material';
+import { Link, Paper } from '@mui/material';
 
 import { useProgressStateStore } from '../state/ProgressState';
 
 import {
     Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
 } from '@mui/material';
-
-import { Help } from '@mui/icons-material';
 
 import { useSocket } from '../socket/socket';
 import { useWorkbenchStateStore } from '../state/WorkbenchState';
@@ -21,8 +17,6 @@ import {
     addRowEmbeddings, computeCosineSimilarity, sortSimilarity,
 } from '../state/row';
 
-import SearchHelp from './SearchHelp';
-import ProgressSubmitButton from '../ProgressSubmitButton';
 import SearchInput from './SearchInput';
 
 interface SearchProps {
@@ -37,9 +31,6 @@ const Search : React.FC <SearchProps> = ({
     const removeActivity = useProgressStateStore(
         (state) => state.removeActivity
     );
-    const activity = useProgressStateStore((state) => state.activity);
-
-    const [help, setHelp] = useState<boolean>(false);
 
     const socket = useSocket();
 
@@ -51,7 +42,6 @@ const Search : React.FC <SearchProps> = ({
     const setView = useSearchStateStore((state) => state.setRows);
 
     const search = useSearchStateStore((state) => state.input);
-    const setSearch = useSearchStateStore((state) => state.setInput);
 
     const select = (row : Row) => {
         setSelected({ uri: row.uri, label: row.label ? row.label : "n/a" });
