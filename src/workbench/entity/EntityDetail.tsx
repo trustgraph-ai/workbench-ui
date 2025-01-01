@@ -80,6 +80,20 @@ const EntityNode : React.FC<{value : Value}> = ({value}) => {
     );
 };
 
+const Element : React.FC<{value : Value, selected : Entity}> = ({
+    value, selected
+}) => {
+
+    if (value.e)
+        if (selected && (value.v == selected.uri))
+            return <SelectedNode value={value}/>
+        else
+            return <EntityNode value={value}/>
+    else
+        return <LiteralNode value={value}/>
+
+};
+
 const EntityDetail : React.FC <EntityDetailProps> = ({
 }) => {
 
@@ -170,31 +184,12 @@ const EntityDetail : React.FC <EntityDetailProps> = ({
                                      gap={0}
                                  >
 
-                                     {
-                                         (t.s.v == selected.uri) ?
-                                         <SelectedNode value={t.s}/> :
-                                         <EntityNode value={t.s}/>
-                                     }
-
+                                     <Element value={t.s} selected={selected}/>
                                      <ArrowForward/>
-
-                                     {
-                                         (t.p.v == selected.uri) ?
-                                         <SelectedNode value={t.p}/> :
-                                         <EntityNode value={t.p}/>
-                                     }
-
+                                     <Element value={t.p} selected={selected}/>
                                      <ArrowForward/>
+                                     <Element value={t.o} selected={selected}/>
 
-                                     {
-                                         t.o.e ?
-                                         (
-                                             (t.o.v == selected.uri) ?
-                                             <SelectedNode value={t.o}/> :
-                                             <EntityNode value={t.o}/>
-                                         ) :
-                                         <LiteralNode value={t.o}/>
-                                     }
 
                                  </Stack>
                              </Box>

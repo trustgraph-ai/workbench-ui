@@ -76,8 +76,8 @@ const Search : React.FC <SearchProps> = ({
             sortSimilarity(addActivity, removeActivity)
         ).then(
             (x) => {
+
                 setView(x);
-                console.log(x);
 
                 setEntities(x.map(
                     (row) => {
@@ -89,6 +89,7 @@ const Search : React.FC <SearchProps> = ({
                 ));
 
                 removeActivity(searchAct);
+
             }
         ).catch(
             (err) => {
