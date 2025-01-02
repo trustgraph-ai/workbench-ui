@@ -16,6 +16,7 @@ import {
 } from '../state/knowledge-graph-viz';
 
 import GraphHelp from './Help';
+import CenterSpinner from '../CenterSpinner';
 
 interface GraphViewProps {
 }
@@ -39,7 +40,15 @@ const GraphView : React.FC <GraphViewProps> = ({
     const fgRef = useRef<any>();
 
     if (!selected) {
-        return ( <div>No node selected.</div> );
+        return (
+            <Box>
+                <CenterSpinner/>
+                <Typography variant="body1">
+                    No data to visualize.  Try Search to find data
+                    to explore.
+                </Typography>
+            </Box>
+        );
     }
 
     const [view, setView] = useState<any>(undefined);
@@ -68,7 +77,15 @@ const GraphView : React.FC <GraphViewProps> = ({
     }, [selected]);
 
     if (!view)
-        return ( <div>No data.</div> );
+        return (
+            <Box>
+                <CenterSpinner/>
+                <Typography variant="body1">
+                    No data to visualize.  Try Search to find data
+                    to explore.
+                </Typography>
+            </Box>
+        );
 
     const wrap = (s : string, w : number) => s.replace(
         new RegExp(`(?![^\\n]{1,${w}}$)([^\\n]{1,${w}})\\s`, 'g'), '$1\n'
@@ -99,18 +116,22 @@ const GraphView : React.FC <GraphViewProps> = ({
         <>
 
             <Box sx={{ display: "flex", alignItems: 'center', mt: 2}}>
-            <Typography variant="h5" component="div" sx={{m: 0, p: 0}}>
-                {selected.label}
-            </Typography>
 
-                        <IconButton
-                            aria-label="help"
-                            color="primary"
-                            size="large"
-                            onClick={() => setHelp(true)}
-                        >
-                            <Help fontSize="inherit"/>
-                        </IconButton>
+                <Typography variant="h5" component="div" sx={{m: 0, p: 0}}>
+                    {selected.label}
+                </Typography>
+
+                <CenterSpinner/>
+
+                <IconButton
+                    aria-label="help"
+                    color="primary"
+                    size="large"
+                    onClick={() => setHelp(true)}
+                >
+                    <Help fontSize="inherit"/>
+                </IconButton>
+
             </Box>
             <Box>
 
