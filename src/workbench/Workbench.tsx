@@ -1,16 +1,18 @@
 
 import React from 'react';
 
-import { Box, Typography } from '@mui/material';
+import { Box, ThemeProvider, Typography } from '@mui/material';
 
 import Banner from './Banner.tsx';
 import Workspace from './Workspace.tsx';
+import { tgTheme } from './Theme.tsx';
 
 import { useProgressStateStore } from './state/ProgressState';
 
 import './Workbench.scss';
 
 import { SocketProvider } from './socket/SocketProvider';
+
 
 const Workbench : React.FC = () => {
 
@@ -19,6 +21,8 @@ const Workbench : React.FC = () => {
     return (
 
         <SocketProvider>
+            <ThemeProvider theme={tgTheme}>
+
             <Box className="workbench">
                 {
                     (activity.size > 0) && 
@@ -55,8 +59,8 @@ const Workbench : React.FC = () => {
                 <Banner/>
                 <Workspace/>
             </Box>
+            </ThemeProvider>
         </SocketProvider>
-
     );
 
 };
