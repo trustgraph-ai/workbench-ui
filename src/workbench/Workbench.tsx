@@ -1,7 +1,7 @@
 
 import React from 'react';
 
-import { Box, CircularProgress, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 
 import Banner from './Banner.tsx';
 import Workspace from './Workspace.tsx';
