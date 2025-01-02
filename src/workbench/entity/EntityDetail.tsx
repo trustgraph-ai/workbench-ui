@@ -13,6 +13,7 @@ import { useProgressStateStore } from '../state/ProgressState';
 
 import EntityHelp from './Help';
 import ElementNode from './ElementNode';
+import CenterSpinner from '../CenterSpinner';
 
 interface EntityDetailProps {
 }
@@ -33,7 +34,15 @@ const EntityDetail : React.FC <EntityDetailProps> = ({
     const setTool = useWorkbenchStateStore((state) => state.setTool);
 
     if (!selected) {
-        return ( <div>No node selected.</div> );
+        return (
+            <Box>
+                <CenterSpinner/>
+                <Typography variant="body1">
+                    No data to view.  Try Search to find data
+                    to explore.
+                </Typography>
+            </Box>
+        );
     }
 
     const [detail, setDetail] = useState<any>(undefined);
@@ -64,7 +73,15 @@ const EntityDetail : React.FC <EntityDetailProps> = ({
     }, [selected]);
 
     if (!detail)
-        return ( <div>No data.</div> );
+        return (
+            <Box>
+                <CenterSpinner/>
+                <Typography variant="body1">
+                    No data to view.  Try Search to find data
+                    to explore.
+                </Typography>
+            </Box>
+        );
 
     return (
         <>
@@ -72,6 +89,8 @@ const EntityDetail : React.FC <EntityDetailProps> = ({
             <Typography variant="h5" component="div" gutterBottom>
                 {selected.label}
             </Typography>
+
+            <CenterSpinner/>
 
             <Box sx={{mt:2,mb:2}}>
                 <Button
@@ -133,4 +152,5 @@ const EntityDetail : React.FC <EntityDetailProps> = ({
 }
 
 export default EntityDetail;
+
 
