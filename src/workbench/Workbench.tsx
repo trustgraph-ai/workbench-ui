@@ -26,15 +26,15 @@ const Workbench : React.FC = () => {
         <SocketProvider>
 
             <Box className="workbench">
+
                 {
                     (activity.size > 0) && 
-                    <Box
+                    <Paper elevation={1}
                         sx={{
                             position: 'absolute',
                             bottom: '2rem',
                             left: '2rem',
                             zIndex: 999,
-                            m: 0,
                             pt: '0.8rem',
                             pb: '0.8rem',
                             pl: '1.2rem',
@@ -59,11 +59,13 @@ const Workbench : React.FC = () => {
                                         </Typography>
                                 )
                             }
-                    </Box>
+                    </Paper>
                 }
                 <Banner/>
                 <Workspace/>
+
             </Box>
+
         </SocketProvider>
     );
 
