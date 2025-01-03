@@ -1,4 +1,6 @@
 
+/*
+
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -19,21 +21,5 @@ h1 {
   line-height: 1.1;
 }
 
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  cursor: pointer;
-  transition: background-color 0.25s, color 0.25s;
-  margin: 0.2em 0.4em 0.2em 0.4em;
-}
-
-button:hover {
-    background-color: #40607f;
-    color: white;
-}
-
-button:focus, button:focus-visible {
-  outline: 4px auto;
-}
+*/
 

@@ -3,12 +3,12 @@ import React, { useState, useEffect, useRef } from 'react';
 
 import { Typography, Box, IconButton } from '@mui/material';
 import { Help } from '@mui/icons-material';
+import { useTheme } from '@mui/material/styles';
 
 import { ForceGraph3D } from 'react-force-graph';
 import SpriteText from 'three-spritetext'
 
 import { useProgressStateStore } from '../state/ProgressState';
-
 import { useSocket } from '../socket/socket';
 import { useWorkbenchStateStore } from '../state/WorkbenchState';
 import {
@@ -23,6 +23,8 @@ interface GraphViewProps {
 
 const GraphView : React.FC <GraphViewProps> = ({
 }) => {
+
+    const theme = useTheme();
 
     const addActivity = useProgressStateStore(
         (state) => state.addActivity
@@ -141,14 +143,14 @@ const GraphView : React.FC <GraphViewProps> = ({
                 width={1200}
                 height={900}
                 graphData={view}
-                nodeOpacity="0.8"
+                nodeOpacity={0.8}
                 nodeLabel="label"
-                nodeColor="#5285ed"
-                backgroundColor="#000"
+                nodeColor={theme.palette.primary.main}
+                backgroundColor={theme.palette.background.paper}
                 nodeThreeObject={(node : any) => {
                   const sprite = new SpriteText(wrap(node.label, 30));
                   sprite.material.depthWrite = false;
-                  sprite.color = "#5285ed";
+                  sprite.color = theme.palette.secondary.main;
                   sprite.textHeight = 4;
                   return sprite;
                 }}
@@ -156,13 +158,13 @@ const GraphView : React.FC <GraphViewProps> = ({
 
                 linkDirectionalArrowLength={2.5}
                 linkDirectionalArrowRelPos={0.5}
-                linkOpacity="0.6"
-                linkColor="#65c97a"
+                linkOpacity={0.6}
+                linkColor={theme.palette.grey[500]}
                 linkWidth="2"
-                /* linkThreeObjectExtend={true}
+                linkThreeObjectExtend={true}
                 linkThreeObject={(link : any) => {
                     const sprite = new SpriteText(wrap(link.label, 30));
-                    sprite.color = '#e0e0e0';
+                    sprite.color = theme.palette.grey[500];
                     sprite.textHeight = 2.0;
                     return sprite;
                 }} 
@@ -173,7 +175,7 @@ const GraphView : React.FC <GraphViewProps> = ({
                         z: start.z + (end.z - start.z) / 2,
                     };
                     Object.assign(sprite.position, middlePos);
-                }} */
+                }} 
 
                 ref={fgRef}
                 linkDirectionalParticleColor={() => '#65c97a'}

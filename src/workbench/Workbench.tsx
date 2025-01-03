@@ -1,11 +1,12 @@
 
 import React from 'react';
+import { useTheme } from '@mui/material/styles';
 
-import { Box, ThemeProvider, Typography } from '@mui/material';
+import { Box, Typography, Paper } from '@mui/material';
+import { alpha } from '@mui/material/styles';
 
 import Banner from './Banner.tsx';
 import Workspace from './Workspace.tsx';
-import { tgTheme } from './Theme.tsx';
 
 import { useProgressStateStore } from './state/ProgressState';
 
@@ -13,15 +14,16 @@ import './Workbench.scss';
 
 import { SocketProvider } from './socket/SocketProvider';
 
-
 const Workbench : React.FC = () => {
 
     const activity = useProgressStateStore((state) => state.activity);
 
+    const theme = useTheme();
+    const translucentBackground = alpha(theme.palette.background.paper, 0.6);
+
     return (
 
         <SocketProvider>
-            <ThemeProvider theme={tgTheme}>
 
             <Box className="workbench">
                 {
@@ -37,9 +39,11 @@ const Workbench : React.FC = () => {
                             pb: '0.8rem',
                             pl: '1.2rem',
                             pr: '1.2rem',
-                            backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                            color: 'secondary',
-                            border: '1px solid #c0c080',
+                            backgroundColor: translucentBackground,
+                            border: 1,
+                            borderColor: "grey.500",
+                            borderRadius: 2,
+                            width: "40rem",
                         }}
                     >
                             {
@@ -47,8 +51,9 @@ const Workbench : React.FC = () => {
                                     (a, ix) =>
                                         <Typography
                                             key={ix}
-                                            variant="body1"
-                                            sx={{ fontSize: 18 }}
+                                            variant="body2"
+                                            color="grey.500"
+                                            noWrap
                                         >
                                              {a}...
                                         </Typography>
@@ -59,7 +64,6 @@ const Workbench : React.FC = () => {
                 <Banner/>
                 <Workspace/>
             </Box>
-            </ThemeProvider>
         </SocketProvider>
     );
 
