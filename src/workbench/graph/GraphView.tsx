@@ -165,6 +165,7 @@ console.log(width, height, ref);
                 graphData={view}
                 nodeOpacity={0.8}
                 nodeLabel="label"
+                enableNodeDrag={true}
                 nodeColor={theme.palette.primary.main}
                 backgroundColor={theme.palette.background.paper}
                 nodeThreeObject={(node : any) => {
@@ -175,6 +176,11 @@ console.log(width, height, ref);
                   return sprite;
                 }}
                 onNodeClick={nodeClick}
+                onNodeDragEnd={(node : any) => {
+                    node.fx = node.x;
+                    node.fy = node.y;
+                    node.fz = node.z;
+                  }}
 
                 linkDirectionalArrowLength={2.5}
                 linkDirectionalArrowRelPos={0.5}
