@@ -5,6 +5,8 @@ import { Typography, Box, IconButton } from '@mui/material';
 import { Help } from '@mui/icons-material';
 import { useTheme } from '@mui/material/styles';
 
+import { useResizeDetector } from 'react-resize-detector';
+
 import { ForceGraph3D } from 'react-force-graph';
 import SpriteText from 'three-spritetext'
 
@@ -41,6 +43,16 @@ const GraphView : React.FC <GraphViewProps> = ({
 
     const fgRef = useRef<any>();
 
+    const { width, height, ref } = useResizeDetector(
+        {
+//            targetRef: boundingRef,
+//            refreshMode: "debounce",
+//            refreshRate: 50,
+        }
+    );
+
+console.log(width, height, ref);
+
     if (!selected) {
         return (
             <Box>
@@ -53,7 +65,6 @@ const GraphView : React.FC <GraphViewProps> = ({
     }
 
     const [view, setView] = useState<any>(undefined);
-
     useEffect(() => {
 
         const act = "Build subgraph: " + selected.label;
@@ -133,15 +144,24 @@ const GraphView : React.FC <GraphViewProps> = ({
                 </IconButton>
 
             </Box>
-            <Box>
 
             <GraphHelp
                 open={help} onClose={() => setHelp(false)}
             />
 
+            <Box
+                ref={ref}
+                sx={{
+                   border: 1,
+                   borderColor: theme.palette.grey[800],
+                    width: "calc(100% - 0.5rem)",
+                    height: "calc(100% - 6rem)",
+                }}
+            >
+
             <ForceGraph3D
-                width={1200}
-                height={900}
+                width={width}
+                height={height}
                 graphData={view}
                 nodeOpacity={0.8}
                 nodeLabel="label"
