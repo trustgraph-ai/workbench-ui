@@ -178,8 +178,10 @@ const GraphView : React.FC <GraphViewProps> = ({
                 }} 
 
                 ref={fgRef}
-                linkDirectionalParticleColor={() => '#65c97a'}
-                linkDirectionalParticleWidth={2.0}
+                linkDirectionalParticleColor={
+                    () => theme.palette.primary.main
+                }
+                linkDirectionalParticleWidth={1.4}
                 linkHoverPrecision={2}
                 onLinkClick={link => {
                     if (fgRef.current != undefined)
