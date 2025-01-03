@@ -46,7 +46,7 @@ const InputArea : React.FC <InputAreaProps> = ({
                     <TextField
                       fullWidth
                       variant="outlined"
-                      placeholder="Type your message..."
+                      placeholder="Describe the data to explore..."
                       value={input}
                       inputRef={inputRef}
                       onChange={(e) => setInput(e.target.value)}

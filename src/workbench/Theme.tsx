@@ -6,15 +6,15 @@ import { createTheme } from '@mui/material';
 export const tgTheme = createTheme({
   palette: {
     primary: {
-      light: '#c68a88',
-      main: '#9f5858',
-      dark: '#804345',
+      light: '#395da5',
+      main: '#5285ed',
+      dark: '#749df0',
       contrastText: '#fff',
     },
     secondary: {
-      light: '#90c7c8',
-      main: '#589f9f',
-      dark: '#4a8280',
+      light: '#9c9c9c',
+      main: '#e0e0e0',
+      dark: '#e6e6e6',
       contrastText: '#000',
     },
   },

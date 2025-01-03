@@ -48,7 +48,7 @@ const Workbench : React.FC = () => {
                                         <Typography
                                             key={ix}
                                             variant="body1"
-                                            sx={{ fontSize: 12 }}
+                                            sx={{ fontSize: 18 }}
                                         >
                                              {a}...
                                         </Typography>

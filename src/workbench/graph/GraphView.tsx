@@ -43,9 +43,8 @@ const GraphView : React.FC <GraphViewProps> = ({
         return (
             <Box>
                 <CenterSpinner/>
-                <Typography variant="body1">
-                    No data to visualize.  Try Search to find data
-                    to explore.
+                <Typography variant='h6' color='primary'>
+                    No data to view. Try Chat or Search to find data.
                 </Typography>
             </Box>
         );
@@ -80,9 +79,8 @@ const GraphView : React.FC <GraphViewProps> = ({
         return (
             <Box>
                 <CenterSpinner/>
-                <Typography variant="body1">
-                    No data to visualize.  Try Search to find data
-                    to explore.
+                <Typography variant='h6' color='primary'>
+                    No data to view. Try Chat or Search to find data.
                 </Typography>
             </Box>
         );
@@ -143,25 +141,31 @@ const GraphView : React.FC <GraphViewProps> = ({
                 width={1200}
                 height={900}
                 graphData={view}
+                nodeOpacity="0.8"
                 nodeLabel="label"
-                nodeAutoColorBy="group"
+                nodeColor="#5285ed"
+                backgroundColor="#000"
                 nodeThreeObject={(node : any) => {
                   const sprite = new SpriteText(wrap(node.label, 30));
-                  sprite.color = 'white';
-                  sprite.textHeight = 2;
+                  sprite.material.depthWrite = false;
+                  sprite.color = "#5285ed";
+                  sprite.textHeight = 4;
                   return sprite;
                 }}
                 onNodeClick={nodeClick}
 
-                linkDirectionalArrowLength={1.5}
-                linkDirectionalArrowRelPos={1}
-                linkThreeObjectExtend={true}
+                linkDirectionalArrowLength={2.5}
+                linkDirectionalArrowRelPos={0.5}
+                linkOpacity="0.6"
+                linkColor="#65c97a"
+                linkWidth="2"
+                /* linkThreeObjectExtend={true}
                 linkThreeObject={(link : any) => {
                     const sprite = new SpriteText(wrap(link.label, 30));
-                    sprite.color = 'white';
-                    sprite.textHeight = 1.5;
+                    sprite.color = '#e0e0e0';
+                    sprite.textHeight = 2.0;
                     return sprite;
-                }}
+                }} 
                 linkPositionUpdate={(sprite, { start, end }) => {
                     const middlePos = {
                         x: start.x + (end.x - start.x) / 2,
@@ -169,11 +173,11 @@ const GraphView : React.FC <GraphViewProps> = ({
                         z: start.z + (end.z - start.z) / 2,
                     };
                     Object.assign(sprite.position, middlePos);
-                }}
+                }} */
 
                 ref={fgRef}
-                linkDirectionalParticleColor={() => '#a0a0c0'}
-                linkDirectionalParticleWidth={0.8}
+                linkDirectionalParticleColor={() => '#65c97a'}
+                linkDirectionalParticleWidth={2.0}
                 linkHoverPrecision={2}
                 onLinkClick={link => {
                     if (fgRef.current != undefined)
