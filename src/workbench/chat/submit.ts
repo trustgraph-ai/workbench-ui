@@ -1,11 +1,12 @@
 
 import { RDFS_LABEL } from '../state/knowledge-graph';
-import { Socket } from '../state/socket';
+import { Socket } from '../socket/trustgraph-socket';
 import { Entity } from '../state/Entity';
+import { Triple, Value } from '../state/Triple';
       
 export const submitChat = (
     socket : Socket,
-    input : text,
+    input : string,
     addMessage : (role : string, m : string) => void,
     addActivity : (act : string) => void,
     removeActivity : (act : string) => void,

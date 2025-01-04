@@ -79,7 +79,7 @@ export const useLoadStateStore = create<LoadState>()(
         setTextUploads: (v) => set(() => ({
             textUploads: v,
         })),
-        incTextUploads: (v) => set((state) => ({
+        incTextUploads: () => set((state) => ({
             textUploads: state.textUploads + 1,
         })),
 

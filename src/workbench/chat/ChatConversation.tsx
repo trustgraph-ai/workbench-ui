@@ -8,8 +8,6 @@ import ChatHistory from './ChatHistory';
 import InputArea from './InputArea';
 
 import { useSocket } from '../socket/socket';
-import { Entity } from '../state/Entity';
-import { Triple, Value } from '../state/Triple';
 import { useWorkbenchStateStore } from '../state/WorkbenchState';
 import { useProgressStateStore } from '../state/ProgressState';
 import { useChatStateStore } from '../state/ChatState';
