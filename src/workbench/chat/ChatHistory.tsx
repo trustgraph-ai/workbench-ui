@@ -68,7 +68,11 @@ const ChatHistory : React.FC <ChatHistoryProps> = ({
                         <Avatar
                             sx={{ bgcolor: bgcolor, mr: mr, ml: ml }}
                         >
-                            { message.role === 'ai' ? <SmartToy/> : <Person/> }
+                            { message.role === 'ai' ? <img
+                        src="./tg.svg"
+                        alt="Trustgraph logo"
+                        height="45"
+                    /> : <Person/> }
                         </Avatar>
 
                         <ListItemText
