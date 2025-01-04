@@ -9,7 +9,7 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ChatBubble from '@mui/icons-material/ChatBubble';
 import Explore from '@mui/icons-material/Explore';
 import ThreeDRotation from '@mui/icons-material/ThreeDRotation';
-import UploadFile from '@mui/icons-material/UploadFile';
+import InputIcon from '@mui/icons-material/Input';
 import Search from '@mui/icons-material/Search';
 
 import { useWorkbenchStateStore } from './state/WorkbenchState';
@@ -83,7 +83,7 @@ const Toolbox : React.FC <ToolboxProps> = ({
                     onClick={() => { setTool('load') }}
                 >
                     <ListItemIcon>
-                        <UploadFile/>
+                        <InputIcon />
                     </ListItemIcon>
                     <ListItemText primary="Load"/>
                 </ListItemButton>
