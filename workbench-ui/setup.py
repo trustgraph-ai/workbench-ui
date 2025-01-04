@@ -37,7 +37,8 @@ setuptools.setup(
     python_requires='>=3.8',
     install_requires=[
         "aiohttp",
-        "pyyaml",
+        "prometheus-client",
+        "websockets",
     ],
     scripts=[
         "scripts/service",

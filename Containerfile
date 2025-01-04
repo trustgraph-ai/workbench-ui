@@ -1,5 +1,5 @@
 
-FROM alpine:3.20 AS build
+FROM alpine:3.21 AS build
 
 RUN apk add --update --no-cache --no-progress make g++ gcc linux-headers
 
@@ -8,13 +8,11 @@ RUN apk add --update --no-cache --no-progress python3 py3-pip py3-wheel \
 
 RUN mkdir /root/wheels
 
-RUN pip wheel -w /root/wheels --no-deps jsonnet
-
 COPY workbench-ui /root/workbench-ui/
 
 RUN (cd /root/workbench-ui && pip wheel -w /root/wheels --no-deps .)
 
-FROM alpine:3.20
+FROM alpine:3.21
 
 ENV PIP_BREAK_SYSTEM_PACKAGES=1
 

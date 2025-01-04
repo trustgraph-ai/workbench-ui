@@ -1,26 +1,45 @@
 
 import { Triple, Value } from '../state/Triple';
 
+type Timeout = ReturnType<typeof setTimeout>;
+
 const SOCKET_RECONNECTION_TIMEOUT = 2000;
 const SOCKET_URL = "/api/socket";
 
 export interface Socket {
+
     close : () => void;
-    textCompletion : (text : string) => Promise<string>;
+
+    textCompletion : (system : string, text : string) => Promise<string>;
+
     graphRag : (text : string) => Promise<string>;
+
     agent : (
         question : string,
         think : (t : string) => void,
         observe : (t : string) => void,
         answer : (t : string) => void,
+        error : (e : string) => void,
     ) => void;
+
     embeddings : (text : string) => Promise<number[][]>;
+
     graphEmbeddingsQuery : (
         vecs : number[][], limit : number
     ) => Promise<Value[]>;
+
     triplesQuery : (
         s? : Value, p? : Value, o? : Value, limit? : number
     ) => Promise<Triple[]>;
+
+    loadDocument : (
+        document : string, id? : string, metadata? : Triple[],
+    ) => Promise<any>;
+
+    loadText : (
+        text : string, id? : string, metadata? : Triple[],
+    ) => Promise<any>;
+
 };
 
 export interface ApiResponse {
@@ -28,145 +47,319 @@ export interface ApiResponse {
     response : any;
 };
 
-export interface Callbacks {
-    success : (resp: ApiResponse) => void;
-    error : (err : string) => void;
+export interface ServiceCall {
+    success : (resp: any) => void;
+    error : (err : any) => void;
+    timeoutId : Timeout;
+    timeout : number;
+    expiry : number;
+    retries : number;
+};
+
+export interface TextCompletionRequest {
+    system : string;
+    prompt : string;
 };
 
 export interface TextCompletionResponse {
-    id : string;
-    response : {
-        response : string;
-    };
+    response : string;
+};
+
+export interface GraphRagRequest {
+    query : string;
 };
 
 export interface GraphRagResponse {
-    id : string;
-    response : {
-        response : string;
-    };
+    response : string;
+};
+
+export interface AgentRequest {
+    question : string;
 };
 
 export interface AgentResponse {
-    id : string;
-    response : {
-        thought? : string;
-        observation? : string;
-        answer? : string;
-        error? : string;
-    };
+    thought? : string;
+    observation? : string;
+    answer? : string;
+    error? : string;
+};
+
+export interface EmbeddingsRequest {
+    text : string;
 };
 
 export interface EmbeddingsResponse {
-    id : string;
-    response : {
-        vectors : number[][];
-    };
+    vectors : number[][];
+};
+
+export interface GraphEmbeddingsQueryRequest {
+    vectors : number[][];
+    limit : number;
 };
 
 export interface GraphEmbeddingsQueryResponse {
-    id : string;
-    response : {
-        entities : Value[];
-    };
+    entities : Value[];
+};
+
+export interface TriplesQueryRequest {
+    s? : Value;
+    p? : Value;
+    o? : Value;
+    limit : number;
 };
 
 export interface TriplesQueryResponse {
-    id : string;
-    response : {
-        response : Triple[];
-    };
+    response : Triple[];
 };
 
-export const createTrustGraphSocket = () : Socket => {
+export interface LoadDocumentRequest {
+    id? : string;
+    data : string;
+    metadata? : Triple[];
+};
 
-    let id = 1;
-    let ws = new WebSocket(SOCKET_URL);
+export interface LoadDocumentResponse {
+};
 
-    let inFlight : { [key : string] : Callbacks } = {}
+export interface LoadTextRequest {
+    id? : string;
+    text : string;
+    charset? : string;
+    metadata? : Triple[];
+};
 
-    const onMessage = (message : MessageEvent) => {
+export interface LoadTextResponse {
+};
 
-        if (!message.data) return;
-        const obj = JSON.parse(message.data);
+export interface TextCompletionResponse {
+    response : string;
+};
 
-        if (!obj.id) return;
+function makeid(length : number) {
 
-        if (inFlight[obj.id]) {
-            inFlight[obj.id].success(obj);
+    const array = new Uint32Array(length);
+    crypto.getRandomValues(array);
+
+    const characters = 'abcdefghijklmnopqrstuvwxyz1234567890';
+
+    return array.reduce(
+        (acc, current) => acc + characters[current % (characters.length)],
+        ""
+    );
+
+}
+
+export class SocketImplementation {
+
+    ws? : WebSocket;
+    tag : string;
+    id : number;
+    inflight : { [key : string] : ServiceCall } = {};
+
+    constructor() {
+
+        this.tag = makeid(16);
+        this.id = 1;
+
+        this.openSocket();
+
+    }
+
+    openSocket() {
+        this.ws = new WebSocket(SOCKET_URL);
+
+        const onMessage = (message : MessageEvent) => {
+
+            if (!message.data) return;
+
+            const obj = JSON.parse(message.data);
+
+//            console.log("<--", obj);
+
+            if (!obj.id) return;
+
+            if (this.inflight[obj.id]) {
+                this.inflight[obj.id].success(obj.response);
+            } else {
+//                console.log("Message ID", obj.id, "not known");
+            }
+
+        };
+
+        const onClose = () => {
+            console.log("[socket close]");
+            this.ws = undefined;
+            setTimeout(
+                () => { this.reopen() }, 
+                SOCKET_RECONNECTION_TIMEOUT,
+            );
+        };
+
+        const onOpen = () => {
+            console.log("[socket open]");
         }
 
-    };
+        this.ws.addEventListener("message", onMessage);
+        this.ws.addEventListener("close", onClose);
+        this.ws.addEventListener("open", onOpen);
 
-    const onClose = () => {
-        console.log("CLOSE");
-        setTimeout(
-            () => {
-                ws = new WebSocket(SOCKET_URL);
+    }
+
+    reopen() {
+        console.log("[socket reopen]");
+        this.openSocket();
+    }
+
+    close() {
+          // Maybe these 'leak' websocket references?
+//        this.ws.removeEventListener("message", onMessage);
+//        this.ws.removeEventListener("close", onClose);
+//        this.ws.removeEventListener("open", doOpen);
+        if (this.ws) {
+            this.ws.close();
+            this.ws = undefined;
+        }
+    }
+
+    getNextId() {
+        const mid = this.tag + "-" + this.id.toString();
+        this.id++;
+        return mid;
+    }
+
+    timeout(mid : string) {
+
+//        console.log("Timeout", mid);
+
+//        console.log("T>", this.inflight[mid].expiry, Date.now());
+//        console.log("Timeout in attempt", this.inflight[mid].retries);
+
+        if (this.inflight[mid].expiry <= Date.now()) {
+
+//            console.log("Timeout expired");
+
+            if (this.inflight[mid].retries <= 0) {
+                console.log("Timeout for", mid);
+                this.inflight[mid].error("Timeout/retries");
+                delete this.inflight[mid];
+                return;
+            }
+
+            this.inflight[mid].retries -= 1;
+
+//            console.log("Attempt", this.inflight[mid].retries, "...");
+
+            const expiry = Date.now() + this.inflight[mid].timeout;
+            this.inflight[mid].expiry = expiry;
+
+            this.inflight[mid].timeoutId = setTimeout(
+                () => this.timeout(mid),
+                this.inflight[mid].timeout
+            );
+
+            return;
+
+        }
+
+//        console.log("Reset timer...");
+        this.inflight[mid].timeoutId = setTimeout(
+            () => this.timeout(mid),
+            this.inflight[mid].expiry - Date.now(),
+        );
+
+    }
+
+    makeRequest<RequestType, ResponseType>(
+        service : string, request : RequestType,
+        timeout? : number,
+        retries? : number,
+    ) {
+
+        const mid = this.getNextId();
+
+        if (timeout == undefined) timeout = 10000;
+
+        if (retries == undefined) retries = 3;
+
+        const msg = {
+            id: mid,
+            service: service,
+            request: request,
+        };
+
+        return new Promise<ResponseType>((resolve, reject) => {
+
+            const expiry = Date.now() + timeout;
+
+            this.inflight[mid] = {
+                success: resolve,
+                error: reject,
+                timeoutId: setTimeout(
+                    () => this.timeout(mid),
+                    timeout,
+                ),
+                timeout: timeout,
+                expiry: expiry,
+                retries: retries,
+            };
+
+//            console.log("-->", msg);
+
+            if (this.ws) {
+                this.ws.send(JSON.stringify(msg));
+            }
+
+            // FIXME: Else arrange for re-connect & retry
+
+        }).then(
+
+            (obj) => {
+
+//                console.log("Success at attempt", this.inflight[mid].retries);
+
+
+                clearTimeout(this.inflight[mid].timeoutId);
+                delete this.inflight[mid];
+
+                return (obj as ResponseType);
+
+            }
+        );
+
+    }
+
+
+    textCompletion(system : string, text : string) : Promise<string> {
+        return this.makeRequest<TextCompletionRequest, TextCompletionResponse>(
+            "text-completion",
+            {
+                system: system,
+                prompt: text,
             },
-            SOCKET_RECONNECTION_TIMEOUT
-        );
-    };
-
-    const textCompletion = (text : string) => {
-        const mid = "m" + id.toString();
-        id++;
-        const msg = JSON.stringify({
-            "id": mid,
-            "service": "text-completion",
-            "request": {
-                "system": "You are a helpful assistant.",
-                "prompt": text,
-            }
-        });
-
-        return new Promise<TextCompletionResponse>((resolve, reject) => {
-
-            inFlight[mid] = { success: resolve, error: reject};
-
-            ws.send(msg);
-
-        }).then(
-            (obj) => {
-                delete inFlight[obj.id];
-                return obj.response.response;
-            }
-        );
+            30000,
+        ).then(r => r.response);
     }
 
-    const graphRag = (text : string) => {
-        const mid = "m" + id.toString();
-        id++;
-        const msg = JSON.stringify({
-            "id": mid,
-            "service": "graph-rag",
-            "request": {
-                "query": text,
-            }
-        });
-
-        return new Promise<GraphRagResponse>((resolve, reject) => {
-
-            inFlight[mid] = { success: resolve, error: reject};
-
-            ws.send(msg);
-
-        }).then(
-            (obj) => {
-                delete inFlight[obj.id];
-                return obj.response.response;
-            }
-        );
+    graphRag(text : string) {
+        return this.makeRequest<GraphRagRequest, GraphRagResponse>(
+            "graph-rag",
+            {
+                query: text,
+            },
+            60000,
+        ).then(r => r.response);
     }
 
-    const agent = (
+    agent(
         question : string,
         think : (s : string) => void,
         observe : (s : string) => void,
         answer : (s : string) => void,
-    ) => {
-        const mid = "m" + id.toString();
-        id++;
+        error : (s : string) => void,
+    ) {
+
+        const mid = this.getNextId();
+
         const msg = JSON.stringify({
             "id": mid,
             "service": "agent",
@@ -177,124 +370,137 @@ export const createTrustGraphSocket = () : Socket => {
         });
 
         const err = (e : string) => {
+            error(e);
             console.log("Error:", e);
         };
 
-        const ok = (e : AgentResponse) => {
-            if (e.response.thought) think(e.response.thought);
-            if (e.response.observation) observe(e.response.observation);
-            if (e.response.answer) {
-                answer(e.response.answer);
-                delete inFlight[mid];
+        const ok = (e : ApiResponse) => {
+            const resp = (e.response as AgentResponse);
+            if (resp.thought) think(resp.thought);
+            if (resp.observation) observe(resp.observation);
+            if (resp.answer) {
+
+                answer(resp.answer);
+
+                clearTimeout(this.inflight[mid].timeoutId);
+                delete this.inflight[mid];
+
             }
         };
 
-        inFlight[mid] = { success: ok, error: err};
+        const timeout = 60000;
+        const retries = 2;
+        const expiry = Date.now() + timeout;
 
-        ws.send(msg);
+        this.inflight[mid] = {
+            success: ok,
+            error: err,
+            timeoutId: setTimeout(
+                () => this.timeout(mid),
+                timeout,
+            ),
+            timeout: timeout,
+            expiry: expiry,
+            retries: retries,
+        };
+
+        if (this.ws) {
+            this.ws.send(msg);
+        } else {
+            // Arrange for send later
+        }
 
     }
 
-    const embeddings = (text : string) => {
-        const mid = "m" + id.toString();
-        id++;
-        const msg = JSON.stringify({
-            "id": mid,
-            "service": "embeddings",
-            "request": {
-                "text": text,
-            }
-        });
-
-        return new Promise<EmbeddingsResponse>((resolve, reject) => {
-            inFlight[mid] = { success: resolve, error: reject};
-            ws.send(msg);
-        }).then(
-            (obj) => {
-                delete inFlight[obj.id];
-                return obj.response.vectors;
-            }
-        );
+    embeddings(text : string) {
+        return this.makeRequest<EmbeddingsRequest, EmbeddingsResponse>(
+            "embeddings",
+            {
+                text: text,
+            },
+            30000
+        ).then(r => r.vectors);
     }
 
-    const graphEmbeddingsQuery = (
+    graphEmbeddingsQuery(
         vecs : number[][],
         limit : number | undefined,
-    ) => {
-        const mid = "m" + id.toString();
-        id++;
-        const msg = JSON.stringify({
-            "id": mid,
-            "service": "graph-embeddings-query",
-            "request": {
-                "vectors": vecs,
-                "limit": limit ? limit : 20,
-            }
-        });
+    ) {
+        return this.makeRequest<
+            GraphEmbeddingsQueryRequest, GraphEmbeddingsQueryResponse
+        >(
+            "graph-embeddings-query",
+            {
+                vectors: vecs,
+                limit: limit ? limit : 20,
+            },
+            30000,
+        ).then(r => r.entities);
 
-        return new Promise<GraphEmbeddingsQueryResponse>((resolve, reject) => {
-            inFlight[mid] = { success: resolve, error: reject};
-            ws.send(msg);
-        }).then(
-            (obj) => {
-                delete inFlight[obj.id];
-                return obj.response.entities;
-            }
-        );
     }
 
-    const triplesQuery = (
+    triplesQuery(
         s? : Value,
         p? : Value,
         o? : Value,
         limit? : number,
-    ) => {
-        const mid = "m" + id.toString();
-        id++;
-
-        const msg = JSON.stringify({
-            "id": mid,
-            "service": "triples-query",
-            "request": {
+    ) {
+        return this.makeRequest<TriplesQueryRequest, TriplesQueryResponse>(
+            "triples-query",
+            {
                 s: s, p: p, o: o,
                 limit: limit ? limit : 20,
-            }
-        });
+            },
+            30000,
+        ).then(r => r.response);
+    }
 
-        return new Promise<TriplesQueryResponse>((resolve, reject) => {
-            inFlight[mid] = { success: resolve, error: reject};
-            ws.send(msg);
-        }).then(
-            (obj) => {
-                delete inFlight[obj.id];
-                return obj.response.response;
-            }
+    loadDocument(
+
+        // base64-encoded doc
+        document : string,
+
+        id? : string,
+        metadata? : Triple[],
+
+    ) {
+        return this.makeRequest<LoadDocumentRequest, LoadDocumentResponse>(
+            "document-load",
+            {
+                "id": id,
+                "metadata": metadata,
+                "data": document,
+            },
+            30000,
         );
     }
 
-    const doOpen = () => {
-        console.log("OPEN");
+    loadText(
+
+        // base64-encoded doc
+        text : string,
+
+        id? : string,
+        metadata? : Triple[],
+
+        charset? : string,
+
+    ) {
+        return this.makeRequest<LoadTextRequest, LoadTextResponse>(
+            "text-load",
+            {
+                "id": id,
+                "metadata": metadata,
+                "text": text,
+                "charset": charset,
+            },
+            30000,
+        );
     }
 
-    const doClose = () => {
-        ws.removeEventListener("message", onMessage);
-        ws.removeEventListener("close", onClose);
-        ws.removeEventListener("open", doOpen);
-    };
+};
 
-    ws.addEventListener("message", onMessage);
-    ws.addEventListener("close", onClose);
-    ws.addEventListener("open", doOpen);
-
-    return {
-        close: doClose,
-        textCompletion: textCompletion,
-        graphRag: graphRag,
-        agent: agent,
-        embeddings: embeddings,
-        graphEmbeddingsQuery: graphEmbeddingsQuery,
-        triplesQuery: triplesQuery,
-    };
-
+export const createTrustGraphSocket = () : Socket => {
+    return new SocketImplementation();
 }
 

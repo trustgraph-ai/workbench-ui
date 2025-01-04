@@ -1,13 +1,14 @@
 
 import React, {  useEffect, useRef } from 'react';
 
-import {
-    List, ListItem, ListItemText, Avatar, Typography
-} from '@mui/material';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
+import Avatar from '@mui/material/Avatar';
+import Typography from '@mui/material/Typography';
+import Person from '@mui/icons-material/Person';
 
-import { SmartToy, Person } from '@mui/icons-material';
-
-import { useWorkbenchStateStore } from './state/WorkbenchState';
+import { useChatStateStore } from '../state/ChatState';
 
 interface ChatHistoryProps {
 }
@@ -15,7 +16,7 @@ interface ChatHistoryProps {
 const ChatHistory : React.FC <ChatHistoryProps> = ({
 }) => {
 
-    const messages = useWorkbenchStateStore((state) => state.messages);
+    const messages = useChatStateStore((state) => state.messages);
 
     const scrollRef = useRef<HTMLInputElement>(null);
 
@@ -65,11 +66,15 @@ const ChatHistory : React.FC <ChatHistoryProps> = ({
                         <Avatar
                             sx={{ bgcolor: bgcolor, mr: mr, ml: ml }}
                         >
-                            { message.role === 'ai' ? <SmartToy/> : <Person/> }
+                            { message.role === 'ai' ? <img
+                        src="./tg.svg"
+                        alt="Trustgraph logo"
+                        height="45"
+                    /> : <Person/> }
                         </Avatar>
 
                         <ListItemText
-                            primary={message.role === 'ai' ? 'AI' : 'You'}
+                            primary={message.role === 'ai' ? 'TrustGraph' : 'User'}
                             secondary={
                               <Typography
                                   sx={{ display: 'inline' }}

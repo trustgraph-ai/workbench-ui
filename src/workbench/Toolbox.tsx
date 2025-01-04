@@ -1,9 +1,16 @@
 
 import React from 'react';
 
-import { List, ListItemButton, ListItemText } from '@mui/material';
-import { ListItemIcon } from '@mui/material';
-import { ChatBubble } from '@mui/icons-material';
+import List from '@mui/material/List';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemText from '@mui/material/ListItemText';
+import ListItemIcon from '@mui/material/ListItemIcon';
+
+import ChatBubble from '@mui/icons-material/ChatBubble';
+import Explore from '@mui/icons-material/Explore';
+import ThreeDRotation from '@mui/icons-material/ThreeDRotation';
+import InputIcon from '@mui/icons-material/Input';
+import Search from '@mui/icons-material/Search';
 
 import { useWorkbenchStateStore } from './state/WorkbenchState';
 
@@ -38,14 +45,25 @@ const Toolbox : React.FC <ToolboxProps> = ({
                 </ListItemButton>
 
                 <ListItemButton
+                    key={'search'}
+                    selected={tool == 'search'}
+                    onClick={() => { setTool('search') }}
+                >
+                    <ListItemIcon>
+                        <Search/>
+                    </ListItemIcon>
+                    <ListItemText primary={'Search'}/>
+                </ListItemButton>
+
+                <ListItemButton
                     key={'entity'}
                     selected={tool == 'entity'}
                     onClick={() => { setTool('entity') }}
                 >
                     <ListItemIcon>
-                        <ChatBubble/>
+                        <Explore/>
                     </ListItemIcon>
-                    <ListItemText primary="Entity"/>
+                    <ListItemText primary="Explore"/>
                 </ListItemButton>
 
                 <ListItemButton
@@ -54,9 +72,20 @@ const Toolbox : React.FC <ToolboxProps> = ({
                     onClick={() => { setTool('graph') }}
                 >
                     <ListItemIcon>
-                        <ChatBubble/>
+                        <ThreeDRotation/>
                     </ListItemIcon>
-                    <ListItemText primary="Graph"/>
+                    <ListItemText primary="Visualize"/>
+                </ListItemButton>
+
+                <ListItemButton
+                    key={'load'}
+                    selected={tool == 'load'}
+                    onClick={() => { setTool('load') }}
+                >
+                    <ListItemIcon>
+                        <InputIcon />
+                    </ListItemIcon>
+                    <ListItemText primary="Load"/>
                 </ListItemButton>
 
             </List>

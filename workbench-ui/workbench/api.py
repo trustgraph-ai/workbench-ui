@@ -2,11 +2,8 @@
 import asyncio
 import aiohttp
 from aiohttp import web
-import yaml
-import zipfile
-from io import BytesIO
 import importlib.resources
-import json
+import websockets.asyncio.client as wsclient
 
 import logging
 logger = logging.getLogger("api")
@@ -21,7 +18,7 @@ class Api:
     def __init__(self, **config):
 
         self.port = int(config.get("port", "8888"))
-        self.gateway = config.get("gateway", "http://api-gateway:8088")
+        self.gateway = config.get("gateway", "ws://api-gateway:8088")
 
         if self.gateway[-1] != "/":
             self.gateway += "/"
@@ -112,23 +109,23 @@ class Api:
 
     async def socket(self, request):
 
-        ws_server = web.WebSocketResponse()
-        await ws_server.prepare(request)
+        # Max message size is 50MB
+        ws_server = web.WebSocketResponse(max_msg_size=52428800)
 
-        session = aiohttp.ClientSession()
+        await ws_server.prepare(request)
 
         url = self.gateway + "api/v1/socket"
 
         running = Running()
 
-        async with session.ws_connect(url) as ws_client:
+        async with wsclient.connect(url, max_size=52428800) as ws_client:
 
-            async def wsforward(ws_from, ws_to, running):
+            async def outbound(ws_from, ws_to, running):
 
                 while running.get():
 
                     try:
-                        msg = await ws_from.receive(timeout=0.5)
+                        msg = await ws_from.receive(timeout=2)
                     except TimeoutError:
                         continue
 
@@ -136,7 +133,7 @@ class Api:
                     md = msg.data
 
                     if mt == aiohttp.WSMsgType.TEXT:
-                        await ws_to.send_str(md)
+                        await ws_to.send(md)
                     elif mt == aiohttp.WSMsgType.BINARY:
                         await ws_to.send_bytes(md)
                     elif mt == aiohttp.WSMsgType.PING:
@@ -151,11 +148,30 @@ class Api:
 
                 running.stop()
 
+            async def inbound(ws_from, ws_to, running):
+
+                while running.get():
+
+                    try:
+                        msg = await asyncio.wait_for(
+                            ws_from.recv(),
+                            2
+                        )
+                    except TimeoutError:
+                        continue
+                    except Exception as e:
+                        print(e)
+                        break
+
+                    await ws_to.send_str(msg)
+
+                running.stop()
+
             s2c_task = asyncio.create_task(
-                wsforward(ws_server, ws_client, running)
+                inbound(ws_client, ws_server, running)
             )
 
-            await wsforward(ws_client, ws_server, running)
+            await outbound(ws_server, ws_client, running)
 
             running.stop()
 
@@ -163,8 +179,6 @@ class Api:
             await ws_client.close()
 
             await s2c_task
-
-        await session.close()
 
         return ws_server
 

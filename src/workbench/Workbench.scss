@@ -1,14 +1,8 @@
 
-pre {
-    background-color: #f9fcff;
-    padding: 1rem;
-    border: 1px solid #e0e0e0;
-}
-
 .workbench {
-    margin: 0.5rem;
+    padding: 1rem;
     width: calc(100% - 1rem);
-    height: calc(100% - 1rem);
+    height: calc(100% - 2rem);
 }
 
 .banner {
@@ -17,6 +11,6 @@ pre {
 }
 
 .workspace {
-    height: calc(100% - 5rem);
+    height: calc(100% - 3rem);
 }
 
