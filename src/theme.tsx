@@ -1,5 +1,5 @@
 
-import { createTheme } from '@mui/material';
+import { createTheme } from '@mui/material/styles';
 import darkScrollbar from '@mui/material/darkScrollbar';
 
 export const tgTheme = createTheme({
