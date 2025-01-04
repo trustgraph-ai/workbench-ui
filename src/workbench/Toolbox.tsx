@@ -1,11 +1,16 @@
 
 import React from 'react';
 
-import { List, ListItemButton, ListItemText } from '@mui/material';
-import { ListItemIcon } from '@mui/material';
-import {
-    ChatBubble, Explore, ThreeDRotation, UploadFile, Search,
-} from '@mui/icons-material';
+import List from '@mui/material/List';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemText from '@mui/material/ListItemText';
+import ListItemIcon from '@mui/material/ListItemIcon';
+
+import ChatBubble from '@mui/icons-material/ChatBubble';
+import Explore from '@mui/icons-material/Explore';
+import ThreeDRotation from '@mui/icons-material/ThreeDRotation';
+import UploadFile from '@mui/icons-material/UploadFile';
+import Search from '@mui/icons-material/Search';
 
 import { useWorkbenchStateStore } from './state/WorkbenchState';
 

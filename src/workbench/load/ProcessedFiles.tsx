@@ -1,10 +1,13 @@
 
 import React from 'react';
 
-import {
-    Box, List, ListItem, ListItemText, ListItemIcon,
-} from '@mui/material';
-import { Check } from '@mui/icons-material';
+import Box from '@mui/material/Box';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
+import ListItemIcon from '@mui/material/ListItemIcon';
+
+import Check from '@mui/icons-material/Check';
 
 interface ProcessedFilesProps {
     uploaded : string[],

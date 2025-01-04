@@ -1,9 +1,11 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 
-import { Typography, Box, IconButton } from '@mui/material';
-import { Help } from '@mui/icons-material';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
 import { useTheme } from '@mui/material/styles';
+import Help from '@mui/icons-material/Help';
 
 import { useResizeDetector } from 'react-resize-detector';
 
@@ -13,10 +15,7 @@ import SpriteText from 'three-spritetext'
 import { useProgressStateStore } from '../state/ProgressState';
 import { useSocket } from '../socket/socket';
 import { useWorkbenchStateStore } from '../state/WorkbenchState';
-import {
-    createSubgraph, updateSubgraph
-} from '../state/knowledge-graph-viz';
-
+import { createSubgraph, updateSubgraph } from '../state/knowledge-graph-viz';
 import GraphHelp from './Help';
 import CenterSpinner from '../CenterSpinner';
 
@@ -27,6 +26,8 @@ const GraphView : React.FC <GraphViewProps> = ({
 }) => {
 
     const theme = useTheme();
+
+    const setError = useProgressStateStore((state) => state.setError);
 
     const addActivity = useProgressStateStore(
         (state) => state.addActivity
@@ -77,6 +78,7 @@ const GraphView : React.FC <GraphViewProps> = ({
         ).catch(
             (err) => {
                 console.log("Error: ", err);
+                setError(err.toString());
                 removeActivity(act);
             }
         );
@@ -112,6 +114,7 @@ const GraphView : React.FC <GraphViewProps> = ({
         ).catch(
             (err) => {
                 console.log("Error: ", err);
+                setError(err.toString());
                 removeActivity(act);
             }
         );
@@ -165,7 +168,7 @@ const GraphView : React.FC <GraphViewProps> = ({
                 backgroundColor={theme.palette.background.paper}
                 nodeThreeObject={(node : any) => {
                   const sprite = new SpriteText(wrap(node.label, 30));
-                  sprite.material.depthWrite = false;
+//                  sprite.material.depthWrite = false;
                   sprite.color = theme.palette.secondary.main;
                   sprite.textHeight = 4;
                   return sprite;

@@ -1,9 +1,10 @@
 
 import React from 'react';
 
-import { Button, Box } from '@mui/material';
+import Button from '@mui/material/Button';
+import Box from '@mui/material/Box';
 import { styled } from '@mui/material/styles';
-import { CloudUpload } from '@mui/icons-material';
+import CloudUpload from '@mui/icons-material/CloudUpload';
 
 import SelectedFiles from './SelectedFiles';
 import ProcessedFiles from './ProcessedFiles';

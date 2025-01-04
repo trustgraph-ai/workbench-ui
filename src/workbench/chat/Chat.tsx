@@ -3,10 +3,7 @@ import React from 'react';
 
 import ChatConversation from './ChatConversation';
 
-interface ChatProps {
-}
-
-const Chat : React.FC <ChatProps> = ({
+const Chat : React.FC <{}> = ({
 }) => {
 
     return (

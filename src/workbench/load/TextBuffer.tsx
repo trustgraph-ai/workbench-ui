@@ -1,7 +1,9 @@
 
 import React from 'react';
 
-import { Box, TextField, Button } from '@mui/material';
+import Box from '@mui/material/Box';
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
 
 interface TextBufferProps {
     value : string,

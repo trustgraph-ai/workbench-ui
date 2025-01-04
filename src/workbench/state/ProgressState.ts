@@ -5,8 +5,12 @@ export interface ProgressState {
 
     activity : Set<string>;
 
+    error : string;
+
     addActivity : (act : string) => void;
     removeActivity : (act : string) => void;
+
+    setError : (error : string) => void;
 
 }
 
@@ -14,7 +18,9 @@ export const useProgressStateStore = create<ProgressState>()(
 
     (set) => ({
 
-        activity : new Set<string>([]),
+        activity: new Set<string>([]),
+
+        error: "",
 
         addActivity: (act) => set((state) => {
             let n = new Set(state.activity);
@@ -32,9 +38,16 @@ export const useProgressStateStore = create<ProgressState>()(
                 ...state,
                 activity: n,
             };
-        })
+        }),
 
-    })
+        setError: (error) => set((state) => {
+            return {
+                ...state,
+                error: error,
+            };
+        }),
+
+    }),
 
 );
 

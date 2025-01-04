@@ -1,16 +1,13 @@
 
 import React, { useState } from 'react';
 
-import {
-    Box, TextField, IconButton
-} from '@mui/material';
+import Box from '@mui/material/Box';
+import TextField from '@mui/material/TextField';
+import IconButton from '@mui/material/IconButton';
+import Help from '@mui/icons-material/Help';
 
 import { useProgressStateStore } from '../state/ProgressState';
-
-import { Help } from '@mui/icons-material';
-
 import { useSearchStateStore } from '../state/SearchState';
-
 import SearchHelp from './SearchHelp';
 import ProgressSubmitButton from '../ProgressSubmitButton';
 

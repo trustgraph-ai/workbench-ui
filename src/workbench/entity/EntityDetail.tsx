@@ -1,16 +1,19 @@
 
 import React, { useState, useEffect } from 'react';
 
-import { Typography, Box, Stack, Button, IconButton } from '@mui/material';
-
-import { ArrowForward, ThreeDRotation, Help } from '@mui/icons-material';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
+import Stack from '@mui/material/Stack';
+import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
+import ArrowForward from '@mui/icons-material/ArrowForward';
+import ThreeDRotation from '@mui/icons-material/ThreeDRotation';
+import Help from '@mui/icons-material/Help';
 
 import { useSocket } from '../socket/socket';
 import { useWorkbenchStateStore } from '../state/WorkbenchState';
 import { getTriples } from '../state/knowledge-graph';
-
 import { useProgressStateStore } from '../state/ProgressState';
-
 import EntityHelp from './Help';
 import ElementNode from './ElementNode';
 import CenterSpinner from '../CenterSpinner';
@@ -29,6 +32,8 @@ const EntityDetail : React.FC <EntityDetailProps> = ({
     );
 
     const socket = useSocket();
+
+    const setError = useProgressStateStore((state) => state.setError);
 
     const selected = useWorkbenchStateStore((state) => state.selected);
     const setTool = useWorkbenchStateStore((state) => state.setTool);
@@ -61,10 +66,12 @@ const EntityDetail : React.FC <EntityDetailProps> = ({
             (d) => {
                 setDetail(d);
                 removeActivity(act);
+                setError("");
             }
         ).catch(
             (err) => {
                 console.log("Error: ", err);
+                setError(err.toString());
                 removeActivity(act);
             }
         );

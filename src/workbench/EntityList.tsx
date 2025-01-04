@@ -1,11 +1,13 @@
 
 import React from 'react';
 
-import { List, ListItemButton, ListItemText, Avatar } from '@mui/material';
-import { Search } from '@mui/icons-material';
+import List from '@mui/material/List';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemText from '@mui/material/ListItemText';
+import Avatar from '@mui/material/Avatar';
+import Search from '@mui/icons-material/Search';
 
 import { Entity } from './state/Entity';
-
 import { useWorkbenchStateStore } from './state/WorkbenchState';
 
 interface EntityListProps {
