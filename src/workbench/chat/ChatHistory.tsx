@@ -6,8 +6,6 @@ import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import Avatar from '@mui/material/Avatar';
 import Typography from '@mui/material/Typography';
-
-import SmartToy from '@mui/icons-material/SmartToy';
 import Person from '@mui/icons-material/Person';
 
 import { useChatStateStore } from '../state/ChatState';

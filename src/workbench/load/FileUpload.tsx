@@ -10,7 +10,6 @@ import InputIcon from '@mui/icons-material/Input';
 import SelectedFiles from './SelectedFiles';
 import ProcessedFiles from './ProcessedFiles';
 import { useLoadStateStore } from '../state/LoadState';
-import { Typography } from '../../../node_modules/@mui/material/index';
 
 const VisuallyHiddenInput = styled('input')({
   clip: 'rect(0 0 0 0)',
