@@ -4,11 +4,13 @@ import React from 'react';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import { styled } from '@mui/material/styles';
-import CloudUpload from '@mui/icons-material/CloudUpload';
+import PostAddIcon from '@mui/icons-material/PostAdd';
+import InputIcon from '@mui/icons-material/Input';
 
 import SelectedFiles from './SelectedFiles';
 import ProcessedFiles from './ProcessedFiles';
 import { useLoadStateStore } from '../state/LoadState';
+import { Typography } from '../../../node_modules/@mui/material/index';
 
 const VisuallyHiddenInput = styled('input')({
   clip: 'rect(0 0 0 0)',
@@ -43,7 +45,7 @@ const FileUpload : React.FC<FileUploadProps> = ({
 
     return (
         <>
-
+            
             <Box>
 
                 <Button
@@ -51,10 +53,10 @@ const FileUpload : React.FC<FileUploadProps> = ({
                   role={undefined}
                   variant="contained"
                   tabIndex={-1}
-                  startIcon={<CloudUpload />}
+                  startIcon={<PostAddIcon />}
                   sx={{ m: 1 }}
                 >
-                    Upload {kind} files
+                    Select {kind} files
                     <VisuallyHiddenInput
                       type="file"
                       onChange={
@@ -70,8 +72,9 @@ const FileUpload : React.FC<FileUploadProps> = ({
                     sx={{ m: 1 }}
                     onClick={submit}
                     disabled={files.length < 1}
+                    startIcon={<InputIcon />}
                 >
-                    Submit
+                    Load
                 </Button>
 
             </Box>

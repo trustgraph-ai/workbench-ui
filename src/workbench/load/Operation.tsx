@@ -46,13 +46,13 @@ const Operation : React.FC<OperationProps> = ({
                   aria-label="Operation"
                 >
                   <ToggleButton value="upload-pdf">
-                      Upload PDF
+                      PDF
                   </ToggleButton>
                   <ToggleButton value="upload-text">
-                      Upload text
+                      TEXT
                   </ToggleButton>
                   <ToggleButton value="paste-text">
-                      Paste text
+                      Paste
                   </ToggleButton>
                 </ToggleButtonGroup>
 

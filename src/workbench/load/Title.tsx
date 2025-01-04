@@ -24,8 +24,8 @@ const Title : React.FC<TitleProps> = ({
                     sx={{
                         width: '50rem',
                     }}
-                    label="Title"
-                    helperText="document title (optional)"
+                    label="Title (optional)"
+                    helperText="File title (not available for loading multiple files at once)"
                     defaultValue={value}
                     onChange={(e) => setValue(e.target.value)}
                 />
