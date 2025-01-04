@@ -45,9 +45,6 @@ const GraphView : React.FC <GraphViewProps> = ({
 
     const { width, height, ref } = useResizeDetector(
         {
-//            targetRef: boundingRef,
-//            refreshMode: "debounce",
-//            refreshRate: 50,
         }
     );
 
@@ -181,7 +178,7 @@ const GraphView : React.FC <GraphViewProps> = ({
                   }}
 
                 linkDirectionalArrowLength={2.5}
-                linkDirectionalArrowRelPos={0.5}
+                linkDirectionalArrowRelPos={0.75}
                 linkOpacity={0.6}
                 linkColor={theme.palette.grey[500]}
                 linkWidth="2"
