@@ -2,7 +2,6 @@
 import React, { useState } from 'react';
 
 import Button from '@mui/material/Button';
-import Snackbar, { SnackbarCloseReason } from '@mui/material/Snackbar';
 
 import { useProgressStateStore } from '../state/ProgressState';
 import { useSocket } from '../socket/socket';
@@ -31,7 +30,8 @@ const Search : React.FC <SearchProps> = ({
         (state) => state.removeActivity
     );
 
-    const [error, setError] = useState<string>("");
+    const error = useProgressStateStore((state) => state.error);
+    const setError = useProgressStateStore((state) => state.setError);
 
     const socket = useSocket();
 
@@ -89,37 +89,11 @@ const Search : React.FC <SearchProps> = ({
         e.preventDefault();
     
     }
-  const handleClose = (
-      _event : React.SyntheticEvent | Event,
-      reason?: SnackbarCloseReason,
-  ) => {
-      if (reason === 'clickaway') {
-          return;
-      }
-      setError("");
-  };
-
-  const action = (
-      <>
-          <Button color="error" size="small" onClick={() => setError("")}>
-              Close
-          </Button>
-      </>
-  );
 
     return (
         <>
 
             <SearchInput submit={submit}/>
-
-            <Snackbar
-                open={error != ""}
-                autoHideDuration={6000}
-                onClose={handleClose}
-                message={error}
-                action={action}
-                anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-            />
 
             {
                 view.length > 0 &&

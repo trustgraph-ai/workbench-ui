@@ -1,9 +1,11 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 
-import { Typography, Box, IconButton } from '@mui/material';
-import { Help } from '@mui/icons-material';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
 import { useTheme } from '@mui/material/styles';
+import Help from '@mui/icons-material/Help';
 
 import { useResizeDetector } from 'react-resize-detector';
 
@@ -27,6 +29,8 @@ const GraphView : React.FC <GraphViewProps> = ({
 }) => {
 
     const theme = useTheme();
+
+    const setError = useProgressStateStore((state) => state.setError);
 
     const addActivity = useProgressStateStore(
         (state) => state.addActivity
@@ -77,6 +81,7 @@ const GraphView : React.FC <GraphViewProps> = ({
         ).catch(
             (err) => {
                 console.log("Error: ", err);
+                setError(err.toString());
                 removeActivity(act);
             }
         );
@@ -112,6 +117,7 @@ const GraphView : React.FC <GraphViewProps> = ({
         ).catch(
             (err) => {
                 console.log("Error: ", err);
+                setError(err.toString());
                 removeActivity(act);
             }
         );

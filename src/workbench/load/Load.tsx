@@ -26,6 +26,8 @@ interface LoadProps {
 const Load : React.FC <LoadProps> = ({
 }) => {
 
+    const setError = useProgressStateStore((state) => state.setError);
+
     const addActivity = useProgressStateStore(
         (state) => state.addActivity
     );
@@ -144,6 +146,7 @@ const Load : React.FC <LoadProps> = ({
                     ).catch(
                         (e) => {
                             removeActivity(act);
+                            setError(e.toString());
                             console.log("Error:", e);
                         }
                     );
@@ -162,6 +165,7 @@ const Load : React.FC <LoadProps> = ({
                     ).catch(
                         (e) => {
                             removeActivity(act);
+                            setError(err.toString());
                             console.log("Error:", e);
                         }
                     );
@@ -211,6 +215,7 @@ const Load : React.FC <LoadProps> = ({
         ).catch(
             (e) => {
                 removeActivity(act);
+                setError(err.toString());
                 console.log("Error:", e);
             }
         );
