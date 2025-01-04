@@ -51,8 +51,6 @@ const GraphView : React.FC <GraphViewProps> = ({
         }
     );
 
-console.log(width, height, ref);
-
     if (!selected) {
         return (
             <Box>
