@@ -1,7 +1,9 @@
 
 import React from 'react';
+import { useTheme } from '@mui/material/styles';
 
-import { Box, Typography } from '@mui/material';
+import { Box, Typography, Paper } from '@mui/material';
+import { alpha } from '@mui/material/styles';
 
 import Banner from './Banner.tsx';
 import Workspace from './Workspace.tsx';
@@ -16,26 +18,32 @@ const Workbench : React.FC = () => {
 
     const activity = useProgressStateStore((state) => state.activity);
 
+    const theme = useTheme();
+    const translucentBackground = alpha(theme.palette.background.paper, 0.6);
+
     return (
 
         <SocketProvider>
+
             <Box className="workbench">
+
                 {
                     (activity.size > 0) && 
-                    <Box
+                    <Paper elevation={1}
                         sx={{
                             position: 'absolute',
                             bottom: '2rem',
                             left: '2rem',
                             zIndex: 999,
-                            m: 0,
                             pt: '0.8rem',
                             pb: '0.8rem',
                             pl: '1.2rem',
                             pr: '1.2rem',
-                            backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                            color: 'secondary',
-                            border: '1px solid #c0c080',
+                            backgroundColor: translucentBackground,
+                            border: 1,
+                            borderColor: "grey.500",
+                            borderRadius: 2,
+                            width: "40rem",
                         }}
                     >
                             {
@@ -43,20 +51,22 @@ const Workbench : React.FC = () => {
                                     (a, ix) =>
                                         <Typography
                                             key={ix}
-                                            variant="body1"
-                                            sx={{ fontSize: 12 }}
+                                            variant="body2"
+                                            color="grey.500"
+                                            noWrap
                                         >
                                              {a}...
                                         </Typography>
                                 )
                             }
-                    </Box>
+                    </Paper>
                 }
                 <Banner/>
                 <Workspace/>
-            </Box>
-        </SocketProvider>
 
+            </Box>
+
+        </SocketProvider>
     );
 
 };

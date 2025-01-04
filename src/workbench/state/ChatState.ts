@@ -20,7 +20,7 @@ export const useChatStateStore = create<ChatState>()(
         messages: [
             {
                 role: "ai",
-                text: "Welcome to TrustGraph system chat. What data would you like to explore?",
+                text: "Welcome to the TrustGraph data workbench. Using a chat conversation, please describe the data you'd like to explore."
             },
         ],
 

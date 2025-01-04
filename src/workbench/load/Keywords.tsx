@@ -45,7 +45,7 @@ const Keywords : React.FC<KeywordsProps> = ({
                         (params) =>
                             <TextField
                                 label="Keywords"
-                                helperText="Topic keywords (optional)"
+                                helperText="Topic keywords (optional) - hit Enter after each keyword"
                                 
                                 {...params}
                             />

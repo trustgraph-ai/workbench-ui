@@ -37,9 +37,8 @@ const EntityDetail : React.FC <EntityDetailProps> = ({
         return (
             <Box>
                 <CenterSpinner/>
-                <Typography variant="body1">
-                    No data to view.  Try Search to find data
-                    to explore.
+                <Typography variant='h6' color='primary'>
+                    No data to view. Try Chat or Search to find data.
                 </Typography>
             </Box>
         );
@@ -76,9 +75,8 @@ const EntityDetail : React.FC <EntityDetailProps> = ({
         return (
             <Box>
                 <CenterSpinner/>
-                <Typography variant="body1">
-                    No data to view.  Try Search to find data
-                    to explore.
+                <Typography variant='h6' color='primary'>
+                    No data to view. Try Chat or Search to find data.
                 </Typography>
             </Box>
         );

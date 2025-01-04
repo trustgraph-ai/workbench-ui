@@ -3,12 +3,14 @@ import React, { useState, useEffect, useRef } from 'react';
 
 import { Typography, Box, IconButton } from '@mui/material';
 import { Help } from '@mui/icons-material';
+import { useTheme } from '@mui/material/styles';
+
+import { useResizeDetector } from 'react-resize-detector';
 
 import { ForceGraph3D } from 'react-force-graph';
 import SpriteText from 'three-spritetext'
 
 import { useProgressStateStore } from '../state/ProgressState';
-
 import { useSocket } from '../socket/socket';
 import { useWorkbenchStateStore } from '../state/WorkbenchState';
 import {
@@ -23,6 +25,8 @@ interface GraphViewProps {
 
 const GraphView : React.FC <GraphViewProps> = ({
 }) => {
+
+    const theme = useTheme();
 
     const addActivity = useProgressStateStore(
         (state) => state.addActivity
@@ -39,20 +43,23 @@ const GraphView : React.FC <GraphViewProps> = ({
 
     const fgRef = useRef<any>();
 
+    const { width, height, ref } = useResizeDetector(
+        {
+        }
+    );
+
     if (!selected) {
         return (
             <Box>
                 <CenterSpinner/>
-                <Typography variant="body1">
-                    No data to visualize.  Try Search to find data
-                    to explore.
+                <Typography variant='h6' color='primary'>
+                    No data to view. Try Chat or Search to find data.
                 </Typography>
             </Box>
         );
     }
 
     const [view, setView] = useState<any>(undefined);
-
     useEffect(() => {
 
         const act = "Build subgraph: " + selected.label;
@@ -80,9 +87,8 @@ const GraphView : React.FC <GraphViewProps> = ({
         return (
             <Box>
                 <CenterSpinner/>
-                <Typography variant="body1">
-                    No data to visualize.  Try Search to find data
-                    to explore.
+                <Typography variant='h6' color='primary'>
+                    No data to view. Try Chat or Search to find data.
                 </Typography>
             </Box>
         );
@@ -133,35 +139,56 @@ const GraphView : React.FC <GraphViewProps> = ({
                 </IconButton>
 
             </Box>
-            <Box>
 
             <GraphHelp
                 open={help} onClose={() => setHelp(false)}
             />
 
+            <Box
+                ref={ref}
+                sx={{
+                   border: 1,
+                   borderColor: theme.palette.grey[800],
+                    width: "calc(100% - 0.5rem)",
+                    height: "calc(100% - 6rem)",
+                }}
+            >
+
             <ForceGraph3D
-                width={1200}
-                height={900}
+                width={width}
+                height={height}
                 graphData={view}
+                nodeOpacity={0.8}
                 nodeLabel="label"
-                nodeAutoColorBy="group"
+                enableNodeDrag={true}
+                nodeColor={theme.palette.primary.main}
+                backgroundColor={theme.palette.background.paper}
                 nodeThreeObject={(node : any) => {
                   const sprite = new SpriteText(wrap(node.label, 30));
-                  sprite.color = 'white';
-                  sprite.textHeight = 2;
+                  sprite.material.depthWrite = false;
+                  sprite.color = theme.palette.secondary.main;
+                  sprite.textHeight = 4;
                   return sprite;
                 }}
                 onNodeClick={nodeClick}
+                onNodeDragEnd={(node : any) => {
+                    node.fx = node.x;
+                    node.fy = node.y;
+                    node.fz = node.z;
+                  }}
 
-                linkDirectionalArrowLength={1.5}
-                linkDirectionalArrowRelPos={1}
+                linkDirectionalArrowLength={2.5}
+                linkDirectionalArrowRelPos={0.75}
+                linkOpacity={0.6}
+                linkColor={theme.palette.grey[500]}
+                linkWidth="2"
                 linkThreeObjectExtend={true}
                 linkThreeObject={(link : any) => {
                     const sprite = new SpriteText(wrap(link.label, 30));
-                    sprite.color = 'white';
-                    sprite.textHeight = 1.5;
+                    sprite.color = theme.palette.grey[500];
+                    sprite.textHeight = 2.0;
                     return sprite;
-                }}
+                }} 
                 linkPositionUpdate={(sprite, { start, end }) => {
                     const middlePos = {
                         x: start.x + (end.x - start.x) / 2,
@@ -169,11 +196,13 @@ const GraphView : React.FC <GraphViewProps> = ({
                         z: start.z + (end.z - start.z) / 2,
                     };
                     Object.assign(sprite.position, middlePos);
-                }}
+                }} 
 
                 ref={fgRef}
-                linkDirectionalParticleColor={() => '#a0a0c0'}
-                linkDirectionalParticleWidth={0.8}
+                linkDirectionalParticleColor={
+                    () => theme.palette.primary.main
+                }
+                linkDirectionalParticleWidth={1.4}
                 linkHoverPrecision={2}
                 onLinkClick={link => {
                     if (fgRef.current != undefined)

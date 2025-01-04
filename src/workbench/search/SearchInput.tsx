@@ -41,7 +41,7 @@ const SearchInput : React.FC <SearchInputProps> = ({
                         <TextField
                           fullWidth
                           variant="outlined"
-                          placeholder="Search term..."
+                          placeholder="Search the data for a term or phrase..."
                           value={search}
                           onChange={(e) => setSearch(e.target.value)}
                         />

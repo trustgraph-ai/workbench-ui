@@ -50,7 +50,7 @@ const Banner : React.FC = () => {
                     </Box>
                 </Box>
                 <Typography variant="h4" component="h1">
-                    TrustGraph Data Workbench
+                    Data Workbench
                 </Typography>
         </Stack>
     );
