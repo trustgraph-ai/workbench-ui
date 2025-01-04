@@ -165,7 +165,7 @@ const Load : React.FC <LoadProps> = ({
                     ).catch(
                         (e) => {
                             removeActivity(act);
-                            setError(err.toString());
+                            setError(e.toString());
                             console.log("Error:", e);
                         }
                     );
@@ -215,7 +215,7 @@ const Load : React.FC <LoadProps> = ({
         ).catch(
             (e) => {
                 removeActivity(act);
-                setError(err.toString());
+                setError(e.toString());
                 console.log("Error:", e);
             }
         );

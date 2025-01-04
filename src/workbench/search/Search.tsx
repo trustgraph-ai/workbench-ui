@@ -1,7 +1,5 @@
 
-import React, { useState } from 'react';
-
-import Button from '@mui/material/Button';
+import React from 'react';
 
 import { useProgressStateStore } from '../state/ProgressState';
 import { useSocket } from '../socket/socket';
@@ -28,7 +26,6 @@ const Search : React.FC <SearchProps> = ({
         (state) => state.removeActivity
     );
 
-    const error = useProgressStateStore((state) => state.error);
     const setError = useProgressStateStore((state) => state.setError);
 
     const socket = useSocket();
