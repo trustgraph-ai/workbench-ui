@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
+import Alert from '@mui/material/Alert';
 import { useTheme } from '@mui/material/styles';
 import Help from '@mui/icons-material/Help';
 
@@ -53,9 +54,9 @@ const GraphView : React.FC <GraphViewProps> = ({
         return (
             <Box>
                 <CenterSpinner/>
-                <Typography variant='h6' color='primary'>
+                <Alert severity="info">
                     No data to view. Try Chat or Search to find data.
-                </Typography>
+                </Alert>
             </Box>
         );
     }

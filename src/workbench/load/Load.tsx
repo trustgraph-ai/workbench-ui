@@ -47,6 +47,7 @@ const Load : React.FC <LoadProps> = ({
     const setText = useLoadStateStore((state) => state.setText);
     const addUploaded = useLoadStateStore((state) => state.addUploaded);
     const removeFile = useLoadStateStore((state) => state.removeFile);
+    const incTextUploads = useLoadStateStore((state) => state.incTextUploads);
 
     const prepareMetadata = (doc_id : string) => {
 
@@ -206,6 +207,7 @@ const Load : React.FC <LoadProps> = ({
             (_x) => {
                 removeActivity(act);
                 setText("");
+                incTextUploads();
             }
         ).catch(
             (e) => {

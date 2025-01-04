@@ -14,9 +14,6 @@ export const tgTheme = createTheme({
         secondary: {
             main: '#edb952',
         },
-        info: {
-            main: '#149d9c',
-        },
     },
     components: {
         MuiCssBaseline: {

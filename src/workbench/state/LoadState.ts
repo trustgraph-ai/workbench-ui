@@ -21,6 +21,10 @@ export interface LoadState {
     addUploaded : (v : string) => void;
     removeFile : (v : File) => void;
 
+    textUploads : number;
+    setTextUploads : (v : number) => void;
+    incTextUploads : () => void;
+
 }
 
 export const useLoadStateStore = create<LoadState>()(
@@ -69,6 +73,14 @@ export const useLoadStateStore = create<LoadState>()(
 
         removeFile: (v) => set((state) => ({
             files: Array.from(state.files).filter((f) => f != v),
+        })),
+
+        textUploads: 0,
+        setTextUploads: (v) => set(() => ({
+            textUploads: v,
+        })),
+        incTextUploads: (v) => set((state) => ({
+            textUploads: state.textUploads + 1,
         })),
 
     })

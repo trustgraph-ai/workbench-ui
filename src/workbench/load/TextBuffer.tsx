@@ -4,6 +4,7 @@ import React from 'react';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
+import Alert from '@mui/material/Alert';
 
 import { useLoadStateStore } from '../state/LoadState';
 
@@ -17,20 +18,34 @@ const TextBuffer : React.FC<TextBufferProps> = ({
 
     const value = useLoadStateStore((state) => state.text);
     const setValue = useLoadStateStore((state) => state.setText);
+    const textUploads = useLoadStateStore((state) => state.textUploads);
 
     return (
-        <Box sx={{ m: 2 }}>
+        <Box sx={{ m: 1 }}>
 
-            <Button
-                variant="contained"
+            <Box
                 sx={{
-                    ml: 1, mt: 1, mb: 4,
+                    ml: 1, mt: 1, mb: 2,
                 }}
-                disabled={value.length < 1}
-                onClick={submit}
             >
-                Submit
-            </Button>
+
+                <Button
+                    variant="contained"
+                    disabled={value.length < 1}
+                    onClick={submit}
+                >
+                    Submit
+                </Button>
+
+            {
+                (textUploads > 0) &&
+                <Box sx={{ml: 1, mt: 1, mb: 2}}>
+                    <Alert severity="success">
+                        {textUploads} text uploads
+                    </Alert>
+                </Box>
+            }
+            </Box>
 
             <TextField
                 fullWidth
