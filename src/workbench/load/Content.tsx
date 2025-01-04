@@ -3,30 +3,21 @@ import React from 'react';
 
 import TextBuffer from './TextBuffer';
 import FileUpload from './FileUpload';
+import { useLoadStateStore } from '../state/LoadState';
 
 const Content : React.FC<{
-    operation : string,
-    files : File[],
-    setFiles : (f : File[]) => void;
-    uploaded : string[],
     submitFiles : () => void;
     submitText : () => void;
-    text : string,
-    setText : (s : string) => void;
 }> = ({
-    operation,
-    files, setFiles,
-    text, setText,
-    uploaded,
     submitFiles,
     submitText,
 }) => {
 
+    const operation = useLoadStateStore((state) => state.operation);
+
     if (operation == "upload-pdf") {
         return (
             <FileUpload
-                files={files} setFiles={setFiles}
-                uploaded={uploaded}
                 submit={submitFiles}
                 kind="PDF"
             />
@@ -36,8 +27,6 @@ const Content : React.FC<{
     if (operation == "upload-text") {
         return (
             <FileUpload
-                files={files} setFiles={setFiles}
-                uploaded={uploaded}
                 submit={submitFiles}
                 kind="text"
             />
@@ -46,8 +35,6 @@ const Content : React.FC<{
 
     return (
         <TextBuffer
-            value={text}
-            setValue={setText}
             submit={submitText}
         />
     );

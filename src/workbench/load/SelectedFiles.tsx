@@ -6,21 +6,21 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import IconButton from '@mui/material/IconButton';
 import ListItemText from '@mui/material/ListItemText';
-
 import DeleteForever from '@mui/icons-material/DeleteForever';
 
+import { useLoadStateStore } from '../state/LoadState';
+
 interface SelectedFilesProps {
-    files : File[],
-    setFiles : (v : File[]) => void;
 }
 
 const SelectedFiles : React.FC<SelectedFilesProps> = ({
-    files, setFiles,
 }) => {
 
-    const remove = (ix : number) => {
-        const updated = Array.from(files).filter((_e,n) => (ix != n));
-        setFiles(updated);
+    const files = useLoadStateStore((state) => state.files);
+    const removeFile = useLoadStateStore((state) => state.removeFile);
+
+    const remove = (file : File) => {
+        removeFile(file);
     }
 
     return (
@@ -36,7 +36,7 @@ const SelectedFiles : React.FC<SelectedFilesProps> = ({
                                         <IconButton
                                             edge="end"
                                             aria-label="delete"
-                                            onClick={() => remove(ix)}
+                                            onClick={() => remove(file)}
                                         >
                                              <DeleteForever />
                                         </IconButton>

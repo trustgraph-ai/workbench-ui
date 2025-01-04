@@ -4,14 +4,16 @@ import React from 'react';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 
+import { useLoadStateStore } from '../state/LoadState';
+
 interface TitleProps {
-    value : string,
-    setValue : (value : string) => void;
 }
 
 const Title : React.FC<TitleProps> = ({
-    value, setValue,
 }) => {
+
+    const value = useLoadStateStore((state) => state.title);
+    const setValue = useLoadStateStore((state) => state.setTitle);
 
     return (
         <>

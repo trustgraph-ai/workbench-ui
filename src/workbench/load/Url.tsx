@@ -4,14 +4,16 @@ import React from 'react';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 
+import { useLoadStateStore } from '../state/LoadState';
+
 interface UrlProps {
-    value : string,
-    setValue : (value : string) => void;
 }
 
 const Url : React.FC<UrlProps> = ({
-    value, setValue,
 }) => {
+
+    const value = useLoadStateStore((state) => state.url);
+    const setValue = useLoadStateStore((state) => state.setUrl);
 
     return (
         <>

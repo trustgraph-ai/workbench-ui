@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 
 import {v4 as uuidv4} from 'uuid';
 
@@ -13,6 +13,7 @@ import Operation from './Operation';
 import Content from './Content';
 import { useProgressStateStore } from '../state/ProgressState';
 import CenterSpinner from '../CenterSpinner';
+import { useLoadStateStore } from '../state/LoadState';
 
 const RDF_TYPE = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
 const RDFS_LABEL = "http://www.w3.org/2000/01/rdf-schema#label";
@@ -37,13 +38,16 @@ const Load : React.FC <LoadProps> = ({
 
     const socket = useSocket();
 
-    const [title, setTitle] = useState<string>("");
-    const [url, setUrl] = useState<string>("");
-    const [keywords, setKeywords] = useState<string[]>([]);
-    const [operation, setOperation] = useState<string>("upload-pdf");
-    const [files, setFiles] = useState<File[]>([]);
-    const [uploaded, setUploaded] = useState<string[]>([]);
-    const [text, setText] = useState<string>("");
+    const title = useLoadStateStore((state) => state.title);
+    const url = useLoadStateStore((state) => state.url);
+    const keywords = useLoadStateStore((state) => state.keywords);
+    const operation = useLoadStateStore((state) => state.operation);
+    const files = useLoadStateStore((state) => state.files);
+    const text = useLoadStateStore((state) => state.text);
+    const setText = useLoadStateStore((state) => state.setText);
+    const addUploaded = useLoadStateStore((state) => state.addUploaded);
+    const removeFile = useLoadStateStore((state) => state.removeFile);
+    const incTextUploads = useLoadStateStore((state) => state.incTextUploads);
 
     const prepareMetadata = (doc_id : string) => {
 
@@ -89,18 +93,10 @@ const Load : React.FC <LoadProps> = ({
     const handleFileSuccess = (file : File) => {
 
         // Add file to 'uploaded' list
-        setUploaded(
-            (state) => [
-                ...state,
-                file.name
-            ]
-        );
+        addUploaded(file.name);
 
         // Remove file from 'selected' list
-        setFiles(
-            (state) => 
-                Array.from(state).filter((f) => f != file)
-        );
+        removeFile(file);
 
     }
 
@@ -211,6 +207,7 @@ const Load : React.FC <LoadProps> = ({
             (_x) => {
                 removeActivity(act);
                 setText("");
+                incTextUploads();
             }
         ).catch(
             (e) => {
@@ -224,37 +221,15 @@ const Load : React.FC <LoadProps> = ({
 
     return (
         <>
-            <Title
-                value={title}
-                setValue={setTitle}
-            />
-
-            <Url
-                value={url}
-                setValue={setUrl}
-            />
-
-            <Keywords
-                value={keywords}
-                setValue={setKeywords}
-            />
-
-            <Operation
-                value={operation}
-                setValue={setOperation}
-            />
-
+            <Title/>
+            <Url/>
+            <Keywords/>
+            <Operation/>
             <Content
-                operation={operation}
-                text={text} setText={setText}
-                files={files} setFiles={setFiles}
-                uploaded={uploaded}
                 submitFiles={submitFiles}
                 submitText={submitText}
             />
-
             <CenterSpinner/>
-
         </>
 
     );

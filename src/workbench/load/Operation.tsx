@@ -8,18 +8,20 @@ import IconButton from '@mui/material/IconButton';
 
 import Help from '@mui/icons-material/Help';
 
+import { useLoadStateStore } from '../state/LoadState';
+
 interface OperationProps {
-    value : string,
-    setValue : (value : string) => void;
 }
 
 import LoadHelp from './Help';
 
 const Operation : React.FC<OperationProps> = ({
-    value, setValue,
 }) => {
 
     const [help, setHelp] = useState<boolean>(false);
+
+    const value = useLoadStateStore((state) => state.operation);
+    const setValue = useLoadStateStore((state) => state.setOperation);
 
     const setOperation = (op : string) => {
         if (op) setValue(op);

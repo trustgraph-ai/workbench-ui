@@ -6,14 +6,16 @@ import Autocomplete from '@mui/material/Autocomplete';
 import Chip from '@mui/material/Chip';
 import TextField from '@mui/material/TextField';
 
-interface KeywordsProps {
-    value : string[],
-    setValue : (value : string[]) => void;
-}
+import { useLoadStateStore } from '../state/LoadState';
+
+interface KeywordsProps {}
 
 const Keywords : React.FC<KeywordsProps> = ({
-    value, setValue,
 }) => {
+
+    const value = useLoadStateStore((state) => state.keywords);
+    const setValue = useLoadStateStore((state) => state.setKeywords);
+
 
     return (
         <>

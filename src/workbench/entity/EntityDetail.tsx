@@ -5,6 +5,7 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
+import Alert from '@mui/material/Alert';
 import IconButton from '@mui/material/IconButton';
 import ArrowForward from '@mui/icons-material/ArrowForward';
 import ThreeDRotation from '@mui/icons-material/ThreeDRotation';
@@ -42,9 +43,9 @@ const EntityDetail : React.FC <EntityDetailProps> = ({
         return (
             <Box>
                 <CenterSpinner/>
-                <Typography variant='h6' color='primary'>
+                <Alert severity="info" variant="outlined">
                     No data to view. Try Chat or Search to find data.
-                </Typography>
+                </Alert>
             </Box>
         );
     }
@@ -82,9 +83,9 @@ const EntityDetail : React.FC <EntityDetailProps> = ({
         return (
             <Box>
                 <CenterSpinner/>
-                <Typography variant='h6' color='primary'>
+                <Alert severity="info" variant="outlined">
                     No data to view. Try Chat or Search to find data.
-                </Typography>
+                </Alert>
             </Box>
         );
 
@@ -157,5 +158,4 @@ const EntityDetail : React.FC <EntityDetailProps> = ({
 }
 
 export default EntityDetail;
-
 
