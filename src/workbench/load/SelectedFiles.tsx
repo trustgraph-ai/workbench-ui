@@ -19,8 +19,8 @@ const SelectedFiles : React.FC<SelectedFilesProps> = ({
     const files = useLoadStateStore((state) => state.files);
     const removeFile = useLoadStateStore((state) => state.removeFile);
 
-    const remove = (ix : number) => {
-        removeFile(files[ix]);
+    const remove = (file : File) => {
+        removeFile(file);
     }
 
     return (
@@ -36,7 +36,7 @@ const SelectedFiles : React.FC<SelectedFilesProps> = ({
                                         <IconButton
                                             edge="end"
                                             aria-label="delete"
-                                            onClick={() => remove(ix)}
+                                            onClick={() => remove(file)}
                                         >
                                              <DeleteForever />
                                         </IconButton>

@@ -13,7 +13,7 @@ export interface LoadState {
 
     setTitle : (v : string) => void;
     setUrl : (v : string) => void;
-    setKeywords : (v : string) => void;
+    setKeywords : (v : string[]) => void;
     setOperation : (v : string) => void;
     setFiles : (v : File[]) => void;
     setUploaded : (v : string[]) => void;
@@ -23,7 +23,7 @@ export interface LoadState {
 
 }
 
-export const useLoadStateStore = create<SearchState>()(
+export const useLoadStateStore = create<LoadState>()(
 
     (set) => ({
 

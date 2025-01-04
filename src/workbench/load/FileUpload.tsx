@@ -77,9 +77,7 @@ const FileUpload : React.FC<FileUploadProps> = ({
             </Box>
 
             <Box>
-                <SelectedFiles
-                    files={files} setFiles={setFiles}
-                />
+                <SelectedFiles/>
             </Box>
 
             <Box>

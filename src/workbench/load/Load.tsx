@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 
 import {v4 as uuidv4} from 'uuid';
 
@@ -43,7 +43,6 @@ const Load : React.FC <LoadProps> = ({
     const keywords = useLoadStateStore((state) => state.keywords);
     const operation = useLoadStateStore((state) => state.operation);
     const files = useLoadStateStore((state) => state.files);
-    const uploaded = useLoadStateStore((state) => state.uploaded);
     const text = useLoadStateStore((state) => state.text);
     const setText = useLoadStateStore((state) => state.setText);
     const addUploaded = useLoadStateStore((state) => state.addUploaded);
