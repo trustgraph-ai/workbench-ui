@@ -5,6 +5,7 @@ import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Alert from '@mui/material/Alert';
+import InputIcon from '@mui/icons-material/Input';
 
 import { useLoadStateStore } from '../state/LoadState';
 
@@ -33,8 +34,9 @@ const TextBuffer : React.FC<TextBufferProps> = ({
                     variant="contained"
                     disabled={value.length < 1}
                     onClick={submit}
+                    startIcon={<InputIcon />}
                 >
-                    Submit
+                    Load
                 </Button>
 
             {

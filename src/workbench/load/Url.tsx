@@ -24,8 +24,8 @@ const Url : React.FC<UrlProps> = ({
                     sx={{
                         width: '50rem',
                     }}
-                    label="URL"
-                    helperText="URL of publication (optional)"
+                    label="URL (optional)"
+                    helperText="Source URL (not available for loading multiple files at once)"
                     defaultValue={value}
                     onChange={(e) => setValue(e.target.value)}
                 />

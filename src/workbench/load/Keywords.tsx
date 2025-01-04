@@ -48,8 +48,8 @@ const Keywords : React.FC<KeywordsProps> = ({
                     renderInput={
                         (params) =>
                             <TextField
-                                label="Keywords"
-                                helperText="Topic keywords (optional) - hit Enter after each keyword"
+                                label="Keywords (optional)"
+                                helperText="Hit ENTER after typing each keyword (not available for loading multiple files at once)"
                                 
                                 {...params}
                             />
