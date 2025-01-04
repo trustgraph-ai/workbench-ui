@@ -1,6 +1,4 @@
 
-import React from 'react';
-
 import { createTheme } from '@mui/material';
 import darkScrollbar from '@mui/material/darkScrollbar';
 

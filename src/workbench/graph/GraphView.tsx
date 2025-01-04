@@ -165,7 +165,7 @@ const GraphView : React.FC <GraphViewProps> = ({
                 backgroundColor={theme.palette.background.paper}
                 nodeThreeObject={(node : any) => {
                   const sprite = new SpriteText(wrap(node.label, 30));
-                  sprite.material.depthWrite = false;
+//                  sprite.material.depthWrite = false;
                   sprite.color = theme.palette.secondary.main;
                   sprite.textHeight = 4;
                   return sprite;
