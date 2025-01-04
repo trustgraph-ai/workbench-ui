@@ -3,10 +3,8 @@ import React, { useState, useEffect, useRef } from 'react';
 
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
-import IconButton from '@mui/material/IconButton';
 import Alert from '@mui/material/Alert';
 import { useTheme } from '@mui/material/styles';
-import Help from '@mui/icons-material/Help';
 
 import { useResizeDetector } from 'react-resize-detector';
 
@@ -17,8 +15,8 @@ import { useProgressStateStore } from '../state/ProgressState';
 import { useSocket } from '../socket/socket';
 import { useWorkbenchStateStore } from '../state/WorkbenchState';
 import { createSubgraph, updateSubgraph } from '../state/knowledge-graph-viz';
-import GraphHelp from './Help';
 import CenterSpinner from '../CenterSpinner';
+import HelpButton from './HelpButton';
 
 interface GraphViewProps {
 }
@@ -36,8 +34,6 @@ const GraphView : React.FC <GraphViewProps> = ({
     const removeActivity = useProgressStateStore(
         (state) => state.removeActivity
     );
-
-    const [help, setHelp] = React.useState<boolean>(false);
 
     const socket = useSocket();
 
@@ -62,6 +58,7 @@ const GraphView : React.FC <GraphViewProps> = ({
     }
 
     const [view, setView] = useState<any>(undefined);
+
     useEffect(() => {
 
         const act = "Build subgraph: " + selected.label;
@@ -90,9 +87,9 @@ const GraphView : React.FC <GraphViewProps> = ({
         return (
             <Box>
                 <CenterSpinner/>
-                <Typography variant='h6' color='primary'>
+                <Alert severity="info" variant="outlined">
                     No data to view. Try Chat or Search to find data.
-                </Typography>
+                </Alert>
             </Box>
         );
 
@@ -122,6 +119,7 @@ const GraphView : React.FC <GraphViewProps> = ({
         
     };
 
+
     return (
         <>
 
@@ -133,20 +131,9 @@ const GraphView : React.FC <GraphViewProps> = ({
 
                 <CenterSpinner/>
 
-                <IconButton
-                    aria-label="help"
-                    color="primary"
-                    size="large"
-                    onClick={() => setHelp(true)}
-                >
-                    <Help fontSize="inherit"/>
-                </IconButton>
+                <HelpButton/>
 
             </Box>
-
-            <GraphHelp
-                open={help} onClose={() => setHelp(false)}
-            />
 
             <Box
                 ref={ref}

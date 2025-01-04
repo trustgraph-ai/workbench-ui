@@ -83,9 +83,9 @@ const EntityDetail : React.FC <EntityDetailProps> = ({
         return (
             <Box>
                 <CenterSpinner/>
-                <Typography variant='h6' color='secondary'>
+                <Alert severity="info" variant="outlined">
                     No data to view. Try Chat or Search to find data.
-                </Typography>
+                </Alert>
             </Box>
         );
 
@@ -158,5 +158,4 @@ const EntityDetail : React.FC <EntityDetailProps> = ({
 }
 
 export default EntityDetail;
-
 
