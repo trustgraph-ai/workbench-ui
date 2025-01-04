@@ -54,7 +54,7 @@ const GraphView : React.FC <GraphViewProps> = ({
         return (
             <Box>
                 <CenterSpinner/>
-                <Alert severity="info">
+                <Alert severity="info" variant="outlined">
                     No data to view. Try Chat or Search to find data.
                 </Alert>
             </Box>
