@@ -15,10 +15,7 @@ import SpriteText from 'three-spritetext'
 import { useProgressStateStore } from '../state/ProgressState';
 import { useSocket } from '../socket/socket';
 import { useWorkbenchStateStore } from '../state/WorkbenchState';
-import {
-    createSubgraph, updateSubgraph
-} from '../state/knowledge-graph-viz';
-
+import { createSubgraph, updateSubgraph } from '../state/knowledge-graph-viz';
 import GraphHelp from './Help';
 import CenterSpinner from '../CenterSpinner';
 

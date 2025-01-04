@@ -6,9 +6,7 @@ import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
-
 import Snackbar, { SnackbarCloseReason } from '@mui/material/Snackbar';
-
 import ArrowForward from '@mui/icons-material/ArrowForward';
 import ThreeDRotation from '@mui/icons-material/ThreeDRotation';
 import Help from '@mui/icons-material/Help';
@@ -16,9 +14,7 @@ import Help from '@mui/icons-material/Help';
 import { useSocket } from '../socket/socket';
 import { useWorkbenchStateStore } from '../state/WorkbenchState';
 import { getTriples } from '../state/knowledge-graph';
-
 import { useProgressStateStore } from '../state/ProgressState';
-
 import EntityHelp from './Help';
 import ElementNode from './ElementNode';
 import CenterSpinner from '../CenterSpinner';

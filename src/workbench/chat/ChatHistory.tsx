@@ -1,11 +1,14 @@
 
 import React, {  useEffect, useRef } from 'react';
 
-import {
-    List, ListItem, ListItemText, Avatar, Typography
-} from '@mui/material';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
+import Avatar from '@mui/material/Avatar';
+import Typography from '@mui/material/Typography';
 
-import { SmartToy, Person } from '@mui/icons-material';
+import SmartToy from '@mui/icons-material/SmartToy';
+import Person from '@mui/icons-material/Person';
 
 import { useChatStateStore } from '../state/ChatState';
 

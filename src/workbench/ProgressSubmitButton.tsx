@@ -1,8 +1,10 @@
 
 import React from 'react';
 
-import { Box, Button, CircularProgress } from '@mui/material';
-import { Send } from '@mui/icons-material';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import CircularProgress from '@mui/material/CircularProgress';
+import Send from '@mui/icons-material/Send';
 
 interface ProgressSubmitButtonProps {
     disabled : boolean;

@@ -1,7 +1,9 @@
 
 import React from 'react';
 
-import { Stack, Divider, Box } from '@mui/material';
+import Stack from '@mui/material/Stack';
+import Divider from '@mui/material/Divider';
+import Box from '@mui/material/Box';
 
 import Toolbox from './Toolbox';
 import Chat from './chat/Chat';
@@ -10,7 +12,6 @@ import EntityDetail from './entity/EntityDetail';
 import EntityList from './EntityList';
 import GraphView from './graph/GraphView';
 import Load from './load/Load';
-
 import { useWorkbenchStateStore } from './state/WorkbenchState';
 
 const Tool : React.FC<{ tool : string}> = ({ tool }) => {

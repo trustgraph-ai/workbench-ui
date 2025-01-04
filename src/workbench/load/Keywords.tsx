@@ -1,8 +1,10 @@
 
 import React from 'react';
 
-import { Box } from '@mui/material';
-import { Autocomplete, Chip, TextField } from "@mui/material"
+import Box from '@mui/material/Box';
+import Autocomplete from '@mui/material/Autocomplete';
+import Chip from '@mui/material/Chip';
+import TextField from '@mui/material/TextField';
 
 interface KeywordsProps {
     value : string[],

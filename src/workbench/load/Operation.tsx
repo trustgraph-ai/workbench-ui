@@ -1,10 +1,12 @@
 
 import React, { useState } from 'react';
 
-import {
-    ToggleButton, ToggleButtonGroup, Box, IconButton
-} from '@mui/material';
-import { Help } from '@mui/icons-material';
+import ToggleButton from '@mui/material/ToggleButton';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
+
+import Help from '@mui/icons-material/Help';
 
 interface OperationProps {
     value : string,

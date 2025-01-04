@@ -1,10 +1,13 @@
 
 import React from 'react';
 
-import {
-    Box, List, ListItem, IconButton, ListItemText
-} from '@mui/material';
-import { DeleteForever } from '@mui/icons-material';
+import Box from '@mui/material/Box';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import IconButton from '@mui/material/IconButton';
+import ListItemText from '@mui/material/ListItemText';
+
+import DeleteForever from '@mui/icons-material/DeleteForever';
 
 interface SelectedFilesProps {
     files : File[],

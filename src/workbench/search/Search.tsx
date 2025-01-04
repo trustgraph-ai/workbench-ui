@@ -11,9 +11,7 @@ import {
     getGraphEmbeddings, addRowLabels, addRowDefinitions,
     addRowEmbeddings, computeCosineSimilarity, sortSimilarity,
 } from '../state/row';
-
 import Results from './Results';
-
 import SearchInput from './SearchInput';
 
 interface SearchProps {

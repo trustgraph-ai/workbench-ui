@@ -1,10 +1,12 @@
 
 import React from 'react';
 
-import {
-    Card, CardContent, CardHeader, Typography, Modal
-} from '@mui/material';
-import { Lightbulb } from '@mui/icons-material';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import CardHeader from '@mui/material/CardHeader';
+import Typography from '@mui/material/Typography';
+import Modal from '@mui/material/Modal';
+import Lightbulb from '@mui/icons-material/Lightbulb';
 
 interface HelpProps {
     open : boolean;
