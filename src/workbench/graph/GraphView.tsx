@@ -43,6 +43,8 @@ const GraphView : React.FC <GraphViewProps> = ({
 
     const { width, height, ref } = useResizeDetector(
         {
+           refreshMode: 'debounce',
+           refreshRate: 1,
         }
     );
 
@@ -65,13 +67,21 @@ const GraphView : React.FC <GraphViewProps> = ({
         addActivity(act);
 
         const sg = createSubgraph();
+        setView(sg);
 
         updateSubgraph(
             socket, selected.uri, sg, addActivity, removeActivity
         ).then(
             (sg) => {
-                setView(sg);
-                removeActivity(act);
+                console.log("Set display delay");
+                setTimeout(
+                    () => {
+                        console.log("Load display");
+                        setView(sg);
+                        removeActivity(act);
+                    },
+                    1000
+                );
             }
         ).catch(
             (err) => {
