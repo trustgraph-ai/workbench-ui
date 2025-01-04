@@ -8,6 +8,7 @@ import CloudUpload from '@mui/icons-material/CloudUpload';
 
 import SelectedFiles from './SelectedFiles';
 import ProcessedFiles from './ProcessedFiles';
+import { useLoadStateStore } from '../state/LoadState';
 
 const VisuallyHiddenInput = styled('input')({
   clip: 'rect(0 0 0 0)',
@@ -22,16 +23,16 @@ const VisuallyHiddenInput = styled('input')({
 });
 
 interface FileUploadProps {
-    files : File[],
-    setFiles : (value : File[]) => void;
-    uploaded : string[],
     submit : () => void;
     kind : string;
 }
 
 const FileUpload : React.FC<FileUploadProps> = ({
-    files, setFiles, submit, kind, uploaded,
+    submit, kind,
 }) => {
+
+    const files = useLoadStateStore((state) => state.files);
+    const setFiles = useLoadStateStore((state) => state.setFiles);
 
     const fl2a = (x : FileList | null) : File[] => {
         if (x)
@@ -82,9 +83,7 @@ const FileUpload : React.FC<FileUploadProps> = ({
             </Box>
 
             <Box>
-                <ProcessedFiles
-                    uploaded={uploaded}
-                />
+                <ProcessedFiles/>
             </Box>
             
         </>

@@ -5,7 +5,7 @@ export interface LoadState {
 
     title : string;
     url : string;
-    keywords : string;
+    keywords : string[];
     operation : string;
     files : File[];
     uploaded : string[];
@@ -18,17 +18,19 @@ export interface LoadState {
     setFiles : (v : File[]) => void;
     setUploaded : (v : string[]) => void;
     setText : (v : string) => void;
+    addUploaded : (v : string) => void;
+    removeFile : (v : File) => void;
 
 }
 
-export const useSearchStateStore = create<SearchState>()(
+export const useLoadStateStore = create<SearchState>()(
 
     (set) => ({
 
         title: "",
         url: "",
-        keywords: "",
-        operation: "",
+        keywords: [],
+        operation: "upload-pdf",
         files: [],
         uploaded: [],
         text: "",
@@ -57,10 +59,17 @@ export const useSearchStateStore = create<SearchState>()(
             uploaded: v,
         })),
 
+        addUploaded: (v) => set((state) => ({
+            uploaded: [...state.uploaded, v],
+        })),
+
         setText:  (v) => set(() => ({
             text: v,
         })),
 
+        removeFile: (v) => set((state) => ({
+            files: Array.from(state.files).filter((f) => f != v),
+        })),
 
     })
 

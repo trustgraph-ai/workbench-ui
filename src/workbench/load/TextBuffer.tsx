@@ -5,15 +5,18 @@ import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 
+import { useLoadStateStore } from '../state/LoadState';
+
 interface TextBufferProps {
-    value : string,
-    setValue : (value : string) => void;
     submit : () => void;
 }
 
 const TextBuffer : React.FC<TextBufferProps> = ({
-    value, setValue, submit,
+    submit,
 }) => {
+
+    const value = useLoadStateStore((state) => state.text);
+    const setValue = useLoadStateStore((state) => state.setText);
 
     return (
         <Box sx={{ m: 2 }}>
