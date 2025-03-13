@@ -46,7 +46,7 @@ const InputArea : React.FC <InputAreaProps> = ({
                     <TextField
                       fullWidth
                       variant="outlined"
-                      placeholder="Describe the data to explore..."
+                      placeholder="Describe a Graph RAG request..."
                       value={input}
                       inputRef={inputRef}
                       onChange={(e) => setInput(e.target.value)}

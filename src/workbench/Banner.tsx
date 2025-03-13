@@ -53,7 +53,7 @@ const Banner : React.FC = () => {
                     </Box>
                 </Box>
                 <Typography variant="h4" component="h1">
-                    Data Workbench
+                    Test Suite
                 </Typography>
         </Stack>
     );
