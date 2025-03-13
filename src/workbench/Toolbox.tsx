@@ -41,7 +41,7 @@ const Toolbox : React.FC <ToolboxProps> = ({
                     <ListItemIcon>
                         <ChatBubble/>
                     </ListItemIcon>
-                    <ListItemText primary={'Chat'}/>
+                    <ListItemText primary={'Graph RAG Chat'}/>
                 </ListItemButton>
 
                 <ListItemButton
@@ -52,7 +52,7 @@ const Toolbox : React.FC <ToolboxProps> = ({
                     <ListItemIcon>
                         <Search/>
                     </ListItemIcon>
-                    <ListItemText primary={'Search'}/>
+                    <ListItemText primary={'Vector Search'}/>
                 </ListItemButton>
 
                 <ListItemButton
@@ -63,7 +63,7 @@ const Toolbox : React.FC <ToolboxProps> = ({
                     <ListItemIcon>
                         <Explore/>
                     </ListItemIcon>
-                    <ListItemText primary="Explore"/>
+                    <ListItemText primary="Semantic Relationships"/>
                 </ListItemButton>
 
                 <ListItemButton
@@ -74,7 +74,7 @@ const Toolbox : React.FC <ToolboxProps> = ({
                     <ListItemIcon>
                         <ThreeDRotation/>
                     </ListItemIcon>
-                    <ListItemText primary="Visualize"/>
+                    <ListItemText primary="Graph Visualizer"/>
                 </ListItemButton>
 
                 <ListItemButton
@@ -85,7 +85,7 @@ const Toolbox : React.FC <ToolboxProps> = ({
                     <ListItemIcon>
                         <InputIcon />
                     </ListItemIcon>
-                    <ListItemText primary="Load"/>
+                    <ListItemText primary="Data Loader"/>
                 </ListItemButton>
 
             </List>
