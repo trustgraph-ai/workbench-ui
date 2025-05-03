@@ -273,6 +273,7 @@ export class SocketImplementation {
         service : string, request : RequestType,
         timeout? : number,
         retries? : number,
+        flow? : string,
     ) {
 
         const mid = this.getNextId();
@@ -286,6 +287,14 @@ export class SocketImplementation {
             service: service,
             request: request,
         };
+
+        // Temporary work-around to match the flow API change.  If no
+        // flow is specified, use 0000 which is the default flow.
+        // Workbench doesn't properly implement Flow API yet
+        if (flow)
+            msg["flow"] = flow;
+        else
+            msg["flow"] = "0000";
 
         return new Promise<ResponseType>((resolve, reject) => {
 
@@ -429,7 +438,7 @@ export class SocketImplementation {
         return this.makeRequest<
             GraphEmbeddingsQueryRequest, GraphEmbeddingsQueryResponse
         >(
-            "graph-embeddings-query",
+            "graph-embeddings",
             {
                 vectors: vecs,
                 limit: limit ? limit : 20,
@@ -446,7 +455,7 @@ export class SocketImplementation {
         limit? : number,
     ) {
         return this.makeRequest<TriplesQueryRequest, TriplesQueryResponse>(
-            "triples-query",
+            "triples",
             {
                 s: s, p: p, o: o,
                 limit: limit ? limit : 20,
