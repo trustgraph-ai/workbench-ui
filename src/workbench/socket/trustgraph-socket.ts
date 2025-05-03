@@ -282,7 +282,7 @@ export class SocketImplementation {
 
         if (retries == undefined) retries = 3;
 
-        const msg = {
+        const msg : any = {
             id: mid,
             service: service,
             request: request,
