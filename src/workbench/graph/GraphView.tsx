@@ -180,7 +180,7 @@ const GraphView : React.FC <GraphViewProps> = ({
                     sprite.textHeight = 2.0;
                     return sprite;
                 }} 
-                linkPositionUpdate={(sprite, { start, end }) => {
+                linkPositionUpdate={(sprite : any, { start, end } : any) => {
                     const middlePos = {
                         x: start.x + (end.x - start.x) / 2,
                         y: start.y + (end.y - start.y) / 2,
@@ -195,7 +195,7 @@ const GraphView : React.FC <GraphViewProps> = ({
                 }
                 linkDirectionalParticleWidth={1.4}
                 linkHoverPrecision={2}
-                onLinkClick={link => {
+                onLinkClick={(link : any) => {
                     if (fgRef.current != undefined)
                         fgRef.current.emitParticle(link);
                 }}
