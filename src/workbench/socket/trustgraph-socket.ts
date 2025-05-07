@@ -172,6 +172,9 @@ type LibraryResponse  = any;
 type ConfigRequest = any;
 type ConfigResponse  = any;
 
+type KnowledgeRequest = any;
+type KnowledgeResponse  = any;
+
 export class SocketImplementation {
 
     ws? : WebSocket;
@@ -418,6 +421,17 @@ export class SocketImplementation {
             },
             60000,
         ).then(r => r["class-names"]);
+    }
+
+    getKnowledgeCores() {
+        return this.makeRequest<FlowRequest, FlowResponse>(
+            "knowledge",
+            {
+                "operation": "list-kg-cores",
+                "user": "trustgraph",
+            },
+            60000,
+        ).then(r => r.ids);
     }
 
     getTokenCosts() {

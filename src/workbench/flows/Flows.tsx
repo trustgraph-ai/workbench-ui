@@ -6,6 +6,7 @@ import FlowClassTable from './FlowClassTable';
 import DocumentTable from './DocumentTable';
 import ProcessingTable from './ProcessingTable';
 import TokenCostTable from './TokenCostTable';
+import KnowledgeCoresTable from './KnowledgeCoresTable';
 
 import { useProgressStateStore } from '../state/ProgressState';
 import { useSocket } from '../socket/socket';
@@ -93,6 +94,7 @@ const Flows : React.FC <SearchProps> = ({
     return (
         <>
 
+            <KnowledgeCoresTable/>
             <FlowTable/>
             <FlowClassTable/>
             <DocumentTable/>
