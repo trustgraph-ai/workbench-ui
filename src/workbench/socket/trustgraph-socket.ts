@@ -360,7 +360,7 @@ export class SocketImplementation {
 
         if (!flow) flow = "0000";
 
-        return this.makeRequest(service, timeout, retries, flow);
+        return this.makeRequest(service, request, timeout, retries, flow);
 
     }
 
@@ -437,6 +437,16 @@ export class SocketImplementation {
             },
             60000,
         ).then(r => r["document-metadatas"]);
+    }
+    getLibraryProcessing() {
+        return this.makeRequest<LibrarianRequest, LibrarianResponse>(
+            "librarian",
+            {
+                "operation": "list-processing",
+                "user": "trustgraph",
+            },
+            60000,
+        ).then(r => r["processing-metadatas"]);
     }
 
     agent(

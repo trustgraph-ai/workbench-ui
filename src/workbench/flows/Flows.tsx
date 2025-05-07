@@ -4,6 +4,7 @@ import React from 'react';
 import FlowTable from './FlowTable';
 import FlowClassTable from './FlowClassTable';
 import DocumentTable from './DocumentTable';
+import ProcessingTable from './ProcessingTable';
 
 import { useProgressStateStore } from '../state/ProgressState';
 import { useSocket } from '../socket/socket';
@@ -94,6 +95,7 @@ const Flows : React.FC <SearchProps> = ({
             <FlowTable/>
             <FlowClassTable/>
             <DocumentTable/>
+            <ProcessingTable/>
 
 
 
