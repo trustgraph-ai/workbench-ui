@@ -169,6 +169,9 @@ export interface FlowResponse {
 type LibraryRequest = any;
 type LibraryResponse  = any;
 
+type ConfigRequest = any;
+type ConfigResponse  = any;
+
 export class SocketImplementation {
 
     ws? : WebSocket;
@@ -415,6 +418,25 @@ export class SocketImplementation {
             },
             60000,
         ).then(r => r["class-names"]);
+    }
+
+    getTokenCosts() {
+        return this.makeRequest<ConfigRequest, ConfigResponse>(
+            "config",
+            {
+                "operation": "getvalues",
+                "type": "token-costs",
+            },
+            60000,
+        ).then(r => r.values.map(x => {
+            return { key: x.key, value: JSON.parse(x.value) };
+        })).then(
+            r => r.map(x => { return {
+                model: x.key,
+                input_price: x.value.input_price,
+                output_price: x.value.output_price,
+            }})
+        );
     }
 
     getFlowClass(name : string) {
