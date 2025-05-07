@@ -12,6 +12,7 @@ import EntityDetail from './entity/EntityDetail';
 import EntityList from './EntityList';
 import GraphView from './graph/GraphView';
 import Load from './load/Load';
+import Flows from './flows/Flows';
 import { useWorkbenchStateStore } from './state/WorkbenchState';
 
 const Tool : React.FC<{ tool : string}> = ({ tool }) => {
@@ -20,6 +21,7 @@ const Tool : React.FC<{ tool : string}> = ({ tool }) => {
    if (tool == "entity") return <EntityDetail/>;
    if (tool == "graph") return <GraphView/>;
    if (tool == "load") return <Load/>;
+   if (tool == "flows") return <Flows/>;
 }
 
 const Workspace : React.FC = () => {

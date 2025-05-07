@@ -149,6 +149,26 @@ function makeid(length : number) {
 
 }
 
+export interface FlowRequest {
+    operation : string;
+    class_name? : string;
+    class_definition? : string;
+    description? : string
+    flow_id? : string;
+};
+
+export interface FlowResponse {
+    class_names? : string[];
+    flow_ids? : string[];
+    class_definition? : string;
+    flow? : string;
+    description? : string;
+    error? : any;
+};
+
+type LibraryRequest = any;
+type LibraryResponse  = any;
+
 export class SocketImplementation {
 
     ws? : WebSocket;
@@ -270,7 +290,8 @@ export class SocketImplementation {
     }
 
     makeRequest<RequestType, ResponseType>(
-        service : string, request : RequestType,
+        service : string,
+        request : RequestType,
         timeout? : number,
         retries? : number,
         flow? : string,
@@ -288,13 +309,8 @@ export class SocketImplementation {
             request: request,
         };
 
-        // Temporary work-around to match the flow API change.  If no
-        // flow is specified, use 0000 which is the default flow.
-        // Workbench doesn't properly implement Flow API yet
         if (flow)
-            msg["flow"] = flow;
-        else
-            msg["flow"] = "0000";
+            msg.flow = flow;
 
         return new Promise<ResponseType>((resolve, reject) => {
 
@@ -323,9 +339,7 @@ export class SocketImplementation {
         }).then(
 
             (obj) => {
-
 //                console.log("Success at attempt", this.inflight[mid].retries);
-
 
                 clearTimeout(this.inflight[mid].timeoutId);
                 delete this.inflight[mid];
@@ -337,9 +351,22 @@ export class SocketImplementation {
 
     }
 
+    makeFlowRequest<RequestType, ResponseType>(
+        service : string, request : RequestType,
+        timeout? : number,
+        retries? : number,
+        flow? : string,
+    ) {
+
+        if (!flow) flow = "0000";
+
+        return this.makeRequest(service, timeout, retries, flow);
+
+    }
+
 
     textCompletion(system : string, text : string) : Promise<string> {
-        return this.makeRequest<TextCompletionRequest, TextCompletionResponse>(
+        return this.makeFlowRequest<TextCompletionRequest, TextCompletionResponse>(
             "text-completion",
             {
                 system: system,
@@ -350,13 +377,66 @@ export class SocketImplementation {
     }
 
     graphRag(text : string) {
-        return this.makeRequest<GraphRagRequest, GraphRagResponse>(
+        return this.makeFlowRequest<GraphRagRequest, GraphRagResponse>(
             "graph-rag",
             {
                 query: text,
             },
             60000,
         ).then(r => r.response);
+    }
+
+    getFlows() {
+        return this.makeRequest<FlowRequest, FlowResponse>(
+            "flow",
+            {
+                "operation": "list-flows",
+            },
+            60000,
+        ).then(r => r["flow-ids"]);
+    }
+
+    getFlow(id : string) {
+        return this.makeRequest<FlowRequest, FlowResponse>(
+            "flow",
+            {
+                "operation": "get-flow",
+                "flow-id": id,
+            },
+            60000,
+        ).then(r => JSON.parse(r.flow));
+    }
+
+    getFlowClasses() {
+        return this.makeRequest<FlowRequest, FlowResponse>(
+            "flow",
+            {
+                "operation": "list-classes",
+            },
+            60000,
+        ).then(r => r["class-names"]);
+    }
+
+    getFlowClass(name : string) {
+        return this.makeRequest<FlowRequest, FlowResponse>(
+            "flow",
+            {
+                "operation": "get-class",
+                "class-name": name,
+            },
+            60000,
+        ).then(r => JSON.parse(r["class-definition"]));
+    }
+
+    getLibraryDocuments() {
+        return this.makeRequest<LibrarianRequest, LibrarianResponse>(
+            "librarian",
+            {
+                "operation": "list-documents",
+                "user": "trustgraph",
+            },
+            60000,
+        ).then(r => r["document-metadatas"]);
     }
 
     agent(
@@ -422,7 +502,7 @@ export class SocketImplementation {
     }
 
     embeddings(text : string) {
-        return this.makeRequest<EmbeddingsRequest, EmbeddingsResponse>(
+        return this.makeFlowRequest<EmbeddingsRequest, EmbeddingsResponse>(
             "embeddings",
             {
                 text: text,
@@ -435,7 +515,7 @@ export class SocketImplementation {
         vecs : number[][],
         limit : number | undefined,
     ) {
-        return this.makeRequest<
+        return this.makeFlowRequest<
             GraphEmbeddingsQueryRequest, GraphEmbeddingsQueryResponse
         >(
             "graph-embeddings",
@@ -454,7 +534,7 @@ export class SocketImplementation {
         o? : Value,
         limit? : number,
     ) {
-        return this.makeRequest<TriplesQueryRequest, TriplesQueryResponse>(
+        return this.makeFlowRequest<TriplesQueryRequest, TriplesQueryResponse>(
             "triples",
             {
                 s: s, p: p, o: o,
@@ -473,7 +553,7 @@ export class SocketImplementation {
         metadata? : Triple[],
 
     ) {
-        return this.makeRequest<LoadDocumentRequest, LoadDocumentResponse>(
+        return this.makeFlowRequest<LoadDocumentRequest, LoadDocumentResponse>(
             "document-load",
             {
                 "id": id,
@@ -495,7 +575,7 @@ export class SocketImplementation {
         charset? : string,
 
     ) {
-        return this.makeRequest<LoadTextRequest, LoadTextResponse>(
+        return this.makeFlowRequest<LoadTextRequest, LoadTextResponse>(
             "text-load",
             {
                 "id": id,

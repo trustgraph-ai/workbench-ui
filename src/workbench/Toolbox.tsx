@@ -88,6 +88,17 @@ const Toolbox : React.FC <ToolboxProps> = ({
                     <ListItemText primary="Data Loader"/>
                 </ListItemButton>
 
+                <ListItemButton
+                    key={'flows'}
+                    selected={tool == 'flows'}
+                    onClick={() => { setTool('flows') }}
+                >
+                    <ListItemIcon>
+                        <InputIcon />
+                    </ListItemIcon>
+                    <ListItemText primary="Processing flows"/>
+                </ListItemButton>
+
             </List>
                         
         </>
