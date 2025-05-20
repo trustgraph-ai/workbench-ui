@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect, useRef } from 'react';
+import { Rotate3d } from 'lucide-react';
 
 import { Box, Text, Alert, Heading, HStack } from '@chakra-ui/react';
 
@@ -135,6 +136,7 @@ const GraphView = () => {
 
 
             <PageHeader
+              icon={ <Rotate3d /> }
               title="Visualize"
               description="Projects the knowledge graph into 3 dimensions"
             />

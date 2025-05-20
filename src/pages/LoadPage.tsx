@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { FileUp } from 'lucide-react';
 
 import {v4 as uuidv4} from 'uuid';
 
@@ -224,6 +225,7 @@ const Load : React.FC <LoadProps> = ({
     return (
         <>
             <PageHeader
+              icon={ <FileUp /> }
               title="Document load"
               description="Load documents into TrustGraph processing"
             />

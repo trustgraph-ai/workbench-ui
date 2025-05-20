@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from "react-router";
 
-import { Rotate3d, ArrowBigRight } from 'lucide-react';
+import { Rotate3d, ArrowBigRight, Waypoints } from 'lucide-react';
 
 import { Box, Alert, Button, Stack, Heading, HStack } from '@chakra-ui/react';
 
@@ -92,6 +92,7 @@ const EntityDetail = () => {
         <>
 
             <PageHeader
+              icon={ <Waypoints /> }
               title="Explore"
               description="Exploring properties and relationships of the knowledge graph"
             />

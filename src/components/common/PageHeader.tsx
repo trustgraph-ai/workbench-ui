@@ -30,7 +30,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({
       <Flex alignItems="center">
         {
           icon &&
-          <Box mr={4} color="colors.brand.solid" fontSize="xl">
+          <Box mr={4} color="{colors.brand.fg}" fontSize="xl">
             {icon}
           </Box>
         }
@@ -38,7 +38,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({
           <Heading as="h1" size="xl" color="{colors.brand.fg}" fontWeight="bold">
             {title}
           </Heading>
-          <Text mt={1} fontSize="md" color="{colors.gray.500}">
+          <Text mt={1} fontSize="md" color="{colors.brand.emphasized}">
             {description}
           </Text>
         </Box>

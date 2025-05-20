@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { BrainCircuit } from 'lucide-react';
 
 import { useSocket } from '../api/trustgraph/socket';
 
@@ -19,8 +20,9 @@ const Load : React.FC <LoadProps> = ({
     return (
         <>
             <PageHeader
+              icon={ <BrainCircuit /> }
               title="Knowledge Cores"
-              description="TBD"
+              description="Knowledge cores are modules which encapsulate a set of domain knowledge"
             />
             <KnowledgeCoresTable />
             <CenterSpinner/>

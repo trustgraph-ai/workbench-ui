@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { CircleArrowRight } from 'lucide-react';
 
 import { useSocket } from '../api/trustgraph/socket';
 
@@ -19,8 +20,9 @@ const Load : React.FC <LoadProps> = ({
     return (
         <>
             <PageHeader
+              icon={ <CircleArrowRight /> }
               title="Processing"
-              description="TBD - this needed?"
+              description="Submit documents for processing"
             />
             <ProcessingTable />
             <CenterSpinner/>

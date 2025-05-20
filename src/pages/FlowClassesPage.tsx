@@ -2,6 +2,7 @@
 import React from 'react';
 
 import { useSocket } from '../api/trustgraph/socket';
+import { ScrollText } from 'lucide-react';
 
 import { useProgressStateStore } from '../state/ProgressState';
 import CenterSpinner from '../components/common/CenterSpinner';
@@ -19,8 +20,9 @@ const Load : React.FC <LoadProps> = ({
     return (
         <>
             <PageHeader
+              icon={ <ScrollText /> }
               title="Flow Classes"
-              description="TBD"
+              description="Managing the dataflow definitions"
             />
             <FlowClassesTable />
             <CenterSpinner />

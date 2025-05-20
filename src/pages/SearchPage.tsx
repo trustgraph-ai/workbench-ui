@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { Search } from 'lucide-react';
 
 import { useProgressStateStore } from '../state/ProgressState';
 import { useSocket } from '../api/trustgraph/socket';
@@ -16,7 +17,7 @@ import PageHeader from '../components/common/PageHeader';
 interface SearchProps {
 }
 
-const Search : React.FC <SearchProps> = ({
+const SearchPage : React.FC <SearchProps> = ({
 }) => {
 
     const addActivity = useProgressStateStore(
@@ -90,6 +91,7 @@ const Search : React.FC <SearchProps> = ({
         <>
 
             <PageHeader
+              icon={ <Search /> }
               title="Document search"
               description="Semantic matching against entities in the knowledge graph"
             />
@@ -107,5 +109,5 @@ const Search : React.FC <SearchProps> = ({
 
 }
 
-export default Search;
+export default SearchPage;
 

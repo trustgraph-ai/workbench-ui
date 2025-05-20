@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { Hammer } from 'lucide-react';
 
 import { useSocket } from '../api/trustgraph/socket';
 
@@ -18,8 +19,9 @@ const Load : React.FC <LoadProps> = ({
     return (
         <>
             <PageHeader
+              icon={ <Hammer /> }
               title="Agent Tools Configuration"
-              description="TBD"
+              description="Agent tools equip the agent framework to work with your data"
             />
             <CenterSpinner/>
         </>

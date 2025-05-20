@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { LibraryBig } from 'lucide-react';
 
 import { useSocket } from '../api/trustgraph/socket';
 
@@ -19,6 +20,7 @@ const Load : React.FC <LoadProps> = ({
     return (
         <>
             <PageHeader
+              icon={ <LibraryBig /> }
               title="Library"
               description="Managing loaded documents"
             />

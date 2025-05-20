@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { Workflow } from 'lucide-react';
 
 import { useSocket } from '../api/trustgraph/socket';
 
@@ -19,8 +20,9 @@ const Load : React.FC <LoadProps> = ({
     return (
         <>
             <PageHeader
+              icon={ <Workflow /> }
               title="Processing Flows"
-              description="Managing the processing configurations"
+              description="Managing the data flows in the system"
             />
             <FlowTable/>
             <CenterSpinner/>

@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { HandCoins } from 'lucide-react';
 
 import { useSocket } from '../api/trustgraph/socket';
 
@@ -19,8 +20,9 @@ const Load : React.FC <LoadProps> = ({
     return (
         <>
             <PageHeader
+              icon={ <HandCoins /> }
               title="Token Cost Configuration"
-              description="TBD"
+              description="Define the cost of AI token processing"
             />
             <TokenCostTable />
             <CenterSpinner/>

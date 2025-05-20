@@ -16,7 +16,8 @@ const ChakraNavLink = chakra(ReactRouterNavLink);
 import {
   LayoutDashboard, Package2, Rocket, Settings, TestTube2, LineChart,
   Ship, Hammer, Cog, MessageSquareText, Search, Waypoints, Rotate3d,
-  FileUp,
+  FileUp, Workflow, ScrollText, LibraryBig, BrainCircuit, CircleArrowRight,
+  HandCoins, MessageCircleCode
 } from 'lucide-react';
 
 interface NavItemProps {
@@ -55,6 +56,9 @@ const Sidebar = () => {
       position="sticky" top="0" height="100vh" boxShadow="sm"
     >
       <Flex h="20" alignItems="center" mx="8" justifyContent="space-between">
+        <Box color="{colors.brand.fg}">
+        <TestTube2 />
+        </Box>
         <Heading fontSize="2xl" fontWeight="bold" color="#5285ed" display={{
         base: 'none',
         md: 'block'
@@ -77,14 +81,14 @@ const Sidebar = () => {
         <NavItem to="/entity" icon={Waypoints} label="Relationships" />
         <NavItem to="/graph" icon={Rotate3d} label="Graph Visualizer" />
         <NavItem to="/load" icon={FileUp} label="Data Loader" />
-        <NavItem to="/flows" icon={FileUp} label="Flows" />
-        <NavItem to="/flow-classes" icon={FileUp} label="Flow Classes" />
-        <NavItem to="/library" icon={FileUp} label="Library" />
-        <NavItem to="/kc" icon={FileUp} label="Knowledge Cores" />
-        <NavItem to="/procs" icon={FileUp} label="Processing" />
-        <NavItem to="/tokencost" icon={FileUp} label="Token Cost" />
-        <NavItem to="/prompts" icon={FileUp} label="Prompts" />
-        <NavItem to="/agents" icon={FileUp} label="Agent Tools" />
+        <NavItem to="/flows" icon={Workflow} label="Flows" />
+        <NavItem to="/flow-classes" icon={ScrollText} label="Flow Classes" />
+        <NavItem to="/library" icon={LibraryBig} label="Library" />
+        <NavItem to="/kc" icon={BrainCircuit} label="Knowledge Cores" />
+        <NavItem to="/procs" icon={CircleArrowRight} label="Processing" />
+        <NavItem to="/tokencost" icon={HandCoins} label="Token Cost" />
+        <NavItem to="/prompts" icon={MessageCircleCode} label="Prompts" />
+        <NavItem to="/agents" icon={Hammer} label="Agent Tools" />
       </VStack>
 
     </Box>
