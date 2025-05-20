@@ -8,6 +8,7 @@ import { useSocket } from '../api/trustgraph/socket';
 import { Triple } from '../api/trustgraph/Triple';
 
 import Title from '../components/load/Title';
+import Comments from '../components/load/Comments';
 import Url from '../components/load/Url';
 import Keywords from '../components/load/Keywords';
 import Operation from '../components/load/Operation';
@@ -37,6 +38,7 @@ const Load = () => {
     const socket = useSocket();
 
     const title = useLoadStateStore((state) => state.title);
+    const comments = useLoadStateStore((state) => state.comments);
     const url = useLoadStateStore((state) => state.url);
     const keywords = useLoadStateStore((state) => state.keywords);
     const operation = useLoadStateStore((state) => state.operation);
@@ -134,8 +136,9 @@ const Load = () => {
 
                 if (operation == "upload-pdf") {
 
-                    socket.loadDocument(
-                        data, doc_id, doc_meta
+                    socket.loadLibraryDocument(
+                        data, doc_id, doc_meta, "application/pdf",
+                        title, comments, keywords, null,
                     ).then(
                         () => {
                             handleFileSuccess(file);
@@ -153,8 +156,9 @@ const Load = () => {
 
                     // Must be upload-text
 
-                    socket.loadText(
-                        data, doc_id, doc_meta
+                    socket.loadLibraryDocument(
+                        data, doc_id, doc_meta, "text/plain",
+                        title, comments, keywords, null,
                     ).then(
                         () => {
                             handleFileSuccess(file);
@@ -229,6 +233,7 @@ const Load = () => {
               description="Load documents into TrustGraph processing"
             />
             <Title/>
+            <Comments/>
             <Url/>
             <Keywords/>
             <Operation/>

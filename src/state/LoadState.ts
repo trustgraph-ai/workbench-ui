@@ -4,6 +4,7 @@ import { create } from 'zustand'
 export interface LoadState {
 
     title : string;
+    comments : string;
     url : string;
     keywords : string[];
     operation : string;
@@ -12,6 +13,7 @@ export interface LoadState {
     text : string;
 
     setTitle : (v : string) => void;
+    setComments : (v : string) => void;
     setUrl : (v : string) => void;
     setKeywords : (v : string[]) => void;
     setOperation : (v : string) => void;
@@ -32,6 +34,7 @@ export const useLoadStateStore = create<LoadState>()(
     (set) => ({
 
         title: "",
+        comments: "",
         url: "",
         keywords: [],
         operation: "upload-pdf",
@@ -41,6 +44,10 @@ export const useLoadStateStore = create<LoadState>()(
 
         setTitle: (v) => set(() => ({
             title: v,
+        })),
+
+        setComments: (v) => set(() => ({
+            comments: v,
         })),
 
         setUrl:  (v) => set(() => ({

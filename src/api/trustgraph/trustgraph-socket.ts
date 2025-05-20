@@ -40,6 +40,11 @@ export interface Socket {
         text : string, id? : string, metadata? : Triple[],
     ) => Promise<void>;
 
+    loadLibraryDocument : (
+        document : string, id? : string, metadata? : Triple[],
+        mimeType : string,
+    ) => Promise<void>;
+
 };
 
 // FIXME: Better types?
@@ -242,6 +247,46 @@ export interface LoadTextRequest {
 
 type LoadTextResponse = void;
 
+export interface DocumentMetadata {
+    id? : string;
+    time? : number;
+    kind? : string;
+    title? : string;
+    comments? : string;
+    metadata? : Triple[];
+    user? : string;
+    tags? : string[];
+};
+
+export interface ProcessingMetadata {
+    id? : string;
+    document_id? : string;
+    time? : number;
+    flow? : string;
+    user? : string;
+    collection? : string;
+    tags? : string[];
+};
+
+export interface LibraryRequest {
+    operation : string;
+    document_id? : string;
+    processing_id? : string;
+    document_metadata? : DocumentMetadata;
+    processing_metadata? : ProcessingMetadata;
+    content? : string;
+    user? : string;
+    collection? : string;
+    metadata? : Triple[];
+};
+
+export interface LibraryResponse {
+    error : Error;
+    document_metadata? : DocumentMetadata;
+    content? : string;
+    document_metadatas? : DocumentMetadata[];
+    processing_metadata? : ProcessingMetadata;
+};
 
 export interface TextCompletionResponse {
     response : string;
@@ -428,7 +473,6 @@ export class SocketImplementation {
       );
 
     }
-
 
     textCompletion(system : string, text : string) : Promise<string> {
         return this.makeFlowRequest<TextCompletionRequest, TextCompletionResponse>(
@@ -746,6 +790,41 @@ export class SocketImplementation {
                 "metadata": metadata,
                 "text": text,
                 "charset": charset,
+            },
+            30000,
+        );
+    }
+
+    loadLibraryDocument(
+
+        // base64-encoded doc
+        document : string,
+
+        id? : string,
+        metadata? : Triple[],
+
+        mimeType : string,
+        title : string,
+        comments : string,
+        tags : string[],
+        user : string,
+
+    ) {
+        return this.makeRequest<LibraryRequest, LibraryResponse>(
+            "librarian",
+            {
+                "operation": "add-document",
+                "document-metadata": {
+                    "id": id,
+                    "time": Math.floor(Date.now() / 1000),
+                    "kind": mimeType,
+                    "title": title,
+                    "comments": comments,
+                    "metadata": metadata,
+                    "user": user ? user : "trustgraph",
+                    "tags": tags,
+                },
+                "content": document,
             },
             30000,
         );
