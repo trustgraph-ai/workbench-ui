@@ -101,9 +101,9 @@ console.log(systemPrompt);
             </Table.Header>
             <Table.Body>
                 {
-                    prompts.map((row : Row) => (
+                    prompts.map((row, ix) => (
                         <Table.Row
-                          key={row.id}
+                          key={ix}
                           sx={{
                               '&:last-child td': { border: 0 },
                               '&:last-child th': { border: 0 }

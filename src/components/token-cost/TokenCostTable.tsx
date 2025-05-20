@@ -3,8 +3,6 @@ import React, { useEffect, useState } from 'react';
 
 import { Table, Link } from '@chakra-ui/react';
 
-import { Row } from '../state/row';
-
 import { useSocket } from '../../api/trustgraph/socket';
 
 const TokenCostTable = () => {
@@ -25,13 +23,10 @@ const TokenCostTable = () => {
 
     }, [socket]);
 
-    const setSelected = useWorkbenchStateStore((state) => state.setSelected);
-
-    const setTool = useWorkbenchStateStore((state) => state.setTool);
-
-    const select = (row : Row) => {
-        setSelected({ uri: row.uri, label: row.label ? row.label : "n/a" });
-        setTool("entity");
+    const select = (row) => {
+    console.log(row);
+//        setSelected({ uri: row.uri, label: row.label ? row.label : "n/a" });
+//        setTool("entity");
     }
 
     return (

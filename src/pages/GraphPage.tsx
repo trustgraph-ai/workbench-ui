@@ -1,5 +1,5 @@
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Rotate3d } from 'lucide-react';
 
 import { Box, Alert, Heading, HStack } from '@chakra-ui/react';
@@ -45,6 +45,8 @@ const GraphView = () => {
 
     useEffect(
       () => {
+
+        if (!selected) return;
 
         const act = "Build subgraph: " + selected.label;
         addActivity(act);
