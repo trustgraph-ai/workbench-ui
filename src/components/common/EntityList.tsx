@@ -1,22 +1,15 @@
 
-import React from 'react';
 import { useNavigate } from "react-router";
 
-import { Box, Avatar, HStack, Tag} from '@chakra-ui/react';
+import { HStack, Tag} from '@chakra-ui/react';
 
 import { Entity } from '../../state/Entity';
 import { useWorkbenchStateStore } from '../../state/WorkbenchState';
 
-interface EntityListProps {
-}
-
-const EntityList : React.FC <EntityListProps> = ({
-}) => {
+const EntityList = () => {
 
     const entities = useWorkbenchStateStore((state) => state.entities);
-    const selected = useWorkbenchStateStore((state) => state.selected);
     const setSelected = useWorkbenchStateStore((state) => state.setSelected);
-    const setTool = useWorkbenchStateStore((state) => state.setTool);
 
     const navigate = useNavigate();
 

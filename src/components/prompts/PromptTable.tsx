@@ -4,13 +4,17 @@ import { useSocket } from '../../api/trustgraph/socket';
 
 import { Table, Link, Code } from '@chakra-ui/react';
 
-const DocumentTable : React.FC<{}> = ({
-}) => {
+const DocumentTable = () => {
 
   const socket = useSocket();
 
   const [ systemPrompt, setSystemPrompt ] = useState<string>("");
-  const [ prompts, setPrompts ] = useState<any[]>([]);
+  const [ prompts, setPrompts ] = useState([]);
+
+// FIXME:
+console.log(systemPrompt);
+
+
 
   useEffect(
     () => {
@@ -79,7 +83,7 @@ const DocumentTable : React.FC<{}> = ({
         }
       )*/
     },
-    []
+    [socket]
   );
     
     return (

@@ -1,16 +1,14 @@
 
 import React from 'react';
 import {
-    Box, SimpleGrid, Select, Field, Slider, NumberInput, Portal, Stack,
-    Span, Image, Flex, Heading, Text, createListCollection, Center,
-    AbsoluteCenter
+    Box, Stack, Image, Flex, Heading, Text, Center
 } from '@chakra-ui/react';
 
 const OptionWithImage : React.FC<{
     image : string,
     title : string,
-    description? : any,
-    badge? : any,
+    description? : string | React.ReactNode,
+    badge? : React.ReactNode,
 }> = ({
     description, title, image, badge
 }) => {

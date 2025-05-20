@@ -2,7 +2,7 @@
 import React, {  useEffect, useRef } from 'react';
 
 import {
-  Box, Flex, Text, VStack, HStack, Avatar, Spacer
+  Box, Text, VStack, HStack, Avatar, Spacer
 } from '@chakra-ui/react';
 
 import { useChatStateStore } from '../../state/ChatState';

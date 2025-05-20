@@ -1,9 +1,6 @@
 
 import React from 'react';
-import {
-  Box, Field, Flex, Heading, Text, Select, Portal, Stack, Span,
-  NumberInput
-} from '@chakra-ui/react';
+import { Field, NumberInput } from '@chakra-ui/react';
 
 interface NumberFieldProps {
 

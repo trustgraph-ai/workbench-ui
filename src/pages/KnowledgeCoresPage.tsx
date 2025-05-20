@@ -2,20 +2,11 @@
 import React from 'react';
 import { BrainCircuit } from 'lucide-react';
 
-import { useSocket } from '../api/trustgraph/socket';
-
-import { useProgressStateStore } from '../state/ProgressState';
 import CenterSpinner from '../components/common/CenterSpinner';
 import PageHeader from '../components/common/PageHeader';
 import KnowledgeCoresTable from '../components/kc/KnowledgeCoresTable';
 
-interface LoadProps {
-}
-
-const Load : React.FC <LoadProps> = ({
-}) => {
-
-    const socket = useSocket();
+const KnowledgeCoresPage = () => {
 
     return (
         <>
@@ -32,5 +23,5 @@ const Load : React.FC <LoadProps> = ({
 
 }
 
-export default Load;
+export default KnowledgeCoresPage;
 

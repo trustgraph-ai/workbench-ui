@@ -4,15 +4,13 @@ import React, { useEffect, useState } from 'react';
 import { Table, Link } from '@chakra-ui/react';
 
 import { useWorkbenchStateStore } from '../../state/WorkbenchState';
-import { useSearchStateStore } from '../../state/SearchState';
 import { Row } from '../state/row';
 
 import { useSocket } from '../../api/trustgraph/socket';
 
-const KnowledgeCoresTable : React.FC<{}> = ({
-}) => {
+const KnowledgeCoresTable = () => {
 
-    const [view, setView] = useState<any[]>([]);
+    const [view, setView] = useState([]);
 
     const socket = useSocket();
 
@@ -26,7 +24,7 @@ const KnowledgeCoresTable : React.FC<{}> = ({
 
 
 
-    }, []);
+    }, [socket]);
 
     const setSelected = useWorkbenchStateStore((state) => state.setSelected);
 

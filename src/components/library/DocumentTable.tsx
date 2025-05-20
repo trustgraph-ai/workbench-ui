@@ -7,10 +7,9 @@ import { Row } from '../state/row';
 
 import { useSocket } from '../../api/trustgraph/socket';
 
-const DocumentTable : React.FC<{}> = ({
-}) => {
+const DocumentTable = () => {
 
-    const [view, setView] = useState<any[]>([]);
+    const [view, setView] = useState([]);
 
     const socket = useSocket();
 
@@ -22,9 +21,7 @@ const DocumentTable : React.FC<{}> = ({
             (err) => console.log("Error:", err)
         );
 
-
-
-    }, []);
+    }, [socket]);
 
     return (
 

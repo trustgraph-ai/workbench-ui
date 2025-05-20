@@ -2,20 +2,17 @@
 import React from 'react';
 import { useNavigate } from "react-router";
 
-import { Box, Table, Link } from '@chakra-ui/react';
+import { Table, Link } from '@chakra-ui/react';
 
 import { useWorkbenchStateStore } from '../../state/WorkbenchState';
 import { useSearchStateStore } from '../../state/SearchState';
 import { Row } from '../state/row';
 
-const Results : React.FC<{}> = ({
-}) => {
+const Results = () => {
 
     const view = useSearchStateStore((state) => state.rows);
 
     const setSelected = useWorkbenchStateStore((state) => state.setSelected);
-
-    const setTool = useWorkbenchStateStore((state) => state.setTool);
 
     const navigate = useNavigate();
 

@@ -1,7 +1,7 @@
 
 import React from 'react';
 
-import { Text, Tag } from '@chakra-ui/react';
+import { Tag } from '@chakra-ui/react';
 
 import { Value } from '../state/Triple';
 

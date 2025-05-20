@@ -5,8 +5,7 @@ import { MessageSquareText } from 'lucide-react';
 import ChatConversation from '../components/chat/ChatConversation';
 import PageHeader from '../components/common/PageHeader';
 
-const Chat : React.FC <{}> = ({
-}) => {
+const Chat = () => {
 
     return (
         <>

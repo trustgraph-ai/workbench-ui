@@ -1,7 +1,7 @@
 
 import React from 'react';
 
-import { Popover, Text, IconButton, Portal, List } from '@chakra-ui/react';
+import { Popover, Text, IconButton, Portal } from '@chakra-ui/react';
 import { CircleHelp } from 'lucide-react';
 
 const SearchHelp = () => {

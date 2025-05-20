@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Field, Box, Flex, Slider as ChakraSlider } from '@chakra-ui/react';
+import { Field, Slider as ChakraSlider } from '@chakra-ui/react';
 
 interface SliderProps {
   label : string;

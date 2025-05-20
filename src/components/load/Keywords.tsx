@@ -1,15 +1,10 @@
 
 import React from 'react';
 
-import { Box } from '@chakra-ui/react';
-
 import { useLoadStateStore } from '../../state/LoadState';
 import ChipInputField from '../common/ChipInputField';
 
-interface KeywordsProps {}
-
-const Keywords : React.FC<KeywordsProps> = ({
-}) => {
+const Keywords = () => {
 
   const values = useLoadStateStore((state) => state.keywords);
   const setValues = useLoadStateStore((state) => state.setKeywords);

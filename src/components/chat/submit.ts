@@ -105,7 +105,7 @@ export const submitChat = (
 
             let entities : Entity[] = [];
 
-            for(let resp of responses) {
+            for(const resp of responses) {
 
                 if (!resp) continue;
                 if (resp.length < 1) continue;
@@ -115,7 +115,8 @@ export const submitChat = (
                     uri: resp[0].s.v,
                 };
 
-                entities.push(ent);
+                // entities.push(ent);
+                entities = [...entities, ent];
 
             }
 

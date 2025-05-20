@@ -40,10 +40,10 @@ export const updateSubgraphTriples = (
 
     const groupId = 1;
 
-    let nodeIds = new Set<string>(sg.nodes.map(n => n.id));
-    let linkIds = new Set<string>(sg.links.map(n => n.id));
+    const nodeIds = new Set<string>(sg.nodes.map(n => n.id));
+    const linkIds = new Set<string>(sg.links.map(n => n.id));
 
-    for (let t of triples) {
+    for (const t of triples) {
 
         // Source has a URI, that can be its unique ID
         const sourceId = t.s.v;

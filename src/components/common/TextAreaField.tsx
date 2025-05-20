@@ -1,9 +1,7 @@
 
 import React from 'react';
-import {
-  Box, Field, Flex, Heading, Text, Select, Portal, Stack, Span,
-  Textarea, Input
-} from '@chakra-ui/react';
+
+import { Field, Textarea } from '@chakra-ui/react';
 
 interface TextFieldProps {
   label: string,

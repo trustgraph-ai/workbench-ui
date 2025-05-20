@@ -1,12 +1,10 @@
 
-import React, { useState, useEffect, PropsWithChildren } from 'react';
+import React, { PropsWithChildren } from 'react';
 
 import {
-  Box, Button, Container, Separator, Flex, Field, Heading, Input, Stack,
-  Text, Link,
+  Box, Container, Flex, Heading, Stack,
 } from "@chakra-ui/react"
 
-import ColorModeToggle from '../components/color-mode-toggle';
 import UnauthedHeader from './UnauthedHeader';
 
 const SimplePage : React.FC<PropsWithChildren<{

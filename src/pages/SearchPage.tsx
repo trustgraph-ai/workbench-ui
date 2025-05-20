@@ -14,11 +14,7 @@ import Results from '../components/search/Results';
 import SearchInput from '../components/search/SearchInput';
 import PageHeader from '../components/common/PageHeader';
 
-interface SearchProps {
-}
-
-const SearchPage : React.FC <SearchProps> = ({
-}) => {
+const SearchPage = () => {
 
     const addActivity = useProgressStateStore(
         (state) => state.addActivity

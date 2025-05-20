@@ -3,14 +3,11 @@ import React, { useEffect, useState } from 'react';
 
 import { Table, Link } from '@chakra-ui/react';
 
-import { Row } from '../state/row';
-
 import { useSocket } from '../../api/trustgraph/socket';
 
-const FlowClassesTable : React.FC<{}> = ({
-}) => {
+const FlowClassesTable = () => {
 
-    const [view, setView] = useState<any[]>([]);
+    const [view, setView] = useState([]);
 
     const socket = useSocket();
 
@@ -18,8 +15,8 @@ const FlowClassesTable : React.FC<{}> = ({
 
         socket.getFlowClasses().then(
 
-            (names : string[]) : any => {
-                return Promise.all<any>(
+            (names) => {
+                return Promise.all(
                     names.map(
                         (name) => socket.getFlowClass(name).then(
                             x => [name, x]
@@ -35,7 +32,7 @@ const FlowClassesTable : React.FC<{}> = ({
 
 
 
-    }, []);
+    }, [socket]);
 
     return (
 

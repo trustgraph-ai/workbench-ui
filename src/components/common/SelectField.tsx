@@ -1,7 +1,7 @@
 
-import React, { ReactElement } from 'react';
+import React from 'react';
 import {
-  Field, Flex, Heading, Text, Select, Portal, Stack, Span,
+  Field, Select, Portal, Stack,
   createListCollection
 } from '@chakra-ui/react';
 

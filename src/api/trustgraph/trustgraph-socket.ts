@@ -34,25 +34,36 @@ export interface Socket {
 
     loadDocument : (
         document : string, id? : string, metadata? : Triple[],
-    ) => Promise<any>;
+    ) => Promise<void>;
 
     loadText : (
         text : string, id? : string, metadata? : Triple[],
-    ) => Promise<any>;
+    ) => Promise<void>;
 
 };
 
+// FIXME: Better types?
+export type Request = object;
+export type Response = object;
+export type Error = object | string;
+
+export interface RequestMessage {
+  id : string;
+  service : string;
+  request : Request;
+}
+
 export interface ApiResponse {
     id : string;
-    response : any;
+    response : Response;
 };
 
 class ServiceCall {
     constructor(
         mid : string,
-        msg : any,
-        success : (resp : any) => void,
-        error : (err : any) => void,
+        msg : RequestMessage, 
+        success : (resp : Response) => void,
+        error : (err : Error) => void,
         timeout : number,
         retries : number,
         socket : Socket,
@@ -68,8 +79,8 @@ class ServiceCall {
     }
 
     mid : string;
-    success : (resp: any) => void;
-    error : (err : any) => void;
+    success : (resp : object) => void; // FIXME: any
+    error : (err : object | string) => void; // FIXME: any
     timeoutId : Timeout;
     timeout : number;
     retries : number;
@@ -83,7 +94,7 @@ class ServiceCall {
 
     }
 
-    onReceived(resp : any) {
+    onReceived(resp : object) {
 
         if (this.complete == true)
             console.log(
@@ -151,7 +162,7 @@ class ServiceCall {
 
             }
         } else {
-            setTimeout(this.attempt, SOCKET_RECONNECTION_TIMEOUT);asd
+            setTimeout(this.attempt, SOCKET_RECONNECTION_TIMEOUT);
         }
 
     }
@@ -220,8 +231,7 @@ export interface LoadDocumentRequest {
     metadata? : Triple[];
 };
 
-export interface LoadDocumentResponse {
-};
+export type LoadDocumentResponse = void;
 
 export interface LoadTextRequest {
     id? : string;
@@ -230,8 +240,8 @@ export interface LoadTextRequest {
     metadata? : Triple[];
 };
 
-export interface LoadTextResponse {
-};
+type LoadTextResponse = void;
+
 
 export interface TextCompletionResponse {
     response : string;
@@ -265,17 +275,17 @@ export interface FlowResponse {
     class_definition? : string;
     flow? : string;
     description? : string;
-    error? : any;
+    error? : Error;
 };
 
-type LibraryRequest = any;
-type LibraryResponse  = any;
+export type LibraryRequest = object;
+export type LibraryResponse  = object;
 
-type ConfigRequest = any;
-type ConfigResponse  = any;
+export type ConfigRequest = object;
+export type ConfigResponse  = object;
 
-type KnowledgeRequest = any;
-type KnowledgeResponse  = any;
+export type KnowledgeRequest = object;
+export type KnowledgeResponse  = object;
 
 export class SocketImplementation {
 
@@ -369,7 +379,7 @@ export class SocketImplementation {
 
         if (retries == undefined) retries = 3;
 
-        const msg : any = {
+        const msg : RequestMessage = {
             id: mid,
             service: service,
             request: request,
@@ -380,7 +390,7 @@ export class SocketImplementation {
 
         return new Promise<ResponseType>((resolve, reject) => {
 
-            let call = new ServiceCall(
+            const call = new ServiceCall(
                 mid,
                 msg,
                 resolve,
@@ -411,9 +421,11 @@ export class SocketImplementation {
         flow? : string,
     ) {
 
-        if (!flow) flow = "0000";
+      if (!flow) flow = "0000";
 
-        return this.makeRequest(service, request, timeout, retries, flow);
+      return this.makeRequest<RequestType, ResponseType>(
+        service, request, timeout, retries, flow
+      );
 
     }
 

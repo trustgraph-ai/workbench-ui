@@ -194,7 +194,7 @@ export const addRowEmbeddings =
 // Rest of the procecess is not async, so not adding progress
 
 export const computeCosineSimilarity =
-    (_add : (s : string) => void, _remove : (s : string) => void) =>
+    () =>
         (entities : Row[]) : Row[] =>
             entities.map(
                 (ent) => {
@@ -211,9 +211,9 @@ export const computeCosineSimilarity =
             );
 
 export const sortSimilarity =
-    (_add : (s : string) => void, _remove : (s : string) => void) =>
+    () =>
         (entities : Row[]) => {
-            let arr = Array.from(entities);
+            const arr = Array.from(entities);
             arr.sort(
                (a, b) => (b.similarity! - a.similarity!)
             );

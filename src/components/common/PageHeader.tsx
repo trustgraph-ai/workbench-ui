@@ -2,14 +2,10 @@
 import React from 'react';
 
 import {
-  Flex, Heading, Text, Box, IconButton, Skeleton
+  Flex, Heading, Text, Box
 } from '@chakra-ui/react';
 
-import { CircleUser } from 'lucide-react';
-
 import ColorModeToggle from "../color-mode-toggle"
-
-import { LuMoon, LuSun } from "react-icons/lu"
 
 interface PageHeaderProps {
   title: string;

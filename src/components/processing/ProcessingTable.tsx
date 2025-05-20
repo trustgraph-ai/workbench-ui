@@ -3,16 +3,11 @@ import React, { useEffect, useState } from 'react';
 
 import { Table, Link } from '@chakra-ui/react';
 
-import { useWorkbenchStateStore } from '../../state/WorkbenchState';
-import { useSearchStateStore } from '../../state/SearchState';
-import { Row } from '../../state/row';
-
 import { useSocket } from '../../api/trustgraph/socket';
 
-const ProcessingTable : React.FC<{}> = ({
-}) => {
+const ProcessingTable = () => {
 
-    const [view, setView] = useState<any[]>([]);
+    const [view, setView] = useState([]);
 
     const socket = useSocket();
 
@@ -26,9 +21,9 @@ const ProcessingTable : React.FC<{}> = ({
 
 
 
-    }, []);
+    }, [socket]);
 
-    const select = (row : Row) => {
+    const select = (row) => {
         setSelected({ uri: row.uri, label: row.label ? row.label : "n/a" });
         setTool("entity");
     }

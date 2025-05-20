@@ -8,17 +8,18 @@ import { Box, Button } from '@chakra-ui/react';
 interface ProgressSubmitButtonProps {
     disabled : boolean;
     working : boolean;
+    onClick : () => void;
 };
 
 const ProgressSubmitButton : React.FC <ProgressSubmitButtonProps> = ({
-    disabled, working,
+    disabled, working, onClick,
 }) => {
 
     return (
 
         <Box>
           <Button variant="subtle" disabled={disabled}
-            loading={working} color="brand"
+            loading={working} color="brand" onClick={() => onClick()}
           >
             Send <SendHorizontal />
           </Button>

@@ -1,8 +1,8 @@
 
-import React, { useRef, useState } from 'react';
+import React, { useRef } from 'react';
 
 import {
-  Box, Input, IconButton, Field, Fieldset, HStack
+  Input, HStack
 } from '@chakra-ui/react';
 
 import { useProgressStateStore } from '../../state/ProgressState';
@@ -55,6 +55,7 @@ const InputArea : React.FC <InputAreaProps> = ({
           <ProgressSubmitButton
             disabled={activity.size > 0}
             working={activity.size > 0}
+            onclick={ () => submit() }
           />
 
           <ChatHelp />

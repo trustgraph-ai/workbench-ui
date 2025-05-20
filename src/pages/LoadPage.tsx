@@ -23,11 +23,7 @@ const DIGITAL_DOCUMENT = "https://schema.org/DigitalDocument";
 const SCHEMA_URL = "https://schema.org/url";
 const SCHEMA_KEYWORDS = "https://schema.org/keywords";
 
-interface LoadProps {
-}
-
-const Load : React.FC <LoadProps> = ({
-}) => {
+const Load = () => {
 
     const setError = useProgressStateStore((state) => state.setError);
 
@@ -62,31 +58,34 @@ const Load : React.FC <LoadProps> = ({
         ];
 
         if (title != "")
-            doc_meta.push(
+            doc_meta = [
+                ...doc_meta,
                 {
                     s: { v: doc_id, e: true },
                     p: { v: RDFS_LABEL, e: true },
                     o: { v: title, e: false },
                 }
-            );
+            ];
 
         if (url != "")
-            doc_meta.push(
+            doc_meta = [
+                ...doc_meta,
                 {
                     s: { v: doc_id, e: true },
                     p: { v: SCHEMA_URL, e: true },
                     o: { v: url, e: true },
                 }
-            );
+            ];
 
-        for (let keyword of keywords)
-            doc_meta.push(
+        for (const keyword of keywords)
+            doc_meta = [
+                ...doc_meta,
                 {
                     s: { v: doc_id, e: true },
                     p: { v: SCHEMA_KEYWORDS, e: true },
                     o: { v: keyword, e: false },
                 }
-            );
+            ];
 
         return doc_meta;
 
@@ -115,7 +114,7 @@ const Load : React.FC <LoadProps> = ({
 
             console.log(file.name, "...");
 
-            let reader = new FileReader();
+            const reader = new FileReader();
 
             reader.onloadend = function() {
 
@@ -138,7 +137,7 @@ const Load : React.FC <LoadProps> = ({
                     socket.loadDocument(
                         data, doc_id, doc_meta
                     ).then(
-                        (_x) => {
+                        () => {
                             handleFileSuccess(file);
                             removeActivity(act);
                         }
@@ -157,7 +156,7 @@ const Load : React.FC <LoadProps> = ({
                     socket.loadText(
                         data, doc_id, doc_meta
                     ).then(
-                        (_x) => {
+                        () => {
                             handleFileSuccess(file);
                             removeActivity(act);
                         }
@@ -179,11 +178,11 @@ const Load : React.FC <LoadProps> = ({
 
     }
 
-    const b64encode = (input : any) => {
+    const b64encode = (input) => {
         return btoa(encodeURIComponent(input).replace(
             /%([0-9A-F]{2})/g,
             (_match, p1) => {
-                return String.fromCharCode(("0x" + p1) as any);
+                return String.fromCharCode(("0x" + p1));
             }
         ));
     }
@@ -207,7 +206,7 @@ const Load : React.FC <LoadProps> = ({
         socket.loadText(
             encoded, doc_id, doc_meta
         ).then(
-            (_x) => {
+            () => {
                 removeActivity(act);
                 setText("");
                 incTextUploads();

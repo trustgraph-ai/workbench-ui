@@ -1,17 +1,11 @@
 
-import React, { useState } from 'react';
-
-import { Box, SegmentGroup, IconButton, Field } from '@chakra-ui/react';
+import { Box, SegmentGroup, Field } from '@chakra-ui/react';
 
 import { useLoadStateStore } from '../../state/LoadState';
 
-interface OperationProps {
-}
+import LoadHelp from './LoadHelp';
 
-import Help from './Help';
-
-const Operation : React.FC<OperationProps> = ({
-}) => {
+const Operation = () => {
 
   const value = useLoadStateStore((state) => state.operation);
   const setValue = useLoadStateStore((state) => state.setOperation);
@@ -45,10 +39,9 @@ const Operation : React.FC<OperationProps> = ({
             Select one of the available upload operations
           </Field.HelperText>
   
-{/*
-        <Help/>
-*/}
         </Field.Root>
+
+        <LoadHelp/>
 
 
       </Box>

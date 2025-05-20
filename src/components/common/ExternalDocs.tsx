@@ -1,10 +1,7 @@
 
-import React, { useState, useEffect, PropsWithChildren } from 'react';
+import React, { PropsWithChildren } from 'react';
 
-import {
-  Box, SimpleGrid, Flex, Button, Drawer, Portal, CloseButton, Text,
-  Table, Link, Code,
-} from '@chakra-ui/react';
+import { Link } from '@chakra-ui/react';
 
 const ExternalDocs : React.FC<PropsWithChildren<{
   href : string;

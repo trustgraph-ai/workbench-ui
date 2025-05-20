@@ -2,19 +2,10 @@
 import React from 'react';
 import { Hammer } from 'lucide-react';
 
-import { useSocket } from '../api/trustgraph/socket';
-
-import { useProgressStateStore } from '../state/ProgressState';
 import CenterSpinner from '../components/common/CenterSpinner';
 import PageHeader from '../components/common/PageHeader';
 
-interface LoadProps {
-}
-
-const Load : React.FC <LoadProps> = ({
-}) => {
-
-    const socket = useSocket();
+const ToolsPage = () => {
 
     return (
         <>
@@ -30,5 +21,5 @@ const Load : React.FC <LoadProps> = ({
 
 }
 
-export default Load;
+export default ToolsPage;
 

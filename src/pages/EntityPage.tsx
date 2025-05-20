@@ -11,7 +11,7 @@ import { useWorkbenchStateStore } from '../state/WorkbenchState';
 import { getTriples } from '../state/knowledge-graph';
 import { useProgressStateStore } from '../state/ProgressState';
 
-import EntityHelp from '../components/entity/Help';
+import EntityHelp from '../components/entity/EntityHelp';
 import ElementNode from '../components/entity/ElementNode';
 import CenterSpinner from '../components/common/CenterSpinner';
 import PageHeader from '../components/common/PageHeader';
@@ -29,10 +29,30 @@ const EntityDetail = () => {
 
     const navigate = useNavigate();
 
-    const setError = useProgressStateStore((state) => state.setError);
-
     const selected = useWorkbenchStateStore((state) => state.selected);
-    const setTool = useWorkbenchStateStore((state) => state.setTool);
+
+    const [detail, setDetail] = useState(undefined);
+
+    useEffect(() => {
+
+        if (!selected) return;
+
+        const act = "Knowledge graph search: " + selected.label;
+        addActivity(act);
+
+        getTriples(socket, selected.uri, addActivity, removeActivity).then(
+            (d) => {
+                setDetail(d);
+                removeActivity(act);
+            }
+        ).catch(
+            (err) => {
+                console.log("Error: ", err);
+                removeActivity(act);
+            }
+        );
+
+    }, [selected, socket, addActivity, removeActivity]);
 
     if (!selected) {
         return (
@@ -48,32 +68,9 @@ const EntityDetail = () => {
         );
     }
 
-    const [detail, setDetail] = useState<any>(undefined);
-
     const graphView = () => {
         navigate("/graph");
     };
-
-    useEffect(() => {
-
-        const act = "Knowledge graph search: " + selected.label;
-        addActivity(act);
-
-        getTriples(socket, selected.uri, addActivity, removeActivity).then(
-            (d) => {
-                setDetail(d);
-                removeActivity(act);
-                setError("");
-            }
-        ).catch(
-            (err) => {
-                console.log("Error: ", err);
-                setError(err.toString());
-                removeActivity(act);
-            }
-        );
-
-    }, [selected]);
 
     if (!detail)
         return (
@@ -122,7 +119,7 @@ const EntityDetail = () => {
             <Box>
 
                 { detail.triples.map(
-                     (t : any) => {
+                     (t) => {
                          return (
                              <Box key={t.s.v + '//' + t.p.v + '//' + t.o.v}
                                mb={2}

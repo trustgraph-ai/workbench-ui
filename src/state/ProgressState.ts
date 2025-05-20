@@ -23,7 +23,7 @@ export const useProgressStateStore = create<ProgressState>()(
         error: "",
 
         addActivity: (act) => set((state) => {
-            let n = new Set(state.activity);
+            const n = new Set(state.activity);
             n.add(act);
             return {
                 ...state,
@@ -32,7 +32,7 @@ export const useProgressStateStore = create<ProgressState>()(
         }),
 
         removeActivity: (act) => set((state) => {
-            let n = new Set(state.activity);
+            const n = new Set(state.activity);
             n.delete(act);
             return {
                 ...state,

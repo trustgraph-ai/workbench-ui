@@ -2,20 +2,11 @@
 import React from 'react';
 import { CircleArrowRight } from 'lucide-react';
 
-import { useSocket } from '../api/trustgraph/socket';
-
-import { useProgressStateStore } from '../state/ProgressState';
 import CenterSpinner from '../components/common/CenterSpinner';
 import PageHeader from '../components/common/PageHeader';
 import ProcessingTable from '../components/processing/ProcessingTable';
 
-interface LoadProps {
-}
-
-const Load : React.FC <LoadProps> = ({
-}) => {
-
-    const socket = useSocket();
+const ProcessingPage = () => {
 
     return (
         <>
@@ -32,5 +23,5 @@ const Load : React.FC <LoadProps> = ({
 
 }
 
-export default Load;
+export default ProcessingPage;
 

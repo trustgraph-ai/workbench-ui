@@ -301,11 +301,11 @@ export const labelO =
 
 // Triple filter
 export const filter =
-    (triples : any[], fn : any) => triples.filter((t) => fn(t));
+    (triples, fn) => triples.filter((t) => fn(t));
 
 // Filter out 'structural' edges nobody needs to see
 export const filterInternals =
-    (triples : any[]) => triples.filter(
+    (triples) => triples.filter(
         (t) => {
             if (t.p.e && t.p.v == RDFS_LABEL) return false;
             return true;

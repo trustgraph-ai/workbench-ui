@@ -4,7 +4,7 @@ import React from 'react';
 import { Popover, Text, IconButton, Portal, List } from '@chakra-ui/react';
 import { CircleHelp } from 'lucide-react';
 
-const Help = () => {
+const LoadHelp = () => {
 
     return (
       <Popover.Root size="md" variant="outline">
@@ -54,5 +54,5 @@ const Help = () => {
 
 }
 
-export default Help;
+export default LoadHelp;
 

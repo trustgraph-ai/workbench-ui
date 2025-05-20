@@ -1,11 +1,7 @@
 
-import React, {  useEffect, useRef } from 'react';
-
 import {
-  Box, Flex, Text, VStack, HStack, Avatar, Spacer
+  Box, Flex, Text, Avatar
 } from '@chakra-ui/react';
-
-import { useChatStateStore } from '../../state/ChatState';
 
 const ChatMessage = ({ message }) => {
   const isUser = message.role === 'human';

@@ -2,20 +2,11 @@
 import React from 'react';
 import { Workflow } from 'lucide-react';
 
-import { useSocket } from '../api/trustgraph/socket';
-
-import { useProgressStateStore } from '../state/ProgressState';
 import CenterSpinner from '../components/common/CenterSpinner';
 import PageHeader from '../components/common/PageHeader';
 import FlowTable from '../components/flows/FlowTable';
 
-interface LoadProps {
-}
-
-const Load : React.FC <LoadProps> = ({
-}) => {
-
-    const socket = useSocket();
+const FlowsPage = () => {
 
     return (
         <>
@@ -31,5 +22,5 @@ const Load : React.FC <LoadProps> = ({
 
 }
 
-export default Load;
+export default FlowsPage;
 

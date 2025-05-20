@@ -1,11 +1,10 @@
 
-import { PropsWithChildren } from 'react';
+import React from 'react';
 import { Text } from '@chakra-ui/react';
 
-const SelectOptionText : React.FC<PropsWithChildren<{
-}>> = ({
-    children
-}) => {
+const SelectOptionText : React.FC<{
+  children : React.ReactNode
+}> = ({children}) => {
   return (
     <Text mt={1} textStyle="xs" color="fg.muted">
       {children}

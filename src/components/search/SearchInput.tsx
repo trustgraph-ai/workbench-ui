@@ -1,9 +1,7 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 
-import { CircleHelp } from 'lucide-react';
-
-import { Box, IconButton, Input, HStack } from '@chakra-ui/react';
+import { Input, HStack } from '@chakra-ui/react';
 
 import { useProgressStateStore } from '../../state/ProgressState';
 import { useSearchStateStore } from '../../state/SearchState';
@@ -19,8 +17,6 @@ const SearchInput : React.FC <SearchInputProps> = ({
 }) => {
 
   const activity = useProgressStateStore((state) => state.activity);
-
-  const [help, setHelp] = useState<boolean>(false);
 
   const search = useSearchStateStore((state) => state.input);
   const setSearch = useSearchStateStore((state) => state.setInput);

@@ -1,8 +1,6 @@
 
 import React from 'react';
 
-import { Box, Card } from '@chakra-ui/react';
-
 import ChatHistory from './ChatHistory';
 import InputArea from './InputArea';
 import EntityList from '../common/EntityList';
@@ -13,11 +11,7 @@ import { useProgressStateStore } from '../../state/ProgressState';
 import { useChatStateStore } from '../../state/ChatState';
 import { submitChat } from './submit';
 
-interface ChatConversationProps {
-};
-
-const ChatConversation : React.FC <ChatConversationProps> = ({
-}) => {
+const ChatConversation = () => {
 
     const socket = useSocket();
 

@@ -1,7 +1,7 @@
 
 import React, { useState } from "react";
 
-import { Box, Input, Tag, Wrap, Field } from "@chakra-ui/react";
+import { Input, Tag, Wrap, Field } from "@chakra-ui/react";
 
 // Represents a label added to the list. Highlighted with a close button for
 // removal.

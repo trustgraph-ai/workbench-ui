@@ -1,23 +1,9 @@
 
-import {
-  Box,
-  Button,
-  Container,
-  Separator,
-  Flex,
-  Field,
-  Heading,
-  Input,
-  Stack,
-  Text,
-  Link,
-} from "@chakra-ui/react"
-
-import { FaGithub, FaGoogle, FaApple } from "react-icons/fa"
+import { Box, Flex } from "@chakra-ui/react"
 
 import ColorModeToggle from '../color-mode-toggle';
 
-export function UnauthedHeader() {
+const UnauthedHeader = () => {
   return (
   <>
     <Flex mb={2} alignItems="center" justifyContent="space-between"

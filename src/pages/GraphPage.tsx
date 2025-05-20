@@ -1,8 +1,8 @@
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Rotate3d } from 'lucide-react';
 
-import { Box, Text, Alert, Heading, HStack } from '@chakra-ui/react';
+import { Box, Alert, Heading, HStack } from '@chakra-ui/react';
 
 import { useResizeDetector } from 'react-resize-detector';
 
@@ -14,7 +14,7 @@ import { useSocket } from '../api/trustgraph/socket';
 import { useWorkbenchStateStore } from '../state/WorkbenchState';
 import { createSubgraph, updateSubgraph } from '../state/knowledge-graph-viz';
 import CenterSpinner from '../components/common/CenterSpinner';
-import Help from '../components/graph/Help';
+import GraphHelp from '../components/graph/GraphHelp';
 import PageHeader from '../components/common/PageHeader';
 
 import { system } from '../theme';
@@ -34,30 +34,17 @@ const GraphView = () => {
 
     const selected = useWorkbenchStateStore((state) => state.selected);
 
-    const fgRef = useRef<any>();
+    const fgRef = useRef();
 
     const { width, height, ref } = useResizeDetector(
         {
         }
     );
 
-    if (!selected) {
-        return (
-            <Box>
-                <CenterSpinner/>
-                <Alert.Root status="info" variant="outline">
-                  <Alert.Indicator />
-                  <Alert.Title>
-                    No data to view. Try Chat or Search to find data.
-                  </Alert.Title>
-                </Alert.Root>
-            </Box>
-        );
-    }
+    const [view, setView] = useState(undefined);
 
-    const [view, setView] = useState<any>(undefined);
-
-    useEffect(() => {
+    useEffect(
+      () => {
 
         const act = "Build subgraph: " + selected.label;
         addActivity(act);
@@ -79,7 +66,23 @@ const GraphView = () => {
             }
         );
 
-    }, [selected]);
+      },
+      [selected, addActivity, removeActivity, setError, socket]
+    );
+
+    if (!selected) {
+        return (
+            <Box>
+                <CenterSpinner/>
+                <Alert.Root status="info" variant="outline">
+                  <Alert.Indicator />
+                  <Alert.Title>
+                    No data to view. Try Chat or Search to find data.
+                  </Alert.Title>
+                </Alert.Root>
+            </Box>
+        );
+    }
 
     if (!view)
         return (
@@ -98,7 +101,7 @@ const GraphView = () => {
         new RegExp(`(?![^\\n]{1,${w}}$)([^\\n]{1,${w}})\\s`, 'g'), '$1\n'
     );
 
-    const nodeClick = (node : any) => {
+    const nodeClick = (node) => {
 
         const act = "Update subgraph: " + node.label;
         addActivity(act);
@@ -149,7 +152,7 @@ const GraphView = () => {
                   {selected.label}
                 </Heading>
 
-                <Help/>
+                <GraphHelp/>
 
             </HStack>
 
@@ -170,14 +173,14 @@ const GraphView = () => {
                 enableNodeDrag={true}
                 nodeColor={nodeColor}
                 backgroundColor={backgroundColor}
-                nodeThreeObject={(node : any) => {
+                nodeThreeObject={(node) => {
                   const sprite = new SpriteText(wrap(node.label, 30));
                   sprite.color = nodeTextColor;
                   sprite.textHeight = 4;
                   return sprite;
                 }}
                 onNodeClick={nodeClick}
-                onNodeDragEnd={(node : any) => {
+                onNodeDragEnd={(node) => {
                     node.fx = node.x;
                     node.fy = node.y;
                     node.fz = node.z;
@@ -189,13 +192,13 @@ const GraphView = () => {
                 linkColor={linkColor}
                 linkWidth="2"
                 linkThreeObjectExtend={true}
-                linkThreeObject={(link : any) => {
+                linkThreeObject={(link) => {
                     const sprite = new SpriteText(wrap(link.label, 30));
                     sprite.color = linkTextColor;
                     sprite.textHeight = 2.0;
                     return sprite;
                 }} 
-                linkPositionUpdate={(sprite : any, { start, end } : any) => {
+                linkPositionUpdate={(sprite, { start, end }) => {
                     const middlePos = {
                         x: start.x + (end.x - start.x) / 2,
                         y: start.y + (end.y - start.y) / 2,
@@ -210,7 +213,7 @@ const GraphView = () => {
                 }
                 linkDirectionalParticleWidth={1.4}
                 linkHoverPrecision={2}
-                onLinkClick={(link : any) => {
+                onLinkClick={(link) => {
                     if (fgRef.current != undefined)
                         fgRef.current.emitParticle(link);
                 }}

@@ -4,18 +4,14 @@ import {
   Box, Flex, VStack, Text, Icon, Heading, Separator, chakra
 } from '@chakra-ui/react';
 
-import { NavLink } from 'react-router';
-
 import {
   NavLink as ReactRouterNavLink,
-  NavLinkProps as ReactRouterNavLinkProps
 } from 'react-router';
 
 const ChakraNavLink = chakra(ReactRouterNavLink);
 
 import {
-  LayoutDashboard, Package2, Rocket, Settings, TestTube2, LineChart,
-  Ship, Hammer, Cog, MessageSquareText, Search, Waypoints, Rotate3d,
+  TestTube2, Hammer, MessageSquareText, Search, Waypoints, Rotate3d,
   FileUp, Workflow, ScrollText, LibraryBig, BrainCircuit, CircleArrowRight,
   HandCoins, MessageCircleCode
 } from 'lucide-react';

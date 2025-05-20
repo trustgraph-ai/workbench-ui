@@ -5,11 +5,7 @@ import { Box, Alert } from '@chakra-ui/react';
 
 import { useLoadStateStore } from '../../state/LoadState';
 
-interface ProcessedFilesProps {
-}
-
-const ProcessedFiles : React.FC<ProcessedFilesProps> = ({
-}) => {
+const ProcessedFiles = () => {
 
     const uploaded = useLoadStateStore((state) => state.uploaded);
 

@@ -1,7 +1,7 @@
 
 import React from 'react';
 
-import { Popover, Text, IconButton, Portal, List } from '@chakra-ui/react';
+import { Popover, Text, IconButton, Portal } from '@chakra-ui/react';
 import { CircleHelp } from 'lucide-react';
 
 const Help = () => {
@@ -18,18 +18,18 @@ const Help = () => {
             <Popover.Content w="25rem">
               <Popover.Arrow />
               <Popover.Body p={5}>
-                <Popover.Title fontWeight="medium">Explore</Popover.Title>
+                <Popover.Title fontWeight="medium">Visualize</Popover.Title>
                 <Text m={2}>
-                  The Explore page shows properties and
-                  relationships of entities in the knowledge graph.
-                  On this page, you can navigate by selecting other
-                  knowledge graph entities and seeing the properties
-                  and relationships related to those entities.
+                  The Visualize page projects the knowledge graph
+                  into 3 dimensions.  The initial view is centered
+                  on a node that you select.  
                 </Text>
                 <Text>
-                  Selecting the Graph View button shows you the
-                  same information, but presented in a 3D graphical
-                  form.
+                  You can use the mouse to zoom, pan and rotate
+                  the space to explore different parts of the
+                  graph.  Clicking on a graph node adds more
+                  properties and relationships to the graph
+                  centered on that node.
                 </Text>
               </Popover.Body>
             </Popover.Content>

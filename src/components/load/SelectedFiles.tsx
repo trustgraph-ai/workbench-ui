@@ -7,11 +7,7 @@ import { Box, Table, IconButton } from '@chakra-ui/react';
 
 import { useLoadStateStore } from '../../state/LoadState';
 
-interface SelectedFilesProps {
-}
-
-const SelectedFiles : React.FC<SelectedFilesProps> = ({
-}) => {
+const SelectedFiles = () => {
 
   const files = useLoadStateStore((state) => state.files);
   const removeFile = useLoadStateStore((state) => state.removeFile);

@@ -3,16 +3,11 @@ import React, { useEffect, useState } from 'react';
 
 import { Table, Link } from '@chakra-ui/react';
 
-import { useWorkbenchStateStore } from '../../state/WorkbenchState';
-import { useSearchStateStore } from '../../state/SearchState';
-import { Row } from '../../state/row';
-
 import { useSocket } from '../../api/trustgraph/socket';
 
-const FlowTable : React.FC<{}> = ({
-}) => {
+const FlowTable = () => {
 
-    const [view, setView] = useState<any[]>([]);
+    const [view, setView] = useState([]);
 
     const socket = useSocket();
 
@@ -20,8 +15,8 @@ const FlowTable : React.FC<{}> = ({
 
         socket.getFlows().then(
 
-            (ids : string[]) : any => {
-                return Promise.all<any>(
+            (ids) => {
+                return Promise.all(
                     ids.map(
                         (id) => socket.getFlow(id).then(x => [id, x])
                     )
@@ -33,17 +28,10 @@ const FlowTable : React.FC<{}> = ({
             (err) => console.log("Error:", err)
         );
 
+    }, [socket]);
 
-
-    }, []);
-
-    const setSelected = useWorkbenchStateStore((state) => state.setSelected);
-
-    const setTool = useWorkbenchStateStore((state) => state.setTool);
-
-    const select = (row : Row) => {
-        setSelected({ uri: row.uri, label: row.label ? row.label : "n/a" });
-        setTool("entity");
+    const select = (row) => {
+      console.log(row);
     }
 
     return (
