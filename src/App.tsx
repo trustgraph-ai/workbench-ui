@@ -20,7 +20,7 @@ import ToolsPage from './pages/ToolsPage';
 
 import Progress from './components/common/Progress';
 
-import { Toaster } from "./components/ui/toaster"
+import { Toaster } from "./components/ui/ToasterComponent"
 
 const App = () => {
 
