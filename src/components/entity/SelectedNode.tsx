@@ -1,0 +1,18 @@
+
+import React from 'react';
+
+import { Text, Tag } from '@chakra-ui/react';
+
+import { Value } from '../state/Triple';
+
+const SelectedNode : React.FC<{value : Value}> = ({value}) => {
+
+    return (
+        <Tag.Root variant="surface" color="gray.50" backgroundColor="gray.600">
+              <Tag.Label>{value.label}</Tag.Label>
+        </Tag.Root>
+    );
+};
+
+export default SelectedNode;
+
