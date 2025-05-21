@@ -844,6 +844,17 @@ export class SocketImplementation {
       30000,
     );
   }
+
+  stopFlow(id: string) {
+    return this.makeRequest<LibraryRequest, LibraryResponse>(
+      "flow",
+      {
+        operation: "stop-flow",
+        "flow-id": id,
+      },
+      30000,
+    );
+  }
 }
 
 export const createTrustGraphSocket = (): Socket => {
