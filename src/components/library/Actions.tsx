@@ -1,10 +1,6 @@
 import { Check } from "lucide-react";
 
-import {
-  ActionBar,
-  Portal,
-  Button,
-} from "@chakra-ui/react";
+import { ActionBar, Portal, Button } from "@chakra-ui/react";
 
 const Actions = ({ selectedCount, onSubmit, onEdit, onDelete }) => {
   return (

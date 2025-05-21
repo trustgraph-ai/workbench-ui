@@ -11,10 +11,9 @@ import {
 
 import { useSocket } from "../../api/trustgraph/socket";
 import SelectField from "../common/SelectField";
-import SelectOptionText from '../common/SelectOptionText';
+import SelectOptionText from "../common/SelectOptionText";
 
 const SubmitDialog = ({ open, onOpenChange, docs }) => {
-
   const [flows, setFlows] = useState([]);
   const [flow, setFlow] = useState("");
 
@@ -32,29 +31,21 @@ const SubmitDialog = ({ open, onOpenChange, docs }) => {
       .catch((err) => console.log("Error:", err));
   }, [socket]);
 
-  const flowOptions = flows.map(
-    (flow) => {
-      return {
-        value: flow[0],
-        label: flow[0],
-        description: (
-          <SelectOptionText>
-             {flow[1].description}
-          </SelectOptionText>
-        ),
-      };
-    }
-  );
-
-console.log("Flows", flows)
-console.log("flowoptions", flowOptions);
-
+  const flowOptions = flows.map((flow) => {
+    return {
+      value: flow[0],
+      label: flow[0],
+      description: <SelectOptionText>{flow[1].description}</SelectOptionText>,
+    };
+  });
 
   return (
     <Dialog.Root
       placement="center"
       open={open}
-      onOpenChange={(x) => { onOpenChange(x.open); }}
+      onOpenChange={(x) => {
+        onOpenChange(x.open);
+      }}
     >
       <Portal>
         <Dialog.Backdrop />
@@ -74,9 +65,7 @@ console.log("flowoptions", flowOptions);
                 ))}
               </List.Root>
 
-              <Box mt={5}>
-                With following flows:
-                </Box>
+              <Box mt={5}>With following flows:</Box>
 
               <Box mt={5}>
                 <SelectField

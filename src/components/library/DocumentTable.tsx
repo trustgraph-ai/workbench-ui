@@ -1,11 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-import {
-  Table,
-  Link,
-  Tag,
-  Checkbox,
-} from "@chakra-ui/react";
+import { Table, Link, Tag, Checkbox } from "@chakra-ui/react";
 
 import { Row } from "../state/row";
 import { toaster } from "../ui/toaster";
@@ -70,7 +65,6 @@ const DocumentTable = () => {
   };
 
   const deleteOne = (ids) => {
-
     // Shouldn't happen, make it a no-op.
     if (ids.length == 0) return;
 
