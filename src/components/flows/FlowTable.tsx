@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-import { Table, Link, Checkbox } from "@chakra-ui/react";
+import { Table, Checkbox } from "@chakra-ui/react";
 
 import { useSocket } from "../../api/trustgraph/socket";
 import Actions from "./Actions";
@@ -25,7 +25,7 @@ const FlowTable = () => {
 
   useEffect(() => {
     refresh();
-  }, [socket]);
+  });
 
   const onDelete = () => {};
 

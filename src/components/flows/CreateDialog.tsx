@@ -1,22 +1,18 @@
 import React, { useEffect, useState, useRef } from "react";
 
-import {
-  List,
-  Portal,
-  Button,
-  Dialog,
-  Box,
-  CloseButton,
-} from "@chakra-ui/react";
+import { Portal, Button, Dialog, Box, CloseButton } from "@chakra-ui/react";
 
 import { useSocket } from "../../api/trustgraph/socket";
 import SelectField from "../common/SelectField";
 import SelectOption from "../common/SelectOption";
-import ChipInputField from "../common/ChipInputField";
 import TextField from "../common/TextField";
 
 const CreateDialog = ({ open, onOpenChange, onSubmit }) => {
   const [flowClasses, setFlowClasses] = useState([]);
+
+  const [flowClass, setFlowClass] = useState(undefined);
+  const [id, setId] = useState("");
+  const [description, setDescription] = useState("");
 
   const socket = useSocket();
 
@@ -36,7 +32,7 @@ const CreateDialog = ({ open, onOpenChange, onSubmit }) => {
         if (!flowClass && x.length > 0) setFlowClass(x[0][0]);
       })
       .catch((err) => console.log("Error:", err));
-  }, [socket]);
+  }, [socket, flowClass]);
 
   const flowClassOptions = flowClasses.map((flowClass) => {
     return {
@@ -49,10 +45,6 @@ const CreateDialog = ({ open, onOpenChange, onSubmit }) => {
       ),
     };
   });
-
-  const [flowClass, setFlowClass] = useState(undefined);
-  const [id, setId] = useState("");
-  const [description, setDescription] = useState("");
 
   const contentRef = useRef<HTMLDivElement>(null);
 

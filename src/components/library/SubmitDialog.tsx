@@ -35,7 +35,7 @@ const SubmitDialog = ({ open, onOpenChange, onSubmit, docs }) => {
         if (!flow && x.length > 0) setFlow(x[0][0]);
       })
       .catch((err) => console.log("Error:", err));
-  }, [socket]);
+  });
 
   const flowOptions = flows.map((flow) => {
     return {
