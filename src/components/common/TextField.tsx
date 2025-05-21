@@ -1,18 +1,17 @@
+import React from "react";
 
-import React from 'react';
-
-import { Field, Input } from '@chakra-ui/react';
+import { Field, Input } from "@chakra-ui/react";
 
 interface TextFieldProps {
-  label: string,
-  placeholder? : string,
-  value : string;
-  onValueChange : (x : string) => void;
-  required? : boolean;
-  helperText? : string;
+  label: string;
+  placeholder?: string;
+  value: string;
+  onValueChange: (x: string) => void;
+  required?: boolean;
+  helperText?: string;
 }
 
-const TextField : React.FC<TextFieldProps> = ({
+const TextField: React.FC<TextFieldProps> = ({
   label,
   placeholder,
   value,
@@ -20,23 +19,20 @@ const TextField : React.FC<TextFieldProps> = ({
   required,
   helperText,
 }) => {
-
   return (
-    <Field.Root mb={4} required={required}
-    >
+    <Field.Root mb={4} required={required}>
       <Field.Label>
         {label} {required && <Field.RequiredIndicator />}
       </Field.Label>
       <Input
         value={value}
-        onChange={ (e) => onValueChange(e.target.value) }
-        placeholder={placeholder} variant="subtle"
+        onChange={(e) => onValueChange(e.target.value)}
+        placeholder={placeholder}
+        variant="subtle"
       />
-      { (helperText) && <Field.HelperText>{helperText}</Field.HelperText> }
+      {helperText && <Field.HelperText>{helperText}</Field.HelperText>}
     </Field.Root>
   );
-
 };
 
 export default TextField;
-

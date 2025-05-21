@@ -1,13 +1,12 @@
+import React, { PropsWithChildren } from "react";
+import { Box, Flex, Heading, Text } from "@chakra-ui/react";
 
-import React, { PropsWithChildren } from 'react';
-import { Box, Flex, Heading, Text } from '@chakra-ui/react';
-
-const SelectOption : React.FC<PropsWithChildren<{
-    title : string,
-    badge? : React.ReactNode,
-}>> = ({
-    title, badge, children
-}) => {
+const SelectOption: React.FC<
+  PropsWithChildren<{
+    title: string;
+    badge?: React.ReactNode;
+  }>
+> = ({ title, badge, children }) => {
   return (
     <Box>
       <Flex alignItems="center">
@@ -20,8 +19,7 @@ const SelectOption : React.FC<PropsWithChildren<{
         {children}
       </Text>
     </Box>
-  );  
+  );
 };
 
 export default SelectOption;
-

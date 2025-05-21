@@ -1,50 +1,43 @@
-
-import { create } from 'zustand'
-import { Message } from './Message';
+import { create } from "zustand";
+import { Message } from "./Message";
 
 export interface ChatState {
+  messages: Message[];
+  input: string;
 
-    messages : Message[];
-    input : string;
-
-    setMessages : (v : Message[]) => void;
-    addMessage : (role : string, text : string) => void;
-    setInput : (v : string) => void;
-
+  setMessages: (v: Message[]) => void;
+  addMessage: (role: string, text: string) => void;
+  setInput: (v: string) => void;
 }
 
-export const useChatStateStore = create<ChatState>()(
+export const useChatStateStore = create<ChatState>()((set) => ({
+  messages: [
+    {
+      role: "ai",
+      text: "Welcome to the TrustGraph Test Suite. Use the chat interface to perform Graph RAG requests.",
+    },
+  ],
 
-    (set) => ({
+  input: "",
 
-        messages: [
-            {
-                role: "ai",
-                text: "Welcome to the TrustGraph Test Suite. Use the chat interface to perform Graph RAG requests."
-            },
-        ],
+  setMessages: (v) =>
+    set(() => ({
+      messages: v,
+    })),
 
-        input: "",
+  addMessage: (role: string, text: string) =>
+    set((state) => ({
+      messages: [
+        ...state.messages,
+        {
+          role: role,
+          text: text,
+        },
+      ],
+    })),
 
-        setMessages: (v) => set(() => ({
-	    messages: v,
-	})),
-
-        addMessage: (role: string, text : string) => set((state) => ({
-	    messages: [
-                ...state.messages, 
-                {
-                    role: role,
-                    text: text,
-                }
-            ]
-	})),
-
-        setInput: (v) => set(() => ({
-	    input: v,
-	})),
-
-    })
-
-);
-
+  setInput: (v) =>
+    set(() => ({
+      input: v,
+    })),
+}));

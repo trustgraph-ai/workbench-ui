@@ -1,21 +1,17 @@
+import React from "react";
 
-import React from 'react';
+import { Input, HStack } from "@chakra-ui/react";
 
-import { Input, HStack } from '@chakra-ui/react';
-
-import { useProgressStateStore } from '../../state/ProgressState';
-import { useSearchStateStore } from '../../state/SearchState';
-import SearchHelp from './SearchHelp';
-import ProgressSubmitButton from '../common/ProgressSubmitButton';
+import { useProgressStateStore } from "../../state/ProgressState";
+import { useSearchStateStore } from "../../state/SearchState";
+import SearchHelp from "./SearchHelp";
+import ProgressSubmitButton from "../common/ProgressSubmitButton";
 
 interface SearchInputProps {
-    submit : React.FormEventHandler<HTMLFormElement>;
+  submit: React.FormEventHandler<HTMLFormElement>;
 }
 
-const SearchInput : React.FC <SearchInputProps> = ({
-    submit,
-}) => {
-
+const SearchInput: React.FC<SearchInputProps> = ({ submit }) => {
   const activity = useProgressStateStore((state) => state.activity);
 
   const search = useSearchStateStore((state) => state.input);
@@ -23,34 +19,25 @@ const SearchInput : React.FC <SearchInputProps> = ({
 
   return (
     <>
+      <form onSubmit={submit}>
+        <HStack>
+          <Input
+            variant="outline"
+            placeholder="Perform a vector search on a term or phrase..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
 
-        <form onSubmit={submit} >
+          <ProgressSubmitButton
+            disabled={activity.size > 0}
+            working={activity.size > 0}
+          />
 
-          <HStack>
-
-            <Input
-              variant="outline"
-              placeholder="Perform a vector search on a term or phrase..."
-              value={search}
-              onChange={ (e) => setSearch(e.target.value) }
-            />
-
-            <ProgressSubmitButton
-                disabled={activity.size > 0}
-                working={activity.size > 0}
-            />
-
-            <SearchHelp />
-
-          </HStack>
-
-        </form>
-
+          <SearchHelp />
+        </HStack>
+      </form>
     </>
-
   );
-
-}
+};
 
 export default SearchInput;
-

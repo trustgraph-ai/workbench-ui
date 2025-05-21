@@ -1,10 +1,7 @@
-
-import {
-  createSystem, defaultConfig, defineConfig
-} from "@chakra-ui/react"
+import { createSystem, defaultConfig, defineConfig } from "@chakra-ui/react";
 
 export const config = defineConfig({
-//  strictTokens: true,
+  //  strictTokens: true,
   globalCss: {
     "#root": {
       color: "{colors.text}",
@@ -43,7 +40,7 @@ export const config = defineConfig({
           900: { value: "#296F3E" },
         },
         gray: {
-          50: { value: "#F7FAFC" },  // Lightest
+          50: { value: "#F7FAFC" }, // Lightest
           100: { value: "#EDF2F7" },
           200: { value: "#E2E8F0" },
           300: { value: "#CBD5E0" },
@@ -63,60 +60,60 @@ export const config = defineConfig({
     },
     semanticTokens: {
       colors: {
-        "background": {
+        background: {
           value: {
             base: "{colors.gray.50}",
             _dark: "{colors.gray.900}",
-          }
+          },
         },
-        "text": {
+        text: {
           value: {
             base: "{colors.gray.900}",
             _dark: "{colors.gray.100}",
-          }
+          },
         },
         brand: {
           solid: {
             value: {
               base: "{colors.tgBlue.500}",
               _dark: "{colors.tgBlue.500}",
-            }
+            },
           },
           contrast: {
             value: {
               base: "{colors.tgBlue.100}",
               _dark: "{colors.tgBlue.900}",
-            }
+            },
           },
           fg: {
             value: {
               base: "{colors.tgBlue.700}",
               _dark: "{colors.tgBlue.300}",
-            }
+            },
           },
           muted: {
             value: {
               base: "{colors.tgBlue.100}",
               _dark: "{colors.tgBlue.900}",
-            }
+            },
           },
           subtle: {
             value: {
               base: "{colors.tgBlue.200}",
               _dark: "{colors.tgBlue.800}",
-            }
+            },
           },
           emphasized: {
             value: {
               base: "{colors.tgBlue.300}",
               _dark: "{colors.tgBlue.700}",
-            }
+            },
           },
           focusRing: {
             value: {
               base: "{colors.tgBlue.400}",
               _dark: "{colors.tgBlue.600}",
-            }
+            },
           },
         },
         altBrand: {
@@ -124,47 +121,47 @@ export const config = defineConfig({
             value: {
               base: "{colors.tgGreen.900}",
               _dark: "{colors.tgGreen.100}",
-            }
+            },
           },
           contrast: {
             value: {
               base: "{colors.tgGreen.100}",
               _dark: "{colors.tgGreen.900}",
-            }
+            },
           },
           fg: {
             value: {
               base: "{colors.tgGreen.700}",
               _dark: "{colors.tgGreen.200}",
-            }
+            },
           },
           muted: {
             value: {
               base: "{colors.tgGreen.100}",
               _dark: "{colors.tgGreen.900}",
-            }
+            },
           },
           subtle: {
             value: {
               base: "{colors.tgGreen.200}",
               _dark: "{colors.tgGreen.700}",
-            }
+            },
           },
           emphasized: {
             value: {
               base: "{colors.tgGreen.300}",
               _dark: "{colors.tgGreen.600}",
-            }
+            },
           },
           focusRing: {
             value: {
               base: "{colors.tgGreen.500}",
               _dark: "{colors.tgGreen.500}",
-            }
+            },
           },
-        }
+        },
       },
-    }
+    },
   },
 });
 

@@ -1,20 +1,16 @@
-
 import { ReactNode } from "react";
 import { createTrustGraphSocket } from "./trustgraph-socket";
 
 const socket = createTrustGraphSocket();
 
 interface ISocketProvider {
-    children? : ReactNode;
+  children?: ReactNode;
 }
 
-export const SocketProvider = (props : ISocketProvider) => {
-
-    return (
-        <SocketContext.Provider value={socket}>
-            {props.children}
-        </SocketContext.Provider>
-    );
-
-}
-
+export const SocketProvider = (props: ISocketProvider) => {
+  return (
+    <SocketContext.Provider value={socket}>
+      {props.children}
+    </SocketContext.Provider>
+  );
+};

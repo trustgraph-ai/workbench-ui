@@ -1,14 +1,11 @@
+import React from "react";
 
-import React from 'react';
-
-import { useLoadStateStore } from '../../state/LoadState';
-import ChipInputField from '../common/ChipInputField';
+import { useLoadStateStore } from "../../state/LoadState";
+import ChipInputField from "../common/ChipInputField";
 
 const Keywords = () => {
-
   const values = useLoadStateStore((state) => state.keywords);
   const setValues = useLoadStateStore((state) => state.setKeywords);
-
 
   return (
     <ChipInputField
@@ -17,11 +14,7 @@ const Keywords = () => {
       values={values}
       onValuesChange={setValues}
     />
-
   );
-
-}
+};
 
 export default Keywords;
-
-

@@ -1,11 +1,8 @@
+import React from "react";
 
-import React from 'react';
+import { Flex, Heading, Text, Box } from "@chakra-ui/react";
 
-import {
-  Flex, Heading, Text, Box
-} from '@chakra-ui/react';
-
-import ColorModeToggle from "../color-mode-toggle"
+import ColorModeToggle from "../color-mode-toggle";
 
 interface PageHeaderProps {
   title: string;
@@ -16,22 +13,30 @@ interface PageHeaderProps {
 const PageHeader: React.FC<PageHeaderProps> = ({
   title,
   description,
-  icon
+  icon,
 }) => {
-
   return (
-    <Flex mb={8} alignItems="center" justifyContent="space-between"
-      width="100%" px={1} py={1}
+    <Flex
+      mb={8}
+      alignItems="center"
+      justifyContent="space-between"
+      width="100%"
+      px={1}
+      py={1}
     >
       <Flex alignItems="center">
-        {
-          icon &&
+        {icon && (
           <Box mr={4} color="{colors.brand.fg}" fontSize="xl">
             {icon}
           </Box>
-        }
+        )}
         <Box>
-          <Heading as="h1" size="xl" color="{colors.brand.fg}" fontWeight="bold">
+          <Heading
+            as="h1"
+            size="xl"
+            color="{colors.brand.fg}"
+            fontWeight="bold"
+          >
             {title}
           </Heading>
           <Text mt={1} fontSize="md" color="{colors.brand.emphasized}">
@@ -46,8 +51,6 @@ const PageHeader: React.FC<PageHeaderProps> = ({
       </Box>
     </Flex>
   );
-
 };
 
 export default PageHeader;
-

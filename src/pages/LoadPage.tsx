@@ -1,247 +1,147 @@
+import React from "react";
+import { FileUp } from "lucide-react";
 
-import React from 'react';
-import { FileUp } from 'lucide-react';
+import { useSocket } from "../api/trustgraph/socket";
 
-import {v4 as uuidv4} from 'uuid';
-
-import { useSocket } from '../api/trustgraph/socket';
-import { Triple } from '../api/trustgraph/Triple';
-
-import Title from '../components/load/Title';
-import Url from '../components/load/Url';
-import Keywords from '../components/load/Keywords';
-import Operation from '../components/load/Operation';
-import Content from '../components/load/Content';
-import { useProgressStateStore } from '../state/ProgressState';
-import CenterSpinner from '../components/common/CenterSpinner';
-import { useLoadStateStore } from '../state/LoadState';
-import PageHeader from '../components/common/PageHeader';
-
-const RDF_TYPE = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
-const RDFS_LABEL = "http://www.w3.org/2000/01/rdf-schema#label";
-const DIGITAL_DOCUMENT = "https://schema.org/DigitalDocument";
-const SCHEMA_URL = "https://schema.org/url";
-const SCHEMA_KEYWORDS = "https://schema.org/keywords";
+import Title from "../components/load/Title";
+import Comments from "../components/load/Comments";
+import Url from "../components/load/Url";
+import Keywords from "../components/load/Keywords";
+import Operation from "../components/load/Operation";
+import Content from "../components/load/Content";
+import { useProgressStateStore } from "../state/ProgressState";
+import CenterSpinner from "../components/common/CenterSpinner";
+import { useLoadStateStore } from "../state/LoadState";
+import PageHeader from "../components/common/PageHeader";
+import { loadFile, loadText } from "../utils/document-load";
+import { toaster } from "../components/ui/toaster";
 
 const Load = () => {
+  const title = useLoadStateStore((state) => state.title);
+  const comments = useLoadStateStore((state) => state.comments);
+  const url = useLoadStateStore((state) => state.url);
+  const keywords = useLoadStateStore((state) => state.keywords);
+  const operation = useLoadStateStore((state) => state.operation);
+  const files = useLoadStateStore((state) => state.files);
+  const text = useLoadStateStore((state) => state.text);
+  const setText = useLoadStateStore((state) => state.setText);
+  const addUploaded = useLoadStateStore((state) => state.addUploaded);
+  const removeFile = useLoadStateStore((state) => state.removeFile);
+  const incTextUploads = useLoadStateStore((state) => state.incTextUploads);
 
-    const setError = useProgressStateStore((state) => state.setError);
+  const addActivity = useProgressStateStore((state) => state.addActivity);
+  const removeActivity = useProgressStateStore(
+    (state) => state.removeActivity,
+  );
 
-    const addActivity = useProgressStateStore(
-        (state) => state.addActivity
-    );
-    const removeActivity = useProgressStateStore(
-        (state) => state.removeActivity
-    );
+  const socket = useSocket();
 
-    const socket = useSocket();
+  const onFilesSubmit = () => {
+    const filesToLoad = [...files];
 
-    const title = useLoadStateStore((state) => state.title);
-    const url = useLoadStateStore((state) => state.url);
-    const keywords = useLoadStateStore((state) => state.keywords);
-    const operation = useLoadStateStore((state) => state.operation);
-    const files = useLoadStateStore((state) => state.files);
-    const text = useLoadStateStore((state) => state.text);
-    const setText = useLoadStateStore((state) => state.setText);
-    const addUploaded = useLoadStateStore((state) => state.addUploaded);
-    const removeFile = useLoadStateStore((state) => state.removeFile);
-    const incTextUploads = useLoadStateStore((state) => state.incTextUploads);
+    // Shouldn't happen, make it a noop
+    if (filesToLoad.length == 0) return;
 
-    const prepareMetadata = (doc_id : string) => {
+    loadOneFile(filesToLoad)
+      .then(() => {
+        console.log("Success");
+        toaster.create({
+          title: "Files uploaded",
+          type: "success",
+        });
+      })
+      .catch((e) =>
+        toaster.create({
+          title: "Error: " + e.toString(),
+          type: "error",
+        }),
+      );
+  };
 
-        let doc_meta : Triple[] = [
-            {
-                s: { v: doc_id, e: true },
-                p: { v: RDF_TYPE, e: true },
-                o: { v: DIGITAL_DOCUMENT, e: true },
-            }
-        ];
+  const loadOneFile = (files) => {
+    const kind = operation == "upload-pdf" ? "application/pdf" : "text/plain";
 
-        if (title != "")
-            doc_meta = [
-                ...doc_meta,
-                {
-                    s: { v: doc_id, e: true },
-                    p: { v: RDFS_LABEL, e: true },
-                    o: { v: title, e: false },
-                }
-            ];
+    const act = "Uploading: " + files[0].name;
+    addActivity(act);
 
-        if (url != "")
-            doc_meta = [
-                ...doc_meta,
-                {
-                    s: { v: doc_id, e: true },
-                    p: { v: SCHEMA_URL, e: true },
-                    o: { v: url, e: true },
-                }
-            ];
-
-        for (const keyword of keywords)
-            doc_meta = [
-                ...doc_meta,
-                {
-                    s: { v: doc_id, e: true },
-                    p: { v: SCHEMA_KEYWORDS, e: true },
-                    o: { v: keyword, e: false },
-                }
-            ];
-
-        return doc_meta;
-
-    }
-
-    const handleFileSuccess = (file : File) => {
+    // Create a promise for the first file in the list
+    const prom = loadFile(files[0], kind, {
+      title: title,
+      url: url,
+      keywords: keywords,
+      comments: comments,
+      socket: socket,
+    })
+      .then(() => {
+        toaster.create({
+          title: files[0].name + " uploaded",
+          type: "info",
+        });
 
         // Add file to 'uploaded' list
-        addUploaded(file.name);
+        addUploaded(files[0].name);
+        removeFile(files[0]);
 
-        // Remove file from 'selected' list
-        removeFile(file);
+        removeActivity(act);
+      })
+      .catch((e) => {
+        removeActivity(act);
+        throw e;
+      });
 
+    if (files.length < 2) {
+      return prom;
+    } else {
+      return prom.then(() => loadOneFile(files.slice(1)));
     }
+  };
 
-    const create_doc_id = () => {
-        return "https://trustgraph.ai/doc/" + uuidv4();
-    }
+  const onTextSubmit = () => {
+    loadText(text, {
+      title: title,
+      url: url,
+      keywords: keywords,
+      comments: comments,
+      addActivity: addActivity,
+      removeActivity: removeActivity,
+      onSuccess: () => handleTextSuccess(),
+      socket: socket,
+    })
+      .then(() => {
+        setText("");
+        incTextUploads();
+        toaster.create({
+          title: "Text uploaded",
+          type: "success",
+        });
+      })
+      .catch((e) =>
+        toaster.create({
+          title: "Error: " + e.toString(),
+          type: "error",
+        }),
+      );
+  };
 
-    const submitFiles = () => {
-
-        const doc_id = create_doc_id();
-        const doc_meta = prepareMetadata(doc_id);
-
-        for (const file of files) {
-
-            console.log(file.name, "...");
-
-            const reader = new FileReader();
-
-            reader.onloadend = function() {
-
-                // FIXME: Type is 'string | ArrayBuffer'?  is this safe?
-
-                const data = (reader.result as string)
-                    .replace('data:', '')
-                    .replace(/^.+,/, '');
-
-                let act;
-                if (title != "")
-                    act = "Upload document: " + title;
-                else
-                    act = "Upload document";
-
-                addActivity(act);
-
-                if (operation == "upload-pdf") {
-
-                    socket.loadDocument(
-                        data, doc_id, doc_meta
-                    ).then(
-                        () => {
-                            handleFileSuccess(file);
-                            removeActivity(act);
-                        }
-                    ).catch(
-                        (e) => {
-                            removeActivity(act);
-                            setError(e.toString());
-                            console.log("Error:", e);
-                        }
-                    );
-
-                } else {
-
-                    // Must be upload-text
-
-                    socket.loadText(
-                        data, doc_id, doc_meta
-                    ).then(
-                        () => {
-                            handleFileSuccess(file);
-                            removeActivity(act);
-                        }
-                    ).catch(
-                        (e) => {
-                            removeActivity(act);
-                            setError(e.toString());
-                            console.log("Error:", e);
-                        }
-                    );
-
-                }
-
-            }
-
-            reader.readAsDataURL(file);
-
-        }
-
-    }
-
-    const b64encode = (input) => {
-        return btoa(encodeURIComponent(input).replace(
-            /%([0-9A-F]{2})/g,
-            (_match, p1) => {
-                return String.fromCharCode(("0x" + p1));
-            }
-        ));
-    }
-
-    const submitText = () => {
-
-        const doc_id = create_doc_id();
-        const doc_meta = prepareMetadata(doc_id);
-
-        const encoded = b64encode(text);
-
-        let act;
-        if (title != "")
-            act = "Upload text: " + title;
-        else
-            act = "Upload text";
-
-        addActivity(act);
-
-        // Must be upload-text
-        socket.loadText(
-            encoded, doc_id, doc_meta
-        ).then(
-            () => {
-                removeActivity(act);
-                setText("");
-                incTextUploads();
-            }
-        ).catch(
-            (e) => {
-                removeActivity(act);
-                setError(e.toString());
-                console.log("Error:", e);
-            }
-        );
-
-    }
-
-    return (
-        <>
-            <PageHeader
-              icon={ <FileUp /> }
-              title="Document load"
-              description="Load documents into TrustGraph processing"
-            />
-            <Title/>
-            <Url/>
-            <Keywords/>
-            <Operation/>
-            <Content
-                submitFiles={submitFiles}
-                submitText={submitText}
-            />
-            <CenterSpinner/>
-        </>
-
-    );
-
-}
+  return (
+    <>
+      <PageHeader
+        icon={<FileUp />}
+        title="Document load"
+        description="Load documents into TrustGraph processing"
+      />
+      <Title />
+      <Comments />
+      <Url />
+      <Keywords />
+      <Operation />
+      <Content
+        submitFiles={() => onFilesSubmit()}
+        submitText={() => onTextSubmit()}
+      />
+      <CenterSpinner />
+    </>
+  );
+};
 
 export default Load;
-

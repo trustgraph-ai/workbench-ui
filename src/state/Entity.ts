@@ -1,6 +1,4 @@
-
 export interface Entity {
-    label : string;
-    uri : string;
-};
-
+  label: string;
+  uri: string;
+}
