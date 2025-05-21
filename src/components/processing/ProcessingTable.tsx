@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 
-import { Table, Link } from "@chakra-ui/react";
+import { Table, Link, Tag } from "@chakra-ui/react";
 
 import { useSocket } from "../../api/trustgraph/socket";
+import { timeString } from "../../utils/time-string.ts";
 
 const ProcessingTable = () => {
   const [view, setView] = useState([]);
@@ -28,6 +29,7 @@ const ProcessingTable = () => {
           <Table.ColumnHeader>ID</Table.ColumnHeader>
           <Table.ColumnHeader>Time</Table.ColumnHeader>
           <Table.ColumnHeader>Document</Table.ColumnHeader>
+          <Table.ColumnHeader>Tags</Table.ColumnHeader>
         </Table.Row>
       </Table.Header>
       <Table.Body>
@@ -48,8 +50,15 @@ const ProcessingTable = () => {
                 {row.id}
               </Link>
             </Table.Cell>
-            <Table.Cell>{row.time}</Table.Cell>
+            <Table.Cell>{timeString(row.time)}</Table.Cell>
             <Table.Cell>{row["document-id"]}</Table.Cell>
+            <Table.Cell>
+              {row.tags.map((t) => (
+                <Tag.Root key={t} mr={2}>
+                  <Tag.Label>{t}</Tag.Label>
+                </Tag.Root>
+              ))}
+            </Table.Cell>
           </Table.Row>
         ))}
       </Table.Body>

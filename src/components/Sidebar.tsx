@@ -114,7 +114,7 @@ const Sidebar = () => {
         <NavItem to="/flow-classes" icon={ScrollText} label="Flow Classes" />
         <NavItem to="/flows" icon={Workflow} label="Flows" />
         <NavItem to="/kc" icon={BrainCircuit} label="Knowledge Cores" />
-        <NavItem to="/procs" icon={CircleArrowRight} label="Processing" />
+        <NavItem to="/procs" icon={CircleArrowRight} label="Submissions" />
         <NavItem to="/tokencost" icon={HandCoins} label="Token Cost" />
         <NavItem to="/prompts" icon={MessageCircleCode} label="Prompts" />
         <NavItem to="/agents" icon={Hammer} label="Agent Tools" />

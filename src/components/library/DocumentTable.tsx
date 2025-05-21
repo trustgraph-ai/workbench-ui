@@ -10,6 +10,7 @@ import Actions from "./Actions";
 import SubmitDialog from "./SubmitDialog";
 
 import { useSocket } from "../../api/trustgraph/socket";
+import { timeString } from "../../utils/time-string.ts";
 
 const DocumentTable = () => {
   const [view, setView] = useState([]);
@@ -93,7 +94,7 @@ const DocumentTable = () => {
     if (ids.length < 2) {
       return prom;
     } else {
-      return prom.then(() => submitOne(ids.slice(1), flow));
+      return prom.then(() => submitOne(ids.slice(1), flow, tags));
     }
   };
 
@@ -182,7 +183,7 @@ const DocumentTable = () => {
                 {row.title}
               </Table.Cell>
               <Table.Cell onClick={() => toggle(row.id)}>
-                {row.time}
+                {timeString(row.time)}
               </Table.Cell>
               <Table.Cell onClick={() => toggle(row.id)}>
                 {row.comments}
