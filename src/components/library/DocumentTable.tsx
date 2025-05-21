@@ -6,14 +6,20 @@ import {
   Table,
   Link,
   Tag,
+  List,
   Checkbox,
   ActionBar,
   Portal,
   Button,
+  Dialog,
+  Box,
+  CloseButton,
 } from "@chakra-ui/react";
 
 import { Row } from "../state/row";
 import { toaster } from "../ui/toaster";
+
+import SelectField from "../common/SelectField";
 
 import { useSocket } from "../../api/trustgraph/socket";
 
@@ -22,12 +28,36 @@ const DocumentTable = () => {
 
   const [selected, setSelected] = useState<Set<string>>(new Set());
 
+const [submitOpen, setSubmitOpen] = useState(false);
+
+
+  const [flows, setFlows] = useState([]);
+
+
   const socket = useSocket();
 
   useEffect(() => {
     socket
       .getLibraryDocuments()
       .then((x) => setView(x))
+      .catch((err) => {
+      console.log("Error:", err);
+      toaster.create({
+      title: "Error: " + err.toString(),
+      type: "error",
+      });
+      })
+  }, [socket]);
+
+  useEffect(() => {
+    socket
+      .getFlows()
+      .then((ids) => {
+        return Promise.all(
+          ids.map((id) => socket.getFlow(id).then((x) => [id, x])),
+        )
+        })
+      .then((x) => setFlows(x))
       .catch((err) => console.log("Error:", err));
   }, [socket]);
 
@@ -38,7 +68,10 @@ const DocumentTable = () => {
     setSelected(newSet);
   };
 
-  const onSubmit = () => {};
+
+  const onSubmit = () => {
+  setSubmitOpen(true);
+  };
 
   const onEdit = () => {};
 
@@ -83,6 +116,8 @@ const DocumentTable = () => {
     }
   };
 
+const [flow, setFlow] = useState("");
+
   return (
     <>
       <ActionBar.Root open={selected.size > 0} colorPalette="blue">
@@ -117,7 +152,94 @@ const DocumentTable = () => {
           </ActionBar.Positioner>
         </Portal>
       </ActionBar.Root>
-      <Table.Root>
+
+
+
+          <Dialog.Root
+            placement="center"
+            open={submitOpen}
+            onOpenChange={(x) => { console.log(x); setSubmitOpen(x.open)}}
+
+          >
+            <Portal>
+              <Dialog.Backdrop />
+              <Dialog.Positioner>
+                <Dialog.Content>
+                  <Dialog.Header>
+                    <Dialog.Title>Dialog Title</Dialog.Title>
+                  </Dialog.Header>
+                  <Dialog.Body>
+                    <p>
+                    Submit the following documents:
+                    </p>
+                    <List.Root>
+                      {view.filter((x) => selected.has(x.id)).map(
+                      (row) => (
+                        <List.Item key={row.id} ml="1.5rem">
+                        {row.title ? row.title : "<untitled>"}
+                        </List.Item>
+                      )
+                      )}
+                    </List.Root>
+<p>
+With following flows:
+</p>
+
+<List.Root>
+
+{flows.map(
+  (flow) => <List.Item key={flow[0]}>{flow[0]}</List.Item>
+  )
+}
+</List.Root>
+
+<Box>
+
+<SelectField
+
+label="bunches"
+
+items={
+flows.map( (flow) => { return {
+value: flow[0],
+description: flow[1].description
+}
+}
+)}
+
+
+value={flow}
+onValueChange={ (x) => {setFlow(x)} }
+
+/>
+
+</Box>
+
+
+                  </Dialog.Body>
+                  <Dialog.Footer>
+                      <Button variant="outline"
+                      onClick={() => setSubmitOpen(false)}
+                      >
+                      Cancel
+                      </Button>
+                    <Button onClick={() => setSubmitOpen(false)}>
+                    Submit
+                    </Button>
+                  </Dialog.Footer>
+                  <Dialog.CloseTrigger asChild>
+                    <CloseButton size="sm" />
+                  </Dialog.CloseTrigger>
+                </Dialog.Content>
+              </Dialog.Positioner>
+            </Portal>
+          </Dialog.Root>
+
+
+
+
+
+      <Table.Root interactive>
         <Table.Header>
           <Table.Row>
             <Table.ColumnHeader></Table.ColumnHeader>
