@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 
 import {
   List,
@@ -12,10 +12,10 @@ import {
 import { useSocket } from "../../api/trustgraph/socket";
 import SelectField from "../common/SelectField";
 import SelectOptionText from "../common/SelectOptionText";
+import SelectOption from "../common/SelectOption";
 
-const SubmitDialog = ({ open, onOpenChange, docs }) => {
+const SubmitDialog = ({ open, onOpenChange, onSubmit, docs }) => {
   const [flows, setFlows] = useState([]);
-  const [flow, setFlow] = useState("");
 
   const socket = useSocket();
 
@@ -27,17 +27,31 @@ const SubmitDialog = ({ open, onOpenChange, docs }) => {
           ids.map((id) => socket.getFlow(id).then((x) => [id, x])),
         );
       })
-      .then((x) => setFlows(x))
+      .then((x) => {
+        // Store flow information
+        setFlows(x);
+
+        // Set selected flow to the first, if none set
+        if (!flow && x.length > 0) setFlow(x[0][0]);
+      })
       .catch((err) => console.log("Error:", err));
   }, [socket]);
 
   const flowOptions = flows.map((flow) => {
     return {
       value: flow[0],
-      label: flow[0],
-      description: <SelectOptionText>{flow[1].description}</SelectOptionText>,
+      label: flow[1].description,
+      description: (
+        <SelectOption title={flow[1].description}>
+          {flow[0]} (class {flow[1]["class-name"]})
+        </SelectOption>
+      ),
     };
   });
+
+  const [flow, setFlow] = useState(undefined);
+
+  const contentRef = useRef<HTMLDivElement>(null);
 
   return (
     <Dialog.Root
@@ -50,7 +64,7 @@ const SubmitDialog = ({ open, onOpenChange, docs }) => {
       <Portal>
         <Dialog.Backdrop />
         <Dialog.Positioner>
-          <Dialog.Content>
+          <Dialog.Content ref={contentRef}>
             <Dialog.Header>
               <Dialog.Title>Submit documents for processing</Dialog.Title>
             </Dialog.Header>
@@ -75,6 +89,7 @@ const SubmitDialog = ({ open, onOpenChange, docs }) => {
                   onValueChange={(x) => {
                     setFlow(x);
                   }}
+                  contentRef={contentRef}
                 />
               </Box>
             </Dialog.Body>
@@ -82,7 +97,7 @@ const SubmitDialog = ({ open, onOpenChange, docs }) => {
               <Button variant="outline" onClick={() => onOpenChange(false)}>
                 Cancel
               </Button>
-              <Button onClick={() => onOpenChange(false)}>Submit</Button>
+              <Button onClick={() => onSubmit(flow)}>Submit</Button>
             </Dialog.Footer>
             <Dialog.CloseTrigger asChild>
               <CloseButton size="sm" />

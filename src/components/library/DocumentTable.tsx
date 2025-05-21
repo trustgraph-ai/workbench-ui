@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { v4 as uuidv4 } from "uuid";
 
 import { Table, Link, Tag, Checkbox } from "@chakra-ui/react";
 
@@ -41,6 +42,63 @@ const DocumentTable = () => {
 
   const onSubmit = () => {
     setSubmitOpen(true);
+  };
+
+  const onSubmitConfirm = (flow) => {
+    console.log(flow);
+    setSubmitOpen(false);
+
+    const ids = Array.from(selected);
+
+    submitOne(ids, flow)
+      .then(() => {
+        console.log("Success");
+        setSelected((x) => new Set([]));
+        toaster.create({
+          title: "Documents submitted",
+          type: "success",
+        });
+      })
+      .catch((e) =>
+        toaster.create({
+          title: "Error: " + e.toString(),
+          type: "error",
+        }),
+      );
+
+  };
+
+  const tags = ["fixme", "fixme2"];
+
+  const submitOne = (ids, flow) => {
+    // Shouldn't happen, make it a no-op.
+    if (ids.length == 0) return;
+
+    console.log("Submitting", ids[0]);
+
+    const proc_id = uuidv4();
+
+    let title = view.filter((row) => row.id == ids[0]).map(
+      (row) => row.title
+    ).join(",");
+
+    if (!title) title = "<no title>";
+
+    const prom = socket.addLibraryProcessing(
+      proc_id, ids[0], flow, null, null, tags
+    ).then(() => {
+        toaster.create({
+          title: "Submitted " + title,
+          type: "info",
+        });
+    });
+
+    if (ids.length < 2) {
+      return prom;
+    } else {
+      return prom.then(() => submitOne(ids.slice(1), flow));
+    }
+
   };
 
   const onEdit = () => {};
@@ -97,6 +155,7 @@ const DocumentTable = () => {
       <SubmitDialog
         open={submitOpen}
         onOpenChange={setSubmitOpen}
+        onSubmit={onSubmitConfirm}
         docs={view.filter((x) => selected.has(x.id))}
       />
 

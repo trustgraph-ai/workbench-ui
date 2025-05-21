@@ -20,6 +20,8 @@ interface SelectFieldProps {
 
   value: string;
   onValueChange: (x: string) => void;
+
+  contentRef?;
 }
 
 const SelectField: React.FC<SelectFieldProps> = ({
@@ -27,6 +29,7 @@ const SelectField: React.FC<SelectFieldProps> = ({
   items,
   value,
   onValueChange,
+  contentRef,
 }) => {
   const collection = createListCollection({ items: items });
 
@@ -48,7 +51,7 @@ const SelectField: React.FC<SelectFieldProps> = ({
             <Select.Indicator />
           </Select.IndicatorGroup>
         </Select.Control>
-        <Portal>
+        <Portal container={contentRef}>
           <Select.Positioner>
             <Select.Content>
               {items.map((v) => (

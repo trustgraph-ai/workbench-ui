@@ -805,6 +805,32 @@ export class SocketImplementation {
       30000,
     );
   }
+
+  addLibraryProcessing(
+    id: string,
+    doc_id: string,
+    flow: string,
+    user?: string,
+    collection?: string,
+    tags?: string[],
+  ) {
+    return this.makeRequest<LibraryRequest, LibraryResponse>(
+      "librarian",
+      {
+        operation: "add-processing",
+        "processing-metadata": {
+          id: id,
+          "document-id": doc_id,
+          time: Math.floor(Date.now() / 1000),
+          flow: flow,
+          user: user ? user : "trustgraph",
+          collection: collection ? collection : "default",
+          tags: tags ? tags : [],
+        },
+      },
+      30000,
+    );
+  }
 }
 
 export const createTrustGraphSocket = (): Socket => {
