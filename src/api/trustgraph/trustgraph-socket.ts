@@ -793,6 +793,18 @@ export class SocketImplementation {
       30000,
     );
   }
+
+  removeLibraryDocument(id: string, user: string) {
+    return this.makeRequest<LibraryRequest, LibraryResponse>(
+      "librarian",
+      {
+        operation: "remove-document",
+        "document-id": id,
+        user: user ? user : "trustgraph",
+      },
+      30000,
+    );
+  }
 }
 
 export const createTrustGraphSocket = (): Socket => {

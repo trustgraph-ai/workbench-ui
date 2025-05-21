@@ -13,6 +13,7 @@ import {
 } from "@chakra-ui/react";
 
 import { Row } from "../state/row";
+import { toaster } from "../ui/toaster";
 
 import { useSocket } from "../../api/trustgraph/socket";
 
@@ -41,7 +42,46 @@ const DocumentTable = () => {
 
   const onEdit = () => {};
 
-  const onDelete = () => {};
+  const onDelete = () => {
+    const ids = Array.from(selected);
+
+    deleteOne(ids)
+      .then(() => {
+        console.log("Success");
+        toaster.create({
+          title: "Documents deleted",
+          type: "success",
+        });
+      })
+      .catch((e) =>
+        toaster.create({
+          title: "Error: " + e.toString(),
+          type: "error",
+        }),
+      );
+  };
+
+  const deleteOne = (ids) => {
+    // Shouldn't happen, make it a no-op.
+    if (ids.length == 0) return;
+
+    console.log("Deleting", ids[0]);
+    const prom = socket.removeLibraryDocument(ids[0]).then(() => {
+      setView((x) => x.filter((row) => row.id != ids[0]));
+      setSelected((x) => {
+        const newSet = new Set(x);
+        x.delete(ids[0]);
+        return newSet;
+      });
+
+    });
+
+    if (ids.length < 2) {
+      return prom;
+    } else {
+      return prom.then(() => deleteOne(ids.slice(1)));
+    }
+  };
 
   return (
     <>
