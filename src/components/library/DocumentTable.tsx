@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 
-import { Table, Link, Tag, Checkbox } from "@chakra-ui/react";
+import { Table, Tag, Checkbox } from "@chakra-ui/react";
 
 import { Row } from "../state/row";
 import { toaster } from "../ui/toaster";
@@ -53,7 +53,7 @@ const DocumentTable = () => {
     submitOne(ids, flow, tags)
       .then(() => {
         console.log("Success");
-        setSelected((x) => new Set([]));
+        setSelected(() => new Set([]));
         toaster.create({
           title: "Documents submitted",
           type: "success",

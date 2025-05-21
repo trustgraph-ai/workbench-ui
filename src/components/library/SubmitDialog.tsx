@@ -11,7 +11,6 @@ import {
 
 import { useSocket } from "../../api/trustgraph/socket";
 import SelectField from "../common/SelectField";
-import SelectOptionText from "../common/SelectOptionText";
 import SelectOption from "../common/SelectOption";
 import ChipInputField from "../common/ChipInputField";
 
