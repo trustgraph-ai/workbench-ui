@@ -13,6 +13,7 @@ import { useSocket } from "../../api/trustgraph/socket";
 import SelectField from "../common/SelectField";
 import SelectOptionText from "../common/SelectOptionText";
 import SelectOption from "../common/SelectOption";
+import ChipInputField from "../common/ChipInputField";
 
 const SubmitDialog = ({ open, onOpenChange, onSubmit, docs }) => {
   const [flows, setFlows] = useState([]);
@@ -50,6 +51,7 @@ const SubmitDialog = ({ open, onOpenChange, onSubmit, docs }) => {
   });
 
   const [flow, setFlow] = useState(undefined);
+  const [tags, setTags] = useState([]);
 
   const contentRef = useRef<HTMLDivElement>(null);
 
@@ -92,12 +94,18 @@ const SubmitDialog = ({ open, onOpenChange, onSubmit, docs }) => {
                   contentRef={contentRef}
                 />
               </Box>
+
+              <ChipInputField
+                label="Tags"
+                values={tags}
+                onValuesChange={setTags}
+              />
             </Dialog.Body>
             <Dialog.Footer>
               <Button variant="outline" onClick={() => onOpenChange(false)}>
                 Cancel
               </Button>
-              <Button onClick={() => onSubmit(flow)}>Submit</Button>
+              <Button onClick={() => onSubmit(flow, tags)}>Submit</Button>
             </Dialog.Footer>
             <Dialog.CloseTrigger asChild>
               <CloseButton size="sm" />

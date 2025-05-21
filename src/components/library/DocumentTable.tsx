@@ -44,13 +44,12 @@ const DocumentTable = () => {
     setSubmitOpen(true);
   };
 
-  const onSubmitConfirm = (flow) => {
-    console.log(flow);
+  const onSubmitConfirm = (flow, tags) => {
     setSubmitOpen(false);
 
     const ids = Array.from(selected);
 
-    submitOne(ids, flow)
+    submitOne(ids, flow, tags)
       .then(() => {
         console.log("Success");
         setSelected((x) => new Set([]));
@@ -65,12 +64,9 @@ const DocumentTable = () => {
           type: "error",
         }),
       );
-
   };
 
-  const tags = ["fixme", "fixme2"];
-
-  const submitOne = (ids, flow) => {
+  const submitOne = (ids, flow, tags) => {
     // Shouldn't happen, make it a no-op.
     if (ids.length == 0) return;
 
@@ -78,27 +74,27 @@ const DocumentTable = () => {
 
     const proc_id = uuidv4();
 
-    let title = view.filter((row) => row.id == ids[0]).map(
-      (row) => row.title
-    ).join(",");
+    let title = view
+      .filter((row) => row.id == ids[0])
+      .map((row) => row.title)
+      .join(",");
 
     if (!title) title = "<no title>";
 
-    const prom = socket.addLibraryProcessing(
-      proc_id, ids[0], flow, null, null, tags
-    ).then(() => {
+    const prom = socket
+      .addLibraryProcessing(proc_id, ids[0], flow, null, null, tags)
+      .then(() => {
         toaster.create({
           title: "Submitted " + title,
           type: "info",
         });
-    });
+      });
 
     if (ids.length < 2) {
       return prom;
     } else {
       return prom.then(() => submitOne(ids.slice(1), flow));
     }
-
   };
 
   const onEdit = () => {};

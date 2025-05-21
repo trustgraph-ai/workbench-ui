@@ -38,7 +38,8 @@ const ChipInput = ({ ...rest }) => <Input {...rest} />;
 const ChipInputField: React.FC<{
   values: string[];
   onValuesChange: (v: string[]) => void;
-}> = ({ values, onValuesChange }) => {
+  label: string;
+}> = ({ values, onValuesChange, label }) => {
   const [inputValue, setInputValue] = useState("");
 
   // Checks whether we've added this item already.
@@ -93,7 +94,6 @@ const ChipInputField: React.FC<{
   };
 
   const required = false;
-  const label = "Keywords";
 
   return (
     <Field.Root mb={4} required={required}>
