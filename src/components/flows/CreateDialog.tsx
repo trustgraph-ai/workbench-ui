@@ -13,10 +13,9 @@ import { useSocket } from "../../api/trustgraph/socket";
 import SelectField from "../common/SelectField";
 import SelectOption from "../common/SelectOption";
 import ChipInputField from "../common/ChipInputField";
-import TextField from '../common/TextField';
+import TextField from "../common/TextField";
 
 const CreateDialog = ({ open, onOpenChange, onSubmit }) => {
-
   const [flowClasses, setFlowClasses] = useState([]);
 
   const socket = useSocket();
@@ -102,13 +101,13 @@ const CreateDialog = ({ open, onOpenChange, onSubmit }) => {
                 values={description}
                 onValueChange={setDescription}
               />
-
             </Dialog.Body>
             <Dialog.Footer>
               <Button variant="outline" onClick={() => onOpenChange(false)}>
                 Cancel
               </Button>
-              <Button onClick={() => onSubmit(flowClass, id, description)}
+              <Button
+                onClick={() => onSubmit(flowClass, id, description)}
                 colorPalette="brand"
               >
                 Create

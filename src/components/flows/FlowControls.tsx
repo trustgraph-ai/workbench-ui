@@ -1,19 +1,14 @@
-
 import React, { useEffect, useState } from "react";
 
-import { Plus } from 'lucide-react';
+import { Plus } from "lucide-react";
 
-import {
-  Button,
-  Box,
-} from "@chakra-ui/react";
+import { Button, Box } from "@chakra-ui/react";
 
-import CreateDialog from './CreateDialog';
+import CreateDialog from "./CreateDialog";
 import { useSocket } from "../../api/trustgraph/socket";
 import { toaster } from "../ui/toaster";
 
 const FlowControls = ({ onUpdate }) => {
-
   const socket = useSocket();
 
   const [createOpen, setCreateOpen] = useState(false);
@@ -21,7 +16,8 @@ const FlowControls = ({ onUpdate }) => {
   const onCreate = (flowClass, id, description) => {
     console.log(flowClass, id, description);
 
-    socket.startFlow(id, flowClass, description)
+    socket
+      .startFlow(id, flowClass, description)
       .then(() => {
         console.log("Success");
         setCreateOpen(false);
@@ -51,7 +47,7 @@ const FlowControls = ({ onUpdate }) => {
       >
         <Plus /> Create
       </Button>
-      <CreateDialog 
+      <CreateDialog
         open={createOpen}
         onOpenChange={setCreateOpen}
         onSubmit={onCreate}
@@ -61,4 +57,3 @@ const FlowControls = ({ onUpdate }) => {
 };
 
 export default FlowControls;
-

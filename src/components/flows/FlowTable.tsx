@@ -21,13 +21,13 @@ const FlowTable = () => {
       })
       .then((x) => setView(x))
       .catch((err) => console.log("Error:", err));
-  }
+  };
 
   useEffect(() => {
     refresh();
   }, [socket]);
 
-  const onDelete = () => {}
+  const onDelete = () => {};
 
   const [selected, setSelected] = useState<Set<string>>(new Set());
 
@@ -40,10 +40,7 @@ const FlowTable = () => {
 
   return (
     <>
-      <Actions
-        selectedCount={selected.size}
-        onDelete={onDelete}
-      />
+      <Actions selectedCount={selected.size} onDelete={onDelete} />
 
       <Table.Root interactive>
         <Table.Header>
@@ -56,9 +53,7 @@ const FlowTable = () => {
         </Table.Header>
         <Table.Body>
           {view.map((row: Row) => (
-            <Table.Row onClick={() => toggle(row.id)}
-              key={row[0]}
-            >
+            <Table.Row onClick={() => toggle(row.id)} key={row[0]}>
               <Table.Cell>
                 <Checkbox.Root
                   size="lg"
@@ -69,22 +64,14 @@ const FlowTable = () => {
                   <Checkbox.Control />
                 </Checkbox.Root>
               </Table.Cell>
-              <Table.Cell>
-                {row[0]}
-              </Table.Cell>
-              <Table.Cell>
-                {row[1]["class-name"]}
-              </Table.Cell>
-              <Table.Cell>
-                {row[1].description}
-              </Table.Cell>
+              <Table.Cell>{row[0]}</Table.Cell>
+              <Table.Cell>{row[1]["class-name"]}</Table.Cell>
+              <Table.Cell>{row[1].description}</Table.Cell>
             </Table.Row>
           ))}
         </Table.Body>
       </Table.Root>
-      <FlowControls
-        onUpdate={refresh}
-      />
+      <FlowControls onUpdate={refresh} />
     </>
   );
 };

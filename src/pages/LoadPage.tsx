@@ -1,7 +1,7 @@
 import React from "react";
 import { FileUp } from "lucide-react";
 
-import { SimpleGrid, Stack, Box } from '@chakra-ui/react';
+import { SimpleGrid, Stack, Box } from "@chakra-ui/react";
 
 import { useSocket } from "../api/trustgraph/socket";
 
@@ -133,9 +133,7 @@ const Load = () => {
         description="Load documents into TrustGraph processing"
       />
 
-      <SimpleGrid minChildWidth="sm"
-        gap={8}
-      >
+      <SimpleGrid minChildWidth="sm" gap={8}>
         <Stack>
           <Title />
           <Url />

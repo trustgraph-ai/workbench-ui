@@ -832,26 +832,20 @@ export class SocketImplementation {
     );
   }
 
-  startFlow(
-    id: string,
-    class_name: string,
-    description: string,
-  ) {
+  startFlow(id: string, class_name: string, description: string) {
     return this.makeRequest<LibraryRequest, LibraryResponse>(
       "flow",
       {
         operation: "start-flow",
         "flow-id": id,
         "class-name": class_name,
-        "description": description,
+        description: description,
       },
       30000,
     );
   }
-
 }
 
 export const createTrustGraphSocket = (): Socket => {
   return new SocketImplementation();
 };
-
