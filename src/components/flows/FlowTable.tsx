@@ -1,15 +1,17 @@
 import React, { useEffect, useState } from "react";
 
-import { Table, Link } from "@chakra-ui/react";
+import { Table, Link, Checkbox } from "@chakra-ui/react";
 
 import { useSocket } from "../../api/trustgraph/socket";
+import Actions from "./Actions";
+import FlowControls from "./FlowControls";
 
 const FlowTable = () => {
   const [view, setView] = useState([]);
 
   const socket = useSocket();
 
-  useEffect(() => {
+  const refresh = () => {
     socket
       .getFlows()
       .then((ids) => {
@@ -19,45 +21,71 @@ const FlowTable = () => {
       })
       .then((x) => setView(x))
       .catch((err) => console.log("Error:", err));
+  }
+
+  useEffect(() => {
+    refresh();
   }, [socket]);
 
-  const select = (row) => {
-    console.log(row);
+  const onDelete = () => {}
+
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+
+  const toggle = (id) => {
+    const newSet = new Set(selected);
+    if (newSet.has(id)) newSet.delete(id);
+    else newSet.add(id);
+    setSelected(newSet);
   };
 
   return (
-    <Table.Root sx={{ minWidth: 450 }} aria-label="table of entities">
-      <Table.Header>
-        <Table.Row>
-          <Table.ColumnHeader>ID</Table.ColumnHeader>
-          <Table.ColumnHeader>Class name</Table.ColumnHeader>
-          <Table.ColumnHeader>Description</Table.ColumnHeader>
-        </Table.Row>
-      </Table.Header>
-      <Table.Body>
-        {view.map((row: Row) => (
-          <Table.Row
-            key={row[0]}
-            sx={{
-              "&:last-child td": { border: 0 },
-              "&:last-child th": { border: 0 },
-            }}
-          >
-            <Table.Cell component="th" scope="row">
-              <Link
-                align="left"
-                component="button"
-                onClick={() => select(row)}
-              >
-                {row[0]}
-              </Link>
-            </Table.Cell>
-            <Table.Cell>{row[1]["class-name"]}</Table.Cell>
-            <Table.Cell>{row[1].description}</Table.Cell>
+    <>
+      <Actions
+        selectedCount={selected.size}
+        onDelete={onDelete}
+      />
+
+      <Table.Root interactive>
+        <Table.Header>
+          <Table.Row>
+            <Table.ColumnHeader></Table.ColumnHeader>
+            <Table.ColumnHeader>ID</Table.ColumnHeader>
+            <Table.ColumnHeader>Class name</Table.ColumnHeader>
+            <Table.ColumnHeader>Description</Table.ColumnHeader>
           </Table.Row>
-        ))}
-      </Table.Body>
-    </Table.Root>
+        </Table.Header>
+        <Table.Body>
+          {view.map((row: Row) => (
+            <Table.Row onClick={() => toggle(row.id)}
+              key={row[0]}
+            >
+              <Table.Cell>
+                <Checkbox.Root
+                  size="lg"
+                  variant="solid"
+                  checked={selected.has(row.id)}
+                >
+                  <Checkbox.HiddenInput />
+                  <Checkbox.Control />
+                </Checkbox.Root>
+              </Table.Cell>
+              <Table.Cell>
+                {row[0]}
+              </Table.Cell>
+              <Table.Cell>
+                {row[1]["class-name"]}
+              </Table.Cell>
+              <Table.Cell>
+                {row[1].description}
+              </Table.Cell>
+            </Table.Row>
+          ))}
+        </Table.Body>
+      </Table.Root>
+      <FlowControls
+        onUpdate={refresh}
+      />
+    </>
   );
 };
 

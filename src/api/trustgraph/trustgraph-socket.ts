@@ -831,8 +831,27 @@ export class SocketImplementation {
       30000,
     );
   }
+
+  startFlow(
+    id: string,
+    class_name: string,
+    description: string,
+  ) {
+    return this.makeRequest<LibraryRequest, LibraryResponse>(
+      "flow",
+      {
+        operation: "start-flow",
+        "flow-id": id,
+        "class-name": class_name,
+        "description": description,
+      },
+      30000,
+    );
+  }
+
 }
 
 export const createTrustGraphSocket = (): Socket => {
   return new SocketImplementation();
 };
+

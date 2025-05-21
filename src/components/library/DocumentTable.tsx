@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+
 import { v4 as uuidv4 } from "uuid";
 
 import { Table, Tag, Checkbox } from "@chakra-ui/react";
@@ -168,8 +169,8 @@ const DocumentTable = () => {
         </Table.Header>
         <Table.Body>
           {view.map((row: Row) => (
-            <Table.Row key={row.id}>
-              <Table.Cell onClick={() => toggle(row.id)}>
+            <Table.Row key={row.id} onClick={() => toggle(row.id)}>
+              <Table.Cell>
                 <Checkbox.Root
                   size="lg"
                   variant="solid"
@@ -204,3 +205,4 @@ const DocumentTable = () => {
 };
 
 export default DocumentTable;
+
