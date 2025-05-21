@@ -81,10 +81,10 @@ const KnowledgeCoresTable = () => {
     }
   };
 
-const receiver = (msg, fin)  => {
-console.log(msg);
-if (fin) console.log("DONE");
-};
+  const receiver = (msg, fin) => {
+    console.log(msg);
+    if (fin) console.log("DONE");
+  };
 
   const onDownload = () => {
     console.log("DOWNLOAD");
@@ -92,15 +92,14 @@ if (fin) console.log("DONE");
     if (sels.length != 1) return;
     console.log(sels[0]);
 
-console.log("DOWNLOAD...");
-socket.getKgCore(sels[0], null, receiver).then(
-   (x) => console.log("I am done")
-   );
-
+    console.log("DOWNLOAD...");
+    socket
+      .getKgCore(sels[0], null, receiver)
+      .then(() => console.log("I am done"));
   };
 
   const toggle = (id) => {
-  console.log(id);
+    console.log(id);
     const newSet = new Set(selected);
     if (newSet.has(id)) newSet.delete(id);
     else newSet.add(id);
@@ -109,37 +108,37 @@ socket.getKgCore(sels[0], null, receiver).then(
 
   return (
     <>
-      <Actions selectedCount={selected.size}
-        onDelete={onDelete} onDownload={onDownload}
+      <Actions
+        selectedCount={selected.size}
+        onDelete={onDelete}
+        onDownload={onDownload}
       />
-    <Table.Root sx={{ minWidth: 450 }} aria-label="table of entities">
-      <Table.Header>
-        <Table.Row>
-          <Table.ColumnHeader>ID</Table.ColumnHeader>
-        </Table.Row>
-      </Table.Header>
-      <Table.Body>
-        {view.map((row) => (
-          <Table.Row
-            key={row.id} onClick={() => toggle(row.id)}
-          >
-            <Table.Cell>
-              <Checkbox.Root
-                size="lg"
-                variant="solid"
-                checked={selected.has(row.id)}
-              >
-                <Checkbox.HiddenInput />
-                <Checkbox.Control />
-              </Checkbox.Root>
-            </Table.Cell>
-            <Table.Cell component="th" scope="row">
-              {row.id}
-            </Table.Cell>
+      <Table.Root sx={{ minWidth: 450 }} aria-label="table of entities">
+        <Table.Header>
+          <Table.Row>
+            <Table.ColumnHeader>ID</Table.ColumnHeader>
           </Table.Row>
-        ))}
-      </Table.Body>
-    </Table.Root>
+        </Table.Header>
+        <Table.Body>
+          {view.map((row) => (
+            <Table.Row key={row.id} onClick={() => toggle(row.id)}>
+              <Table.Cell>
+                <Checkbox.Root
+                  size="lg"
+                  variant="solid"
+                  checked={selected.has(row.id)}
+                >
+                  <Checkbox.HiddenInput />
+                  <Checkbox.Control />
+                </Checkbox.Root>
+              </Table.Cell>
+              <Table.Cell component="th" scope="row">
+                {row.id}
+              </Table.Cell>
+            </Table.Row>
+          ))}
+        </Table.Body>
+      </Table.Root>
     </>
   );
 };

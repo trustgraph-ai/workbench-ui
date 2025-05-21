@@ -203,20 +203,17 @@ class ServiceCallMulti {
     if (this.complete == true)
       console.log(this.mid, "should not happen, request is already complete");
 
-      const fin = this.receiver(resp);
+    const fin = this.receiver(resp);
 
-      if (fin) {
+    if (fin) {
+      this.complete = true;
 
-
-          this.complete = true;
-
-          //        console.log("Received for", this.mid);
-          clearTimeout(this.timeoutId);
-          this.timeoutId = null;
-          delete this.socket.inflight[this.mid];
-          this.success(resp);
-      }
-
+      //        console.log("Received for", this.mid);
+      clearTimeout(this.timeoutId);
+      this.timeoutId = null;
+      delete this.socket.inflight[this.mid];
+      this.success(resp);
+    }
   }
 
   onTimeout() {
@@ -273,22 +270,20 @@ class ServiceCallMulti {
 }
 
 export interface Metadata {
-    id? : string;
-    metadata? : Triple[];
-    user? : string;
-    collection? : string;
-};
-
+  id?: string;
+  metadata?: Triple[];
+  user?: string;
+  collection?: string;
+}
 
 export interface EntityEmbeddings {
-    entity? : Value;
-    vectors? : number[][];
-
-};
+  entity?: Value;
+  vectors?: number[][];
+}
 
 export interface GraphEmbeddings {
-    metadata? : Metadata;
-    entities? : EntityEmbedding[];
+  metadata?: Metadata;
+  entities?: EntityEmbedding[];
 }
 
 export interface TextCompletionRequest {
@@ -406,21 +401,21 @@ export interface LibraryResponse {
 }
 
 export interface KnowledgeRequest {
-    operation: string;
-    user? : string;
-    id? : string;
-    flow? : string;
-    collection? : string;
-    triples? : Triple[];
-    graphEmbeddings? : GraphEmbeddings;
+  operation: string;
+  user?: string;
+  id?: string;
+  flow?: string;
+  collection?: string;
+  triples?: Triple[];
+  graphEmbeddings?: GraphEmbeddings;
 }
 
 export interface KnowledgeResponse {
   error?: Error;
-    ids? : string[];
-    eos? : boolean;
-    triples? : Triple[];
-    graphEmbeddings? : Graphembeddings;
+  ids?: string[];
+  eos?: boolean;
+  triples?: Triple[];
+  graphEmbeddings?: Graphembeddings;
 }
 
 export interface TextCompletionResponse {
@@ -577,10 +572,10 @@ export class SocketImplementation {
   makeRequestMulti<RequestType, ResponseType>(
     service: string,
     request: RequestType,
-      receiver,
+    receiver,
     timeout?: number,
     retries?: number,
-      flow?: string,
+    flow?: string,
   ) {
     const mid = this.getNextId();
 
@@ -604,8 +599,8 @@ export class SocketImplementation {
         reject,
         timeout,
         retries,
-          this,
-          receiver,
+        this,
+        receiver,
       );
 
       call.start();
@@ -1047,39 +1042,35 @@ export class SocketImplementation {
       "knowledge",
       {
         operation: "delete-kg-core",
-          id: id,
-          user: user ? user : "trustgraph",
+        id: id,
+        user: user ? user : "trustgraph",
       },
       30000,
     );
   }
 
-    getKgCore(id : string, user?: string, receiver) {
-
-      const recv = (msg) => {
-
-          if (msg.eos) {
-              receiver(msg, true);
-              return true;
-          } else {
-              receiver(msg, false);
-              return false;
-          }
-            
+  getKgCore(id: string, user?: string, receiver) {
+    const recv = (msg) => {
+      if (msg.eos) {
+        receiver(msg, true);
+        return true;
+      } else {
+        receiver(msg, false);
+        return false;
       }
+    };
 
     return this.makeRequestMulti<LibraryRequest, LibraryResponse>(
       "knowledge",
       {
-          operation: "get-kg-core",
-          id: id,
+        operation: "get-kg-core",
+        id: id,
         user: user ? user : "trustgraph",
       },
       recv,
       30000,
     );
   }
-
 }
 
 export const createTrustGraphSocket = (): Socket => {
