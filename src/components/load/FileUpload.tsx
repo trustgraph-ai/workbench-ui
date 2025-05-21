@@ -32,6 +32,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ submit, kind }) => {
           mb={5}
           component="label"
           variant="solid"
+          colorPalette="brand"
           onClick={() => fileInput.current.click()}
         >
           <FilePlus /> Select {kind} files
@@ -59,6 +60,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ submit, kind }) => {
           ml={5}
           mb={5}
           variant="solid"
+          colorPalette="brand"
           onClick={() => submit()}
           disabled={files.length < 1}
         >

@@ -21,7 +21,7 @@ const LoadHelp = () => {
                 The Load page lets you ingest new data into TrustGraph
                 processing. There are 3 operations:
               </Text>
-              <List.Root m={2}>
+              <List.Root m={2} ps={8}>
                 <List.Item>Upload PDF - for PDF documents</List.Item>
                 <List.Item>
                   Upload text - for text and markdown documents

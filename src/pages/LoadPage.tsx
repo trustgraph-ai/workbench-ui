@@ -1,6 +1,8 @@
 import React from "react";
 import { FileUp } from "lucide-react";
 
+import { SimpleGrid, Stack, Box } from '@chakra-ui/react';
+
 import { useSocket } from "../api/trustgraph/socket";
 
 import Title from "../components/load/Title";
@@ -130,11 +132,20 @@ const Load = () => {
         title="Document load"
         description="Load documents into TrustGraph processing"
       />
-      <Title />
-      <Comments />
-      <Url />
-      <Keywords />
-      <Operation />
+
+      <SimpleGrid minChildWidth="sm"
+        gap={8}
+      >
+        <Stack>
+          <Title />
+          <Url />
+          <Keywords />
+        </Stack>
+        <Box>
+          <Comments />
+          <Operation />
+        </Box>
+      </SimpleGrid>
       <Content
         submitFiles={() => onFilesSubmit()}
         submitText={() => onTextSubmit()}

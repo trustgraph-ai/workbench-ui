@@ -19,7 +19,9 @@ const SelectedFiles = () => {
               <Table.Row key={ix}>
                 <Table.Cell>{file.name}</Table.Cell>
                 <Table.Cell>
-                  <IconButton onClick={() => removeFile(file)}>
+                  <IconButton size="xs" onClick={() => removeFile(file)}
+                    colorPalette="red"
+                  >
                     <Trash />
                   </IconButton>
                 </Table.Cell>

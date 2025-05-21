@@ -1,4 +1,5 @@
-import { Box, SegmentGroup, Field } from "@chakra-ui/react";
+
+import { Box, SegmentGroup, Field, HStack } from "@chakra-ui/react";
 
 import { useLoadStateStore } from "../../state/LoadState";
 
@@ -11,6 +12,7 @@ const Operation = () => {
   return (
     <>
       <Box>
+      <HStack>
         <Field.Root>
           <Field.Label>Upload operation</Field.Label>
           <SegmentGroup.Root
@@ -35,8 +37,8 @@ const Operation = () => {
             Select one of the available upload operations
           </Field.HelperText>
         </Field.Root>
-
         <LoadHelp />
+</HStack>
       </Box>
     </>
   );
