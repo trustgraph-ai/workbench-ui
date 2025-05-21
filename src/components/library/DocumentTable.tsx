@@ -168,23 +168,26 @@ const DocumentTable = () => {
         <Table.Body>
           {view.map((row: Row) => (
             <Table.Row key={row.id}>
-              <Table.Cell>
+              <Table.Cell onClick={() => toggle(row.id)}>
                 <Checkbox.Root
                   size="lg"
                   variant="solid"
                   checked={selected.has(row.id)}
-                  onCheckedChange={() => toggle(row.id)}
                 >
                   <Checkbox.HiddenInput />
                   <Checkbox.Control />
                 </Checkbox.Root>
               </Table.Cell>
-              <Table.Cell>
-                <Link onClick={() => select(row)}>{row.title}</Link>
+              <Table.Cell onClick={() => toggle(row.id)}>
+                {row.title}
               </Table.Cell>
-              <Table.Cell>{row.time}</Table.Cell>
-              <Table.Cell>{row.comments}</Table.Cell>
-              <Table.Cell>
+              <Table.Cell onClick={() => toggle(row.id)}>
+                {row.time}
+              </Table.Cell>
+              <Table.Cell onClick={() => toggle(row.id)}>
+                {row.comments}
+              </Table.Cell>
+              <Table.Cell onClick={() => toggle(row.id)}>
                 {row.tags.map((t) => (
                   <Tag.Root key={t} mr={2}>
                     <Tag.Label>{t}</Tag.Label>
