@@ -3,7 +3,7 @@ import React from 'react';
 
 import { Upload } from 'lucide-react';
 
-import { Box, Button } from '@chakra-ui/react';
+import { Box, Button, Alert } from '@chakra-ui/react';
 
 import { useLoadStateStore } from '../../state/LoadState';
 import TextAreaField from '../common/TextAreaField';
@@ -39,21 +39,22 @@ const TextBuffer : React.FC<TextBufferProps> = ({
 
       <Box mt={5}>
 
-        {
-          (textUploads > 0) &&
-          <Box sx={{ml: 1, mt: 1, mb: 2}}>
-            <Alert severity="success">
-              {textUploads} text uploads
-            </Alert>
-          </Box>
-        }
-
         <TextAreaField
           value={value}
           onValueChange={(e) => setValue(e)}
           label="Text content"
           rows={15}
         />
+
+        {
+          (textUploads > 0) &&
+          <Box sx={{ml: 1, mt: 1, mb: 2}}>
+            <Alert.Root status="success">
+              <Alert.Indicator />
+              <Alert.Title>{textUploads} text uploads</Alert.Title>
+            </Alert.Root>
+          </Box>
+        }
 
       </Box>
 
