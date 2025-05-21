@@ -14,9 +14,6 @@ export interface LoadParameters {
     url? : string,
     keywords? : string[],
     comments? : string,
-    addActivity,
-    removeActivity,
-    onSuccess,
     socket,
 };
 
@@ -83,87 +80,84 @@ export const loadFile = (
     file, kind : string, params : LoadParameters,
 ) => {
 
-  const doc_id = create_doc_id();
-  const doc_meta = prepareMetadata(doc_id, params);
+  return new Promise((resolve, reject) => {
 
-  console.log(file.name, "...");
+      try {
 
-  const reader = new FileReader();
+          const doc_id = create_doc_id();
+          const doc_meta = prepareMetadata(doc_id, params);
 
-  reader.onloadend = function() {
+          const reader = new FileReader();
 
-    // FIXME: Type is 'string | ArrayBuffer'?  is this safe?
-    // FIXME: Use Blob.arrayBuffer API?
+          reader.onloadend = function() {
 
-    const data = (reader.result as string)
-        .replace('data:', '')
-        .replace(/^.+,/, '');
+              // FIXME: Type is 'string | ArrayBuffer'?  is this safe?
+              // FIXME: Use Blob.arrayBuffer API?
 
-    let act;
-    if (params.title != "")
-        act = "Upload document: " + params.title;
-    else
-        act = "Upload document";
+              const data = (reader.result as string)
+                               .replace('data:', '')
+                               .replace(/^.+,/, '');
 
-    params.addActivity(act);
+              params.socket.loadLibraryDocument(
+                  data, doc_id, doc_meta, kind,
+                  params.title, params.comments, params.keywords, null,
+              ).then(
+                  () => {
+                      resolve();
+                  }
+              ).catch(
+                  (e) => {
+                      // FIXME: What to do about error
+                      console.log("Error:", e);
+                      reject(e);
+                  }
+              );
+              
+          }
 
-    params.socket.loadLibraryDocument(
-        data, doc_id, doc_meta, kind,
-        params.title, params.comments, params.keywords, null,
-    ).then(
-        () => {
-            params.onSuccess();
-            params.removeActivity(act);
-        }
-    ).catch(
-        (e) => {
-            params.removeActivity(act);
-            // FIXME: What to do about error
-            console.log("Error:", e);
-        }
-    );
+          reader.readAsDataURL(file);
 
-  }
+      } catch (e) {
+          reject(e);
+      }
 
-  reader.readAsDataURL(file);
+  });
 
-}
+};
 
 export const loadText = (
     text, params : LoadParameters,
 ) => {
 
-    console.log("PARAMS>", params);
+  return new Promise((resolve, reject) => {
 
-    const doc_id = create_doc_id();
-    const doc_meta = prepareMetadata(doc_id, params);
+      try {
 
-    const encoded = b64encode(text);
+        const doc_id = create_doc_id();
+        const doc_meta = prepareMetadata(doc_id, params);
 
-    let act;
-    if (params.title != "")
-        act = "Upload text: " + params.title;
-    else
-        act = "Upload text";
+        const encoded = b64encode(text);
 
-    params.addActivity(act);
+        params.socket.loadLibraryDocument(
+            encoded, doc_id, doc_meta, "text/plain",
+            params.title, params.comments, params.keywords, null,
+        ).then(
+            () => {
+                resolve();
+            }
+        ).catch(
+            (e) => {
+                // FIXME: Report error
+                console.log("Error:", e);
+                reject(e);
+            }
+        );
+      } catch (e) {
+          reject(e);
+      }
 
-    // Must be upload-text
-    params.socket.loadLibraryDocument(
-        encoded, doc_id, doc_meta, "text/plain",
-        params.title, params.comments, params.keywords, null,
-    ).then(
-        () => {
-            params.removeActivity(act);
-            params.onSuccess();
-        }
-    ).catch(
-        (e) => {
-            params.removeActivity(act);
-            // FIXME: Report error
-            console.log("Error:", e);
-        }
-    );
+
+  });
 
 }
 
