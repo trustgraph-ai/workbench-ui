@@ -1,9 +1,15 @@
 import React, { useEffect, useState } from "react";
 
-import { Check } from 'lucide-react';
+import { Check } from "lucide-react";
 
 import {
-  Table, Link, Tag, Checkbox, ActionBar, Portal, Button
+  Table,
+  Link,
+  Tag,
+  Checkbox,
+  ActionBar,
+  Portal,
+  Button,
 } from "@chakra-ui/react";
 
 import { Row } from "../state/row";
@@ -26,72 +32,91 @@ const DocumentTable = () => {
 
   const toggle = (id) => {
     let newSet = new Set(selected);
-    if (newSet.has(id)) newSet.delete(id); else newSet.add(id);
+    if (newSet.has(id)) newSet.delete(id);
+    else newSet.add(id);
     setSelected(newSet);
-  }
+  };
+
+  const onSubmit = () => {};
+
+  const onEdit = () => {};
+
+  const onDelete = () => {};
 
   return (
     <>
-    <ActionBar.Root open={selected.size > 0} colorPalette="blue">
+      <ActionBar.Root open={selected.size > 0} colorPalette="blue">
         <Portal>
-          <ActionBar.Positioner >
+          <ActionBar.Positioner>
             <ActionBar.Content
-              background="{colors.bg.muted}" color="fg"
+              background="{colors.bg.muted}"
+              color="fg"
               colorPalette="brand"
             >
               <ActionBar.SelectionTrigger>
                 <Check /> {selected.size} selected
               </ActionBar.SelectionTrigger>
               <ActionBar.Separator />
-              <Button variant="outline" size="sm">
+              <Button variant="outline" size="sm" onClick={onSubmit}>
                 Submit
               </Button>
-              <Button variant="outline" colorPalette="red" size="sm">
+              {selected.size == 1 && (
+                <Button variant="outline" size="sm" onClick={onEdit}>
+                  Edit
+                </Button>
+              )}
+              <Button
+                variant="outline"
+                colorPalette="red"
+                size="sm"
+                onClick={onDelete}
+              >
                 Delete
               </Button>
             </ActionBar.Content>
           </ActionBar.Positioner>
         </Portal>
-    </ActionBar.Root>
-    <Table.Root>
-      <Table.Header>
-        <Table.Row>
-          <Table.ColumnHeader></Table.ColumnHeader>
-          <Table.ColumnHeader>Title</Table.ColumnHeader>
-          <Table.ColumnHeader>Time</Table.ColumnHeader>
-          <Table.ColumnHeader>Description</Table.ColumnHeader>
-          <Table.ColumnHeader>Tags</Table.ColumnHeader>
-        </Table.Row>
-      </Table.Header>
-      <Table.Body>
-        {view.map((row: Row) => (
-          <Table.Row key={row.id}>
-            <Table.Cell>
-              <Checkbox.Root size="lg"
-                variant="solid"
-                checked={selected.has(row.id)}
-                onCheckedChange={(e) => toggle(row.id)}
-              >
-                <Checkbox.HiddenInput />
-                <Checkbox.Control />
-              </Checkbox.Root>
-            </Table.Cell>
-            <Table.Cell>
-              <Link onClick={() => select(row)}>{row.title}</Link>
-            </Table.Cell>
-            <Table.Cell>{row.time}</Table.Cell>
-            <Table.Cell>{row.comments}</Table.Cell>
-            <Table.Cell>
-              {row.tags.map((t) => (
-                <Tag.Root key={t} mr={2}>
-                  <Tag.Label>{t}</Tag.Label>
-                </Tag.Root>
-              ))}
-            </Table.Cell>
+      </ActionBar.Root>
+      <Table.Root>
+        <Table.Header>
+          <Table.Row>
+            <Table.ColumnHeader></Table.ColumnHeader>
+            <Table.ColumnHeader>Title</Table.ColumnHeader>
+            <Table.ColumnHeader>Time</Table.ColumnHeader>
+            <Table.ColumnHeader>Description</Table.ColumnHeader>
+            <Table.ColumnHeader>Tags</Table.ColumnHeader>
           </Table.Row>
-        ))}
-      </Table.Body>
-    </Table.Root>
+        </Table.Header>
+        <Table.Body>
+          {view.map((row: Row) => (
+            <Table.Row key={row.id}>
+              <Table.Cell>
+                <Checkbox.Root
+                  size="lg"
+                  variant="solid"
+                  checked={selected.has(row.id)}
+                  onCheckedChange={(e) => toggle(row.id)}
+                >
+                  <Checkbox.HiddenInput />
+                  <Checkbox.Control />
+                </Checkbox.Root>
+              </Table.Cell>
+              <Table.Cell>
+                <Link onClick={() => select(row)}>{row.title}</Link>
+              </Table.Cell>
+              <Table.Cell>{row.time}</Table.Cell>
+              <Table.Cell>{row.comments}</Table.Cell>
+              <Table.Cell>
+                {row.tags.map((t) => (
+                  <Tag.Root key={t} mr={2}>
+                    <Tag.Label>{t}</Tag.Label>
+                  </Tag.Root>
+                ))}
+              </Table.Cell>
+            </Table.Row>
+          ))}
+        </Table.Body>
+      </Table.Root>
     </>
   );
 };
