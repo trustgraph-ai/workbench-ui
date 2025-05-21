@@ -25,7 +25,15 @@ const FlowTable = () => {
   };
 
   useEffect(() => {
-    refresh();
+    socket
+      .getFlows()
+      .then((ids) => {
+        return Promise.all(
+          ids.map((id) => socket.getFlow(id).then((x) => [id, x])),
+        );
+      })
+      .then((x) => setView(x))
+      .catch((err) => console.log("Error:", err));
   }, [socket]);
 
   const onDelete = () => {
