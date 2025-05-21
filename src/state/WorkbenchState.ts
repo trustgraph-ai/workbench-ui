@@ -1,48 +1,42 @@
-
-import { create } from 'zustand'
-import { Entity } from './Entity';
+import { create } from "zustand";
+import { Entity } from "./Entity";
 
 export interface WorkbenchState {
+  selected?: Entity;
+  tool: string;
+  entities: Entity[];
 
-    selected? : Entity;
-    tool : string;
-    entities : Entity[];
+  setSelected: (e: Entity) => void;
+  unsetSelected: () => void;
 
-    setSelected : (e : Entity) => void;
-    unsetSelected : () => void;
-
-    setTool : (v : string) => void;
-    setEntities : (ents : Entity[]) => void;
-
+  setTool: (v: string) => void;
+  setEntities: (ents: Entity[]) => void;
 }
 
-export const useWorkbenchStateStore = create<WorkbenchState>()(
+export const useWorkbenchStateStore = create<WorkbenchState>()((set) => ({
+  selected: undefined,
 
-    (set) => ({
+  tool: "chat",
 
-        selected : undefined,
+  entities: [],
 
-        tool : "chat",
+  setSelected: (e: Entity) =>
+    set(() => ({
+      selected: e,
+    })),
 
-        entities : [],
+  unsetSelected: () =>
+    set(() => ({
+      selected: undefined,
+    })),
 
-        setSelected: (e : Entity) => set(() => ({
-            selected: e,
-        })),
+  setTool: (v) =>
+    set(() => ({
+      tool: v,
+    })),
 
-        unsetSelected: () => set(() => ({
-            selected: undefined,
-        })),
-
-        setTool: (v) => set(() => ({
-            tool: v,
-        })),
-
-        setEntities: (v) => set(() => ({
-            entities: v,
-        })),
-
-    })
-
-);
-
+  setEntities: (v) =>
+    set(() => ({
+      entities: v,
+    })),
+}));

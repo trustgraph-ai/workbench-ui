@@ -1,13 +1,12 @@
-
 import {
   Toaster as ChakraToaster,
   Portal,
   Spinner,
   Stack,
   Toast,
-} from "@chakra-ui/react"
+} from "@chakra-ui/react";
 
-import { toaster } from './toaster';
+import { toaster } from "./toaster";
 
 export const Toaster = () => {
   return (
@@ -34,5 +33,5 @@ export const Toaster = () => {
         )}
       </ChakraToaster>
     </Portal>
-  )
-}
+  );
+};

@@ -1,35 +1,30 @@
+import { Box } from "@chakra-ui/react";
+import { BrowserRouter as Router, Routes, Route } from "react-router";
 
-import { Box } from '@chakra-ui/react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router';
+import Layout from "./components/Layout";
 
-import Layout from './components/Layout';
+import ChatPage from "./pages/ChatPage";
+import SearchPage from "./pages/SearchPage";
+import EntityPage from "./pages/EntityPage";
+import GraphPage from "./pages/GraphPage";
+import LoadPage from "./pages/LoadPage";
+import FlowsPage from "./pages/FlowsPage";
+import FlowClassesPage from "./pages/FlowClassesPage";
+import LibraryPage from "./pages/LibraryPage";
+import KnowledgeCoresPage from "./pages/KnowledgeCoresPage";
+import ProcessingPage from "./pages/ProcessingPage";
+import TokenCostPage from "./pages/TokenCostPage";
+import PromptsPage from "./pages/PromptsPage";
+import ToolsPage from "./pages/ToolsPage";
 
-import ChatPage from './pages/ChatPage';
-import SearchPage from './pages/SearchPage';
-import EntityPage from './pages/EntityPage';
-import GraphPage from './pages/GraphPage';
-import LoadPage from './pages/LoadPage';
-import FlowsPage from './pages/FlowsPage';
-import FlowClassesPage from './pages/FlowClassesPage';
-import LibraryPage from './pages/LibraryPage';
-import KnowledgeCoresPage from './pages/KnowledgeCoresPage';
-import ProcessingPage from './pages/ProcessingPage';
-import TokenCostPage from './pages/TokenCostPage';
-import PromptsPage from './pages/PromptsPage';
-import ToolsPage from './pages/ToolsPage';
+import Progress from "./components/common/Progress";
 
-import Progress from './components/common/Progress';
-
-import { Toaster } from "./components/ui/ToasterComponent"
+import { Toaster } from "./components/ui/ToasterComponent";
 
 const App = () => {
-
   return (
-    
     <Box width="100%" minHeight="100vh" bg="colors.background">
-
       <Router>
-
         <Layout>
           <Routes>
             <Route path="/" element={<LoadPage />} />
@@ -52,12 +47,8 @@ const App = () => {
 
       <Progress />
       <Toaster />
-
     </Box>
-
   );
-
-}
+};
 
 export default App;
-

@@ -1,31 +1,24 @@
+import React from "react";
 
-import React from 'react';
+import { Upload } from "lucide-react";
 
-import { Upload } from 'lucide-react';
+import { Box, Button, Alert } from "@chakra-ui/react";
 
-import { Box, Button, Alert } from '@chakra-ui/react';
-
-import { useLoadStateStore } from '../../state/LoadState';
-import TextAreaField from '../common/TextAreaField';
+import { useLoadStateStore } from "../../state/LoadState";
+import TextAreaField from "../common/TextAreaField";
 
 interface TextBufferProps {
-    submit : () => void;
+  submit: () => void;
 }
 
-const TextBuffer : React.FC<TextBufferProps> = ({
-    submit,
-}) => {
-
+const TextBuffer: React.FC<TextBufferProps> = ({ submit }) => {
   const value = useLoadStateStore((state) => state.text);
   const setValue = useLoadStateStore((state) => state.setText);
   const textUploads = useLoadStateStore((state) => state.textUploads);
 
   return (
-
     <>
-
       <Box mt={5}>
-
         <Button
           variant="solid"
           colorPalette="brand"
@@ -34,11 +27,9 @@ const TextBuffer : React.FC<TextBufferProps> = ({
         >
           <Upload /> Load
         </Button>
-
       </Box>
 
       <Box mt={5}>
-
         <TextAreaField
           value={value}
           onValueChange={(e) => setValue(e)}
@@ -46,23 +37,17 @@ const TextBuffer : React.FC<TextBufferProps> = ({
           rows={15}
         />
 
-        {
-          (textUploads > 0) &&
-          <Box sx={{ml: 1, mt: 1, mb: 2}}>
+        {textUploads > 0 && (
+          <Box sx={{ ml: 1, mt: 1, mb: 2 }}>
             <Alert.Root status="success">
               <Alert.Indicator />
               <Alert.Title>{textUploads} text uploads</Alert.Title>
             </Alert.Root>
           </Box>
-        }
-
+        )}
       </Box>
-
     </>
-
   );
-
-}
+};
 
 export default TextBuffer;
-

@@ -1,33 +1,25 @@
-
-import { create } from 'zustand'
-import { Row } from './row';
+import { create } from "zustand";
+import { Row } from "./row";
 
 export interface SearchState {
+  rows: Row[];
+  setRows: (v: Row[]) => void;
 
-    rows : Row[];
-    setRows : (v : Row[]) => void;
-
-    input : string;
-    setInput : (v : string) => void;
-
+  input: string;
+  setInput: (v: string) => void;
 }
 
-export const useSearchStateStore = create<SearchState>()(
+export const useSearchStateStore = create<SearchState>()((set) => ({
+  rows: [],
+  input: "",
 
-    (set) => ({
+  setRows: (v) =>
+    set(() => ({
+      rows: v,
+    })),
 
-        rows: [],
-        input: "",
-
-        setRows: (v) => set(() => ({
-	    rows: v,
-	})),
-
-        setInput: (v) => set(() => ({
-	    input: v,
-	})),
-
-    })
-
-);
-
+  setInput: (v) =>
+    set(() => ({
+      input: v,
+    })),
+}));

@@ -1,20 +1,16 @@
+import { Box, SegmentGroup, Field } from "@chakra-ui/react";
 
-import { Box, SegmentGroup, Field } from '@chakra-ui/react';
+import { useLoadStateStore } from "../../state/LoadState";
 
-import { useLoadStateStore } from '../../state/LoadState';
-
-import LoadHelp from './LoadHelp';
+import LoadHelp from "./LoadHelp";
 
 const Operation = () => {
-
   const value = useLoadStateStore((state) => state.operation);
   const setValue = useLoadStateStore((state) => state.setOperation);
 
   return (
     <>
-
       <Box>
-
         <Field.Root>
           <Field.Label>Upload operation</Field.Label>
           <SegmentGroup.Root
@@ -38,19 +34,12 @@ const Operation = () => {
           <Field.HelperText>
             Select one of the available upload operations
           </Field.HelperText>
-  
         </Field.Root>
 
-        <LoadHelp/>
-
-
+        <LoadHelp />
       </Box>
-
     </>
-
   );
-
-}
+};
 
 export default Operation;
-

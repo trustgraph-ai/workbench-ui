@@ -1,33 +1,33 @@
+import React from "react";
 
-import React from 'react';
+import { SendHorizontal } from "lucide-react";
 
-import { SendHorizontal } from 'lucide-react';
-
-import { Box, Button } from '@chakra-ui/react';
+import { Box, Button } from "@chakra-ui/react";
 
 interface ProgressSubmitButtonProps {
-    disabled : boolean;
-    working : boolean;
-    onClick : () => void;
-};
-
-const ProgressSubmitButton : React.FC <ProgressSubmitButtonProps> = ({
-    disabled, working, onClick,
-}) => {
-
-    return (
-
-        <Box>
-          <Button variant="subtle" disabled={disabled}
-            loading={working} color="brand" onClick={() => onClick()}
-          >
-            Send <SendHorizontal />
-          </Button>
-        </Box>
-
-    );
-
+  disabled: boolean;
+  working: boolean;
+  onClick: () => void;
 }
 
-export default ProgressSubmitButton;
+const ProgressSubmitButton: React.FC<ProgressSubmitButtonProps> = ({
+  disabled,
+  working,
+  onClick,
+}) => {
+  return (
+    <Box>
+      <Button
+        variant="subtle"
+        disabled={disabled}
+        loading={working}
+        color="brand"
+        onClick={() => onClick()}
+      >
+        Send <SendHorizontal />
+      </Button>
+    </Box>
+  );
+};
 
+export default ProgressSubmitButton;

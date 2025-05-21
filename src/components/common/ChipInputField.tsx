@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 
 import { Input, Tag, Wrap, Field } from "@chakra-ui/react";
@@ -7,11 +6,18 @@ import { Input, Tag, Wrap, Field } from "@chakra-ui/react";
 // removal.
 const Chip = ({ label, onCloseClick }) => (
   <Tag.Root
-    key={label} borderRadius="full" variant="solid" colorScheme="green"
+    key={label}
+    borderRadius="full"
+    variant="solid"
+    colorScheme="green"
   >
     <Tag.Label>{label}</Tag.Label>
     <Tag.EndElement>
-      <Tag.CloseTrigger onClick={() => { onCloseClick(label); }} />
+      <Tag.CloseTrigger
+        onClick={() => {
+          onCloseClick(label);
+        }}
+      />
     </Tag.EndElement>
   </Tag.Root>
 );
@@ -26,18 +32,13 @@ const ChipList = ({ items = [], onCloseClick }) => (
 );
 
 // Form field wrapper.
-const ChipInput = ({ ...rest }) => (
-    <Input {...rest} />
-);
+const ChipInput = ({ ...rest }) => <Input {...rest} />;
 
 // Field wrapping chip list and input
-const ChipInputField : React.FC<{
-  values : string[];
-  onValuesChange : (v : string[]) => void;
-}> = ({
-  values, onValuesChange
-}) => {
-
+const ChipInputField: React.FC<{
+  values: string[];
+  onValuesChange: (v: string[]) => void;
+}> = ({ values, onValuesChange }) => {
   const [inputValue, setInputValue] = useState("");
 
   // Checks whether we've added this item already.
@@ -91,13 +92,11 @@ const ChipInputField : React.FC<{
     removeItem(item);
   };
 
-const required=false;
-const label = 'Keywords';
+  const required = false;
+  const label = "Keywords";
 
   return (
-
-    <Field.Root mb={4} required={required}
-    >
+    <Field.Root mb={4} required={required}>
       <Field.Label>
         {label} {required && <Field.RequiredIndicator />}
       </Field.Label>
@@ -112,11 +111,8 @@ const label = 'Keywords';
         value={inputValue}
         variant="subtle"
       />
-
     </Field.Root>
-
   );
 };
 
 export default ChipInputField;
-
