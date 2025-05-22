@@ -42,13 +42,7 @@ const ProcessingTable = () => {
             }}
           >
             <Table.Cell component="th" scope="row">
-              <Link
-                align="left"
-                component="button"
-                onClick={() => select(row)}
-              >
-                {row.id}
-              </Link>
+              {row.id}
             </Table.Cell>
             <Table.Cell>{timeString(row.time)}</Table.Cell>
             <Table.Cell>{row["document-id"]}</Table.Cell>

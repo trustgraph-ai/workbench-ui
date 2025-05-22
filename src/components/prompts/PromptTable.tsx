@@ -2,12 +2,15 @@ import React, { useEffect, useState } from "react";
 import { useSocket } from "../../api/trustgraph/socket";
 
 import { Table, Link, Code } from "@chakra-ui/react";
+import EditDialog from './EditDialog';
 
-const DocumentTable = () => {
+const PromptTable = () => {
   const socket = useSocket();
 
   const [systemPrompt, setSystemPrompt] = useState<string>("");
   const [prompts, setPrompts] = useState([]);
+
+  const [selected, setSelected] = useState("");
 
   // FIXME:
   console.log(systemPrompt);
@@ -75,8 +78,25 @@ const DocumentTable = () => {
       )*/
   }, [socket]);
 
+  const onSelect = (row) => {
+    setSelected(row[0]);
+  }
+
+  const onEditConfirm = (x) => {
+    console.log(x);
+  }
+
   return (
-    <Table.Root sx={{ minWidth: 450 }} aria-label="table of entities">
+    <>
+      <EditDialog
+        open={selected != ""}
+        onOpenChange={() => setSelected("")}
+        onSubmit={onEditConfirm}
+        id={selected}
+      />
+    <Table.Root sx={{ minWidth: 450 }} aria-label="table of entities"
+      interactive
+    >
       <Table.Header>
         <Table.Row>
           <Table.ColumnHeader>ID</Table.ColumnHeader>
@@ -89,19 +109,10 @@ const DocumentTable = () => {
         {prompts.map((row, ix) => (
           <Table.Row
             key={ix}
-            sx={{
-              "&:last-child td": { border: 0 },
-              "&:last-child th": { border: 0 },
-            }}
+            onClick={() => onSelect(row)}
           >
             <Table.Cell component="th" scope="row" verticalAlign="top">
-              <Link
-                align="left"
-                component="button"
-                onClick={() => select(row)}
-              >
-                <Code>{row[0]}</Code>
-              </Link>
+              <Code>{row[0]}</Code>
             </Table.Cell>
             <Table.Cell verticalAlign="top">
               <Code>{row[1].prompt}</Code>
@@ -116,7 +127,9 @@ const DocumentTable = () => {
         ))}
       </Table.Body>
     </Table.Root>
+    </>
   );
+
 };
 
-export default DocumentTable;
+export default PromptTable;
