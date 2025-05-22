@@ -6,7 +6,7 @@ import { toaster } from "../ui/toaster";
 
 import { useSocket } from "../../api/trustgraph/socket";
 import Actions from "./Actions";
-import streamSaver from 'streamsaver';
+import streamSaver from "streamsaver";
 import { encode as msgpackEncode } from "@msgpack/msgpack";
 
 const KnowledgeCoresTable = () => {
@@ -84,12 +84,11 @@ const KnowledgeCoresTable = () => {
   };
 
   const onDownload = () => {
-
     console.log("DOWNLOAD");
-        toaster.create({
-          title: "Download is experimental",
-          type: "info",
-        });
+    toaster.create({
+      title: "Download is experimental",
+      type: "info",
+    });
 
     const sels = Array.from(selected);
 
@@ -99,18 +98,15 @@ const KnowledgeCoresTable = () => {
 
     console.log("DOWNLOAD...");
 
-    const fileStream = streamSaver.createWriteStream('filename.out', {
-//      size: uInt8.byteLength, // (optional filesize) Will show progress
-//            writableStrategy: undefined, // (optional)
-//                  readableStrategy: undefined  // (optional)
+    const fileStream = streamSaver.createWriteStream("filename.out", {
+      //      size: uInt8.byteLength, // (optional filesize) Will show progress
+      //            writableStrategy: undefined, // (optional)
+      //                  readableStrategy: undefined  // (optional)
     });
 
     const writer = fileStream.getWriter();
-    const encoder = new TextEncoder();
-
 
     const receiver = (msg, fin) => {
-
       if (msg.triples) {
         const fmtd = {
           m: {
@@ -120,8 +116,8 @@ const KnowledgeCoresTable = () => {
             c: msg.triples.metadata.collection,
           },
           t: msg.triples.triples,
-        }
-        const buf = msgpackEncode(["t", msg]);
+        };
+        const buf = msgpackEncode(["t", fmtd]);
         writer.write(buf);
       }
 
@@ -133,22 +129,19 @@ const KnowledgeCoresTable = () => {
             u: msg["graph-embeddings"].metadata.user,
             c: msg["graph-embeddings"].metadata.collection,
           },
-          e: msg["graph-embeddings"].entities.map(
-            (ge) => {
-              return {
-                v: ge.vectors,
-                e: ge.entity,
-              };
-            }
-          )
-        }
-        const buf = msgpackEncode(["ge", msg]);
+          e: msg["graph-embeddings"].entities.map((ge) => {
+            return {
+              v: ge.vectors,
+              e: ge.entity,
+            };
+          }),
+        };
+        const buf = msgpackEncode(["ge", fmtd]);
         writer.write(buf);
       }
 
-
-//      console.log(buf);
-//      writer.write(buf);
+      //      console.log(buf);
+      //      writer.write(buf);
 
       if (fin) {
         console.log("DONE");
@@ -156,18 +149,13 @@ const KnowledgeCoresTable = () => {
       }
     };
 
-
-    socket
-      .getKgCore(sels[0], null, receiver)
-      .then(() => {
-          console.log("I am done");
-        toaster.create({
-          title: "Download finished",
-          type: "success",
-        });
-}
-          );
-
+    socket.getKgCore(sels[0], null, receiver).then(() => {
+      console.log("I am done");
+      toaster.create({
+        title: "Download finished",
+        type: "success",
+      });
+    });
   };
 
   const toggle = (id) => {
@@ -188,6 +176,7 @@ const KnowledgeCoresTable = () => {
       <Table.Root sx={{ minWidth: 450 }} aria-label="table of entities">
         <Table.Header>
           <Table.Row>
+            <Table.ColumnHeader></Table.ColumnHeader>
             <Table.ColumnHeader>ID</Table.ColumnHeader>
           </Table.Row>
         </Table.Header>

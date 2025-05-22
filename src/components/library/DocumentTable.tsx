@@ -100,10 +100,10 @@ const DocumentTable = () => {
   };
 
   const onEdit = () => {
-        toaster.create({
-          title: "Not implemented",
-          type: "info",
-        });
+    toaster.create({
+      title: "Not implemented",
+      type: "info",
+    });
   };
 
   const onDelete = () => {
