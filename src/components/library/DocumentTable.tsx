@@ -99,7 +99,12 @@ const DocumentTable = () => {
     }
   };
 
-  const onEdit = () => {};
+  const onEdit = () => {
+        toaster.create({
+          title: "Not implemented",
+          type: "info",
+        });
+  };
 
   const onDelete = () => {
     const ids = Array.from(selected);
