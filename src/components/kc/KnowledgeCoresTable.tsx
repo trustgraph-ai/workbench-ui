@@ -6,6 +6,8 @@ import { toaster } from "../ui/toaster";
 
 import { useSocket } from "../../api/trustgraph/socket";
 import Actions from "./Actions";
+import streamSaver from 'streamsaver';
+import { encode as msgpackEncode } from "@msgpack/msgpack";
 
 const KnowledgeCoresTable = () => {
   const [view, setView] = useState([]);
@@ -81,21 +83,91 @@ const KnowledgeCoresTable = () => {
     }
   };
 
-  const receiver = (msg, fin) => {
-    console.log(msg);
-    if (fin) console.log("DONE");
-  };
-
   const onDownload = () => {
+
     console.log("DOWNLOAD");
+        toaster.create({
+          title: "Download is experimental",
+          type: "info",
+        });
+
     const sels = Array.from(selected);
+
     if (sels.length != 1) return;
+
     console.log(sels[0]);
 
     console.log("DOWNLOAD...");
+
+    const fileStream = streamSaver.createWriteStream('filename.out', {
+//      size: uInt8.byteLength, // (optional filesize) Will show progress
+//            writableStrategy: undefined, // (optional)
+//                  readableStrategy: undefined  // (optional)
+    });
+
+    const writer = fileStream.getWriter();
+    const encoder = new TextEncoder();
+
+
+    const receiver = (msg, fin) => {
+
+      if (msg.triples) {
+        const fmtd = {
+          m: {
+            i: msg.triples.metadata.id,
+            m: msg.triples.metadata.metadata,
+            u: msg.triples.metadata.user,
+            c: msg.triples.metadata.collection,
+          },
+          t: msg.triples.triples,
+        }
+        const buf = msgpackEncode(["t", msg]);
+        writer.write(buf);
+      }
+
+      if (msg["graph-embeddings"]) {
+        const fmtd = {
+          m: {
+            i: msg["graph-embeddings"].metadata.id,
+            m: msg["graph-embeddings"].metadata.metadata,
+            u: msg["graph-embeddings"].metadata.user,
+            c: msg["graph-embeddings"].metadata.collection,
+          },
+          e: msg["graph-embeddings"].entities.map(
+            (ge) => {
+              return {
+                v: ge.vectors,
+                e: ge.entity,
+              };
+            }
+          )
+        }
+        const buf = msgpackEncode(["ge", msg]);
+        writer.write(buf);
+      }
+
+
+//      console.log(buf);
+//      writer.write(buf);
+
+      if (fin) {
+        console.log("DONE");
+        writer.close();
+      }
+    };
+
+
     socket
       .getKgCore(sels[0], null, receiver)
-      .then(() => console.log("I am done"));
+      .then(() => {
+          console.log("I am done");
+        toaster.create({
+          title: "Download finished",
+          type: "success",
+        });
+}
+          );
+
   };
 
   const toggle = (id) => {
