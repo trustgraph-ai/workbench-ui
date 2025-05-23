@@ -707,7 +707,7 @@ export class SocketImplementation {
     );
   }
 
-  deleteConfig(keys: { type: string; key: string;} ) {
+  deleteConfig(keys: { type: string; key: string }) {
     return this.makeRequest<ConfigRequest, ConfigResponse>(
       "config",
       {

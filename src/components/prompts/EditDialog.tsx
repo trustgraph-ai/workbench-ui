@@ -268,8 +268,8 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
                 Cancel
               </Button>
               {
-              // If a 'create' operation, there's nothing to delete, only
-              // present if an existing prompt exists
+                // If a 'create' operation, there's nothing to delete, only
+                // present if an existing prompt exists
               }
               {!create && (
                 <Button

@@ -1,4 +1,3 @@
-
 import { Check, Download, Trash } from "lucide-react";
 
 import { ActionBar, Portal, Button } from "@chakra-ui/react";
