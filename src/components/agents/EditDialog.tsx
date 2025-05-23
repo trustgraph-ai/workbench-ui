@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState, useRef } from "react";
 
 import { Trash, SendHorizontal, Plus } from "lucide-react";
@@ -13,7 +12,6 @@ import {
   Editable,
   Popover,
   Text,
-  Input,
   RadioGroup,
   Stack,
 } from "@chakra-ui/react";
@@ -31,7 +29,6 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
   const [description, setDescription] = useState("");
   const [type, setType] = useState("");
   const [args, setArgs] = useState([]);
-
 
   const [editArgIx, setEditArgIx] = useState(-1);
 
@@ -68,19 +65,6 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
       value: "knowledge-query",
       label: "Knowledge query",
       description: "Uses the GraphRAG service for knowledge",
-    },
-  ];
-
-  const argTypeOptions = [
-    {
-      value: "string",
-      label: "string",
-      description: "Textual data",
-    },
-    {
-      value: "number",
-      label: "number",
-      description: "Numeric data",
     },
   ];
 
@@ -331,45 +315,54 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
                           <Editable.Input />
                         </Editable.Root>
                       </Table.Cell>
-                      <Table.Cell onClick={ () => { setEditArgIx(ix)} } >
-                        { (editArgIx == ix) &&
-
-  <Popover.Root open={editArgIx==ix} onOpenChange={ (e) => { if (e) setEditArgIx(-1)}}>
-      <Popover.Trigger asChild>
-                                <Text>{arg.type}</Text>
-      </Popover.Trigger>
-        <Popover.Positioner>
-          <Popover.Content>
-            <Popover.Arrow />
-            <Popover.Body>
-<RadioGroup.Root value={args[ix].type}
-onValueChange={ (v) => setArgAttr(ix, "type", v.value) }
->
-      <Stack gap="6" >
-          <RadioGroup.Item value={'string'}>
-            <RadioGroup.ItemHiddenInput />
-            <RadioGroup.ItemIndicator />
-            <RadioGroup.ItemText>string</RadioGroup.ItemText>
-          </RadioGroup.Item>
-          <RadioGroup.Item value={'number'}>
-            <RadioGroup.ItemHiddenInput />
-            <RadioGroup.ItemIndicator />
-            <RadioGroup.ItemText>number</RadioGroup.ItemText>
-          </RadioGroup.Item>
-      </Stack>
-    </RadioGroup.Root>
-
-
-            </Popover.Body>
-          </Popover.Content>
-        </Popover.Positioner>
-    </Popover.Root>
-
-
-                        }
-                        { (editArgIx != ix) &&
-                          arg.type
-                        }
+                      <Table.Cell
+                        onClick={() => {
+                          setEditArgIx(ix);
+                        }}
+                      >
+                        {editArgIx == ix && (
+                          <Popover.Root
+                            open={editArgIx == ix}
+                            onOpenChange={(e) => {
+                              if (e) setEditArgIx(-1);
+                            }}
+                          >
+                            <Popover.Trigger asChild>
+                              <Text>{arg.type}</Text>
+                            </Popover.Trigger>
+                            <Popover.Positioner>
+                              <Popover.Content>
+                                <Popover.Arrow />
+                                <Popover.Body>
+                                  <RadioGroup.Root
+                                    value={args[ix].type}
+                                    onValueChange={(v) =>
+                                      setArgAttr(ix, "type", v.value)
+                                    }
+                                  >
+                                    <Stack gap="6">
+                                      <RadioGroup.Item value={"string"}>
+                                        <RadioGroup.ItemHiddenInput />
+                                        <RadioGroup.ItemIndicator />
+                                        <RadioGroup.ItemText>
+                                          string
+                                        </RadioGroup.ItemText>
+                                      </RadioGroup.Item>
+                                      <RadioGroup.Item value={"number"}>
+                                        <RadioGroup.ItemHiddenInput />
+                                        <RadioGroup.ItemIndicator />
+                                        <RadioGroup.ItemText>
+                                          number
+                                        </RadioGroup.ItemText>
+                                      </RadioGroup.Item>
+                                    </Stack>
+                                  </RadioGroup.Root>
+                                </Popover.Body>
+                              </Popover.Content>
+                            </Popover.Positioner>
+                          </Popover.Root>
+                        )}
+                        {editArgIx != ix && arg.type}
                       </Table.Cell>
                     </Table.Row>
                   ))}
