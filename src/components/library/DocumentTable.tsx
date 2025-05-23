@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
+
 import { v4 as uuidv4 } from "uuid";
 
-import { Table, Link, Tag, Checkbox } from "@chakra-ui/react";
+import { Table, Tag, Checkbox } from "@chakra-ui/react";
 
 import { Row } from "../state/row";
 import { toaster } from "../ui/toaster";
@@ -10,6 +11,7 @@ import Actions from "./Actions";
 import SubmitDialog from "./SubmitDialog";
 
 import { useSocket } from "../../api/trustgraph/socket";
+import { timeString } from "../../utils/time-string.ts";
 
 const DocumentTable = () => {
   const [view, setView] = useState([]);
@@ -52,7 +54,7 @@ const DocumentTable = () => {
     submitOne(ids, flow, tags)
       .then(() => {
         console.log("Success");
-        setSelected((x) => new Set([]));
+        setSelected(() => new Set([]));
         toaster.create({
           title: "Documents submitted",
           type: "success",
@@ -93,11 +95,16 @@ const DocumentTable = () => {
     if (ids.length < 2) {
       return prom;
     } else {
-      return prom.then(() => submitOne(ids.slice(1), flow));
+      return prom.then(() => submitOne(ids.slice(1), flow, tags));
     }
   };
 
-  const onEdit = () => {};
+  const onEdit = () => {
+    toaster.create({
+      title: "Not implemented",
+      type: "info",
+    });
+  };
 
   const onDelete = () => {
     const ids = Array.from(selected);
@@ -167,24 +174,27 @@ const DocumentTable = () => {
         </Table.Header>
         <Table.Body>
           {view.map((row: Row) => (
-            <Table.Row key={row.id}>
+            <Table.Row key={row.id} onClick={() => toggle(row.id)}>
               <Table.Cell>
                 <Checkbox.Root
                   size="lg"
                   variant="solid"
                   checked={selected.has(row.id)}
-                  onCheckedChange={() => toggle(row.id)}
                 >
                   <Checkbox.HiddenInput />
                   <Checkbox.Control />
                 </Checkbox.Root>
               </Table.Cell>
-              <Table.Cell>
-                <Link onClick={() => select(row)}>{row.title}</Link>
+              <Table.Cell onClick={() => toggle(row.id)}>
+                {row.title}
               </Table.Cell>
-              <Table.Cell>{row.time}</Table.Cell>
-              <Table.Cell>{row.comments}</Table.Cell>
-              <Table.Cell>
+              <Table.Cell onClick={() => toggle(row.id)}>
+                {timeString(row.time)}
+              </Table.Cell>
+              <Table.Cell onClick={() => toggle(row.id)}>
+                {row.comments}
+              </Table.Cell>
+              <Table.Cell onClick={() => toggle(row.id)}>
                 {row.tags.map((t) => (
                   <Tag.Root key={t} mr={2}>
                     <Tag.Label>{t}</Tag.Label>

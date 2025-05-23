@@ -163,6 +163,129 @@ class ServiceCall {
   }
 }
 
+class ServiceCallMulti {
+  constructor(
+    mid: string,
+    msg: RequestMessage,
+    success: (resp: Response) => void,
+    error: (err: Error) => void,
+    timeout: number,
+    retries: number,
+    socket: Socket,
+    receiver,
+  ) {
+    this.mid = mid;
+    this.msg = msg;
+    this.success = success;
+    this.error = error;
+    this.timeout = timeout;
+    this.retries = retries;
+    this.socket = socket;
+    this.complete = false;
+    this.receiver = receiver;
+  }
+
+  mid: string;
+  success: (resp: object) => void; // FIXME: any
+  error: (err: object | string) => void; // FIXME: any
+  timeoutId: Timeout;
+  timeout: number;
+  retries: number;
+  socket: Socket;
+  complete: boolean;
+
+  start() {
+    this.socket.inflight[this.mid] = this;
+    this.attempt();
+  }
+
+  onReceived(resp: object) {
+    if (this.complete == true)
+      console.log(this.mid, "should not happen, request is already complete");
+
+    const fin = this.receiver(resp);
+
+    if (fin) {
+      this.complete = true;
+
+      //        console.log("Received for", this.mid);
+      clearTimeout(this.timeoutId);
+      this.timeoutId = null;
+      delete this.socket.inflight[this.mid];
+      this.success(resp);
+    }
+  }
+
+  onTimeout() {
+    if (this.complete == true)
+      console.log(
+        this.mid,
+        "timeout should not happen, request is already complete",
+      );
+
+    console.log("Request", this.mid, "timed out");
+    clearTimeout(this.timeoutId);
+    this.attempt();
+  }
+
+  attempt() {
+    //        console.log("attempt:", this.mid);
+
+    if (this.complete == true)
+      console.log(
+        this.mid,
+        "attempt should not be called, request is already complete",
+      );
+
+    this.retries--;
+
+    if (this.retries < 0) {
+      console.log("Request", this.mid, "ran out of retries");
+
+      clearTimeout(this.timeoutId);
+      delete this.socket.inflight[this.mid];
+
+      this.error("Ran out of retries");
+    }
+
+    if (this.socket.ws) {
+      try {
+        this.socket.ws.send(JSON.stringify(this.msg));
+        this.timeoutId = setTimeout(this.onTimeout, this.timeout);
+
+        return;
+      } catch (e) {
+        console.log("Error:", e);
+        console.log("Message send failure, retry...");
+
+        this.timeoutId = setTimeout(
+          this.attempt,
+          SOCKET_RECONNECTION_TIMEOUT,
+        );
+      }
+    } else {
+      setTimeout(this.attempt, SOCKET_RECONNECTION_TIMEOUT);
+    }
+  }
+}
+
+export interface Metadata {
+  id?: string;
+  metadata?: Triple[];
+  user?: string;
+  collection?: string;
+}
+
+export interface EntityEmbeddings {
+  entity?: Value;
+  vectors?: number[][];
+}
+
+export interface GraphEmbeddings {
+  metadata?: Metadata;
+  entities?: EntityEmbedding[];
+}
+
 export interface TextCompletionRequest {
   system: string;
   prompt: string;
@@ -277,6 +400,24 @@ export interface LibraryResponse {
   processing_metadata?: ProcessingMetadata;
 }
 
+export interface KnowledgeRequest {
+  operation: string;
+  user?: string;
+  id?: string;
+  flow?: string;
+  collection?: string;
+  triples?: Triple[];
+  graphEmbeddings?: GraphEmbeddings;
+}
+
+export interface KnowledgeResponse {
+  error?: Error;
+  ids?: string[];
+  eos?: boolean;
+  triples?: Triple[];
+  graphEmbeddings?: Graphembeddings;
+}
+
 export interface TextCompletionResponse {
   response: string;
 }
@@ -309,9 +450,6 @@ export interface FlowResponse {
   description?: string;
   error?: Error;
 }
-
-export type LibraryRequest = object;
-export type LibraryResponse = object;
 
 export type ConfigRequest = object;
 export type ConfigResponse = object;
@@ -431,6 +569,49 @@ export class SocketImplementation {
     });
   }
 
+  makeRequestMulti<RequestType, ResponseType>(
+    service: string,
+    request: RequestType,
+    receiver,
+    timeout?: number,
+    retries?: number,
+    flow?: string,
+  ) {
+    const mid = this.getNextId();
+
+    if (timeout == undefined) timeout = 10000;
+
+    if (retries == undefined) retries = 3;
+
+    const msg: RequestMessage = {
+      id: mid,
+      service: service,
+      request: request,
+    };
+
+    if (flow) msg.flow = flow;
+
+    return new Promise<ResponseType>((resolve, reject) => {
+      const call = new ServiceCallMulti(
+        mid,
+        msg,
+        resolve,
+        reject,
+        timeout,
+        retries,
+        this,
+        receiver,
+      );
+
+      call.start();
+
+      //            console.log("-->", msg);
+    }).then((obj) => {
+      //                console.log("Success for", mid);
+      return obj as ResponseType;
+    });
+  }
+
   makeFlowRequest<RequestType, ResponseType>(
     service: string,
     request: RequestType,
@@ -495,7 +676,7 @@ export class SocketImplementation {
   }
 
   getConfigAll() {
-    return this.makeRequest<FlowRequest, FlowResponse>(
+    return this.makeRequest<ConfigRequest, ConfigResponse>(
       "config",
       {
         operation: "config",
@@ -505,7 +686,7 @@ export class SocketImplementation {
   }
 
   getConfig(keys: { type: string; key: string }[]) {
-    return this.makeRequest<FlowRequest, FlowResponse>(
+    return this.makeRequest<ConfigRequest, ConfigResponse>(
       "config",
       {
         operation: "get",
@@ -516,13 +697,24 @@ export class SocketImplementation {
   }
 
   putConfig(values: { type: string; key: string; value: string }[]) {
-    return this.makeRequest<FlowRequest, FlowResponse>(
+    return this.makeRequest<ConfigRequest, ConfigResponse>(
       "config",
       {
         operation: "put",
         values: values,
       },
       60000,
+    );
+  }
+
+  deleteConfig(keys: { type: string; key: string }) {
+    return this.makeRequest<ConfigRequest, ConfigResponse>(
+      "config",
+      {
+        operation: "delete",
+        keys: keys,
+      },
+      30000,
     );
   }
 
@@ -537,6 +729,7 @@ export class SocketImplementation {
       JSON.parse(r.config.prompt[`template.${id}`]),
     );
   }
+
   /*
     setPrompt(
       id : string, prompt : string, responseType : string,
@@ -828,6 +1021,65 @@ export class SocketImplementation {
           tags: tags ? tags : [],
         },
       },
+      30000,
+    );
+  }
+
+  startFlow(id: string, class_name: string, description: string) {
+    return this.makeRequest<LibraryRequest, LibraryResponse>(
+      "flow",
+      {
+        operation: "start-flow",
+        "flow-id": id,
+        "class-name": class_name,
+        description: description,
+      },
+      30000,
+    );
+  }
+
+  stopFlow(id: string) {
+    return this.makeRequest<LibraryRequest, LibraryResponse>(
+      "flow",
+      {
+        operation: "stop-flow",
+        "flow-id": id,
+      },
+      30000,
+    );
+  }
+
+  deleteKgCore(id: string, user?: string) {
+    return this.makeRequest<LibraryRequest, LibraryResponse>(
+      "knowledge",
+      {
+        operation: "delete-kg-core",
+        id: id,
+        user: user ? user : "trustgraph",
+      },
+      30000,
+    );
+  }
+
+  getKgCore(id: string, user?: string, receiver) {
+    const recv = (msg) => {
+      if (msg.eos) {
+        receiver(msg, true);
+        return true;
+      } else {
+        receiver(msg, false);
+        return false;
+      }
+    };
+
+    return this.makeRequestMulti<LibraryRequest, LibraryResponse>(
+      "knowledge",
+      {
+        operation: "get-kg-core",
+        id: id,
+        user: user ? user : "trustgraph",
+      },
+      recv,
       30000,
     );
   }

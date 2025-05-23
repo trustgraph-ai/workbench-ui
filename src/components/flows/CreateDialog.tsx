@@ -1,58 +1,52 @@
 import React, { useEffect, useState, useRef } from "react";
 
-import { SendHorizontal } from "lucide-react";
+import { Plus } from "lucide-react";
 
-import {
-  List,
-  Portal,
-  Button,
-  Dialog,
-  Box,
-  CloseButton,
-} from "@chakra-ui/react";
+import { Portal, Button, Dialog, Box, CloseButton } from "@chakra-ui/react";
 
 import { useSocket } from "../../api/trustgraph/socket";
 import SelectField from "../common/SelectField";
 import SelectOption from "../common/SelectOption";
-import ChipInputField from "../common/ChipInputField";
+import TextField from "../common/TextField";
 
-const SubmitDialog = ({ open, onOpenChange, onSubmit, docs }) => {
-  const [flows, setFlows] = useState([]);
+const CreateDialog = ({ open, onOpenChange, onSubmit }) => {
+  const [flowClasses, setFlowClasses] = useState([]);
+
+  const [flowClass, setFlowClass] = useState(undefined);
+  const [id, setId] = useState("");
+  const [description, setDescription] = useState("");
 
   const socket = useSocket();
 
   useEffect(() => {
     socket
-      .getFlows()
+      .getFlowClasses()
       .then((ids) => {
         return Promise.all(
-          ids.map((id) => socket.getFlow(id).then((x) => [id, x])),
+          ids.map((id) => socket.getFlowClass(id).then((x) => [id, x])),
         );
       })
       .then((x) => {
         // Store flow information
-        setFlows(x);
+        setFlowClasses(x);
 
         // Set selected flow to the first, if none set
-        if (!flow && x.length > 0) setFlow(x[0][0]);
+        if (!flowClass && x.length > 0) setFlowClass(x[0][0]);
       })
       .catch((err) => console.log("Error:", err));
-  });
+  }, [socket, flowClass]);
 
-  const flowOptions = flows.map((flow) => {
+  const flowClassOptions = flowClasses.map((flowClass) => {
     return {
-      value: flow[0],
-      label: flow[1].description,
+      value: flowClass[0],
+      label: flowClass[1].description,
       description: (
-        <SelectOption title={flow[1].description}>
-          {flow[0]} (class {flow[1]["class-name"]})
+        <SelectOption title={flowClass[1].description}>
+          {flowClass[0]}
         </SelectOption>
       ),
     };
   });
-
-  const [flow, setFlow] = useState(undefined);
-  const [tags, setTags] = useState([]);
 
   const contentRef = useRef<HTMLDivElement>(null);
 
@@ -74,32 +68,32 @@ const SubmitDialog = ({ open, onOpenChange, onSubmit, docs }) => {
             <Dialog.Body>
               <Box>Submit the following documents:</Box>
 
-              <List.Root mt={5}>
-                {docs.map((row) => (
-                  <List.Item key={row.id} ml="1.5rem">
-                    {row.title ? row.title : "<untitled>"}
-                  </List.Item>
-                ))}
-              </List.Root>
-
-              <Box mt={5}>With following flows:</Box>
+              <Box mt={5}>With following flow classes:</Box>
 
               <Box mt={5}>
                 <SelectField
                   label="Processing flow"
-                  items={flowOptions}
-                  value={flow}
+                  items={flowClassOptions}
+                  value={flowClass}
                   onValueChange={(x) => {
-                    setFlow(x);
+                    setFlowClass(x);
                   }}
                   contentRef={contentRef}
                 />
               </Box>
 
-              <ChipInputField
-                label="Tags"
-                values={tags}
-                onValuesChange={setTags}
+              <TextField
+                label="ID"
+                helperText="A unique ID for your flow"
+                values={id}
+                onValueChange={setId}
+              />
+
+              <TextField
+                label="Description"
+                helperText="A human-readable description"
+                values={description}
+                onValueChange={setDescription}
               />
             </Dialog.Body>
             <Dialog.Footer>
@@ -107,10 +101,10 @@ const SubmitDialog = ({ open, onOpenChange, onSubmit, docs }) => {
                 Cancel
               </Button>
               <Button
-                onClick={() => onSubmit(flow, tags)}
+                onClick={() => onSubmit(flowClass, id, description)}
                 colorPalette="brand"
               >
-                <SendHorizontal /> Submit
+                <Plus /> Create
               </Button>
             </Dialog.Footer>
             <Dialog.CloseTrigger asChild>
@@ -123,4 +117,4 @@ const SubmitDialog = ({ open, onOpenChange, onSubmit, docs }) => {
   );
 };
 
-export default SubmitDialog;
+export default CreateDialog;
