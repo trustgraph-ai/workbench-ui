@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-import { Table, Link, Tag } from "@chakra-ui/react";
+import { Table, Tag } from "@chakra-ui/react";
 
 import { useSocket } from "../../api/trustgraph/socket";
 import { timeString } from "../../utils/time-string.ts";
@@ -16,11 +16,6 @@ const ProcessingTable = () => {
       .then((x) => setView(x))
       .catch((err) => console.log("Error:", err));
   }, [socket]);
-
-  const select = (row) => {
-    setSelected({ uri: row.uri, label: row.label ? row.label : "n/a" });
-    setTool("entity");
-  };
 
   return (
     <Table.Root sx={{ minWidth: 450 }} aria-label="table of entities">

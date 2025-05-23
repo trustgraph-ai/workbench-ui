@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 
-import { Plus } from 'lucide-react';
+import { Plus } from "lucide-react";
 
 import { Portal, Button, Dialog, Box, CloseButton } from "@chakra-ui/react";
 

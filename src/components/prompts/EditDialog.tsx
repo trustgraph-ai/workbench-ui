@@ -1,9 +1,8 @@
 import React, { useEffect, useState, useRef } from "react";
 
-import { Trash, SendHorizontal } from 'lucide-react';
+import { Trash, SendHorizontal } from "lucide-react";
 
 import {
-  List,
   Portal,
   Button,
   Dialog,
@@ -13,7 +12,6 @@ import {
 
 import { useSocket } from "../../api/trustgraph/socket";
 import SelectField from "../common/SelectField";
-import SelectOption from "../common/SelectOption";
 import TextAreaField from "../common/TextAreaField";
 import TextField from "../common/TextField";
 import { toaster } from "../ui/toaster";
@@ -53,7 +51,7 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
           type: "error",
         });
       });
-  }, [id]);
+  }, [id, create, socket]);
 
   const formatOptions = [
     {
@@ -96,10 +94,10 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
             value: JSON.stringify(promptStruct),
           },
         ])
-        .then((x) =>
+        .then(() =>
           socket.getConfig([{ type: "prompt", key: "template-index" }]),
         )
-        .then((x) => {
+        .then(() => {
           const templates = JSON.parse(x.values[0].value);
 
           if (!templates.includes(newId)) {
@@ -114,15 +112,15 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
               ])
               .then({});
           } else {
-             return {};
+            return {};
           }
         })
         .then(() => {
-                toaster.create({
-          title: "Created prompt",
-          type: "success",
-        });
-        onComplete();
+          toaster.create({
+            title: "Created prompt",
+            type: "success",
+          });
+          onComplete();
         })
 
         .catch((err) => {
@@ -144,19 +142,19 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
           },
         ])
         .then(() => {
-                toaster.create({
-          title: "Edited prompt",
-          type: "success",
-        });
-        onComplete();
+          toaster.create({
+            title: "Edited prompt",
+            type: "success",
+          });
+          onComplete();
         })
-      .catch((e) => {
-        console.log("Error:", err);
-        toaster.create({
-          title: "Error: " + e.toString(),
-          type: "error",
+        .catch((e) => {
+          console.log("Error:", err);
+          toaster.create({
+            title: "Error: " + e.toString(),
+            type: "error",
+          });
         });
-      });
     }
   };
 
@@ -226,7 +224,9 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
               <Button variant="outline" onClick={() => onOpenChange(false)}>
                 Cancel
               </Button>
-              <Button variant="solid" onClick={() => onOpenChange(false)}
+              <Button
+                variant="solid"
+                onClick={() => onOpenChange(false)}
                 colorPalette="red"
               >
                 <Trash /> Delete

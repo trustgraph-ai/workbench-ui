@@ -5,15 +5,12 @@ import { Plus } from "lucide-react";
 import { Button, Box } from "@chakra-ui/react";
 
 import EditDialog from "./EditDialog";
-import { useSocket } from "../../api/trustgraph/socket";
-import { toaster } from "../ui/toaster";
 
 const PromptControls = ({ onUpdate }) => {
-  const socket = useSocket();
 
   const [createOpen, setCreateOpen] = useState(false);
 
-  const onComplete = (x) => {
+  const onComplete = () => {
     console.log("COMPLETE!!!");
     onUpdate();
     setCreateOpen(false);
@@ -42,4 +39,3 @@ const PromptControls = ({ onUpdate }) => {
 };
 
 export default PromptControls;
-

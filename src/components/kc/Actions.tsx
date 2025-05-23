@@ -42,4 +42,3 @@ const Actions = ({ selectedCount, onDelete, onDownload }) => {
 };
 
 export default Actions;
-

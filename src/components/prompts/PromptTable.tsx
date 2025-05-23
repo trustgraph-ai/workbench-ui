@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useSocket } from "../../api/trustgraph/socket";
 
-import { Table, Link, Code } from "@chakra-ui/react";
+import { Table, Code } from "@chakra-ui/react";
 import EditDialog from "./EditDialog";
 import PromptControls from "./PromptControls";
 
@@ -13,9 +13,8 @@ const PromptTable = () => {
 
   const [selected, setSelected] = useState("");
 
-
   const refresh = () => {
-   socket
+    socket
       .getConfig([
         { type: "prompt", key: "system" },
         { type: "prompt", key: "template-index" },
@@ -50,7 +49,6 @@ const PromptTable = () => {
         return config;
       })
       .then((config) => setPrompts(config));
-
   };
 
   useEffect(() => {
@@ -91,14 +89,13 @@ const PromptTable = () => {
         return config;
       })
       .then((config) => setPrompts(config));
-
   }, [socket]);
 
   const onSelect = (row) => {
     setSelected(row[0]);
   };
 
-  const onComplete = (x) => {
+  const onComplete = () => {
     console.log("COMPLETE");
     setSelected("");
     refresh();
