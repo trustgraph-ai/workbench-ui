@@ -1,4 +1,5 @@
-import { Check } from "lucide-react";
+
+import { Check, Download, Trash } from "lucide-react";
 
 import { ActionBar, Portal, Button } from "@chakra-ui/react";
 
@@ -23,7 +24,7 @@ const Actions = ({ selectedCount, onDelete, onDownload }) => {
                 size="sm"
                 onClick={onDownload}
               >
-                Download
+                <Download /> Download
               </Button>
             )}
             <Button
@@ -32,7 +33,7 @@ const Actions = ({ selectedCount, onDelete, onDownload }) => {
               size="sm"
               onClick={onDelete}
             >
-              Delete
+              <Trash /> Delete
             </Button>
           </ActionBar.Content>
         </ActionBar.Positioner>

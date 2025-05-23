@@ -7,7 +7,6 @@ import { Button, Box } from "@chakra-ui/react";
 import EditDialog from "./EditDialog";
 
 const PromptControls = ({ onUpdate }) => {
-
   const [createOpen, setCreateOpen] = useState(false);
 
   const onComplete = () => {

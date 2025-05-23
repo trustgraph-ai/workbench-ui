@@ -2,13 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 
 import { Trash, SendHorizontal } from "lucide-react";
 
-import {
-  Portal,
-  Button,
-  Dialog,
-  Box,
-  CloseButton,
-} from "@chakra-ui/react";
+import { Portal, Button, Dialog, Box, CloseButton } from "@chakra-ui/react";
 
 import { useSocket } from "../../api/trustgraph/socket";
 import SelectField from "../common/SelectField";
@@ -45,7 +39,7 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
         else setSchema("");
       })
       .catch((e) => {
-        console.log("Error:", err);
+        console.log("Error:", e);
         toaster.create({
           title: "Error: " + e.toString(),
           type: "error",
@@ -97,7 +91,7 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
         .then(() =>
           socket.getConfig([{ type: "prompt", key: "template-index" }]),
         )
-        .then(() => {
+        .then((x) => {
           const templates = JSON.parse(x.values[0].value);
 
           if (!templates.includes(newId)) {
@@ -126,7 +120,7 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
         .catch((err) => {
           console.log("Error:", err);
           toaster.create({
-            title: "Error: " + e.toString(),
+            title: "Error: " + err.toString(),
             type: "error",
           });
         });
@@ -149,13 +143,62 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
           onComplete();
         })
         .catch((e) => {
-          console.log("Error:", err);
+          console.log("Error:", e);
           toaster.create({
             title: "Error: " + e.toString(),
             type: "error",
           });
         });
     }
+  };
+
+  const onDelete = () => {
+    // Shouldn't happen, but can't delete a prompt that hasn't been created
+    // yet
+    if (create) return;
+
+    // When creating, the order is...
+    // 1) Get the template index
+    // 2) Write back
+    // 3) Delete the prompt
+
+    socket
+      .getConfig([{ type: "prompt", key: "template-index" }])
+      .then((x) => {
+        const templates = JSON.parse(x.values[0].value);
+
+        const newTemplates = templates.filter((x) => x !== id);
+
+        return socket.putConfig([
+          {
+            type: "prompt",
+            key: "template-index",
+            value: JSON.stringify(newTemplates),
+          },
+        ]);
+      })
+      .then(() =>
+        socket.deleteConfig([
+          {
+            type: "prompt",
+            key: "template." + id,
+          },
+        ]),
+      )
+      .then(() => {
+        toaster.create({
+          title: "Prompt deleted",
+          type: "success",
+        });
+        onComplete();
+      })
+      .catch((err) => {
+        console.log("Error:", err);
+        toaster.create({
+          title: "Error: " + err.toString(),
+          type: "error",
+        });
+      });
   };
 
   return (
@@ -224,14 +267,20 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
               <Button variant="outline" onClick={() => onOpenChange(false)}>
                 Cancel
               </Button>
-              <Button
-                variant="solid"
-                onClick={() => onOpenChange(false)}
-                colorPalette="red"
-              >
-                <Trash /> Delete
-              </Button>
-              <Button onClick={() => onEdit()}>
+              {
+              // If a 'create' operation, there's nothing to delete, only
+              // present if an existing prompt exists
+              }
+              {!create && (
+                <Button
+                  variant="solid"
+                  onClick={() => onDelete()}
+                  colorPalette="red"
+                >
+                  <Trash /> Delete
+                </Button>
+              )}
+              <Button onClick={() => onEdit()} colorPalette="brand">
                 <SendHorizontal /> Submit
               </Button>
             </Dialog.Footer>

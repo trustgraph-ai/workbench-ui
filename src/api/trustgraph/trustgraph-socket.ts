@@ -676,7 +676,7 @@ export class SocketImplementation {
   }
 
   getConfigAll() {
-    return this.makeRequest<FlowRequest, FlowResponse>(
+    return this.makeRequest<ConfigRequest, ConfigResponse>(
       "config",
       {
         operation: "config",
@@ -686,7 +686,7 @@ export class SocketImplementation {
   }
 
   getConfig(keys: { type: string; key: string }[]) {
-    return this.makeRequest<FlowRequest, FlowResponse>(
+    return this.makeRequest<ConfigRequest, ConfigResponse>(
       "config",
       {
         operation: "get",
@@ -697,13 +697,24 @@ export class SocketImplementation {
   }
 
   putConfig(values: { type: string; key: string; value: string }[]) {
-    return this.makeRequest<FlowRequest, FlowResponse>(
+    return this.makeRequest<ConfigRequest, ConfigResponse>(
       "config",
       {
         operation: "put",
         values: values,
       },
       60000,
+    );
+  }
+
+  deleteConfig(keys: { type: string; key: string;} ) {
+    return this.makeRequest<ConfigRequest, ConfigResponse>(
+      "config",
+      {
+        operation: "delete",
+        keys: keys,
+      },
+      30000,
     );
   }
 
@@ -718,6 +729,7 @@ export class SocketImplementation {
       JSON.parse(r.config.prompt[`template.${id}`]),
     );
   }
+
   /*
     setPrompt(
       id : string, prompt : string, responseType : string,
