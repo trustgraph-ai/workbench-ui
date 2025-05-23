@@ -166,9 +166,7 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
     ]);
   };
 
-  console.log(args);
   const setArgAttr = (id, key, value) => {
-    console.log("setArgAttr", id, key, value);
     const newArgs = args.map((arg, ix) => {
       if (id == ix) {
         return {
@@ -180,7 +178,6 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
       }
     });
     setArgs(newArgs);
-    console.log(newArgs);
   };
 
   const onDelete = () => {

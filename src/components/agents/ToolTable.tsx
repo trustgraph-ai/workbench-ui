@@ -84,7 +84,6 @@ const ToolTable = () => {
   };
 
   const onComplete = () => {
-    console.log("COMPLETE");
     setSelected("");
     refresh();
   };
