@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-import { Table, Link } from "@chakra-ui/react";
+import { Table } from "@chakra-ui/react";
 
 import { useSocket } from "../../api/trustgraph/socket";
 
@@ -41,13 +41,7 @@ const FlowClassesTable = () => {
             }}
           >
             <Table.Cell component="th" scope="row">
-              <Link
-                align="left"
-                component="button"
-                onClick={() => select(row)}
-              >
-                {row[0]}
-              </Link>
+              {row[0]}
             </Table.Cell>
             <Table.Cell>{row[1].description}</Table.Cell>
           </Table.Row>

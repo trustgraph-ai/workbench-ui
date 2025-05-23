@@ -173,7 +173,7 @@ const KnowledgeCoresTable = () => {
         onDelete={onDelete}
         onDownload={onDownload}
       />
-      <Table.Root sx={{ minWidth: 450 }} aria-label="table of entities">
+      <Table.Root interactive>
         <Table.Header>
           <Table.Row>
             <Table.ColumnHeader></Table.ColumnHeader>
