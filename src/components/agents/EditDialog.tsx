@@ -1,10 +1,15 @@
 import React, { useEffect, useState, useRef } from "react";
 
-import { Trash, SendHorizontal } from "lucide-react";
+import { Trash, SendHorizontal, Plus } from "lucide-react";
 
 import {
-  Portal, Button, Dialog, Box, CloseButton, Popover, Input, Table,
-  Editable
+  Portal,
+  Button,
+  Dialog,
+  Box,
+  CloseButton,
+  Table,
+  Editable,
 } from "@chakra-ui/react";
 
 import { useSocket } from "../../api/trustgraph/socket";
@@ -20,10 +25,8 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
   const [description, setDescription] = useState("");
   const [type, setType] = useState("");
   const [args, setArgs] = useState([]);
-  const [argEdit, setArgEdit] = useState("");
 
   useEffect(() => {
-
     if (!id) return;
 
     socket
@@ -53,9 +56,23 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
       description: "Consults an LLM for a response with no further knowledge",
     },
     {
-      value: "knowledge-query", label: "Knowledge query",
-      description: "Uses the GraphRAG service for knowledge"
-      },
+      value: "knowledge-query",
+      label: "Knowledge query",
+      description: "Uses the GraphRAG service for knowledge",
+    },
+  ];
+
+  const argTypeOptions = [
+    {
+      value: "string",
+      label: "string",
+      description: "Textual data",
+    },
+    {
+      value: "number",
+      label: "number",
+      description: "Numeric data",
+    },
   ];
 
   const contentRef = useRef<HTMLDivElement>(null);
@@ -83,9 +100,7 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
             value: JSON.stringify(toolStruct),
           },
         ])
-        .then(() =>
-          socket.getConfig([{ type: "agent", key: "tool-index" }]),
-        )
+        .then(() => socket.getConfig([{ type: "agent", key: "tool-index" }]))
         .then((x) => {
           const tools = JSON.parse(x.values[0].value);
 
@@ -149,7 +164,35 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
 
   const onEditArg = (arg) => {
     setArgEdit(arg.name);
-  }
+  };
+
+  const addArgument = () => {
+    setArgs((x) => [
+      ...x,
+      {
+        name: "argname",
+        description: "???",
+        type: "string",
+      },
+    ]);
+  };
+
+  console.log(args);
+  const setArgAttr = (id, key, value) => {
+    console.log("setArgAttr", id, key, value);
+    const newArgs = args.map((arg, ix) => {
+      if (id == ix) {
+        return {
+          ...arg,
+          [key]: value,
+        };
+      } else {
+        return arg;
+      }
+    });
+    setArgs(newArgs);
+    console.log(newArgs);
+  };
 
   const onDelete = () => {
     // Shouldn't happen, but can't delete a tool that hasn't been created
@@ -223,7 +266,6 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
               )}
             </Dialog.Header>
             <Dialog.Body>
-
               {create && (
                 <TextField
                   label="Tool ID"
@@ -250,46 +292,56 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
                 contentRef={contentRef}
               />
 
-              <Table.Root interactive>
+              <Table.Root interactive size="xs">
                 <Table.Header>
                   <Table.Row>
-                    <Table.ColumnHeader>Name</Table.ColumnHeader>  
+                    <Table.ColumnHeader>Name</Table.ColumnHeader>
                     <Table.ColumnHeader>Description</Table.ColumnHeader>
                     <Table.ColumnHeader>Type</Table.ColumnHeader>
                   </Table.Row>
                 </Table.Header>
                 <Table.Body>
-                  {args.map(
-                    (arg) =>
-                      <Table.Row key={arg.name}
-                        onClick={ () => onEditArg(arg)}
-                      >
-                        <Table.Cell>
-                          <Editable.Root
-                            value={arg.name}
-                            onValueChange={ (e) => console.log(e) }
-                          >
-                            <Editable.Preview />
-                            <Editable.Input />
-                          </Editable.Root>
-                        </Table.Cell>
-                        <Table.Cell>
-                          <Editable.Root
-                            value={arg.description}
-                            onValueChange={ (e) => console.log(e) }
-                          >
-                            <Editable.Preview />
-                            <Editable.Input />
-                          </Editable.Root>
-                        </Table.Cell>
-                        <Table.Cell>
-                          {arg.type}
-                        </Table.Cell>
-                      </Table.Row>
-                  )}
+                  {args.map((arg, ix) => (
+                    <Table.Row key={ix} onClick={() => onEditArg(arg)}>
+                      <Table.Cell width="20%">
+                        <Editable.Root
+                          autoResize={false}
+                          value={arg.name}
+                          onValueChange={(v) =>
+                            setArgAttr(ix, "name", v.value)
+                          }
+                        >
+                          <Editable.Preview />
+                          <Editable.Input />
+                        </Editable.Root>
+                      </Table.Cell>
+                      <Table.Cell width="50%">
+                        <Editable.Root
+                          value={arg.description}
+                          onValueChange={(v) =>
+                            setArgAttr(ix, "description", v.value)
+                          }
+                        >
+                          <Editable.Preview />
+                          <Editable.Input />
+                        </Editable.Root>
+                      </Table.Cell>
+                      <Table.Cell>{arg.type}</Table.Cell>
+                    </Table.Row>
+                  ))}
                 </Table.Body>
               </Table.Root>
 
+              <Box mt={5}>
+                <Button
+                  variant="solid"
+                  onClick={() => addArgument()}
+                  colorPalette="brand"
+                  size="xs"
+                >
+                  <Plus /> add argument
+                </Button>
+              </Box>
             </Dialog.Body>
             <Dialog.Footer>
               <Button variant="outline" onClick={() => onOpenChange(false)}>

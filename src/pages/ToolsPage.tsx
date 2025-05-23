@@ -3,7 +3,7 @@ import { Hammer } from "lucide-react";
 
 import CenterSpinner from "../components/common/CenterSpinner";
 import PageHeader from "../components/common/PageHeader";
-import ToolTable from '../components/agents/ToolTable';
+import ToolTable from "../components/agents/ToolTable";
 
 const ToolsPage = () => {
   return (
@@ -20,4 +20,3 @@ const ToolsPage = () => {
 };
 
 export default ToolsPage;
-

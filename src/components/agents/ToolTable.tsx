@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-import { Table, Code, Tabs, Box } from "@chakra-ui/react";
+import { Table } from "@chakra-ui/react";
 
 import EditDialog from "./EditDialog";
 import Controls from "./Controls";
@@ -15,11 +15,8 @@ const ToolTable = () => {
 
   const refresh = () => {
     socket
-      .getConfig([
-        { type: "agent", key: "tool-index" },
-      ])
+      .getConfig([{ type: "agent", key: "tool-index" }])
       .then((res) => {
-
         const toolIds = JSON.parse(res.values[0].value);
 
         return socket
@@ -51,12 +48,8 @@ const ToolTable = () => {
 
   useEffect(() => {
     socket
-      .getConfig([
-        { type: "agent", key: "tool-index" },
-      ])
+      .getConfig([{ type: "agent", key: "tool-index" }])
       .then((res) => {
-
-
         const toolIds = JSON.parse(res.values[0].value);
 
         return socket
@@ -105,35 +98,35 @@ const ToolTable = () => {
         create={false}
         id={selected}
       />
-          <Table.Root
-            sx={{ minWidth: 450 }}
-            aria-label="table of entities"
-            interactive
-          >
-            <Table.Header>
-              <Table.Row>
-                <Table.ColumnHeader>Tool ID</Table.ColumnHeader>
-                <Table.ColumnHeader>Description</Table.ColumnHeader>
-                <Table.ColumnHeader>Type</Table.ColumnHeader>
-              </Table.Row>
-            </Table.Header>
-            <Table.Body>
-              {tools.map((row, ix) => (
-                <Table.Row key={ix} onClick={() => onSelect(row)}>
-                  <Table.Cell component="th" scope="row" verticalAlign="top">
-                    {row[0]}
-                  </Table.Cell>
-                  <Table.Cell verticalAlign="top">
-                    {row[1] ? row[1].description : ""}
-                  </Table.Cell>
-                  <Table.Cell verticalAlign="top">
-                    {row[1] ? row[1].type : ""}
-                  </Table.Cell>
-                </Table.Row>
-              ))}
-            </Table.Body>
-          </Table.Root>
-          <Controls onUpdate={refresh} />
+      <Table.Root
+        sx={{ minWidth: 450 }}
+        aria-label="table of entities"
+        interactive
+      >
+        <Table.Header>
+          <Table.Row>
+            <Table.ColumnHeader>Tool ID</Table.ColumnHeader>
+            <Table.ColumnHeader>Description</Table.ColumnHeader>
+            <Table.ColumnHeader>Type</Table.ColumnHeader>
+          </Table.Row>
+        </Table.Header>
+        <Table.Body>
+          {tools.map((row, ix) => (
+            <Table.Row key={ix} onClick={() => onSelect(row)}>
+              <Table.Cell component="th" scope="row" verticalAlign="top">
+                {row[0]}
+              </Table.Cell>
+              <Table.Cell verticalAlign="top">
+                {row[1] ? row[1].description : ""}
+              </Table.Cell>
+              <Table.Cell verticalAlign="top">
+                {row[1] ? row[1].type : ""}
+              </Table.Cell>
+            </Table.Row>
+          ))}
+        </Table.Body>
+      </Table.Root>
+      <Controls onUpdate={refresh} />
     </>
   );
 };
