@@ -2,7 +2,10 @@ import React, { useEffect, useState, useRef } from "react";
 
 import { Trash, SendHorizontal } from "lucide-react";
 
-import { Portal, Button, Dialog, Box, CloseButton } from "@chakra-ui/react";
+import {
+  Portal, Button, Dialog, Box, CloseButton, Popover, Input, Table,
+  Editable
+} from "@chakra-ui/react";
 
 import { useSocket } from "../../api/trustgraph/socket";
 import SelectField from "../common/SelectField";
@@ -17,6 +20,7 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
   const [description, setDescription] = useState("");
   const [type, setType] = useState("");
   const [args, setArgs] = useState([]);
+  const [argEdit, setArgEdit] = useState("");
 
   useEffect(() => {
 
@@ -31,7 +35,7 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
         // Store flow information
         setDescription(x.description);
         setType(x.type);
-        setArgs(x.args);
+        setArgs(x.arguments);
       })
       .catch((e) => {
         console.log("Error:", e);
@@ -143,6 +147,10 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
     }
   };
 
+  const onEditArg = (arg) => {
+    setArgEdit(arg.name);
+  }
+
   const onDelete = () => {
     // Shouldn't happen, but can't delete a tool that hasn't been created
     // yet
@@ -215,6 +223,7 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
               )}
             </Dialog.Header>
             <Dialog.Body>
+
               {create && (
                 <TextField
                   label="Tool ID"
@@ -232,6 +241,54 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
                 onValueChange={(v) => setDescription(v)}
                 required={true}
               />
+
+              <SelectField
+                label="Tool type"
+                items={typeOptions}
+                value={type}
+                onValueChange={(v) => setType(v)}
+                contentRef={contentRef}
+              />
+
+              <Table.Root interactive>
+                <Table.Header>
+                  <Table.Row>
+                    <Table.ColumnHeader>Name</Table.ColumnHeader>  
+                    <Table.ColumnHeader>Description</Table.ColumnHeader>
+                    <Table.ColumnHeader>Type</Table.ColumnHeader>
+                  </Table.Row>
+                </Table.Header>
+                <Table.Body>
+                  {args.map(
+                    (arg) =>
+                      <Table.Row key={arg.name}
+                        onClick={ () => onEditArg(arg)}
+                      >
+                        <Table.Cell>
+                          <Editable.Root
+                            value={arg.name}
+                            onValueChange={ (e) => console.log(e) }
+                          >
+                            <Editable.Preview />
+                            <Editable.Input />
+                          </Editable.Root>
+                        </Table.Cell>
+                        <Table.Cell>
+                          <Editable.Root
+                            value={arg.description}
+                            onValueChange={ (e) => console.log(e) }
+                          >
+                            <Editable.Preview />
+                            <Editable.Input />
+                          </Editable.Root>
+                        </Table.Cell>
+                        <Table.Cell>
+                          {arg.type}
+                        </Table.Cell>
+                      </Table.Row>
+                  )}
+                </Table.Body>
+              </Table.Root>
 
             </Dialog.Body>
             <Dialog.Footer>

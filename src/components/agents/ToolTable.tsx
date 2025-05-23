@@ -114,6 +114,7 @@ const ToolTable = () => {
               <Table.Row>
                 <Table.ColumnHeader>Tool ID</Table.ColumnHeader>
                 <Table.ColumnHeader>Description</Table.ColumnHeader>
+                <Table.ColumnHeader>Type</Table.ColumnHeader>
               </Table.Row>
             </Table.Header>
             <Table.Body>
@@ -124,6 +125,9 @@ const ToolTable = () => {
                   </Table.Cell>
                   <Table.Cell verticalAlign="top">
                     {row[1] ? row[1].description : ""}
+                  </Table.Cell>
+                  <Table.Cell verticalAlign="top">
+                    {row[1] ? row[1].type : ""}
                   </Table.Cell>
                 </Table.Row>
               ))}
