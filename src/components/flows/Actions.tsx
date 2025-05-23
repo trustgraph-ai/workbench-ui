@@ -1,5 +1,7 @@
 import { Check } from "lucide-react";
 
+import { Trash } from 'lucide-react';
+
 import { ActionBar, Portal, Button } from "@chakra-ui/react";
 
 const Actions = ({ selectedCount, onDelete }) => {
@@ -22,7 +24,7 @@ const Actions = ({ selectedCount, onDelete }) => {
               size="sm"
               onClick={onDelete}
             >
-              Delete
+              <Trash /> Delete
             </Button>
           </ActionBar.Content>
         </ActionBar.Positioner>

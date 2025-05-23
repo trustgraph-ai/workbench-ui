@@ -1,5 +1,7 @@
 import { Check } from "lucide-react";
 
+import { SquareChevronRight, Pencil, Trash } from 'lucide-react';
+
 import { ActionBar, Portal, Button } from "@chakra-ui/react";
 
 const Actions = ({ selectedCount, onSubmit, onEdit, onDelete }) => {
@@ -17,11 +19,11 @@ const Actions = ({ selectedCount, onSubmit, onEdit, onDelete }) => {
             </ActionBar.SelectionTrigger>
             <ActionBar.Separator />
             <Button variant="outline" size="sm" onClick={onSubmit}>
-              Submit
+              <SquareChevronRight /> Submit
             </Button>
             {selectedCount == 1 && (
               <Button variant="outline" size="sm" onClick={onEdit}>
-                Edit
+                <Pencil /> Edit
               </Button>
             )}
             <Button
@@ -30,7 +32,7 @@ const Actions = ({ selectedCount, onSubmit, onEdit, onDelete }) => {
               size="sm"
               onClick={onDelete}
             >
-              Delete
+              <Trash /> Delete
             </Button>
           </ActionBar.Content>
         </ActionBar.Positioner>

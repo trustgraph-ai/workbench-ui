@@ -1,5 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 
+import { SendHorizontal } from 'lucide-react';
+
 import {
   List,
   Portal,
@@ -104,7 +106,11 @@ const SubmitDialog = ({ open, onOpenChange, onSubmit, docs }) => {
               <Button variant="outline" onClick={() => onOpenChange(false)}>
                 Cancel
               </Button>
-              <Button onClick={() => onSubmit(flow, tags)}>Submit</Button>
+              <Button onClick={() => onSubmit(flow, tags)}
+                colorPalette="brand"
+              >
+                <SendHorizontal /> Submit
+              </Button>
             </Dialog.Footer>
             <Dialog.CloseTrigger asChild>
               <CloseButton size="sm" />

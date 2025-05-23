@@ -1,5 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 
+import { Plus } from 'lucide-react';
+
 import { Portal, Button, Dialog, Box, CloseButton } from "@chakra-ui/react";
 
 import { useSocket } from "../../api/trustgraph/socket";
@@ -102,7 +104,7 @@ const CreateDialog = ({ open, onOpenChange, onSubmit }) => {
                 onClick={() => onSubmit(flowClass, id, description)}
                 colorPalette="brand"
               >
-                Create
+                <Plus /> Create
               </Button>
             </Dialog.Footer>
             <Dialog.CloseTrigger asChild>
