@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState, useRef } from "react";
 
 import { Trash, SendHorizontal, Plus } from "lucide-react";
@@ -10,6 +11,11 @@ import {
   CloseButton,
   Table,
   Editable,
+  Popover,
+  Text,
+  Input,
+  RadioGroup,
+  Stack,
 } from "@chakra-ui/react";
 
 import { useSocket } from "../../api/trustgraph/socket";
@@ -327,18 +333,42 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
                       </Table.Cell>
                       <Table.Cell onClick={ () => { setEditArgIx(ix)} } >
                         { (editArgIx == ix) &&
-              <SelectField
-                label="Argument type"
-                items={argTypeOptions}
-                value={arg.type}
-                onValueChange={
-                  (v) => {
-                    setArgAttr(ix, "type", v);
-                    setEditArgIx(-1);
-                  }
-                }
-                contentRef={contentRef}
-              />
+
+  <Popover.Root>
+      <Popover.Trigger asChild>
+        <Button size="sm" variant="outline">
+          Click me
+        </Button>
+      </Popover.Trigger>
+      <Portal>
+        <Popover.Positioner>
+          <Popover.Content>
+            <Popover.Arrow />
+            <Popover.Body>
+              <Popover.Title fontWeight="medium">Argument type</Popover.Title>
+              
+<RadioGroup.Root defaultValue="number" mt={4}>
+      <Stack gap="6" >
+          <RadioGroup.Item value={'string'}>
+            <RadioGroup.ItemHiddenInput />
+            <RadioGroup.ItemIndicator />
+            <RadioGroup.ItemText>string</RadioGroup.ItemText>
+          </RadioGroup.Item>
+          <RadioGroup.Item value={'number'}>
+            <RadioGroup.ItemHiddenInput />
+            <RadioGroup.ItemIndicator />
+            <RadioGroup.ItemText>number</RadioGroup.ItemText>
+          </RadioGroup.Item>
+      </Stack>
+    </RadioGroup.Root>
+
+
+            </Popover.Body>
+          </Popover.Content>
+        </Popover.Positioner>
+      </Portal>
+    </Popover.Root>
+
 
                         }
                         { (editArgIx != ix) &&
