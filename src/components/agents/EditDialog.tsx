@@ -27,7 +27,7 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
 
   const [newId, setNewId] = useState("");
   const [description, setDescription] = useState("");
-  const [type, setType] = useState("");
+  const [type, setType] = useState("knowledge-query");
   const [args, setArgs] = useState([]);
 
   const [editArgIx, setEditArgIx] = useState(-1);
@@ -263,7 +263,7 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
               )}
 
               <TextAreaField
-                label="Description"
+                label="Description of the tool"
                 placeholder="Description"
                 value={description}
                 onValueChange={(v) => setDescription(v)}
