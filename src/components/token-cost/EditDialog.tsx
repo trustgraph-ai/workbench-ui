@@ -1,11 +1,10 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 
 import { Trash, SendHorizontal } from "lucide-react";
 
-import { Portal, Button, Dialog, Box, CloseButton } from "@chakra-ui/react";
+import { Portal, Button, Dialog, CloseButton } from "@chakra-ui/react";
 
 import { useSocket } from "../../api/trustgraph/socket";
-import SelectField from "../common/SelectField";
 import TextField from "../common/TextField";
 import { toaster } from "../ui/toaster";
 
@@ -17,7 +16,6 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
   const [output, setOutput] = useState(0);
 
   useEffect(() => {
-
     if (!id) return;
 
     socket
@@ -40,7 +38,6 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
   }, [id, create, socket]);
 
   const onEdit = () => {
-
     // Build the prompt structure
     const cost = {
       input_price: input / 1000000,
@@ -115,12 +112,13 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
     // 2) Write back
     // 3) Delete the prompt
 
-    socket.deleteConfig([
-          {
-            type: "token-costs",
-            key: id,
-          },
-        ])
+    socket
+      .deleteConfig([
+        {
+          type: "token-costs",
+          key: id,
+        },
+      ])
       .then(() => {
         toaster.create({
           title: "Model cost deleted",
@@ -185,7 +183,6 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
                 onValueChange={(v) => setOutput(v)}
                 required={true}
               />
-
             </Dialog.Body>
             <Dialog.Footer>
               <Button variant="outline" onClick={() => onOpenChange(false)}>
@@ -219,4 +216,3 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
 };
 
 export default EditDialog;
-

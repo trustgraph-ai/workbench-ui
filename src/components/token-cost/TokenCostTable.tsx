@@ -30,7 +30,7 @@ const TokenCostTable = () => {
   const onComplete = () => {
     setSelected("");
     refresh();
-  }
+  };
 
   return (
     <>
@@ -41,25 +41,29 @@ const TokenCostTable = () => {
         create={false}
         id={selected}
       />
-    <Table.Root interactive>
-      <Table.Header>
-        <Table.Row>
-          <Table.ColumnHeader>Model</Table.ColumnHeader>
-          <Table.ColumnHeader>Input ($/1Mt)</Table.ColumnHeader>
-          <Table.ColumnHeader>Output ($/1Mt)</Table.ColumnHeader>
-        </Table.Row>
-      </Table.Header>
-      <Table.Body>
-        {view.map((row: Row) => (
-          <Table.Row key={row.model} onClick={() => setSelected(row.model)}>
-            <Table.Cell component="th" scope="row">
-              {row.model}
-            </Table.Cell>
-            <Table.Cell>{(row.input_price * 1000000).toFixed(3)}</Table.Cell>
-            <Table.Cell>{(row.output_price * 1000000).toFixed(3)}</Table.Cell>
+      <Table.Root interactive>
+        <Table.Header>
+          <Table.Row>
+            <Table.ColumnHeader>Model</Table.ColumnHeader>
+            <Table.ColumnHeader>Input ($/1Mt)</Table.ColumnHeader>
+            <Table.ColumnHeader>Output ($/1Mt)</Table.ColumnHeader>
           </Table.Row>
-        ))}
-      </Table.Body>
+        </Table.Header>
+        <Table.Body>
+          {view.map((row: Row) => (
+            <Table.Row key={row.model} onClick={() => setSelected(row.model)}>
+              <Table.Cell component="th" scope="row">
+                {row.model}
+              </Table.Cell>
+              <Table.Cell>
+                {(row.input_price * 1000000).toFixed(3)}
+              </Table.Cell>
+              <Table.Cell>
+                {(row.output_price * 1000000).toFixed(3)}
+              </Table.Cell>
+            </Table.Row>
+          ))}
+        </Table.Body>
       </Table.Root>
       <Controls onUpdate={refresh} />
     </>
@@ -67,4 +71,3 @@ const TokenCostTable = () => {
 };
 
 export default TokenCostTable;
-

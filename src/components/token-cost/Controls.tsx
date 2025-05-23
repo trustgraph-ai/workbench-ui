@@ -38,4 +38,3 @@ const Controls = ({ onUpdate }) => {
 };
 
 export default Controls;
-
