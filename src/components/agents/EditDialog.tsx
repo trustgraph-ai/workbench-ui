@@ -334,20 +334,17 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
                       <Table.Cell onClick={ () => { setEditArgIx(ix)} } >
                         { (editArgIx == ix) &&
 
-  <Popover.Root>
+  <Popover.Root open={editArgIx==ix} onOpenChange={ (e) => { if (e) setEditArgIx(-1)}}>
       <Popover.Trigger asChild>
-        <Button size="sm" variant="outline">
-          Click me
-        </Button>
+                                <Text>{arg.type}</Text>
       </Popover.Trigger>
-      <Portal>
         <Popover.Positioner>
           <Popover.Content>
             <Popover.Arrow />
             <Popover.Body>
-              <Popover.Title fontWeight="medium">Argument type</Popover.Title>
-              
-<RadioGroup.Root defaultValue="number" mt={4}>
+<RadioGroup.Root value={args[ix].type}
+onValueChange={ (v) => setArgAttr(ix, "type", v.value) }
+>
       <Stack gap="6" >
           <RadioGroup.Item value={'string'}>
             <RadioGroup.ItemHiddenInput />
@@ -366,7 +363,6 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
             </Popover.Body>
           </Popover.Content>
         </Popover.Positioner>
-      </Portal>
     </Popover.Root>
 
 
