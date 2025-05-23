@@ -26,6 +26,9 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
   const [type, setType] = useState("");
   const [args, setArgs] = useState([]);
 
+
+  const [editArgIx, setEditArgIx] = useState(-1);
+
   useEffect(() => {
     if (!id) return;
 
@@ -160,10 +163,6 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
           });
         });
     }
-  };
-
-  const onEditArg = (arg) => {
-    setArgEdit(arg.name);
   };
 
   const addArgument = () => {
@@ -302,7 +301,7 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
                 </Table.Header>
                 <Table.Body>
                   {args.map((arg, ix) => (
-                    <Table.Row key={ix} onClick={() => onEditArg(arg)}>
+                    <Table.Row key={ix}>
                       <Table.Cell width="20%">
                         <Editable.Root
                           autoResize={false}
@@ -326,7 +325,26 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
                           <Editable.Input />
                         </Editable.Root>
                       </Table.Cell>
-                      <Table.Cell>{arg.type}</Table.Cell>
+                      <Table.Cell onClick={ () => { setEditArgIx(ix)} } >
+                        { (editArgIx == ix) &&
+              <SelectField
+                label="Argument type"
+                items={argTypeOptions}
+                value={arg.type}
+                onValueChange={
+                  (v) => {
+                    setArgAttr(ix, "type", v);
+                    setEditArgIx(-1);
+                  }
+                }
+                contentRef={contentRef}
+              />
+
+                        }
+                        { (editArgIx != ix) &&
+                          arg.type
+                        }
+                      </Table.Cell>
                     </Table.Row>
                   ))}
                 </Table.Body>
