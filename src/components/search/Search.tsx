@@ -1,5 +1,4 @@
 import { toaster } from "../ui/toaster";
-
 import SearchInput from "./SearchInput";
 import Results from "./Results";
 import { useProgressStateStore } from "../../state/ProgressState";

@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
-
 import { Rotate3d, ArrowBigRight } from "lucide-react";
 
 import { Box, Alert, Button, Stack, Heading, HStack } from "@chakra-ui/react";
 
+import { toaster } from "../ui/toaster";
 import { useSocket } from "../../api/trustgraph/socket";
 import { useWorkbenchStateStore } from "../../state/WorkbenchState";
 import { getTriples } from "../../state/knowledge-graph";
 import { useProgressStateStore } from "../../state/ProgressState";
-
 import EntityHelp from "./EntityHelp";
 import ElementNode from "./ElementNode";
 
@@ -41,6 +40,10 @@ const EntityDetail = () => {
       .catch((err) => {
         console.log("Error: ", err);
         removeActivity(act);
+        toaster.create({
+          title: "Error: " + err.toString(),
+          type: "error",
+        });
       });
   }, [selected, socket, addActivity, removeActivity]);
 
@@ -57,10 +60,6 @@ const EntityDetail = () => {
     );
   }
 
-  const graphView = () => {
-    navigate("/graph");
-  };
-
   if (!detail)
     return (
       <Box>
@@ -72,6 +71,10 @@ const EntityDetail = () => {
         </Alert.Root>
       </Box>
     );
+
+  const graphView = () => {
+    navigate("/graph");
+  };
 
   return (
     <>
