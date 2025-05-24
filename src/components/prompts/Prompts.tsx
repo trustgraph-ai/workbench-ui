@@ -2,12 +2,19 @@ import React, { useEffect, useState } from "react";
 
 import { Table, Code, Tabs, Box } from "@chakra-ui/react";
 
+import { useProgressStateStore } from "../../state/ProgressState";
 import EditDialog from "./EditDialog";
 import PromptControls from "./PromptControls";
 import { useSocket } from "../../api/trustgraph/socket";
 import EditSystemPrompt from "./EditSystemPrompt";
+import { toaster } from "../ui/toaster";
 
 const PromptTable = () => {
+  const addActivity = useProgressStateStore((state) => state.addActivity);
+  const removeActivity = useProgressStateStore(
+    (state) => state.removeActivity,
+  );
+
   const socket = useSocket();
 
   const [systemPrompt, setSystemPrompt] = useState<string>("");
@@ -16,7 +23,9 @@ const PromptTable = () => {
   const [selected, setSelected] = useState("");
   const [systemEdit, setSystemEdit] = useState(false);
 
-  const refresh = () => {
+  const refresh = (socket) => {
+    const act = "Load prompts";
+    addActivity(act);
     socket
       .getConfig([
         { type: "prompt", key: "system" },
@@ -51,47 +60,22 @@ const PromptTable = () => {
         const config = p.config.map((c, ix) => [promptIds[ix], c]);
         return config;
       })
-      .then((config) => setPrompts(config));
+      .then((config) => {
+        removeActivity(act);
+        setPrompts(config);
+      })
+      .catch((err) => {
+        removeActivity(act);
+        console.log("Error:", err);
+        toaster.create({
+          title: "Error: " + err.toString(),
+          type: "error",
+        });
+      });
   };
 
   useEffect(() => {
-    socket
-      .getConfig([
-        { type: "prompt", key: "system" },
-        { type: "prompt", key: "template-index" },
-      ])
-      .then((res) => {
-        setSystemPrompt(JSON.parse(res.values[0].value));
-
-        console.log("System:", res.values[0].value);
-
-        const promptIds = JSON.parse(res.values[1].value);
-
-        return socket
-          .getConfig(
-            promptIds.map((id) => {
-              return {
-                type: "prompt",
-                key: "template." + id,
-              };
-            }),
-          )
-          .then((r) => {
-            return { prompts: promptIds, config: r.values };
-          });
-      })
-      .then((p) => {
-        return {
-          prompts: p.prompts,
-          config: p.config.map((c) => JSON.parse(c.value)),
-        };
-      })
-      .then((p) => {
-        const promptIds = p.prompts;
-        const config = p.config.map((c, ix) => [promptIds[ix], c]);
-        return config;
-      })
-      .then((config) => setPrompts(config));
+    refresh(socket);
   }, [socket]);
 
   const onSelect = (row) => {
@@ -102,7 +86,7 @@ const PromptTable = () => {
     console.log("COMPLETE");
     setSelected("");
     setSystemEdit(false);
-    refresh();
+    refresh(socket);
   };
 
   const onSystemEdit = () => {
@@ -165,7 +149,7 @@ const PromptTable = () => {
               ))}
             </Table.Body>
           </Table.Root>
-          <PromptControls onUpdate={refresh} />
+          <PromptControls onUpdate={() => refresh(socket)} />
         </Tabs.Content>
         <Tabs.Content value="system">
           <Box

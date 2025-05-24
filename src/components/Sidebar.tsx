@@ -24,7 +24,7 @@ import {
   Rotate3d,
   FileUp,
   Workflow,
-  ScrollText,
+  //  ScrollText,
   LibraryBig,
   BrainCircuit,
   CircleArrowRight,
@@ -111,7 +111,9 @@ const Sidebar = () => {
         <NavItem to="/graph" icon={Rotate3d} label="Graph Visualizer" />
         <NavItem to="/load" icon={FileUp} label="Document Loader" />
         <NavItem to="/library" icon={LibraryBig} label="Library" />
+        {/*
         <NavItem to="/flow-classes" icon={ScrollText} label="Flow Classes" />
+*/}
         <NavItem to="/flows" icon={Workflow} label="Flows" />
         <NavItem to="/kc" icon={BrainCircuit} label="Knowledge Cores" />
         <NavItem to="/procs" icon={CircleArrowRight} label="Submissions" />
