@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-import { Flex, Heading, Text, Box, HStack } from "@chakra-ui/react";
+import { Flex, Heading, Text, Box, HStack, Stack } from "@chakra-ui/react";
 
 import ColorModeToggle from "../color-mode-toggle";
 import { useSessionStore } from "../../state/session";
@@ -16,9 +16,8 @@ const PageHeader: React.FC<PageHeaderProps> = ({
   description,
   icon,
 }) => {
-
-  const [flows, setFlows] = useState([]);
-  const [selectedFlow, setSelectedFlow] = useState(null);
+  const flowId = useSessionStore((state) => state.flowId);
+  const flow = useSessionStore((state) => state.flow);
 
   return (
     <Flex
@@ -51,10 +50,19 @@ const PageHeader: React.FC<PageHeaderProps> = ({
       </Flex>
       <Box>
         <HStack>
-          <Box mr={5}>
-            {selectedFlow ? selectedFlow[0] : "<none>"}
-            {selectedFlow ? " : " + selectedFlow[1].description : "<none>"}
-          </Box>
+          <Stack p={2} mr={8}
+            _hover={{
+              backgroundColor: "bg.emphasized",
+              color: "brand.solid",
+            }}
+          >
+            <Box>
+              <Text fontWeight="bold">{flowId ? flowId : "<none>"}</Text>
+            </Box>
+            <Box>
+              <Text textStyle="xs">{flow ? flow.description : "<none>"}</Text>
+            </Box>
+          </Stack>
           <ColorModeToggle />
         </HStack>
       </Box>

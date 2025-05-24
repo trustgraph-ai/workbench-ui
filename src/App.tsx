@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 
 import { Box } from "@chakra-ui/react";
@@ -29,18 +28,22 @@ import { useProgressStateStore } from "./state/progress";
 import { useSessionStore } from "./state/session";
 
 const App = () => {
-
   const socket = useSocket();
+  const [flows, setFlows] = useState([]);
+  const [selectedFlow, setSelectedFlow] = useState(null);
 
   const addActivity = useProgressStateStore((state) => state.addActivity);
   const removeActivity = useProgressStateStore(
     (state) => state.removeActivity,
   );
 
+  const flowId = useSessionStore((state) => state.flowId);
   const flow = useSessionStore((state) => state.flow);
+
+  const setFlowId = useSessionStore((state) => state.setFlowId);
   const setFlow = useSessionStore((state) => state.setFlow);
 
-  const refresh = (socket) => {
+  useEffect(() => {
     const act = "Load flows";
     addActivity(act);
     socket
@@ -51,27 +54,22 @@ const App = () => {
         );
       })
       .then((flows) => {
-        console.log("UPDATE HDR");
         removeActivity(act);
-
-        setFlows(flows);
 
         const flowIds = flows.map((fl) => fl[0]);
 
-        if (flowIds.includes(flow)) {
-          setSelectedFlow(flows.filter((fl) => fl[0] != flow)[0]);
+        if (flowIds.includes("default")) {
+          setFlowId("default");
+          setFlow(flows.filter((fl) => fl[0] != flow)[0][1]);
         } else {
-          setSelectedFlow(null);
+          setFlowId(flows[0][0]);
+          setFlow(flows[0][1]);
         }
       })
       .catch((err) => {
         removeActivity(act);
         console.log("Error:", err);
       });
-  };
-
-  useEffect(() => {
-    refresh(socket);
   }, [socket]);
 
   return (
