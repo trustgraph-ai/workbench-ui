@@ -2,19 +2,38 @@ import React, { useEffect, useState } from "react";
 
 import { Table, Tag } from "@chakra-ui/react";
 
+import { useProgressStateStore } from "../../state/ProgressState";
 import { useSocket } from "../../api/trustgraph/socket";
 import { timeString } from "../../utils/time-string.ts";
+import { toaster } from "../ui/toaster";
 
 const ProcessingTable = () => {
+  const addActivity = useProgressStateStore((state) => state.addActivity);
+  const removeActivity = useProgressStateStore(
+    (state) => state.removeActivity,
+  );
   const [view, setView] = useState([]);
 
   const socket = useSocket();
 
   useEffect(() => {
+    const act = "Load submissions";
+    addActivity(act);
     socket
       .getLibraryProcessing()
-      .then((x) => setView(x))
-      .catch((err) => console.log("Error:", err));
+      .then((x) => {
+        setView(x);
+        removeActivity(act);
+      })
+      .catch((err) => {
+        console.log("Error:", err);
+        removeActivity(act);
+        console.log(err);
+        toaster.create({
+          title: "Error: " + err.toString(),
+          type: "error",
+        });
+      });
   }, [socket]);
 
   return (
