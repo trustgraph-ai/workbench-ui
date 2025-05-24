@@ -2,11 +2,10 @@ import React from "react";
 
 import { Search as SearchIcon } from "lucide-react";
 
-import Search from '../components/search/Search';
+import Search from "../components/search/Search";
 import PageHeader from "../components/common/PageHeader";
 
 const SearchPage = () => {
-
   return (
     <>
       <PageHeader
@@ -16,10 +15,8 @@ const SearchPage = () => {
       />
 
       <Search />
-
     </>
   );
 };
 
 export default SearchPage;
-
