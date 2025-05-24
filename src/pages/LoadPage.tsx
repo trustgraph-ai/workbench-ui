@@ -12,7 +12,6 @@ import Keywords from "../components/load/Keywords";
 import Operation from "../components/load/Operation";
 import Content from "../components/load/Content";
 import { useProgressStateStore } from "../state/progress";
-import CenterSpinner from "../components/common/CenterSpinner";
 import { useLoadStateStore } from "../state/load";
 import PageHeader from "../components/common/PageHeader";
 import { loadFile, loadText } from "../utils/document-load";
@@ -148,7 +147,6 @@ const Load = () => {
         submitFiles={() => onFilesSubmit()}
         submitText={() => onTextSubmit()}
       />
-      <CenterSpinner />
     </>
   );
 };

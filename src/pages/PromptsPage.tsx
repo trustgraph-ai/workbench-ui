@@ -1,6 +1,5 @@
 import { MessageCircleCode } from "lucide-react";
 
-import CenterSpinner from "../components/common/CenterSpinner";
 import PageHeader from "../components/common/PageHeader";
 import Prompts from "../components/prompts/Prompts";
 
@@ -13,7 +12,6 @@ const PromptsPage = () => {
         description="Define prompts which control AI interactions"
       />
       <Prompts />
-      <CenterSpinner />
     </>
   );
 };

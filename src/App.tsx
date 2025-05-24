@@ -17,8 +17,8 @@ import TokenCostPage from "./pages/TokenCostPage";
 import PromptsPage from "./pages/PromptsPage";
 import ToolsPage from "./pages/ToolsPage";
 
+import CenterSpinner from "./components/common/CenterSpinner";
 import Progress from "./components/common/Progress";
-
 import { Toaster } from "./components/ui/ToasterComponent";
 
 const App = () => {
@@ -48,6 +48,7 @@ const App = () => {
       </Router>
 
       <Progress />
+      <CenterSpinner />
       <Toaster />
     </Box>
   );

@@ -1,7 +1,6 @@
 import React from "react";
 import { Hammer } from "lucide-react";
 
-import CenterSpinner from "../components/common/CenterSpinner";
 import PageHeader from "../components/common/PageHeader";
 import Tools from "../components/agents/Tools";
 
@@ -14,7 +13,6 @@ const ToolsPage = () => {
         description="Agent tools equip the agent framework to work with your data"
       />
       <Tools />
-      <CenterSpinner />
     </>
   );
 };
