@@ -1,3 +1,6 @@
+
+import React, { useState, useEffect } from "react";
+
 import { Box } from "@chakra-ui/react";
 import { BrowserRouter as Router, Routes, Route } from "react-router";
 
@@ -21,7 +24,56 @@ import CenterSpinner from "./components/common/CenterSpinner";
 import Progress from "./components/common/Progress";
 import { Toaster } from "./components/ui/ToasterComponent";
 
+import { useSocket } from "./api/trustgraph/socket";
+import { useProgressStateStore } from "./state/progress";
+import { useSessionStore } from "./state/session";
+
 const App = () => {
+
+  const socket = useSocket();
+
+  const addActivity = useProgressStateStore((state) => state.addActivity);
+  const removeActivity = useProgressStateStore(
+    (state) => state.removeActivity,
+  );
+
+  const flow = useSessionStore((state) => state.flow);
+  const setFlow = useSessionStore((state) => state.setFlow);
+
+  const refresh = (socket) => {
+    const act = "Load flows";
+    addActivity(act);
+    socket
+      .getFlows()
+      .then((ids) => {
+        return Promise.all(
+          ids.map((id) => socket.getFlow(id).then((x) => [id, x])),
+        );
+      })
+      .then((flows) => {
+        console.log("UPDATE HDR");
+        removeActivity(act);
+
+        setFlows(flows);
+
+        const flowIds = flows.map((fl) => fl[0]);
+
+        if (flowIds.includes(flow)) {
+          setSelectedFlow(flows.filter((fl) => fl[0] != flow)[0]);
+        } else {
+          setSelectedFlow(null);
+        }
+      })
+      .catch((err) => {
+        removeActivity(act);
+        console.log("Error:", err);
+      });
+  };
+
+  useEffect(() => {
+    refresh(socket);
+  }, [socket]);
+
   return (
     <Box width="100%" minHeight="100vh" bg="colors.background">
       <Router>
