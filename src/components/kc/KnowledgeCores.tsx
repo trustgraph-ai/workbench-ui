@@ -2,42 +2,47 @@ import React, { useEffect, useState } from "react";
 
 import { Table, Checkbox } from "@chakra-ui/react";
 
+import { useProgressStateStore } from "../../state/ProgressState";
 import { toaster } from "../ui/toaster";
-
 import { useSocket } from "../../api/trustgraph/socket";
 import Actions from "./Actions";
 import streamSaver from "streamsaver";
 import { encode as msgpackEncode } from "@msgpack/msgpack";
 
 const KnowledgeCoresTable = () => {
+  const addActivity = useProgressStateStore((state) => state.addActivity);
+  const removeActivity = useProgressStateStore(
+    (state) => state.removeActivity,
+  );
   const [view, setView] = useState([]);
 
   const socket = useSocket();
 
-  const refresh = () => {
+  const refresh = (socket) => {
+    const act = "Load knowledge cores";
+    addActivity(act);
     socket
       .getKnowledgeCores()
-      .then((x) =>
+      .then((x) => {
+        removeActivity(act);
         setView(
           x.map((x) => {
             return { id: x };
           }),
-        ),
-      )
-      .catch((err) => console.log("Error:", err));
+        );
+      })
+      .catch((err) => {
+        console.log("Error:", err);
+        removeActivity(act);
+        toaster.create({
+          title: "Error: " + err.toString(),
+          type: "error",
+        });
+      });
   };
 
   useEffect(() => {
-    socket
-      .getKnowledgeCores()
-      .then((x) =>
-        setView(
-          x.map((x) => {
-            return { id: x };
-          }),
-        ),
-      )
-      .catch((err) => console.log("Error:", err));
+    refresh(socket);
   }, [socket]);
 
   const [selected, setSelected] = useState<Set<string>>(new Set());
