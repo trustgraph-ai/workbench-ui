@@ -13,7 +13,7 @@ import { useWorkbenchStateStore } from "../../state/WorkbenchState";
 import {
   createSubgraph,
   updateSubgraph,
-} from "../../state/knowledge-graph-viz";
+} from "../../utils/knowledge-graph-viz";
 import GraphHelp from "./GraphHelp";
 import { toaster } from "../ui/toaster";
 
