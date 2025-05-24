@@ -4,7 +4,7 @@ import { ScrollText } from "lucide-react";
 
 import CenterSpinner from "../components/common/CenterSpinner";
 import PageHeader from "../components/common/PageHeader";
-import FlowClassesTable from "../components/flow-classes/FlowClassesTable";
+import FlowClasses from "../components/flow-classes/FlowClasses";
 
 const FlowClassesPage = () => {
   return (
@@ -14,8 +14,8 @@ const FlowClassesPage = () => {
         title="Flow Classes"
         description="Managing the dataflow definitions"
       />
-      <FlowClassesTable />
       <CenterSpinner />
+      <FlowClasses />
     </>
   );
 };
