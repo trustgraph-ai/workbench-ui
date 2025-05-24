@@ -2,7 +2,7 @@ import React from "react";
 
 import TextBuffer from "./TextBuffer";
 import FileUpload from "./FileUpload";
-import { useLoadStateStore } from "../../state/LoadState";
+import { useLoadStateStore } from "../../state/load";
 
 const Content: React.FC<{
   submitFiles: () => void;

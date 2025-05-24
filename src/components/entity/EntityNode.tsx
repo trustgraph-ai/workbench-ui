@@ -2,7 +2,7 @@ import React from "react";
 
 import { Button, Tag } from "@chakra-ui/react";
 
-import { useWorkbenchStateStore } from "../../state/WorkbenchState";
+import { useWorkbenchStateStore } from "../../state/workbench";
 import { Value } from "../../state/Triple";
 
 const EntityNode: React.FC<{ value: Value }> = ({ value }) => {

@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from "uuid";
 
 import { Table, Tag, Checkbox } from "@chakra-ui/react";
 
-import { useProgressStateStore } from "../../state/ProgressState";
+import { useProgressStateStore } from "../../state/progress";
 import { Row } from "../state/row";
 import { toaster } from "../ui/toaster";
 import Actions from "./Actions";

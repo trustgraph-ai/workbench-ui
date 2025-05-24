@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from "react";
 
 import { Box, Text, VStack, HStack, Avatar, Spacer } from "@chakra-ui/react";
 
-import { useChatStateStore } from "../../state/ChatState";
+import { useChatStateStore } from "../../state/chat";
 import ChatMessage from "./ChatMessage";
 
 const ChatHistory = () => {

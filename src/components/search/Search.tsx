@@ -1,10 +1,10 @@
 import { toaster } from "../ui/toaster";
 import SearchInput from "./SearchInput";
 import Results from "./Results";
-import { useProgressStateStore } from "../../state/ProgressState";
+import { useProgressStateStore } from "../../state/progress";
+import { useWorkbenchStateStore } from "../../state/workbench";
+import { useSearchStateStore } from "../../state/search";
 import { useSocket } from "../../api/trustgraph/socket";
-import { useWorkbenchStateStore } from "../../state/WorkbenchState";
-import { useSearchStateStore } from "../../state/SearchState";
 import { vectorSearch } from "../../utils/vector-search";
 
 const Search = () => {

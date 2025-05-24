@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 
 import { Table, Code, Tabs, Box } from "@chakra-ui/react";
 
-import { useProgressStateStore } from "../../state/ProgressState";
+import { useProgressStateStore } from "../../state/progress";
 import EditDialog from "./EditDialog";
 import PromptControls from "./PromptControls";
 import { useSocket } from "../../api/trustgraph/socket";

@@ -4,7 +4,7 @@ import { Trash } from "lucide-react";
 
 import { Box, Table, IconButton } from "@chakra-ui/react";
 
-import { useLoadStateStore } from "../../state/LoadState";
+import { useLoadStateStore } from "../../state/load";
 
 const SelectedFiles = () => {
   const files = useLoadStateStore((state) => state.files);

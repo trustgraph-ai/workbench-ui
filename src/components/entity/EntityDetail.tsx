@@ -6,9 +6,9 @@ import { Box, Alert, Button, Stack, Heading, HStack } from "@chakra-ui/react";
 
 import { toaster } from "../ui/toaster";
 import { useSocket } from "../../api/trustgraph/socket";
-import { useWorkbenchStateStore } from "../../state/WorkbenchState";
+import { useWorkbenchStateStore } from "../../state/workbench";
 import { getTriples } from "../../utils/knowledge-graph";
-import { useProgressStateStore } from "../../state/ProgressState";
+import { useProgressStateStore } from "../../state/progress";
 import EntityHelp from "./EntityHelp";
 import ElementNode from "./ElementNode";
 

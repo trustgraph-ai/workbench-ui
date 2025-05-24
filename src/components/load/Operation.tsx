@@ -1,6 +1,6 @@
 import { Box, SegmentGroup, Field, HStack } from "@chakra-ui/react";
 
-import { useLoadStateStore } from "../../state/LoadState";
+import { useLoadStateStore } from "../../state/load";
 
 import LoadHelp from "./LoadHelp";
 

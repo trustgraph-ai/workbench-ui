@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 
 import { Table, Checkbox } from "@chakra-ui/react";
 
-import { useProgressStateStore } from "../../state/ProgressState";
+import { useProgressStateStore } from "../../state/progress";
 import { toaster } from "../ui/toaster";
 import { useSocket } from "../../api/trustgraph/socket";
 import Actions from "./Actions";

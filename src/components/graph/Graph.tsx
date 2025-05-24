@@ -7,9 +7,9 @@ import { useResizeDetector } from "react-resize-detector";
 import { ForceGraph3D } from "react-force-graph";
 import SpriteText from "three-spritetext";
 
-import { useProgressStateStore } from "../../state/ProgressState";
+import { useProgressStateStore } from "../../state/progress";
 import { useSocket } from "../../api/trustgraph/socket";
-import { useWorkbenchStateStore } from "../../state/WorkbenchState";
+import { useWorkbenchStateStore } from "../../state/workbench";
 import {
   createSubgraph,
   updateSubgraph,

@@ -4,7 +4,7 @@ import { Upload } from "lucide-react";
 
 import { Box, Button, Alert } from "@chakra-ui/react";
 
-import { useLoadStateStore } from "../../state/LoadState";
+import { useLoadStateStore } from "../../state/load";
 import TextAreaField from "../common/TextAreaField";
 
 interface TextBufferProps {
