@@ -3,7 +3,7 @@ import { CircleArrowRight } from "lucide-react";
 
 import CenterSpinner from "../components/common/CenterSpinner";
 import PageHeader from "../components/common/PageHeader";
-import ProcessingTable from "../components/processing/ProcessingTable";
+import Processing from "../components/processing/Processing";
 
 const ProcessingPage = () => {
   return (
@@ -13,7 +13,7 @@ const ProcessingPage = () => {
         title="Processing"
         description="Submit documents for processing"
       />
-      <ProcessingTable />
+      <Processing />
       <CenterSpinner />
     </>
   );

@@ -3,7 +3,7 @@ import { HandCoins } from "lucide-react";
 
 import CenterSpinner from "../components/common/CenterSpinner";
 import PageHeader from "../components/common/PageHeader";
-import TokenCostTable from "../components/token-cost/TokenCostTable";
+import TokenCosts from "../components/token-cost/TokenCosts";
 
 const TokenCostPage = () => {
   return (
@@ -13,7 +13,7 @@ const TokenCostPage = () => {
         title="Token Cost Configuration"
         description="Define the cost of AI token processing"
       />
-      <TokenCostTable />
+      <TokenCosts />
       <CenterSpinner />
     </>
   );

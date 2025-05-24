@@ -4,30 +4,38 @@ import { v4 as uuidv4 } from "uuid";
 
 import { Table, Tag, Checkbox } from "@chakra-ui/react";
 
+import { useProgressStateStore } from "../../state/ProgressState";
 import { Row } from "../state/row";
 import { toaster } from "../ui/toaster";
-
 import Actions from "./Actions";
 import SubmitDialog from "./SubmitDialog";
-
 import { useSocket } from "../../api/trustgraph/socket";
 import { timeString } from "../../utils/time-string.ts";
 
 const DocumentTable = () => {
+  const addActivity = useProgressStateStore((state) => state.addActivity);
+  const removeActivity = useProgressStateStore(
+    (state) => state.removeActivity,
+  );
+
   const [view, setView] = useState([]);
-
   const [selected, setSelected] = useState<Set<string>>(new Set());
-
   const [submitOpen, setSubmitOpen] = useState(false);
 
   const socket = useSocket();
 
   useEffect(() => {
+    const act = "Load library";
+    addActivity(act);
     socket
       .getLibraryDocuments()
-      .then((x) => setView(x))
+      .then((x) => {
+        setView(x);
+        removeActivity(act);
+      })
       .catch((err) => {
         console.log("Error:", err);
+        removeAct(act);
         toaster.create({
           title: "Error: " + err.toString(),
           type: "error",

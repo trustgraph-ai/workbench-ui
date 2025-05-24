@@ -2,34 +2,50 @@ import React, { useEffect, useState } from "react";
 
 import { Table } from "@chakra-ui/react";
 
+import { useProgressStateStore } from "../../state/ProgressState";
 import { useSocket } from "../../api/trustgraph/socket";
 import EditDialog from "./EditDialog";
 import Controls from "./Controls";
+import { toaster } from "../ui/toaster";
 
 const TokenCostTable = () => {
+  const addActivity = useProgressStateStore((state) => state.addActivity);
+  const removeActivity = useProgressStateStore(
+    (state) => state.removeActivity,
+  );
+
   const [view, setView] = useState([]);
 
   const socket = useSocket();
 
-  const refresh = () => {
+  const refresh = (socket) => {
+    const act = "Load token costs...";
+    addActivity(act);
     socket
       .getTokenCosts()
-      .then((x) => setView(x))
-      .catch((err) => console.log("Error:", err));
+      .then((x) => {
+        setView(x);
+        removeActivity(act);
+      })
+      .catch((err) => {
+        removeActivity(act);
+        console.log("Error:", err);
+        toaster.create({
+          title: "Error: " + err.toString(),
+          type: "error",
+        });
+      });
   };
 
   useEffect(() => {
-    socket
-      .getTokenCosts()
-      .then((x) => setView(x))
-      .catch((err) => console.log("Error:", err));
+    refresh(socket);
   }, [socket]);
 
   const [selected, setSelected] = useState("");
 
   const onComplete = () => {
     setSelected("");
-    refresh();
+    refresh(socket);
   };
 
   return (

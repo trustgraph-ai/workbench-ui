@@ -2,14 +2,22 @@ import React, { useEffect, useState } from "react";
 
 import { Table } from "@chakra-ui/react";
 
+import { toaster } from "../ui/toaster";
 import { useSocket } from "../../api/trustgraph/socket";
+import { useProgressStateStore } from "../../state/ProgressState";
 
 const FlowClassesTable = () => {
+  const addActivity = useProgressStateStore((state) => state.addActivity);
+  const removeActivity = useProgressStateStore(
+    (state) => state.removeActivity,
+  );
+
   const [view, setView] = useState([]);
 
   const socket = useSocket();
 
   useEffect(() => {
+    const act = "Load flow classes";
     socket
       .getFlowClasses()
       .then((names) => {
@@ -19,8 +27,17 @@ const FlowClassesTable = () => {
           ),
         );
       })
-      .then((x) => setView(x))
-      .catch((err) => console.log("Error:", err));
+      .then((x) => {
+        setView(x);
+        removeActivity(act);
+      })
+      .catch((err) => {
+        console.log("Error:", err);
+        toaster.create({
+          title: "Error: " + err.toString(),
+          type: "error",
+        });
+      });
   }, [socket]);
 
   return (

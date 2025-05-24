@@ -3,7 +3,7 @@ import { BrainCircuit } from "lucide-react";
 
 import CenterSpinner from "../components/common/CenterSpinner";
 import PageHeader from "../components/common/PageHeader";
-import KnowledgeCoresTable from "../components/kc/KnowledgeCoresTable";
+import KnowledgeCores from "../components/kc/KnowledgeCores";
 
 const KnowledgeCoresPage = () => {
   return (
@@ -13,7 +13,7 @@ const KnowledgeCoresPage = () => {
         title="Knowledge Cores"
         description="Knowledge cores are modules which encapsulate a set of domain knowledge"
       />
-      <KnowledgeCoresTable />
+      <KnowledgeCores />
       <CenterSpinner />
     </>
   );

@@ -3,7 +3,7 @@ import { Workflow } from "lucide-react";
 
 import CenterSpinner from "../components/common/CenterSpinner";
 import PageHeader from "../components/common/PageHeader";
-import FlowTable from "../components/flows/FlowTable";
+import Flows from "../components/flows/Flows";
 
 const FlowsPage = () => {
   return (
@@ -13,7 +13,7 @@ const FlowsPage = () => {
         title="Processing Flows"
         description="Managing the data flows in the system"
       />
-      <FlowTable />
+      <Flows />
       <CenterSpinner />
     </>
   );

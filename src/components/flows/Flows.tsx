@@ -2,17 +2,25 @@ import React, { useEffect, useState } from "react";
 
 import { Table, Checkbox } from "@chakra-ui/react";
 
+import { useProgressStateStore } from "../../state/ProgressState";
 import { useSocket } from "../../api/trustgraph/socket";
 import Actions from "./Actions";
 import FlowControls from "./FlowControls";
 import { toaster } from "../ui/toaster";
 
 const FlowTable = () => {
+  const addActivity = useProgressStateStore((state) => state.addActivity);
+  const removeActivity = useProgressStateStore(
+    (state) => state.removeActivity,
+  );
+
   const [view, setView] = useState([]);
 
   const socket = useSocket();
 
-  const refresh = () => {
+  const refresh = (socket) => {
+    const act = "Load flows";
+    addActivity(act);
     socket
       .getFlows()
       .then((ids) => {
@@ -20,20 +28,18 @@ const FlowTable = () => {
           ids.map((id) => socket.getFlow(id).then((x) => [id, x])),
         );
       })
-      .then((x) => setView(x))
-      .catch((err) => console.log("Error:", err));
+      .then((x) => {
+        removeActivity(act);
+        setView(x);
+      })
+      .catch((err) => {
+        removeActivity(act);
+        console.log("Error:", err);
+      });
   };
 
   useEffect(() => {
-    socket
-      .getFlows()
-      .then((ids) => {
-        return Promise.all(
-          ids.map((id) => socket.getFlow(id).then((x) => [id, x])),
-        );
-      })
-      .then((x) => setView(x))
-      .catch((err) => console.log("Error:", err));
+    refresh(socket);
   }, [socket]);
 
   const onDelete = () => {
@@ -46,7 +52,7 @@ const FlowTable = () => {
           title: "Flows deleted",
           type: "success",
         });
-        refresh();
+        refresh(socket);
       })
       .catch((e) =>
         toaster.create({
@@ -119,7 +125,7 @@ const FlowTable = () => {
           ))}
         </Table.Body>
       </Table.Root>
-      <FlowControls onUpdate={refresh} />
+      <FlowControls onUpdate={() => refresh(socket)} />
     </>
   );
 };

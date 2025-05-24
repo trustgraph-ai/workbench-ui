@@ -3,7 +3,7 @@ import { LibraryBig } from "lucide-react";
 
 import CenterSpinner from "../components/common/CenterSpinner";
 import PageHeader from "../components/common/PageHeader";
-import DocumentTable from "../components/library/DocumentTable";
+import Documents from "../components/library/Documents";
 
 const LibraryPage = () => {
   return (
@@ -13,7 +13,7 @@ const LibraryPage = () => {
         title="Library"
         description="Managing loaded documents"
       />
-      <DocumentTable />
+      <Documents />
       <CenterSpinner />
     </>
   );

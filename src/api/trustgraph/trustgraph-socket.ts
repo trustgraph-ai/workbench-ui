@@ -619,7 +619,7 @@ export class SocketImplementation {
     retries?: number,
     flow?: string,
   ) {
-    if (!flow) flow = "0000";
+    if (!flow) flow = "default";
 
     return this.makeRequest<RequestType, ResponseType>(
       service,

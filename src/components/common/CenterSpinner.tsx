@@ -7,7 +7,9 @@ import { useProgressStateStore } from "../../state/ProgressState";
 const CenterSpinner: React.FC = () => {
   const activity = useProgressStateStore((state) => state.activity);
 
-  if (activity.size < 1) return null;
+  if (activity.size < 1) {
+    return null;
+  }
 
   return (
     <Box
