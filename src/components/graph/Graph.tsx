@@ -15,12 +15,11 @@ import {
   updateSubgraph,
 } from "../../state/knowledge-graph-viz";
 import GraphHelp from "./GraphHelp";
+import { toaster } from "../ui/toaster";
 
 import { system } from "../../theme";
 
 const GraphView = () => {
-  const setError = useProgressStateStore((state) => state.setError);
-
   const addActivity = useProgressStateStore((state) => state.addActivity);
   const removeActivity = useProgressStateStore(
     (state) => state.removeActivity,
@@ -51,10 +50,13 @@ const GraphView = () => {
       })
       .catch((err) => {
         console.log("Error: ", err);
-        setError(err.toString());
         removeActivity(act);
+        toaster.create({
+          title: "Error: " + err.toString(),
+          type: "error",
+        });
       });
-  }, [selected, addActivity, removeActivity, setError, socket]);
+  }, [selected, addActivity, removeActivity, socket]);
 
   if (!selected) {
     return (
@@ -97,9 +99,12 @@ const GraphView = () => {
         removeActivity(act);
       })
       .catch((err) => {
-        console.log("Error: ", err);
-        setError(err.toString());
         removeActivity(act);
+        console.log("Error: ", err);
+        toaster.create({
+          title: "Error: " + err.toString(),
+          type: "error",
+        });
       });
   };
 
