@@ -42,8 +42,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({
         );
       })
       .then((flows) => {
-
-console.log("UPDATE HDR");
+        console.log("UPDATE HDR");
         removeActivity(act);
 
         setFlows(flows);
@@ -55,7 +54,6 @@ console.log("UPDATE HDR");
         } else {
           setSelectedFlow(null);
         }
-
       })
       .catch((err) => {
         removeActivity(act);
@@ -67,7 +65,7 @@ console.log("UPDATE HDR");
     refresh(socket);
   }, [socket]);
 
-  const flowDescription = flows.filter
+  const flowDescription = flows.filter;
 
   return (
     <Flex

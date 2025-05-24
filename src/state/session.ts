@@ -1,11 +1,9 @@
 import { create } from "zustand";
 
 export interface SessionState {
-
   flow: string;
 
   setFlow: (v: string) => void;
-
 }
 
 export const useSessionStore = create<SessionState>()((set) => ({
@@ -15,6 +13,4 @@ export const useSessionStore = create<SessionState>()((set) => ({
     set(() => ({
       flow: v,
     })),
-
 }));
-
