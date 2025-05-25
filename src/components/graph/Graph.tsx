@@ -46,7 +46,14 @@ const GraphView = () => {
 
     const sg = createSubgraph();
 
-    updateSubgraph(socket, flowId, selected.uri, sg, addActivity, removeActivity)
+    updateSubgraph(
+      socket,
+      flowId,
+      selected.uri,
+      sg,
+      addActivity,
+      removeActivity,
+    )
       .then((sg) => {
         setView(sg);
         removeActivity(act);

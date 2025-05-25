@@ -39,21 +39,26 @@ const FlowSelector = () => {
       .getFlows()
       .then((ids) => {
         return Promise.all(
-          ids.map((id) => socket.flows().getFlow(id).then((x) => [id, x])),
+          ids.map((id) =>
+            socket
+              .flows()
+              .getFlow(id)
+              .then((x) => [id, x]),
+          ),
         );
       })
       .then((x) => {
         removeActivity(act);
         setFlows(x);
       })
-        .catch((err) => {
-      removeActivity(act);
-      toaster.create({
-        title: "Error: " + err.toString(),
-        type: "error",
+      .catch((err) => {
+        removeActivity(act);
+        toaster.create({
+          title: "Error: " + err.toString(),
+          type: "error",
+        });
+        console.log("Error:", err);
       });
-      console.log("Error:", err);
-    });
   };
 
   useEffect(() => {

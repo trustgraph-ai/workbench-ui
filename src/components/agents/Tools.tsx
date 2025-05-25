@@ -24,13 +24,13 @@ const Tools = () => {
     addActivity(act);
 
     socket
-    .config()
+      .config()
       .getConfig([{ type: "agent", key: "tool-index" }])
       .then((res) => {
         const toolIds = JSON.parse(res.values[0].value);
 
         return socket
-        .config()
+          .config()
           .getConfig(
             toolIds.map((id) => {
               return {

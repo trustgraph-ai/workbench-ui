@@ -30,7 +30,7 @@ const Prompts = () => {
     const act = "Load prompts";
     addActivity(act);
     socket
-    .config()
+      .config()
       .getConfig([
         { type: "prompt", key: "system" },
         { type: "prompt", key: "template-index" },
@@ -41,7 +41,7 @@ const Prompts = () => {
         const promptIds = JSON.parse(res.values[1].value);
 
         return socket
-        .config()
+          .config()
           .getConfig(
             promptIds.map((id) => {
               return {

@@ -36,7 +36,7 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
     if (!id) return;
 
     socket
-    .config()
+      .config()
       .getConfig([{ type: "agent", key: "tool." + id }])
       .then((x) => {
         return JSON.parse(x.values[0].value);
@@ -87,7 +87,7 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
       // 3) add this tool ID to the index if not already there
 
       socket
-      .config()
+        .config()
         .putConfig([
           {
             type: "agent",
@@ -95,14 +95,16 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
             value: JSON.stringify(toolStruct),
           },
         ])
-        .then(() => socket.config().getConfig([{ type: "agent", key: "tool-index" }]))
+        .then(() =>
+          socket.config().getConfig([{ type: "agent", key: "tool-index" }]),
+        )
         .then((x) => {
           const tools = JSON.parse(x.values[0].value);
 
           if (!tools.includes(newId)) {
             tools.push(newId);
             return socket
-            .config()
+              .config()
               .putConfig([
                 {
                   type: "agent",
@@ -134,7 +136,7 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
       // This is the case for updating an existing template, just over-write
       // its value.
       return socket
-      .config()
+        .config()
         .putConfig([
           {
             type: "agent",
@@ -195,7 +197,7 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
     // 3) Delete the tool
 
     socket
-    .config()
+      .config()
       .getConfig([{ type: "agent", key: "tool-index" }])
       .then((x) => {
         const tools = JSON.parse(x.values[0].value);

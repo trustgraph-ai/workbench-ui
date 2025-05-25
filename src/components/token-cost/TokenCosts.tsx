@@ -22,7 +22,7 @@ const TokenCostTable = () => {
     const act = "Load token costs...";
     addActivity(act);
     socket
-    .config()
+      .config()
       .getTokenCosts()
       .then((x) => {
         setView(x);

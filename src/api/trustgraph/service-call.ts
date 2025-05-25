@@ -1,4 +1,3 @@
-
 export const SOCKET_RECONNECTION_TIMEOUT = 2000;
 
 export class ServiceCall {
@@ -99,7 +98,4 @@ export class ServiceCall {
       setTimeout(this.attempt, SOCKET_RECONNECTION_TIMEOUT);
     }
   }
-};
-
-
-
+}

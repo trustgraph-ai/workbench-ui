@@ -156,13 +156,16 @@ const KnowledgeCores = () => {
       }
     };
 
-    socket.knowledge().getKgCore(sels[0], null, receiver).then(() => {
-      console.log("I am done");
-      toaster.create({
-        title: "Download finished",
-        type: "success",
+    socket
+      .knowledge()
+      .getKgCore(sels[0], null, receiver)
+      .then(() => {
+        console.log("I am done");
+        toaster.create({
+          title: "Download finished",
+          type: "success",
+        });
       });
-    });
   };
 
   const toggle = (id) => {

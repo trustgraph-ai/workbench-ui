@@ -8,19 +8,16 @@ import {
 } from "./row";
 
 export const vectorSearch = (
-    socket,
-    flowId,
+  socket,
+  flowId,
   addActivity,
   removeActivity,
   term: string,
 ) => {
-
-    const api = socket.flow(flowId);
+  const api = socket.flow(flowId);
 
   const searchAct = "Search: " + term;
-    addActivity(searchAct);
-
-    
+  addActivity(searchAct);
 
   return api
     .embeddings(term)

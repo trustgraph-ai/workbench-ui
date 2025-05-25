@@ -8,12 +8,10 @@ import SearchHelp from "./SearchHelp";
 import ProgressSubmitButton from "../common/ProgressSubmitButton";
 
 interface SearchInputProps {
-  submit,
+  submit;
 }
 
-const SearchInput = ({
-  submit
-}) =>  {
+const SearchInput = ({ submit }) => {
   const activity = useProgressStateStore((state) => state.activity);
 
   const search = useSearchStateStore((state) => state.input);
@@ -33,7 +31,7 @@ const SearchInput = ({
           <ProgressSubmitButton
             disabled={activity.size > 0}
             working={activity.size > 0}
-            onClick={ () => submit() }
+            onClick={() => submit()}
           />
 
           <SearchHelp />

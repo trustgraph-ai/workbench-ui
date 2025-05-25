@@ -15,7 +15,7 @@ const EditDialog = ({ open, onOpenChange, onComplete }) => {
 
   useEffect(() => {
     socket
-    .config()
+      .config()
       .getConfig([{ type: "prompt", key: "system" }])
       .then((x) => {
         return JSON.parse(x.values[0].value);
@@ -37,7 +37,7 @@ const EditDialog = ({ open, onOpenChange, onComplete }) => {
     // Build the prompt structure
 
     return socket
-    .config()
+      .config()
       .putConfig([
         {
           type: "prompt",

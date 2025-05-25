@@ -1,19 +1,43 @@
 import { Triple, Value } from "./Triple";
-import { ServiceCallMulti } from './service-call-multi';
-import { ServiceCall } from './service-call';
+import { ServiceCallMulti } from "./service-call-multi";
+import { ServiceCall } from "./service-call";
 
 import {
-    Request, Response, Error, RequestMessage, ApiResponse, Metadata,
-    EntityEmbeddings, GraphEmbedding, TextCompletionRequest,
-    TextCompletionResponse, GraphRagRequest, GraphRagResponse, AgentRequest,
-    AgentResponse, EmbeddingsRequest, EmbeddingsResponse,
-    GraphEmbeddingsQueryRequest, GraphEmbeddingsQueryResponse,
-    TriplesQueryRequest, TriplesQueryResponse, LoadDocumentRequest,
-    LoadDocumentResponse, LoadTextRequest, LoadTextResponse,
-    DocumentMetadata, ProcessingMetadata, LibraryRequest, LibraryResponse,
-    KnowledgeRequest, KnowledgeResponse, FlowRequest, FlowResponse,
-    ConfigRequest, ConfigResponse,
-} from './messages';
+  Request,
+  Response,
+  Error,
+  RequestMessage,
+  ApiResponse,
+  Metadata,
+  EntityEmbeddings,
+  GraphEmbedding,
+  TextCompletionRequest,
+  TextCompletionResponse,
+  GraphRagRequest,
+  GraphRagResponse,
+  AgentRequest,
+  AgentResponse,
+  EmbeddingsRequest,
+  EmbeddingsResponse,
+  GraphEmbeddingsQueryRequest,
+  GraphEmbeddingsQueryResponse,
+  TriplesQueryRequest,
+  TriplesQueryResponse,
+  LoadDocumentRequest,
+  LoadDocumentResponse,
+  LoadTextRequest,
+  LoadTextResponse,
+  DocumentMetadata,
+  ProcessingMetadata,
+  LibraryRequest,
+  LibraryResponse,
+  KnowledgeRequest,
+  KnowledgeResponse,
+  FlowRequest,
+  FlowResponse,
+  ConfigRequest,
+  ConfigResponse,
+} from "./messages";
 
 type Timeout = ReturnType<typeof setTimeout>;
 
@@ -248,54 +272,56 @@ export class BaseApi {
     );
   }
 
-    librarian() {
-      return new LibrarianApi(this);
+  librarian() {
+    return new LibrarianApi(this);
   }
 
-    flows() {
-      return new FlowsApi(this);
+  flows() {
+    return new FlowsApi(this);
   }
 
-    flow(id) {
-      return new FlowApi(this, id);
-    }
+  flow(id) {
+    return new FlowApi(this, id);
+  }
 
-    knowledge() {
-        return new KnowledgeApi(this);
-    }
+  knowledge() {
+    return new KnowledgeApi(this);
+  }
 
-    config() {
-        return new ConfigApi(this);
-    }
-
+  config() {
+    return new ConfigApi(this);
+  }
 }
 
 export class LibrarianApi {
-
   constructor(api) {
-      this.api = api;
+    this.api = api;
   }
 
   getDocuments() {
-    return this.api.makeRequest<LibrarianRequest, LibrarianResponse>(
-      "librarian",
-      {
-        operation: "list-documents",
-        user: "trustgraph",
-      },
-      60000,
-    ).then((r) => r["document-metadatas"]);
+    return this.api
+      .makeRequest<LibrarianRequest, LibrarianResponse>(
+        "librarian",
+        {
+          operation: "list-documents",
+          user: "trustgraph",
+        },
+        60000,
+      )
+      .then((r) => r["document-metadatas"]);
   }
 
   getProcessing() {
-    return this.api.makeRequest<LibrarianRequest, LibrarianResponse>(
-      "librarian",
-      {
-        operation: "list-processing",
-        user: "trustgraph",
-      },
-      60000,
-    ).then((r) => r["processing-metadatas"]);
+    return this.api
+      .makeRequest<LibrarianRequest, LibrarianResponse>(
+        "librarian",
+        {
+          operation: "list-processing",
+          user: "trustgraph",
+        },
+        60000,
+      )
+      .then((r) => r["processing-metadatas"]);
   }
 
   loadDocument(
@@ -368,34 +394,36 @@ export class LibrarianApi {
       30000,
     );
   }
-
 }
 
 export class FlowsApi {
-
   constructor(api) {
-      this.api = api;
+    this.api = api;
   }
 
   getFlows() {
-    return this.api.makeRequest<FlowRequest, FlowResponse>(
-      "flow",
-      {
-        operation: "list-flows",
-      },
-      60000,
-    ).then((r) => r["flow-ids"]);
+    return this.api
+      .makeRequest<FlowRequest, FlowResponse>(
+        "flow",
+        {
+          operation: "list-flows",
+        },
+        60000,
+      )
+      .then((r) => r["flow-ids"]);
   }
 
   getFlow(id: string) {
-    return this.api.makeRequest<FlowRequest, FlowResponse>(
-      "flow",
-      {
-        operation: "get-flow",
-        "flow-id": id,
-      },
-      60000,
-    ).then((r) => JSON.parse(r.flow));
+    return this.api
+      .makeRequest<FlowRequest, FlowResponse>(
+        "flow",
+        {
+          operation: "get-flow",
+          "flow-id": id,
+        },
+        60000,
+      )
+      .then((r) => JSON.parse(r.flow));
   }
 
   getConfigAll() {
@@ -442,9 +470,9 @@ export class FlowsApi {
   }
 
   getPrompts() {
-    return this.api.getConfigAll().then((r) =>
-      JSON.parse(r.config.prompt["template-index"]),
-    );
+    return this.api
+      .getConfigAll()
+      .then((r) => JSON.parse(r.config.prompt["template-index"]));
   }
 
   getPrompt(id: string) {
@@ -460,24 +488,28 @@ export class FlowsApi {
   }
 
   getFlowClasses() {
-    return this.api.makeRequest<FlowRequest, FlowResponse>(
-      "flow",
-      {
-        operation: "list-classes",
-      },
-      60000,
-    ).then((r) => r["class-names"]);
+    return this.api
+      .makeRequest<FlowRequest, FlowResponse>(
+        "flow",
+        {
+          operation: "list-classes",
+        },
+        60000,
+      )
+      .then((r) => r["class-names"]);
   }
 
   getFlowClass(name: string) {
-    return this.api.makeRequest<FlowRequest, FlowResponse>(
-      "flow",
-      {
-        operation: "get-class",
-        "class-name": name,
-      },
-      60000,
-    ).then((r) => JSON.parse(r["class-definition"]));
+    return this.api
+      .makeRequest<FlowRequest, FlowResponse>(
+        "flow",
+        {
+          operation: "get-class",
+          "class-name": name,
+        },
+        60000,
+      )
+      .then((r) => JSON.parse(r["class-definition"]));
   }
 
   startFlow(id: string, class_name: string, description: string) {
@@ -503,42 +535,41 @@ export class FlowsApi {
       30000,
     );
   }
-
 }
 
 export class FlowApi {
-
-    constructor(api, flowId) {
-        this.api = api;
-        this.flowId = flowId;
+  constructor(api, flowId) {
+    this.api = api;
+    this.flowId = flowId;
   }
 
   textCompletion(system: string, text: string): Promise<string> {
-    return this.api.makeRequest<
-      TextCompletionRequest,
-      TextCompletionResponse
-    >(
-      "text-completion",
-      {
-        system: system,
-        prompt: text,
-      },
+    return this.api
+      .makeRequest<TextCompletionRequest, TextCompletionResponse>(
+        "text-completion",
+        {
+          system: system,
+          prompt: text,
+        },
         30000,
         null, // retries
         this.flowId, // Flow ID
-    ).then((r) => r.response);
+      )
+      .then((r) => r.response);
   }
 
   graphRag(text: string) {
-    return this.api.makeRequest<GraphRagRequest, GraphRagResponse>(
-      "graph-rag",
-      {
-        query: text,
-      },
+    return this.api
+      .makeRequest<GraphRagRequest, GraphRagResponse>(
+        "graph-rag",
+        {
+          query: text,
+        },
         60000,
         null,
         this.flowId,
-    ).then((r) => r.response);
+      )
+      .then((r) => r.response);
   }
 
   agent(
@@ -570,7 +601,7 @@ export class FlowApi {
       if (resp.answer) {
         answer(resp.answer);
 
-          clearTimeout(this.api,inflight[mid].timeoutId);
+        clearTimeout(this.api, inflight[mid].timeoutId);
         delete this.inflight[mid];
       }
     };
@@ -594,40 +625,46 @@ export class FlowApi {
   }
 
   embeddings(text: string) {
-    return this.api.makeFlowRequest<EmbeddingsRequest, EmbeddingsResponse>(
-      "embeddings",
-      {
-        text: text,
-      },
-      30000,
-    ).then((r) => r.vectors);
+    return this.api
+      .makeFlowRequest<EmbeddingsRequest, EmbeddingsResponse>(
+        "embeddings",
+        {
+          text: text,
+        },
+        30000,
+      )
+      .then((r) => r.vectors);
   }
 
   graphEmbeddingsQuery(vecs: number[][], limit: number | undefined) {
-    return this.api.makeFlowRequest<
-      GraphEmbeddingsQueryRequest,
-      GraphEmbeddingsQueryResponse
-    >(
-      "graph-embeddings",
-      {
-        vectors: vecs,
-        limit: limit ? limit : 20,
-      },
-      30000,
-    ).then((r) => r.entities);
+    return this.api
+      .makeFlowRequest<
+        GraphEmbeddingsQueryRequest,
+        GraphEmbeddingsQueryResponse
+      >(
+        "graph-embeddings",
+        {
+          vectors: vecs,
+          limit: limit ? limit : 20,
+        },
+        30000,
+      )
+      .then((r) => r.entities);
   }
 
   triplesQuery(s?: Value, p?: Value, o?: Value, limit?: number) {
-    return this.api.makeFlowRequest<TriplesQueryRequest, TriplesQueryResponse>(
-      "triples",
-      {
-        s: s,
-        p: p,
-        o: o,
-        limit: limit ? limit : 20,
-      },
-      30000,
-    ).then((r) => r.response);
+    return this.api
+      .makeFlowRequest<TriplesQueryRequest, TriplesQueryResponse>(
+        "triples",
+        {
+          s: s,
+          p: p,
+          o: o,
+          limit: limit ? limit : 20,
+        },
+        30000,
+      )
+      .then((r) => r.response);
   }
 
   loadDocument(
@@ -637,7 +674,10 @@ export class FlowApi {
     id?: string,
     metadata?: Triple[],
   ) {
-    return this.api.makeFlowRequest<LoadDocumentRequest, LoadDocumentResponse>(
+    return this.api.makeFlowRequest<
+      LoadDocumentRequest,
+      LoadDocumentResponse
+    >(
       "document-load",
       {
         id: id,
@@ -668,14 +708,11 @@ export class FlowApi {
       30000,
     );
   }
-
 }
 
 export class ConfigApi {
-
   constructor(api) {
-      this.api = api;
-
+    this.api = api;
   }
 
   getConfigAll() {
@@ -722,32 +759,33 @@ export class ConfigApi {
   }
 
   getPrompts() {
-    return this.api.getConfigAll().then((r) =>
-      JSON.parse(r.config.prompt["template-index"]),
-    );
+    return this.api
+      .getConfigAll()
+      .then((r) => JSON.parse(r.config.prompt["template-index"]));
   }
 
   getPrompt(id: string) {
-    return this.api.getConfigAll().then((r) =>
-      JSON.parse(r.config.prompt[`template.${id}`]),
-    );
+    return this.api
+      .getConfigAll()
+      .then((r) => JSON.parse(r.config.prompt[`template.${id}`]));
   }
 
   getSystemPrompt() {
-    return this.api.getConfigAll().then((r) =>
-      JSON.parse(r.config.prompt.system),
-    );
+    return this.api
+      .getConfigAll()
+      .then((r) => JSON.parse(r.config.prompt.system));
   }
 
   getTokenCosts() {
-    return this.api.makeRequest<ConfigRequest, ConfigResponse>(
-      "config",
-      {
-        operation: "getvalues",
-        type: "token-costs",
-      },
-      60000,
-    )
+    return this.api
+      .makeRequest<ConfigRequest, ConfigResponse>(
+        "config",
+        {
+          operation: "getvalues",
+          type: "token-costs",
+        },
+        60000,
+      )
       .then((r) =>
         r.values.map((x) => {
           return { key: x.key, value: JSON.parse(x.value) };
@@ -763,24 +801,24 @@ export class ConfigApi {
         }),
       );
   }
-
 }
 
 export class KnowledgeApi {
-
-    constructor(api) {
-        this.api = api;
-    }
+  constructor(api) {
+    this.api = api;
+  }
 
   getKnowledgeCores() {
-    return this.api.makeRequest<FlowRequest, FlowResponse>(
-      "knowledge",
-      {
-        operation: "list-kg-cores",
-        user: "trustgraph",
-      },
-      60000,
-    ).then((r) => r.ids);
+    return this.api
+      .makeRequest<FlowRequest, FlowResponse>(
+        "knowledge",
+        {
+          operation: "list-kg-cores",
+          user: "trustgraph",
+        },
+        60000,
+      )
+      .then((r) => r.ids);
   }
 
   deleteKgCore(id: string, user?: string) {
@@ -817,10 +855,8 @@ export class KnowledgeApi {
       30000,
     );
   }
-
 }
 
 export const createTrustGraphSocket = (): Socket => {
   return new BaseApi();
 };
-

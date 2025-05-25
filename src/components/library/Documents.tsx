@@ -138,14 +138,17 @@ const Documents = () => {
     if (ids.length == 0) return;
 
     console.log("Deleting", ids[0]);
-    const prom = socket.librarian().removeDocument(ids[0]).then(() => {
-      setView((x) => x.filter((row) => row.id != ids[0]));
-      setSelected((x) => {
-        const newSet = new Set(x);
-        x.delete(ids[0]);
-        return newSet;
+    const prom = socket
+      .librarian()
+      .removeDocument(ids[0])
+      .then(() => {
+        setView((x) => x.filter((row) => row.id != ids[0]));
+        setSelected((x) => {
+          const newSet = new Set(x);
+          x.delete(ids[0]);
+          return newSet;
+        });
       });
-    });
 
     if (ids.length < 2) {
       return prom;

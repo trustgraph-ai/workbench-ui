@@ -27,7 +27,12 @@ const SubmitDialog = ({ open, onOpenChange, onSubmit, docs }) => {
       .getFlows()
       .then((ids) => {
         return Promise.all(
-          ids.map((id) => socket.flows().getFlow(id).then((x) => [id, x])),
+          ids.map((id) =>
+            socket
+              .flows()
+              .getFlow(id)
+              .then((x) => [id, x]),
+          ),
         );
       })
       .then((x) => {

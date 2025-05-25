@@ -1,4 +1,3 @@
-
 // FIXME: Better types?
 export type Request = object;
 export type Response = object;
@@ -183,5 +182,3 @@ export interface FlowResponse {
 
 export type ConfigRequest = object;
 export type ConfigResponse = object;
-
-
