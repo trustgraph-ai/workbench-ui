@@ -1,4 +1,3 @@
-
 import { Code, Box } from "@chakra-ui/react";
 
 const SystemPrompt = ({ prompt, onEdit }) => {
