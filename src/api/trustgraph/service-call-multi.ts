@@ -1,7 +1,7 @@
 
-const SOCKET_RECONNECTION_TIMEOUT = 2000;
+export const SOCKET_RECONNECTION_TIMEOUT = 2000;
 
-class ServiceCallMulti {
+export class ServiceCallMulti {
   constructor(
     mid: string,
     msg: RequestMessage,

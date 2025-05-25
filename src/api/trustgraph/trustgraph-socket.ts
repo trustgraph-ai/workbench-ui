@@ -62,6 +62,7 @@ export interface Socket {
   ) => Promise<void>;
 }
 
+// Create a random message ID
 function makeid(length: number) {
   const array = new Uint32Array(length);
   crypto.getRandomValues(array);
@@ -74,7 +75,7 @@ function makeid(length: number) {
   );
 }
 
-export class SocketImplementation {
+export class BaseApi {
   ws?: WebSocket;
   tag: string;
   id: number;
@@ -688,9 +689,254 @@ export class SocketImplementation {
       30000,
     );
   }
+
+    library() {
+      return new LibraryApi(this);
+  }
+
+    flows() {
+      return new FlowsApi(this);
+  }
+
+}
+
+export class LibraryApi {
+
+  constructor(api) {
+      this.api = api;
+  }
+
+  getDocuments() {
+    return this.api.makeRequest<LibrarianRequest, LibrarianResponse>(
+      "librarian",
+      {
+        operation: "list-documents",
+        user: "trustgraph",
+      },
+      60000,
+    ).then((r) => r["document-metadatas"]);
+  }
+
+  getProcessing() {
+    return this.api.makeRequest<LibrarianRequest, LibrarianResponse>(
+      "librarian",
+      {
+        operation: "list-processing",
+        user: "trustgraph",
+      },
+      60000,
+    ).then((r) => r["processing-metadatas"]);
+  }
+
+  loadDocument(
+    // base64-encoded doc
+    document: string,
+
+    id?: string,
+    metadata?: Triple[],
+
+    mimeType: string,
+    title: string,
+    comments: string,
+    tags: string[],
+    user: string,
+  ) {
+    return this.api.makeRequest<LibraryRequest, LibraryResponse>(
+      "librarian",
+      {
+        operation: "add-document",
+        "document-metadata": {
+          id: id,
+          time: Math.floor(Date.now() / 1000),
+          kind: mimeType,
+          title: title,
+          comments: comments,
+          metadata: metadata,
+          user: user ? user : "trustgraph",
+          tags: tags,
+        },
+        content: document,
+      },
+      30000,
+    );
+  }
+
+  removeDocument(id: string, user: string) {
+    return this.api.makeRequest<LibraryRequest, LibraryResponse>(
+      "librarian",
+      {
+        operation: "remove-document",
+        "document-id": id,
+        user: user ? user : "trustgraph",
+      },
+      30000,
+    );
+  }
+
+  addProcessing(
+    id: string,
+    doc_id: string,
+    flow: string,
+    user?: string,
+    collection?: string,
+    tags?: string[],
+  ) {
+    return this.api.makeRequest<LibraryRequest, LibraryResponse>(
+      "librarian",
+      {
+        operation: "add-processing",
+        "processing-metadata": {
+          id: id,
+          "document-id": doc_id,
+          time: Math.floor(Date.now() / 1000),
+          flow: flow,
+          user: user ? user : "trustgraph",
+          collection: collection ? collection : "default",
+          tags: tags ? tags : [],
+        },
+      },
+      30000,
+    );
+  }
+
+}
+
+export class FlowsApi {
+
+  constructor(api) {
+      this.api = api;
+  }
+
+  getFlows() {
+    return this.api.makeRequest<FlowRequest, FlowResponse>(
+      "flow",
+      {
+        operation: "list-flows",
+      },
+      60000,
+    ).then((r) => r["flow-ids"]);
+  }
+
+  getFlow(id: string) {
+    return this.api.makeRequest<FlowRequest, FlowResponse>(
+      "flow",
+      {
+        operation: "get-flow",
+        "flow-id": id,
+      },
+      60000,
+    ).then((r) => JSON.parse(r.flow));
+  }
+
+  getConfigAll() {
+    return this.makeRequest<ConfigRequest, ConfigResponse>(
+      "config",
+      {
+        operation: "config",
+      },
+      60000,
+    );
+  }
+
+  getConfig(keys: { type: string; key: string }[]) {
+    return this.makeRequest<ConfigRequest, ConfigResponse>(
+      "config",
+      {
+        operation: "get",
+        keys: keys,
+      },
+      60000,
+    );
+  }
+
+  putConfig(values: { type: string; key: string; value: string }[]) {
+    return this.makeRequest<ConfigRequest, ConfigResponse>(
+      "config",
+      {
+        operation: "put",
+        values: values,
+      },
+      60000,
+    );
+  }
+
+  deleteConfig(keys: { type: string; key: string }) {
+    return this.makeRequest<ConfigRequest, ConfigResponse>(
+      "config",
+      {
+        operation: "delete",
+        keys: keys,
+      },
+      30000,
+    );
+  }
+
+  getPrompts() {
+    return this.getConfigAll().then((r) =>
+      JSON.parse(r.config.prompt["template-index"]),
+    );
+  }
+
+  getPrompt(id: string) {
+    return this.getConfigAll().then((r) =>
+      JSON.parse(r.config.prompt[`template.${id}`]),
+    );
+  }
+
+  getSystemPrompt() {
+    return this.getConfigAll().then((r) =>
+      JSON.parse(r.config.prompt.system),
+    );
+  }
+
+  getFlowClasses() {
+    return this.api.makeRequest<FlowRequest, FlowResponse>(
+      "flow",
+      {
+        operation: "list-classes",
+      },
+      60000,
+    ).then((r) => r["class-names"]);
+  }
+
+  getFlowClass(name: string) {
+    return this.makeRequest<FlowRequest, FlowResponse>(
+      "flow",
+      {
+        operation: "get-class",
+        "class-name": name,
+      },
+      60000,
+    ).then((r) => JSON.parse(r["class-definition"]));
+  }
+
+  startFlow(id: string, class_name: string, description: string) {
+    return this.api.makeRequest<LibraryRequest, LibraryResponse>(
+      "flow",
+      {
+        operation: "start-flow",
+        "flow-id": id,
+        "class-name": class_name,
+        description: description,
+      },
+      30000,
+    );
+  }
+
+  stopFlow(id: string) {
+    return this.api.makeRequest<LibraryRequest, LibraryResponse>(
+      "flow",
+      {
+        operation: "stop-flow",
+        "flow-id": id,
+      },
+      30000,
+    );
+  }
+
 }
 
 export const createTrustGraphSocket = (): Socket => {
-  return new SocketImplementation();
+  return new BaseApi();
 };
 

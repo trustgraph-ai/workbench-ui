@@ -26,7 +26,8 @@ const Documents = () => {
     const act = "Load library";
     addActivity(act);
     socket
-      .getLibraryDocuments()
+      .library()
+      .getDocuments()
       .then((x) => {
         setView(x);
         removeActivity(act);
@@ -90,7 +91,8 @@ const Documents = () => {
     if (!title) title = "<no title>";
 
     const prom = socket
-      .addLibraryProcessing(proc_id, ids[0], flow, null, null, tags)
+      .library()
+      .addProcessing(proc_id, ids[0], flow, null, null, tags)
       .then(() => {
         toaster.create({
           title: "Submitted " + title,
@@ -136,7 +138,7 @@ const Documents = () => {
     if (ids.length == 0) return;
 
     console.log("Deleting", ids[0]);
-    const prom = socket.removeLibraryDocument(ids[0]).then(() => {
+    const prom = socket.library().removeDocument(ids[0]).then(() => {
       setView((x) => x.filter((row) => row.id != ids[0]));
       setSelected((x) => {
         const newSet = new Set(x);
