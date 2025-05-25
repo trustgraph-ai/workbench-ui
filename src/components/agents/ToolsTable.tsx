@@ -1,7 +1,6 @@
 import { Table } from "@chakra-ui/react";
 
 const ToolsTable = ({ setSelected, tools }) => {
-
   const onSelect = (row) => {
     setSelected(row[0]);
   };
