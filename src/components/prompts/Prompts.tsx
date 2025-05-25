@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-import { Table, Code, Tabs, Box } from "@chakra-ui/react";
+import { Tabs } from "@chakra-ui/react";
 
 import { useProgressStateStore } from "../../state/progress";
 import { useSocket } from "../../api/trustgraph/socket";
@@ -9,8 +9,8 @@ import { toaster } from "../ui/toaster";
 import EditDialog from "./EditDialog";
 import PromptControls from "./PromptControls";
 import EditSystemPrompt from "./EditSystemPrompt";
-import PromptsTable from './PromptsTable';
-import SystemPrompt from './SystemPrompt';
+import PromptsTable from "./PromptsTable";
+import SystemPrompt from "./SystemPrompt";
 
 const Prompts = () => {
   const addActivity = useProgressStateStore((state) => state.addActivity);
@@ -115,12 +115,11 @@ const Prompts = () => {
           <Tabs.Trigger value="system">System prompt</Tabs.Trigger>
         </Tabs.List>
         <Tabs.Content value="prompts">
-          <PromptsTable prompts={prompts} onSelect={(row) => onSelect(row)}/>
+          <PromptsTable prompts={prompts} onSelect={(row) => onSelect(row)} />
           <PromptControls onUpdate={() => refresh(socket)} />
         </Tabs.Content>
         <Tabs.Content value="system">
-          <SystemPrompt prompt={systemPrompt} onEdit={onSystemEdit}
-        />
+          <SystemPrompt prompt={systemPrompt} onEdit={onSystemEdit} />
         </Tabs.Content>
       </Tabs.Root>
     </>
