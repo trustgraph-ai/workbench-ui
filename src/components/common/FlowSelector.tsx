@@ -76,6 +76,7 @@ const FlowSelector = () => {
       <Popover.Trigger asChild>
         <Stack
           p={3}
+          mr={8}
           gap={1}
           borderWidth="1px"
           borderRadius="8px"

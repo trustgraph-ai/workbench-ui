@@ -93,6 +93,9 @@ export class ServiceCall {
           this.attempt,
           SOCKET_RECONNECTION_TIMEOUT,
         );
+
+        console.log("Reopen...");
+        this.socket.reopen();
       }
     } else {
       setTimeout(this.attempt, SOCKET_RECONNECTION_TIMEOUT);

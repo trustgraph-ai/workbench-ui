@@ -86,7 +86,8 @@ export const loadFile = (file, kind: string, params: LoadParameters) => {
           .replace(/^.+,/, "");
 
         params.socket
-          .loadLibraryDocument(
+          .librarian()
+          .loadDocument(
             data,
             doc_id,
             doc_meta,
@@ -121,7 +122,8 @@ export const loadText = (text, params: LoadParameters) => {
       const encoded = b64encode(text);
 
       params.socket
-        .loadLibraryDocument(
+        .librarian()
+        .loadDocument(
           encoded,
           doc_id,
           doc_meta,
