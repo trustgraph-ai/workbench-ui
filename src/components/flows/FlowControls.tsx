@@ -17,6 +17,7 @@ const FlowControls = ({ onUpdate }) => {
     console.log(flowClass, id, description);
 
     socket
+      .flows()
       .startFlow(id, flowClass, description)
       .then(() => {
         console.log("Success");

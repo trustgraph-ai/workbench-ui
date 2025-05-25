@@ -20,7 +20,8 @@ const ProcessingTable = () => {
     const act = "Load submissions";
     addActivity(act);
     socket
-      .getLibraryProcessing()
+      .librarian()
+      .getProcessing()
       .then((x) => {
         setView(x);
         removeActivity(act);

@@ -9,19 +9,22 @@ import {
 
 export const vectorSearch = (
   socket,
+  flowId,
   addActivity,
   removeActivity,
   term: string,
 ) => {
+  const api = socket.flow(flowId);
+
   const searchAct = "Search: " + term;
   addActivity(searchAct);
 
-  return socket
+  return api
     .embeddings(term)
-    .then(getGraphEmbeddings(socket, addActivity, removeActivity, 10))
-    .then(addRowLabels(socket, addActivity, removeActivity))
-    .then(addRowDefinitions(socket, addActivity, removeActivity))
-    .then(addRowEmbeddings(socket, addActivity, removeActivity))
+    .then(getGraphEmbeddings(api, addActivity, removeActivity, 10))
+    .then(addRowLabels(api, addActivity, removeActivity))
+    .then(addRowDefinitions(api, addActivity, removeActivity))
+    .then(addRowEmbeddings(api, addActivity, removeActivity))
     .then(computeCosineSimilarity(addActivity, removeActivity))
     .then(sortSimilarity(addActivity, removeActivity))
     .then((x) => {

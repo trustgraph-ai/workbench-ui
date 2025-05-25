@@ -22,6 +22,7 @@ const TokenCostTable = () => {
     const act = "Load token costs...";
     addActivity(act);
     socket
+      .config()
       .getTokenCosts()
       .then((x) => {
         setView(x);
@@ -81,7 +82,7 @@ const TokenCostTable = () => {
           ))}
         </Table.Body>
       </Table.Root>
-      <Controls onUpdate={refresh} />
+      <Controls onUpdate={() => refresh(socket)} />
     </>
   );
 };

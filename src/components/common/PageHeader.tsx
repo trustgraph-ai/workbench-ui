@@ -1,9 +1,9 @@
 import React from "react";
 
-import { Flex, Heading, Text, Box, HStack, Stack } from "@chakra-ui/react";
+import { Flex, Text, Box, HStack, Heading } from "@chakra-ui/react";
 
 import ColorModeToggle from "../color-mode-toggle";
-import { useSessionStore } from "../../state/session";
+import FlowSelector from "./FlowSelector";
 
 interface PageHeaderProps {
   title: string;
@@ -16,9 +16,6 @@ const PageHeader: React.FC<PageHeaderProps> = ({
   description,
   icon,
 }) => {
-  const flowId = useSessionStore((state) => state.flowId);
-  const flow = useSessionStore((state) => state.flow);
-
   return (
     <Flex
       mb={8}
@@ -50,27 +47,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({
       </Flex>
       <Box>
         <HStack>
-          <Stack
-            p={2}
-            mr={8}
-            borderWidth="1px"
-            borderRadius="8px"
-            borderColor="border.inverted/20"
-            color="fg.muted"
-            backgroundColor="brand.bg"
-            _hover={{
-              backgroundColor: "bg.emphasized",
-              borderColor: "border.inverted",
-              color: "fg",
-            }}
-          >
-            <Box>
-              <Text fontWeight="bold">{flowId ? flowId : "<none>"}</Text>
-            </Box>
-            <Box>
-              <Text textStyle="xs">{flow ? flow.description : "<none>"}</Text>
-            </Box>
-          </Stack>
+          <FlowSelector />
           <ColorModeToggle />
         </HStack>
       </Box>

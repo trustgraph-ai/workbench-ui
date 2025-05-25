@@ -1,11 +1,13 @@
 import { toaster } from "../ui/toaster";
-import SearchInput from "./SearchInput";
-import Results from "./Results";
-import { useProgressStateStore } from "../../state/progress";
 import { useWorkbenchStateStore } from "../../state/workbench";
 import { useSearchStateStore } from "../../state/search";
 import { useSocket } from "../../api/trustgraph/socket";
 import { vectorSearch } from "../../utils/vector-search";
+import { useProgressStateStore } from "../../state/progress";
+import { useSessionStore } from "../../state/session";
+
+import SearchInput from "./SearchInput";
+import Results from "./Results";
 
 const Search = () => {
   const addActivity = useProgressStateStore((state) => state.addActivity);
@@ -15,6 +17,7 @@ const Search = () => {
   );
 
   const socket = useSocket();
+  const flowId = useSessionStore((state) => state.flowId);
 
   const setEntities = useWorkbenchStateStore((state) => state.setEntities);
 
@@ -23,8 +26,8 @@ const Search = () => {
 
   const search = useSearchStateStore((state) => state.input);
 
-  const submit: React.FormEventHandler<HTMLFormElement> = (e) => {
-    vectorSearch(socket, addActivity, removeActivity, search)
+  const submit = () => {
+    vectorSearch(socket, flowId, addActivity, removeActivity, search)
       .then((x) => {
         setView(x.view);
         setEntities(x.entities);
@@ -36,8 +39,6 @@ const Search = () => {
           type: "error",
         });
       });
-
-    e.preventDefault();
   };
 
   return (

@@ -9,6 +9,7 @@ import { useWorkbenchStateStore } from "../../state/workbench";
 import { useProgressStateStore } from "../../state/progress";
 import { useChatStateStore } from "../../state/chat";
 import { submitChat } from "./submit";
+import { useSessionStore } from "../../state/session";
 
 const ChatConversation = () => {
   const socket = useSocket();
@@ -22,13 +23,14 @@ const ChatConversation = () => {
   const removeActivity = useProgressStateStore(
     (state) => state.removeActivity,
   );
+  const flowId = useSessionStore((state) => state.flowId);
 
   const setEntities = useWorkbenchStateStore((state) => state.setEntities);
 
   const submit = () => {
-    console.log("Input:", input);
     submitChat(
       socket,
+      flowId,
       input,
       addMessage,
       addActivity,

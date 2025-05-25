@@ -27,6 +27,7 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
     if (!id) return;
 
     socket
+      .config()
       .getConfig([{ type: "prompt", key: "template." + id }])
       .then((x) => {
         return JSON.parse(x.values[0].value);
@@ -81,6 +82,7 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
       // 3) add this prompt ID to the index if not already there
 
       socket
+        .config()
         .putConfig([
           {
             type: "prompt",
@@ -89,7 +91,9 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
           },
         ])
         .then(() =>
-          socket.getConfig([{ type: "prompt", key: "template-index" }]),
+          socket
+            .config()
+            .getConfig([{ type: "prompt", key: "template-index" }]),
         )
         .then((x) => {
           const templates = JSON.parse(x.values[0].value);
@@ -97,6 +101,7 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
           if (!templates.includes(newId)) {
             templates.push(newId);
             return socket
+              .config()
               .putConfig([
                 {
                   type: "prompt",
@@ -128,6 +133,7 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
       // This is the case for updating an existing template, just over-write
       // its value.
       return socket
+        .config()
         .putConfig([
           {
             type: "prompt",
@@ -163,13 +169,14 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
     // 3) Delete the prompt
 
     socket
+      .config()
       .getConfig([{ type: "prompt", key: "template-index" }])
       .then((x) => {
         const templates = JSON.parse(x.values[0].value);
 
         const newTemplates = templates.filter((x) => x !== id);
 
-        return socket.putConfig([
+        return socket.config().putConfig([
           {
             type: "prompt",
             key: "template-index",
@@ -178,7 +185,7 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
         ]);
       })
       .then(() =>
-        socket.deleteConfig([
+        socket.config().deleteConfig([
           {
             type: "prompt",
             key: "template." + id,

@@ -7,15 +7,18 @@ import { useSearchStateStore } from "../../state/search";
 import SearchHelp from "./SearchHelp";
 import ProgressSubmitButton from "../common/ProgressSubmitButton";
 
-interface SearchInputProps {
-  submit: React.FormEventHandler<HTMLFormElement>;
-}
-
-const SearchInput: React.FC<SearchInputProps> = ({ submit }) => {
+const SearchInput = ({ submit }) => {
   const activity = useProgressStateStore((state) => state.activity);
 
   const search = useSearchStateStore((state) => state.input);
   const setSearch = useSearchStateStore((state) => state.setInput);
+
+  const handleKeyDown = (e) => {
+    if (["Enter"].includes(e.key)) {
+      e.preventDefault();
+      submit();
+    }
+  };
 
   return (
     <>
@@ -25,12 +28,16 @@ const SearchInput: React.FC<SearchInputProps> = ({ submit }) => {
             variant="outline"
             placeholder="Perform a vector search on a term or phrase..."
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onKeyDown={handleKeyDown}
+            onChange={(e) => {
+              setSearch(e.target.value);
+            }}
           />
 
           <ProgressSubmitButton
             disabled={activity.size > 0}
             working={activity.size > 0}
+            onClick={() => submit()}
           />
 
           <SearchHelp />

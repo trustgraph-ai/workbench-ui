@@ -9,6 +9,8 @@ import { useSocket } from "../../api/trustgraph/socket";
 import { useWorkbenchStateStore } from "../../state/workbench";
 import { getTriples } from "../../utils/knowledge-graph";
 import { useProgressStateStore } from "../../state/progress";
+import { useSessionStore } from "../../state/session";
+
 import EntityHelp from "./EntityHelp";
 import ElementNode from "./ElementNode";
 
@@ -19,6 +21,7 @@ const EntityDetail = () => {
   );
 
   const socket = useSocket();
+  const flowId = useSessionStore((state) => state.flowId);
 
   const navigate = useNavigate();
 
@@ -32,7 +35,7 @@ const EntityDetail = () => {
     const act = "Knowledge graph search: " + selected.label;
     addActivity(act);
 
-    getTriples(socket, selected.uri, addActivity, removeActivity)
+    getTriples(socket, flowId, selected.uri, addActivity, removeActivity)
       .then((d) => {
         setDetail(d);
         removeActivity(act);
