@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 
 import { Flex, Heading, Text, Box, HStack, Stack } from "@chakra-ui/react";
 
@@ -50,7 +50,9 @@ const PageHeader: React.FC<PageHeaderProps> = ({
       </Flex>
       <Box>
         <HStack>
-          <Stack p={2} mr={8}
+          <Stack
+            p={2}
+            mr={8}
             borderWidth="1px"
             borderRadius="8px"
             borderColor="border.inverted/20"

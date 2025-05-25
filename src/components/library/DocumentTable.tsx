@@ -1,20 +1,9 @@
-import React, { useEffect, useState } from "react";
-
-import { v4 as uuidv4 } from "uuid";
 
 import { Table, Tag, Checkbox } from "@chakra-ui/react";
 
-import { Row } from "../state/row";
-import { toaster } from "../ui/toaster";
-import Actions from "./Actions";
-import SubmitDialog from "./SubmitDialog";
-import { useSocket } from "../../api/trustgraph/socket";
 import { timeString } from "../../utils/time-string.ts";
 
-const DocumentTable = ({
-  selected, documents, toggle
-}) => {
-
+const DocumentTable = ({ selected, documents, toggle }) => {
   return (
     <>
       <Table.Root interactive>

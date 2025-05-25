@@ -1,15 +1,6 @@
-
 import { Table } from "@chakra-ui/react";
 
-import { useProgressStateStore } from "../../state/progress";
-
-const ToolsTable = ({
-  selected, setSelected, tools
-}) => {
-  const addActivity = useProgressStateStore((state) => state.addActivity);
-  const removeActivity = useProgressStateStore(
-    (state) => state.removeActivity,
-  );
+const ToolsTable = ({ setSelected, tools }) => {
 
   const onSelect = (row) => {
     setSelected(row[0]);

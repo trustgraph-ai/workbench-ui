@@ -2,17 +2,13 @@ import React, { useEffect, useState } from "react";
 
 import { v4 as uuidv4 } from "uuid";
 
-import { Tag, Checkbox } from "@chakra-ui/react";
-
 import { useProgressStateStore } from "../../state/progress";
-import { Row } from "../state/row";
 import { toaster } from "../ui/toaster";
 import { useSocket } from "../../api/trustgraph/socket";
-import { timeString } from "../../utils/time-string.ts";
 
 import Actions from "./Actions";
 import SubmitDialog from "./SubmitDialog";
-import DocumentTable from './DocumentTable';
+import DocumentTable from "./DocumentTable";
 
 const Documents = () => {
   const addActivity = useProgressStateStore((state) => state.addActivity);
@@ -172,7 +168,7 @@ const Documents = () => {
         docs={view.filter((x) => selected.has(x.id))}
       />
 
-      <DocumentTable selected={selected} documents={view} toggle={toggle}/>
+      <DocumentTable selected={selected} documents={view} toggle={toggle} />
     </>
   );
 };

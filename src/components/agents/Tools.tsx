@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useProgressStateStore } from "../../state/progress";
 import EditDialog from "./EditDialog";
 import Controls from "./Controls";
-import ToolsTable from './ToolsTable';
+import ToolsTable from "./ToolsTable";
 import { useSocket } from "../../api/trustgraph/socket";
 import { toaster } from "../ui/toaster";
 
@@ -70,10 +70,6 @@ const Tools = () => {
     refresh(socket);
   }, [socket]);
 
-  const onSelect = (row) => {
-    setSelected(row[0]);
-  };
-
   const onComplete = () => {
     setSelected("");
     refresh(socket);
@@ -88,7 +84,9 @@ const Tools = () => {
         create={false}
         id={selected}
       />
-      <ToolsTable selected={selected} setSelected={setSelected}
+      <ToolsTable
+        selected={selected}
+        setSelected={setSelected}
         tools={tools}
       />
       <Controls onUpdate={() => refresh(socket)} />
