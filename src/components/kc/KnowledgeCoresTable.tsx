@@ -1,8 +1,6 @@
 import { Table, Checkbox } from "@chakra-ui/react";
 
-const KnowledgeCoresTable = ({
-  cores, selected, toggle
-}) => {
+const KnowledgeCoresTable = ({ cores, selected, toggle }) => {
   return (
     <>
       <Table.Root interactive>

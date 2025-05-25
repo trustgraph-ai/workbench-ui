@@ -1,10 +1,6 @@
-
 import { Table, Checkbox } from "@chakra-ui/react";
 
-const FlowsTable = ({
-  flows, selected, toggle
-}) => {
-
+const FlowsTable = ({ flows, selected, toggle }) => {
   return (
     <>
       <Table.Root interactive>

@@ -6,7 +6,7 @@ import { toaster } from "../ui/toaster";
 
 import Actions from "./Actions";
 import FlowControls from "./FlowControls";
-import FlowsTable from './FlowsTable';
+import FlowsTable from "./FlowsTable";
 
 const Flows = () => {
   const addActivity = useProgressStateStore((state) => state.addActivity);

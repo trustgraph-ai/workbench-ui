@@ -7,7 +7,7 @@ import { encode as msgpackEncode } from "@msgpack/msgpack";
 
 import Actions from "./Actions";
 import streamSaver from "streamsaver";
-import KnowledgeCoresTable from './KnowledgeCoresTable';
+import KnowledgeCoresTable from "./KnowledgeCoresTable";
 
 const KnowledgeCores = () => {
   const addActivity = useProgressStateStore((state) => state.addActivity);
@@ -178,8 +178,7 @@ const KnowledgeCores = () => {
         onDelete={onDelete}
         onDownload={onDownload}
       />
-      <KnowledgeCoresTable cores={view} selected={selected} toggle={toggle}
-      />
+      <KnowledgeCoresTable cores={view} selected={selected} toggle={toggle} />
     </>
   );
 };

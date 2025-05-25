@@ -1,4 +1,3 @@
-
 import { useEffect } from "react";
 
 import { Box } from "@chakra-ui/react";
