@@ -1,4 +1,19 @@
-import { Triple, Value } from "../state/Triple";
+import { Triple, Value } from "./Triple";
+import { ServiceCallMulti } from './service-call-multi';
+import { ServiceCall } from './service-call';
+
+import {
+    Request, Response, Error, RequestMessage, ApiResponse, Metadata,
+    EntityEmbeddings, GraphEmbedding, TextCompletionRequest,
+    TextCompletionResponse, GraphRagRequest, GraphRagResponse, AgentRequest,
+    AgentResponse, EmbeddingsRequest, EmbeddingsResponse,
+    GraphEmbeddingsQueryRequest, GraphEmbeddingsQueryResponse,
+    TriplesQueryRequest, TriplesQueryResponse, LoadDocumentRequest,
+    LoadDocumentResponse, LoadTextRequest, LoadTextResponse,
+    DocumentMetadata, ProcessingMetadata, LibraryRequest, LibraryResponse,
+    KnowledgeRequest, KnowledgeResponse, FlowRequest, FlowResponse,
+    ConfigRequest, ConfigResponse,
+} from './messages';
 
 type Timeout = ReturnType<typeof setTimeout>;
 
@@ -47,381 +62,6 @@ export interface Socket {
   ) => Promise<void>;
 }
 
-// FIXME: Better types?
-export type Request = object;
-export type Response = object;
-export type Error = object | string;
-
-export interface RequestMessage {
-  id: string;
-  service: string;
-  request: Request;
-}
-
-export interface ApiResponse {
-  id: string;
-  response: Response;
-}
-
-class ServiceCall {
-  constructor(
-    mid: string,
-    msg: RequestMessage,
-    success: (resp: Response) => void,
-    error: (err: Error) => void,
-    timeout: number,
-    retries: number,
-    socket: Socket,
-  ) {
-    this.mid = mid;
-    this.msg = msg;
-    this.success = success;
-    this.error = error;
-    this.timeout = timeout;
-    this.retries = retries;
-    this.socket = socket;
-    this.complete = false;
-  }
-
-  mid: string;
-  success: (resp: object) => void; // FIXME: any
-  error: (err: object | string) => void; // FIXME: any
-  timeoutId: Timeout;
-  timeout: number;
-  retries: number;
-  socket: Socket;
-  complete: boolean;
-
-  start() {
-    this.socket.inflight[this.mid] = this;
-    this.attempt();
-  }
-
-  onReceived(resp: object) {
-    if (this.complete == true)
-      console.log(this.mid, "should not happen, request is already complete");
-
-    this.complete = true;
-
-    //        console.log("Received for", this.mid);
-    clearTimeout(this.timeoutId);
-    this.timeoutId = null;
-    delete this.socket.inflight[this.mid];
-    this.success(resp);
-  }
-
-  onTimeout() {
-    if (this.complete == true)
-      console.log(
-        this.mid,
-        "timeout should not happen, request is already complete",
-      );
-
-    console.log("Request", this.mid, "timed out");
-    clearTimeout(this.timeoutId);
-    this.attempt();
-  }
-
-  attempt() {
-    //        console.log("attempt:", this.mid);
-
-    if (this.complete == true)
-      console.log(
-        this.mid,
-        "attempt should not be called, request is already complete",
-      );
-
-    this.retries--;
-
-    if (this.retries < 0) {
-      console.log("Request", this.mid, "ran out of retries");
-
-      clearTimeout(this.timeoutId);
-      delete this.socket.inflight[this.mid];
-
-      this.error("Ran out of retries");
-    }
-
-    if (this.socket.ws) {
-      try {
-        this.socket.ws.send(JSON.stringify(this.msg));
-        this.timeoutId = setTimeout(this.onTimeout, this.timeout);
-
-        return;
-      } catch (e) {
-        console.log("Error:", e);
-        console.log("Message send failure, retry...");
-
-        this.timeoutId = setTimeout(
-          this.attempt,
-          SOCKET_RECONNECTION_TIMEOUT,
-        );
-      }
-    } else {
-      setTimeout(this.attempt, SOCKET_RECONNECTION_TIMEOUT);
-    }
-  }
-}
-
-class ServiceCallMulti {
-  constructor(
-    mid: string,
-    msg: RequestMessage,
-    success: (resp: Response) => void,
-    error: (err: Error) => void,
-    timeout: number,
-    retries: number,
-    socket: Socket,
-    receiver,
-  ) {
-    this.mid = mid;
-    this.msg = msg;
-    this.success = success;
-    this.error = error;
-    this.timeout = timeout;
-    this.retries = retries;
-    this.socket = socket;
-    this.complete = false;
-    this.receiver = receiver;
-  }
-
-  mid: string;
-  success: (resp: object) => void; // FIXME: any
-  error: (err: object | string) => void; // FIXME: any
-  timeoutId: Timeout;
-  timeout: number;
-  retries: number;
-  socket: Socket;
-  complete: boolean;
-
-  start() {
-    this.socket.inflight[this.mid] = this;
-    this.attempt();
-  }
-
-  onReceived(resp: object) {
-    if (this.complete == true)
-      console.log(this.mid, "should not happen, request is already complete");
-
-    const fin = this.receiver(resp);
-
-    if (fin) {
-      this.complete = true;
-
-      //        console.log("Received for", this.mid);
-      clearTimeout(this.timeoutId);
-      this.timeoutId = null;
-      delete this.socket.inflight[this.mid];
-      this.success(resp);
-    }
-  }
-
-  onTimeout() {
-    if (this.complete == true)
-      console.log(
-        this.mid,
-        "timeout should not happen, request is already complete",
-      );
-
-    console.log("Request", this.mid, "timed out");
-    clearTimeout(this.timeoutId);
-    this.attempt();
-  }
-
-  attempt() {
-    //        console.log("attempt:", this.mid);
-
-    if (this.complete == true)
-      console.log(
-        this.mid,
-        "attempt should not be called, request is already complete",
-      );
-
-    this.retries--;
-
-    if (this.retries < 0) {
-      console.log("Request", this.mid, "ran out of retries");
-
-      clearTimeout(this.timeoutId);
-      delete this.socket.inflight[this.mid];
-
-      this.error("Ran out of retries");
-    }
-
-    if (this.socket.ws) {
-      try {
-        this.socket.ws.send(JSON.stringify(this.msg));
-        this.timeoutId = setTimeout(this.onTimeout, this.timeout);
-
-        return;
-      } catch (e) {
-        console.log("Error:", e);
-        console.log("Message send failure, retry...");
-
-        this.timeoutId = setTimeout(
-          this.attempt,
-          SOCKET_RECONNECTION_TIMEOUT,
-        );
-      }
-    } else {
-      setTimeout(this.attempt, SOCKET_RECONNECTION_TIMEOUT);
-    }
-  }
-}
-
-export interface Metadata {
-  id?: string;
-  metadata?: Triple[];
-  user?: string;
-  collection?: string;
-}
-
-export interface EntityEmbeddings {
-  entity?: Value;
-  vectors?: number[][];
-}
-
-export interface GraphEmbeddings {
-  metadata?: Metadata;
-  entities?: EntityEmbedding[];
-}
-
-export interface TextCompletionRequest {
-  system: string;
-  prompt: string;
-}
-
-export interface TextCompletionResponse {
-  response: string;
-}
-
-export interface GraphRagRequest {
-  query: string;
-}
-
-export interface GraphRagResponse {
-  response: string;
-}
-
-export interface AgentRequest {
-  question: string;
-}
-
-export interface AgentResponse {
-  thought?: string;
-  observation?: string;
-  answer?: string;
-  error?: string;
-}
-
-export interface EmbeddingsRequest {
-  text: string;
-}
-
-export interface EmbeddingsResponse {
-  vectors: number[][];
-}
-
-export interface GraphEmbeddingsQueryRequest {
-  vectors: number[][];
-  limit: number;
-}
-
-export interface GraphEmbeddingsQueryResponse {
-  entities: Value[];
-}
-
-export interface TriplesQueryRequest {
-  s?: Value;
-  p?: Value;
-  o?: Value;
-  limit: number;
-}
-
-export interface TriplesQueryResponse {
-  response: Triple[];
-}
-
-export interface LoadDocumentRequest {
-  id?: string;
-  data: string;
-  metadata?: Triple[];
-}
-
-export type LoadDocumentResponse = void;
-
-export interface LoadTextRequest {
-  id?: string;
-  text: string;
-  charset?: string;
-  metadata?: Triple[];
-}
-
-type LoadTextResponse = void;
-
-export interface DocumentMetadata {
-  id?: string;
-  time?: number;
-  kind?: string;
-  title?: string;
-  comments?: string;
-  metadata?: Triple[];
-  user?: string;
-  tags?: string[];
-}
-
-export interface ProcessingMetadata {
-  id?: string;
-  document_id?: string;
-  time?: number;
-  flow?: string;
-  user?: string;
-  collection?: string;
-  tags?: string[];
-}
-
-export interface LibraryRequest {
-  operation: string;
-  document_id?: string;
-  processing_id?: string;
-  document_metadata?: DocumentMetadata;
-  processing_metadata?: ProcessingMetadata;
-  content?: string;
-  user?: string;
-  collection?: string;
-  metadata?: Triple[];
-}
-
-export interface LibraryResponse {
-  error: Error;
-  document_metadata?: DocumentMetadata;
-  content?: string;
-  document_metadatas?: DocumentMetadata[];
-  processing_metadata?: ProcessingMetadata;
-}
-
-export interface KnowledgeRequest {
-  operation: string;
-  user?: string;
-  id?: string;
-  flow?: string;
-  collection?: string;
-  triples?: Triple[];
-  graphEmbeddings?: GraphEmbeddings;
-}
-
-export interface KnowledgeResponse {
-  error?: Error;
-  ids?: string[];
-  eos?: boolean;
-  triples?: Triple[];
-  graphEmbeddings?: Graphembeddings;
-}
-
-export interface TextCompletionResponse {
-  response: string;
-}
-
 function makeid(length: number) {
   const array = new Uint32Array(length);
   crypto.getRandomValues(array);
@@ -433,29 +73,6 @@ function makeid(length: number) {
     "",
   );
 }
-
-export interface FlowRequest {
-  operation: string;
-  class_name?: string;
-  class_definition?: string;
-  description?: string;
-  flow_id?: string;
-}
-
-export interface FlowResponse {
-  class_names?: string[];
-  flow_ids?: string[];
-  class_definition?: string;
-  flow?: string;
-  description?: string;
-  error?: Error;
-}
-
-export type ConfigRequest = object;
-export type ConfigResponse = object;
-
-export type KnowledgeRequest = object;
-export type KnowledgeResponse = object;
 
 export class SocketImplementation {
   ws?: WebSocket;
@@ -730,18 +347,6 @@ export class SocketImplementation {
     );
   }
 
-  /*
-    setPrompt(
-      id : string, prompt : string, responseType : string,
-      schema : any,
-    ) {
-      
-
-      return this.getConfigAll().then(
-          (r) => JSON.parse(r.config.prompt[`template.${id}`])
-      );
-    }
-*/
   getSystemPrompt() {
     return this.getConfigAll().then((r) =>
       JSON.parse(r.config.prompt.system),
@@ -1088,3 +693,4 @@ export class SocketImplementation {
 export const createTrustGraphSocket = (): Socket => {
   return new SocketImplementation();
 };
+
