@@ -625,8 +625,7 @@ export class FlowApi {
   }
 
   embeddings(text: string) {
-
-      console.log("EMBED>", this.flowId, text);
+    console.log("EMBED>", this.flowId, text);
 
     return this.api
       .makeRequest<EmbeddingsRequest, EmbeddingsResponse>(
@@ -634,28 +633,24 @@ export class FlowApi {
         {
           text: text,
         },
-          30000,
-          null,
-          this.flowId,
+        30000,
+        null,
+        this.flowId,
       )
       .then((r) => r.vectors);
-
   }
 
   graphEmbeddingsQuery(vecs: number[][], limit: number | undefined) {
     return this.api
-      .makeRequest<
-        GraphEmbeddingsQueryRequest,
-        GraphEmbeddingsQueryResponse
-      >(
+      .makeRequest<GraphEmbeddingsQueryRequest, GraphEmbeddingsQueryResponse>(
         "graph-embeddings",
         {
           vectors: vecs,
           limit: limit ? limit : 20,
         },
         30000,
-          null,
-          this.flowId,
+        null,
+        this.flowId,
       )
       .then((r) => r.entities);
   }
@@ -671,8 +666,8 @@ export class FlowApi {
           limit: limit ? limit : 20,
         },
         30000,
-          null,
-          this.flowId,
+        null,
+        this.flowId,
       )
       .then((r) => r.response);
   }
@@ -684,10 +679,7 @@ export class FlowApi {
     id?: string,
     metadata?: Triple[],
   ) {
-    return this.api.makeRequest<
-      LoadDocumentRequest,
-      LoadDocumentResponse
-    >(
+    return this.api.makeRequest<LoadDocumentRequest, LoadDocumentResponse>(
       "document-load",
       {
         id: id,
@@ -695,8 +687,8 @@ export class FlowApi {
         data: document,
       },
       30000,
-          null,
-          this.flowId,
+      null,
+      this.flowId,
     );
   }
 
@@ -718,8 +710,8 @@ export class FlowApi {
         charset: charset,
       },
       30000,
-          null,
-          this.flowId,
+      null,
+      this.flowId,
     );
   }
 }
@@ -874,4 +866,3 @@ export class KnowledgeApi {
 export const createTrustGraphSocket = (): Socket => {
   return new BaseApi();
 };
-

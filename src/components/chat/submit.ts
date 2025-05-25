@@ -4,8 +4,8 @@ import { Entity } from "../../state/Entity";
 import { Triple, Value } from "../../state/Triple";
 
 export const submitChat = (
-    socket: Socket,
-    flowId: string,
+  socket: Socket,
+  flowId: string,
   input: string,
   addMessage: (role: string, m: string) => void,
   addActivity: (act: string) => void,
@@ -38,8 +38,8 @@ export const submitChat = (
 */
 
   addActivity(ragActivity);
-    socket
-        .flow(flowId)
+  socket
+    .flow(flowId)
     .graphRag(input)
     .then((text: string) => {
       addMessage("ai", text);
@@ -56,14 +56,14 @@ export const submitChat = (
 
   // Take the text, and get embeddings
   addActivity(embActivity);
-    socket
-        .flow(flowId)
+  socket
+    .flow(flowId)
     .embeddings(input)
     .then(
       // Take the embeddings, and lookup entities using graph
       // embeddings
       (vecs: number[][]) => {
-          return socket.flow(flowId).graphEmbeddingsQuery(vecs, 15);
+        return socket.flow(flowId).graphEmbeddingsQuery(vecs, 15);
       },
     )
     .then(
@@ -73,8 +73,8 @@ export const submitChat = (
           entities.map((ent: Value) => {
             const act = "Label " + ent.v;
             addActivity(act);
-              return socket
-                  .flow(flowId)
+            return socket
+              .flow(flowId)
               .triplesQuery(ent, { v: RDFS_LABEL, e: true }, undefined, 1)
               .then((x) => {
                 removeActivity(act);

@@ -29,7 +29,9 @@ const SearchInput = ({ submit }) => {
             placeholder="Perform a vector search on a term or phrase..."
             value={search}
             onKeyDown={handleKeyDown}
-            onChange={(e) => { setSearch(e.target.value);}}
+            onChange={(e) => {
+              setSearch(e.target.value);
+            }}
           />
 
           <ProgressSubmitButton
