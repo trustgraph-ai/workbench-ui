@@ -13,6 +13,13 @@ const SearchInput = ({ submit }) => {
   const search = useSearchStateStore((state) => state.input);
   const setSearch = useSearchStateStore((state) => state.setInput);
 
+  const handleKeyDown = (e) => {
+    if (["Enter"].includes(e.key)) {
+      e.preventDefault();
+      submit();
+    }
+  };
+
   return (
     <>
       <form onSubmit={submit}>
@@ -21,7 +28,8 @@ const SearchInput = ({ submit }) => {
             variant="outline"
             placeholder="Perform a vector search on a term or phrase..."
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onKeyDown={handleKeyDown}
+            onChange={(e) => { setSearch(e.target.value);}}
           />
 
           <ProgressSubmitButton

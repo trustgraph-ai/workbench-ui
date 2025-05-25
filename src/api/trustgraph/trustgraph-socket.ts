@@ -625,20 +625,26 @@ export class FlowApi {
   }
 
   embeddings(text: string) {
+
+      console.log("EMBED>", this.flowId, text);
+
     return this.api
-      .makeFlowRequest<EmbeddingsRequest, EmbeddingsResponse>(
+      .makeRequest<EmbeddingsRequest, EmbeddingsResponse>(
         "embeddings",
         {
           text: text,
         },
-        30000,
+          30000,
+          null,
+          this.flowId,
       )
       .then((r) => r.vectors);
+
   }
 
   graphEmbeddingsQuery(vecs: number[][], limit: number | undefined) {
     return this.api
-      .makeFlowRequest<
+      .makeRequest<
         GraphEmbeddingsQueryRequest,
         GraphEmbeddingsQueryResponse
       >(
@@ -648,13 +654,15 @@ export class FlowApi {
           limit: limit ? limit : 20,
         },
         30000,
+          null,
+          this.flowId,
       )
       .then((r) => r.entities);
   }
 
   triplesQuery(s?: Value, p?: Value, o?: Value, limit?: number) {
     return this.api
-      .makeFlowRequest<TriplesQueryRequest, TriplesQueryResponse>(
+      .makeRequest<TriplesQueryRequest, TriplesQueryResponse>(
         "triples",
         {
           s: s,
@@ -663,6 +671,8 @@ export class FlowApi {
           limit: limit ? limit : 20,
         },
         30000,
+          null,
+          this.flowId,
       )
       .then((r) => r.response);
   }
@@ -674,7 +684,7 @@ export class FlowApi {
     id?: string,
     metadata?: Triple[],
   ) {
-    return this.api.makeFlowRequest<
+    return this.api.makeRequest<
       LoadDocumentRequest,
       LoadDocumentResponse
     >(
@@ -685,6 +695,8 @@ export class FlowApi {
         data: document,
       },
       30000,
+          null,
+          this.flowId,
     );
   }
 
@@ -697,7 +709,7 @@ export class FlowApi {
 
     charset?: string,
   ) {
-    return this.api.makeFlowRequest<LoadTextRequest, LoadTextResponse>(
+    return this.api.makeRequest<LoadTextRequest, LoadTextResponse>(
       "text-load",
       {
         id: id,
@@ -706,6 +718,8 @@ export class FlowApi {
         charset: charset,
       },
       30000,
+          null,
+          this.flowId,
     );
   }
 }
@@ -860,3 +874,4 @@ export class KnowledgeApi {
 export const createTrustGraphSocket = (): Socket => {
   return new BaseApi();
 };
+
