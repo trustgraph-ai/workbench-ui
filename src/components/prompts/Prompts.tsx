@@ -10,6 +10,7 @@ import EditDialog from "./EditDialog";
 import PromptControls from "./PromptControls";
 import EditSystemPrompt from "./EditSystemPrompt";
 import PromptsTable from './PromptsTable';
+import SystemPrompt from './SystemPrompt';
 
 const Prompts = () => {
   const addActivity = useProgressStateStore((state) => state.addActivity);
@@ -81,13 +82,10 @@ const Prompts = () => {
   }, [socket]);
 
   const onSelect = (row) => {
-  console.log("SELECT");
-  console.log("SELECT", row);
     setSelected(row[0]);
   };
 
   const onComplete = () => {
-    console.log("COMPLETE");
     setSelected("");
     setSystemEdit(false);
     refresh(socket);
@@ -121,13 +119,8 @@ const Prompts = () => {
           <PromptControls onUpdate={() => refresh(socket)} />
         </Tabs.Content>
         <Tabs.Content value="system">
-          <Box
-            onClick={() => onSystemEdit()}
-            p={4}
-            _hover={{ backgroundColor: "bg.emphasized" }}
-          >
-            <Code p={2}>{systemPrompt}</Code>
-          </Box>
+          <SystemPrompt prompt={systemPrompt} onEdit={onSystemEdit}
+        />
         </Tabs.Content>
       </Tabs.Root>
     </>
