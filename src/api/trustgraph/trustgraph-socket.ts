@@ -1,7 +1,9 @@
+// Import core types and classes for the TrustGraph API
 import { Triple, Value } from "./Triple";
 import { ServiceCallMulti } from "./service-call-multi";
 import { ServiceCall } from "./service-call";
 
+// Import all message types for different services
 import {
   //  AgentRequest,
   AgentResponse,
@@ -39,45 +41,59 @@ import {
   //  Response,
 } from "./messages";
 
-//type Timeout = ReturnType<typeof setTimeout>;
+// Configuration constants
+const SOCKET_RECONNECTION_TIMEOUT = 2000; // 2 seconds between reconnection
+// attempts
+const SOCKET_URL = "/api/socket"; // WebSocket endpoint path
 
-const SOCKET_RECONNECTION_TIMEOUT = 2000;
-const SOCKET_URL = "/api/socket";
-
+/**
+ * Socket interface defining all available operations for the TrustGraph API
+ * This provides a unified interface for various AI/ML and knowledge graph
+ * operations
+ */
 export interface Socket {
   close: () => void;
 
+  // Text completion using AI models
   textCompletion: (system: string, text: string) => Promise<string>;
 
+  // Graph-based Retrieval Augmented Generation
   graphRag: (text: string) => Promise<string>;
 
+  // Agent interaction with streaming callbacks for different phases
   agent: (
     question: string,
-    think: (t: string) => void,
-    observe: (t: string) => void,
-    answer: (t: string) => void,
-    error: (e: string) => void,
+    think: (t: string) => void, // Called when agent is thinking
+    observe: (t: string) => void, // Called when agent makes observations
+    answer: (t: string) => void, // Called when agent provides final answer
+    error: (e: string) => void, // Called on errors
   ) => void;
 
+  // Generate embeddings for text
   embeddings: (text: string) => Promise<number[][]>;
 
+  // Query graph using embedding vectors
   graphEmbeddingsQuery: (vecs: number[][], limit: number) => Promise<Value[]>;
 
+  // Query knowledge graph triples (subject-predicate-object)
   triplesQuery: (
-    s?: Value,
-    p?: Value,
-    o?: Value,
+    s?: Value, // Subject (optional)
+    p?: Value, // Predicate (optional)
+    o?: Value, // Object (optional)
     limit?: number,
   ) => Promise<Triple[]>;
 
+  // Load a document into the system
   loadDocument: (
-    document: string,
-    id?: string,
-    metadata?: Triple[],
+    document: string, // Base64-encoded document
+    id?: string, // Optional document ID
+    metadata?: Triple[], // Optional metadata as triples
   ) => Promise<void>;
 
+  // Load plain text into the system
   loadText: (text: string, id?: string, metadata?: Triple[]) => Promise<void>;
 
+  // Load a document into the library with full metadata
   loadLibraryDocument: (
     document: string,
     id?: string,
@@ -86,7 +102,11 @@ export interface Socket {
   ) => Promise<void>;
 }
 
-// Create a random message ID
+/**
+ * Generates a random message ID using cryptographically secure random values
+ * @param length - Number of random characters to generate
+ * @returns Random string of specified length
+ */
 function makeid(length: number) {
   const array = new Uint32Array(length);
   crypto.getRandomValues(array);
@@ -99,38 +119,50 @@ function makeid(length: number) {
   );
 }
 
+/**
+ * BaseApi - Core WebSocket client for TrustGraph API
+ * Manages connection lifecycle, message routing, and provides base request
+ * functionality
+ */
 export class BaseApi {
-  ws?: WebSocket;
-  tag: string;
-  id: number;
-  inflight: { [key: string]: ServiceCall } = {};
+  ws?: WebSocket; // WebSocket connection instance
+  tag: string; // Unique client identifier
+  id: number; // Counter for generating unique message IDs
+  inflight: { [key: string]: ServiceCall } = {}; // Track active requests by
+  // message ID
 
   constructor() {
-    this.tag = makeid(16);
-    this.id = 1;
-
-    this.openSocket();
+    this.tag = makeid(16); // Generate unique client tag
+    this.id = 1; // Start message ID counter
+    this.openSocket(); // Establish WebSocket connection
   }
 
+  /**
+   * Establishes WebSocket connection and sets up event handlers
+   */
   openSocket() {
     this.ws = new WebSocket(SOCKET_URL);
 
+    // Handle incoming messages from server
     const onMessage = (message: MessageEvent) => {
       if (!message.data) return;
 
       const obj = JSON.parse(message.data);
 
-      //            console.log("<--", obj);
-
+      // Skip messages without ID (can't route them)
       if (!obj.id) return;
 
+      // Route response to the corresponding inflight request
       if (this.inflight[obj.id]) {
         this.inflight[obj.id].onReceived(obj.response);
       } else {
-        //                console.log("Message ID", obj.id, "not known");
+        // Message ID not recognized - likely already processed or timed out
+        // Commented out to reduce noise:
+        // console.log("Message ID", obj.id, "not known");
       }
     };
 
+    // Handle connection closure - automatically attempt reconnection
     const onClose = () => {
       console.log("[socket close]");
       this.ws = undefined;
@@ -139,37 +171,58 @@ export class BaseApi {
       }, SOCKET_RECONNECTION_TIMEOUT);
     };
 
+    // Log successful connection
     const onOpen = () => {
       console.log("[socket open]");
     };
 
+    // Attach event listeners
     this.ws.addEventListener("message", onMessage);
     this.ws.addEventListener("close", onClose);
     this.ws.addEventListener("open", onOpen);
   }
 
+  /**
+   * Reopens the WebSocket connection (used after connection failures)
+   */
   reopen() {
     console.log("[socket reopen]");
     this.openSocket();
   }
 
+  /**
+   * Closes the WebSocket connection and cleans up
+   */
   close() {
-    // Maybe these 'leak' websocket references?
-    //        this.ws.removeEventListener("message", onMessage);
-    //        this.ws.removeEventListener("close", onClose);
-    //        this.ws.removeEventListener("open", doOpen);
+    // Note: Could potentially leak WebSocket references if event listeners
+    // aren't removed
+    // Currently commented out to avoid potential issues
+    // with handler references
     if (this.ws) {
       this.ws.close();
       this.ws = undefined;
     }
   }
 
+  /**
+   * Generates the next unique message ID for requests
+   * Format: {clientTag}-{incrementingNumber}
+   */
   getNextId() {
     const mid = this.tag + "-" + this.id.toString();
     this.id++;
     return mid;
   }
 
+  /**
+   * Core method for making service requests over WebSocket
+   * @param service - Name of the service to call
+   * @param request - Request payload
+   * @param timeout - Request timeout in milliseconds (default: 10000)
+   * @param retries - Number of retry attempts (default: 3)
+   * @param flow - Optional flow identifier
+   * @returns Promise resolving to the service response
+   */
   makeRequest<RequestType, ResponseType>(
     service: string,
     request: RequestType,
@@ -179,18 +232,21 @@ export class BaseApi {
   ) {
     const mid = this.getNextId();
 
+    // Set default values
     if (timeout == undefined) timeout = 10000;
-
     if (retries == undefined) retries = 3;
 
+    // Construct the request message
     const msg: RequestMessage = {
       id: mid,
       service: service,
       request: request,
     };
 
+    // Add flow identifier if provided
     if (flow) msg.flow = flow;
 
+    // Return a Promise that will be resolved/rejected by the ServiceCall
     return new Promise<ResponseType>((resolve, reject) => {
       const call = new ServiceCall(
         mid,
@@ -203,28 +259,32 @@ export class BaseApi {
       );
 
       call.start();
-
-      //            console.log("-->", msg);
+      // Commented out debug logging: console.log("-->", msg);
     }).then((obj) => {
-      //                console.log("Success for", mid);
+      // Commented out success logging: console.log("Success for", mid);
       return obj as ResponseType;
     });
   }
 
+  /**
+   * Makes a request that can receive multiple responses (streaming)
+   * Used for operations that return data in chunks
+   */
   makeRequestMulti<RequestType, ResponseType>(
     service: string,
     request: RequestType,
-    receiver,
+    receiver, // Callback to handle each response chunk
     timeout?: number,
     retries?: number,
     flow?: string,
   ) {
     const mid = this.getNextId();
 
+    // Set defaults
     if (timeout == undefined) timeout = 10000;
-
     if (retries == undefined) retries = 3;
 
+    // Construct request message
     const msg: RequestMessage = {
       id: mid,
       service: service,
@@ -246,14 +306,15 @@ export class BaseApi {
       );
 
       call.start();
-
-      //            console.log("-->", msg);
     }).then((obj) => {
-      //                console.log("Success for", mid);
       return obj as ResponseType;
     });
   }
 
+  /**
+   * Convenience method for making flow-specific requests
+   * Defaults to "default" flow if none specified
+   */
   makeFlowRequest<RequestType, ResponseType>(
     service: string,
     request: RequestType,
@@ -272,6 +333,7 @@ export class BaseApi {
     );
   }
 
+  // Factory methods for creating specialized API instances
   librarian() {
     return new LibrarianApi(this);
   }
@@ -293,11 +355,18 @@ export class BaseApi {
   }
 }
 
+/**
+ * LibrarianApi - Manages document storage and retrieval
+ * Handles document lifecycle including upload, processing, and removal
+ */
 export class LibrarianApi {
   constructor(api) {
     this.api = api;
   }
 
+  /**
+   * Retrieves list of all documents in the system
+   */
   getDocuments() {
     return this.api
       .makeRequest<LibrarianRequest, LibrarianResponse>(
@@ -306,11 +375,14 @@ export class LibrarianApi {
           operation: "list-documents",
           user: "trustgraph",
         },
-        60000,
+        60000, // 60 second timeout for potentially large lists
       )
       .then((r) => r["document-metadatas"]);
   }
 
+  /**
+   * Retrieves list of documents currently being processed
+   */
   getProcessing() {
     return this.api
       .makeRequest<LibrarianRequest, LibrarianResponse>(
@@ -324,13 +396,21 @@ export class LibrarianApi {
       .then((r) => r["processing-metadatas"]);
   }
 
+  /**
+   * Uploads a document to the library with full metadata
+   * @param document - Base64-encoded document content
+   * @param id - Optional document identifier
+   * @param metadata - Optional metadata as triples
+   * @param mimeType - Document MIME type
+   * @param title - Document title
+   * @param comments - Additional comments
+   * @param tags - Document tags for categorization
+   * @param user - User identifier
+   */
   loadDocument(
-    // base64-encoded doc
-    document: string,
-
+    document: string, // base64-encoded doc
     id?: string,
     metadata?: Triple[],
-
     mimeType: string,
     title: string,
     comments: string,
@@ -343,7 +423,7 @@ export class LibrarianApi {
         operation: "add-document",
         "document-metadata": {
           id: id,
-          time: Math.floor(Date.now() / 1000),
+          time: Math.floor(Date.now() / 1000), // Unix timestamp
           kind: mimeType,
           title: title,
           comments: comments,
@@ -353,10 +433,13 @@ export class LibrarianApi {
         },
         content: document,
       },
-      30000,
+      30000, // 30 second timeout for document upload
     );
   }
 
+  /**
+   * Removes a document from the library
+   */
   removeDocument(id: string, user: string) {
     return this.api.makeRequest<LibraryRequest, LibraryResponse>(
       "librarian",
@@ -369,6 +452,15 @@ export class LibrarianApi {
     );
   }
 
+  /**
+   * Adds a document to the processing queue
+   * @param id - Processing job identifier
+   * @param doc_id - Document to process
+   * @param flow - Processing flow to use
+   * @param user - User identifier
+   * @param collection - Collection to add processed data to
+   * @param tags - Tags for the processing job
+   */
   addProcessing(
     id: string,
     doc_id: string,
@@ -396,11 +488,18 @@ export class LibrarianApi {
   }
 }
 
+/**
+ * FlowsApi - Manages processing flows and configuration
+ * Flows define how documents and data are processed through the system
+ */
 export class FlowsApi {
   constructor(api) {
     this.api = api;
   }
 
+  /**
+   * Retrieves list of available flows
+   */
   getFlows() {
     return this.api
       .makeRequest<FlowRequest, FlowResponse>(
@@ -413,6 +512,9 @@ export class FlowsApi {
       .then((r) => r["flow-ids"]);
   }
 
+  /**
+   * Retrieves definition of a specific flow
+   */
   getFlow(id: string) {
     return this.api
       .makeRequest<FlowRequest, FlowResponse>(
@@ -423,9 +525,14 @@ export class FlowsApi {
         },
         60000,
       )
-      .then((r) => JSON.parse(r.flow));
+      .then((r) => JSON.parse(r.flow)); // Parse JSON flow definition
   }
 
+  // Configuration management methods
+
+  /**
+   * Retrieves all configuration settings
+   */
   getConfigAll() {
     return this.api.makeRequest<ConfigRequest, ConfigResponse>(
       "config",
@@ -436,6 +543,9 @@ export class FlowsApi {
     );
   }
 
+  /**
+   * Retrieves specific configuration values by key
+   */
   getConfig(keys: { type: string; key: string }[]) {
     return this.api.makeRequest<ConfigRequest, ConfigResponse>(
       "config",
@@ -447,6 +557,9 @@ export class FlowsApi {
     );
   }
 
+  /**
+   * Updates configuration values
+   */
   putConfig(values: { type: string; key: string; value: string }[]) {
     return this.api.makeRequest<ConfigRequest, ConfigResponse>(
       "config",
@@ -458,6 +571,9 @@ export class FlowsApi {
     );
   }
 
+  /**
+   * Deletes configuration entries
+   */
   deleteConfig(keys: { type: string; key: string }) {
     return this.api.makeRequest<ConfigRequest, ConfigResponse>(
       "config",
@@ -469,24 +585,40 @@ export class FlowsApi {
     );
   }
 
+  // Prompt management - specialized config operations for AI prompts
+
+  /**
+   * Retrieves list of available prompt templates
+   */
   getPrompts() {
     return this.api
       .getConfigAll()
       .then((r) => JSON.parse(r.config.prompt["template-index"]));
   }
 
+  /**
+   * Retrieves a specific prompt template
+   */
   getPrompt(id: string) {
     return this.getConfigAll().then((r) =>
       JSON.parse(r.config.prompt[`template.${id}`]),
     );
   }
 
+  /**
+   * Retrieves the system prompt configuration
+   */
   getSystemPrompt() {
     return this.getConfigAll().then((r) =>
       JSON.parse(r.config.prompt.system),
     );
   }
 
+  // Flow class management - templates for creating flows
+
+  /**
+   * Retrieves list of available flow classes (templates)
+   */
   getFlowClasses() {
     return this.api
       .makeRequest<FlowRequest, FlowResponse>(
@@ -499,6 +631,9 @@ export class FlowsApi {
       .then((r) => r["class-names"]);
   }
 
+  /**
+   * Retrieves definition of a specific flow class
+   */
   getFlowClass(name: string) {
     return this.api
       .makeRequest<FlowRequest, FlowResponse>(
@@ -512,6 +647,11 @@ export class FlowsApi {
       .then((r) => JSON.parse(r["class-definition"]));
   }
 
+  // Flow lifecycle management
+
+  /**
+   * Starts a new flow instance
+   */
   startFlow(id: string, class_name: string, description: string) {
     return this.api.makeRequest<LibraryRequest, LibraryResponse>(
       "flow",
@@ -525,6 +665,9 @@ export class FlowsApi {
     );
   }
 
+  /**
+   * Stops a running flow instance
+   */
   stopFlow(id: string) {
     return this.api.makeRequest<LibraryRequest, LibraryResponse>(
       "flow",
@@ -537,27 +680,37 @@ export class FlowsApi {
   }
 }
 
+/**
+ * FlowApi - Interface for interacting with a specific flow instance
+ * Provides flow-specific versions of core AI/ML operations
+ */
 export class FlowApi {
   constructor(api, flowId) {
     this.api = api;
-    this.flowId = flowId;
+    this.flowId = flowId; // All requests will be routed through this flow
   }
 
+  /**
+   * Performs text completion using AI models within this flow
+   */
   textCompletion(system: string, text: string): Promise<string> {
     return this.api
       .makeRequest<TextCompletionRequest, TextCompletionResponse>(
         "text-completion",
         {
-          system: system,
-          prompt: text,
+          system: system, // System prompt/instructions
+          prompt: text, // User prompt
         },
         30000,
-        null, // retries
-        this.flowId, // Flow ID
+        null, // Use default retries
+        this.flowId, // Route through this flow
       )
       .then((r) => r.response);
   }
 
+  /**
+   * Performs Graph RAG (Retrieval Augmented Generation) query
+   */
   graphRag(text: string) {
     return this.api
       .makeRequest<GraphRagRequest, GraphRagResponse>(
@@ -565,22 +718,27 @@ export class FlowApi {
         {
           query: text,
         },
-        60000,
+        60000, // Longer timeout for complex graph operations
         null,
         this.flowId,
       )
       .then((r) => r.response);
   }
 
+  /**
+   * Interacts with an AI agent that provides streaming responses
+   * Note: This implementation appears to have some issues and inconsistencies
+   */
   agent(
     question: string,
-    think: (s: string) => void,
-    observe: (s: string) => void,
-    answer: (s: string) => void,
-    error: (s: string) => void,
+    think: (s: string) => void, // Called when agent is thinking
+    observe: (s: string) => void, // Called when agent observes something
+    answer: (s: string) => void, // Called when agent provides answer
+    error: (s: string) => void, // Called on errors
   ) {
     const mid = this.api.getNextId();
 
+    // Manually construct message (bypasses normal request flow)
     const msg = JSON.stringify({
       id: mid,
       service: "agent",
@@ -594,13 +752,15 @@ export class FlowApi {
       console.log("Error:", e);
     };
 
+    // Handle agent responses - different types trigger different callbacks
     const ok = (e: ApiResponse) => {
       const resp = e.response as AgentResponse;
       if (resp.thought) think(resp.thought);
       if (resp.observation) observe(resp.observation);
       if (resp.answer) {
         answer(resp.answer);
-
+        // Clean up when final answer is received
+        // Note: This code has syntax errors and inconsistent property access
         clearTimeout(this.api, inflight[mid].timeoutId);
         delete this.inflight[mid];
       }
@@ -609,6 +769,7 @@ export class FlowApi {
     const timeout = 60000;
     const retries = 2;
 
+    // Manual inflight tracking (inconsistent with rest of API)
     this.inflight[mid] = {
       success: ok,
       error: err,
@@ -617,13 +778,17 @@ export class FlowApi {
       retries: retries,
     };
 
+    // Send message if WebSocket is available
     if (this.ws) {
       this.ws.send(msg);
     } else {
-      // Arrange for send later
+      // TODO: Queue for later sending when connection is available
     }
   }
 
+  /**
+   * Generates embeddings for text within this flow
+   */
   embeddings(text: string) {
     return this.api
       .makeRequest<EmbeddingsRequest, EmbeddingsResponse>(
@@ -638,13 +803,16 @@ export class FlowApi {
       .then((r) => r.vectors);
   }
 
+  /**
+   * Queries the knowledge graph using embedding vectors
+   */
   graphEmbeddingsQuery(vecs: number[][], limit: number | undefined) {
     return this.api
       .makeRequest<GraphEmbeddingsQueryRequest, GraphEmbeddingsQueryResponse>(
         "graph-embeddings",
         {
           vectors: vecs,
-          limit: limit ? limit : 20,
+          limit: limit ? limit : 20, // Default to 20 results
         },
         30000,
         null,
@@ -653,14 +821,18 @@ export class FlowApi {
       .then((r) => r.entities);
   }
 
+  /**
+   * Queries knowledge graph triples (subject-predicate-object relationships)
+   * All parameters are optional - omitted parameters act as wildcards
+   */
   triplesQuery(s?: Value, p?: Value, o?: Value, limit?: number) {
     return this.api
       .makeRequest<TriplesQueryRequest, TriplesQueryResponse>(
         "triples",
         {
-          s: s,
-          p: p,
-          o: o,
+          s: s, // Subject
+          p: p, // Predicate
+          o: o, // Object
           limit: limit ? limit : 20,
         },
         30000,
@@ -670,10 +842,11 @@ export class FlowApi {
       .then((r) => r.response);
   }
 
+  /**
+   * Loads a document into this flow for processing
+   */
   loadDocument(
-    // base64-encoded doc
-    document: string,
-
+    document: string, // base64-encoded document
     id?: string,
     metadata?: Triple[],
   ) {
@@ -690,14 +863,14 @@ export class FlowApi {
     );
   }
 
+  /**
+   * Loads plain text into this flow for processing
+   */
   loadText(
-    // base64-encoded doc
-    text: string,
-
+    text: string, // Text content
     id?: string,
     metadata?: Triple[],
-
-    charset?: string,
+    charset?: string, // Character encoding
   ) {
     return this.api.makeRequest<LoadTextRequest, LoadTextResponse>(
       "text-load",
@@ -714,11 +887,18 @@ export class FlowApi {
   }
 }
 
+/**
+ * ConfigApi - Dedicated configuration management interface
+ * Handles system configuration, prompts, and token cost tracking
+ */
 export class ConfigApi {
   constructor(api) {
     this.api = api;
   }
 
+  /**
+   * Retrieves complete configuration
+   */
   getConfigAll() {
     return this.api.makeRequest<ConfigRequest, ConfigResponse>(
       "config",
@@ -729,6 +909,9 @@ export class ConfigApi {
     );
   }
 
+  /**
+   * Retrieves specific configuration entries
+   */
   getConfig(keys: { type: string; key: string }[]) {
     return this.api.makeRequest<ConfigRequest, ConfigResponse>(
       "config",
@@ -740,6 +923,9 @@ export class ConfigApi {
     );
   }
 
+  /**
+   * Updates configuration values
+   */
   putConfig(values: { type: string; key: string; value: string }[]) {
     return this.api.makeRequest<ConfigRequest, ConfigResponse>(
       "config",
@@ -751,6 +937,9 @@ export class ConfigApi {
     );
   }
 
+  /**
+   * Deletes configuration entries
+   */
   deleteConfig(keys: { type: string; key: string }) {
     return this.api.makeRequest<ConfigRequest, ConfigResponse>(
       "config",
@@ -762,24 +951,39 @@ export class ConfigApi {
     );
   }
 
+  // Specialized prompt management methods
+
+  /**
+   * Retrieves available prompt templates
+   */
   getPrompts() {
     return this.api
       .getConfigAll()
       .then((r) => JSON.parse(r.config.prompt["template-index"]));
   }
 
+  /**
+   * Retrieves a specific prompt template
+   */
   getPrompt(id: string) {
     return this.api
       .getConfigAll()
       .then((r) => JSON.parse(r.config.prompt[`template.${id}`]));
   }
 
+  /**
+   * Retrieves system prompt configuration
+   */
   getSystemPrompt() {
     return this.api
       .getConfigAll()
       .then((r) => JSON.parse(r.config.prompt.system));
   }
 
+  /**
+   * Retrieves token cost information for different AI models
+   * Useful for cost tracking and optimization
+   */
   getTokenCosts() {
     return this.api
       .makeRequest<ConfigRequest, ConfigResponse>(
@@ -791,27 +995,36 @@ export class ConfigApi {
         60000,
       )
       .then((r) =>
+        // Parse JSON values and restructure data
         r.values.map((x) => {
           return { key: x.key, value: JSON.parse(x.value) };
         }),
       )
       .then((r) =>
+        // Transform to more usable format
         r.map((x) => {
           return {
             model: x.key,
-            input_price: x.value.input_price,
-            output_price: x.value.output_price,
+            input_price: x.value.input_price, // Cost per input token
+            output_price: x.value.output_price, // Cost per output token
           };
         }),
       );
   }
 }
 
+/**
+ * KnowledgeApi - Manages knowledge graph cores and data
+ * Knowledge cores appear to be collections of processed knowledge graph data
+ */
 export class KnowledgeApi {
   constructor(api) {
     this.api = api;
   }
 
+  /**
+   * Retrieves list of available knowledge graph cores
+   */
   getKnowledgeCores() {
     return this.api
       .makeRequest<FlowRequest, FlowResponse>(
@@ -825,6 +1038,9 @@ export class KnowledgeApi {
       .then((r) => r.ids);
   }
 
+  /**
+   * Deletes a knowledge graph core
+   */
   deleteKgCore(id: string, user?: string) {
     return this.api.makeRequest<LibraryRequest, LibraryResponse>(
       "knowledge",
@@ -837,12 +1053,20 @@ export class KnowledgeApi {
     );
   }
 
+  /**
+   * Retrieves a knowledge graph core with streaming data
+   * Uses multi-request pattern for large datasets
+   * @param receiver - Callback function to handle streaming data chunks
+   */
   getKgCore(id: string, user?: string, receiver) {
+    // Wrapper to handle end-of-stream detection
     const recv = (msg) => {
       if (msg.eos) {
+        // End of stream - notify receiver and signal completion
         receiver(msg, true);
         return true;
       } else {
+        // Regular message - continue streaming
         receiver(msg, false);
         return false;
       }
@@ -855,12 +1079,16 @@ export class KnowledgeApi {
         id: id,
         user: user ? user : "trustgraph",
       },
-      recv,
+      recv, // Stream handler
       30000,
     );
   }
 }
 
+/**
+ * Factory function to create a new TrustGraph WebSocket connection
+ * This is the main entry point for using the TrustGraph API
+ */
 export const createTrustGraphSocket = (): Socket => {
   return new BaseApi();
 };
