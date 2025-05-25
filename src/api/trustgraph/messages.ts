@@ -102,7 +102,7 @@ export interface LoadTextRequest {
   metadata?: Triple[];
 }
 
-type LoadTextResponse = void;
+export type LoadTextResponse = void;
 
 export interface DocumentMetadata {
   id?: string;

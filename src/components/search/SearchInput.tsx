@@ -7,10 +7,6 @@ import { useSearchStateStore } from "../../state/search";
 import SearchHelp from "./SearchHelp";
 import ProgressSubmitButton from "../common/ProgressSubmitButton";
 
-interface SearchInputProps {
-  submit;
-}
-
 const SearchInput = ({ submit }) => {
   const activity = useProgressStateStore((state) => state.activity);
 
