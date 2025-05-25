@@ -6,7 +6,6 @@ import {
   Stack,
   Popover,
   Portal,
-  VStack,
   RadioGroup,
 } from "@chakra-ui/react";
 
@@ -68,7 +67,10 @@ const FlowSelector = () => {
   const [open, setOpen] = useState(false);
 
   return (
-    <Popover.Root open={open} onOpenChange={(e) => setOpen(e.open)} size="xl"
+    <Popover.Root
+      open={open}
+      onOpenChange={(e) => setOpen(e.open)}
+      size="xl"
       positioning={{ placement: "bottom-end" }}
     >
       <Popover.Trigger asChild>
@@ -100,28 +102,25 @@ const FlowSelector = () => {
           <Popover.Content>
             <Popover.Arrow />
             <Popover.Body>
-            <Box>
-              <RadioGroup.Root
-              p={5}
-                value={flowId}
-                onValueChange={(x) => {
-                  setFlowId(x.value);
-                  const fl = flows.filter((fl) => fl[0] === x.value);
-                  if (fl) setFlow(fl[0][1]);
-                }}
-              >
-                <RadioGroup.Label>Select flow</RadioGroup.Label>
-                <Stack gap="0">
-                  {flows.map((flow) => {
-                    return (
-                      <RadioGroup.Item
-                        key={flow[0]}
-                        value={flow[0]}
-                      >
-                        <RadioGroup.ItemHiddenInput />
-                        <RadioGroup.ItemIndicator />
+              <Box>
+                <RadioGroup.Root
+                  p={5}
+                  value={flowId}
+                  onValueChange={(x) => {
+                    setFlowId(x.value);
+                    const fl = flows.filter((fl) => fl[0] === x.value);
+                    if (fl) setFlow(fl[0][1]);
+                  }}
+                >
+                  <RadioGroup.Label>Select flow</RadioGroup.Label>
+                  <Stack gap="1">
+                    {flows.map((flow) => {
+                      return (
+                        <RadioGroup.Item key={flow[0]} value={flow[0]}>
+                          <RadioGroup.ItemHiddenInput />
+                          <RadioGroup.ItemIndicator />
                           <RadioGroup.ItemText>
-                            <Stack mt={3}>
+                            <Stack mt={3} gap={1}>
                               <Box>
                                 <Text fontWeight="semibold">{flow[0]}</Text>
                               </Box>
@@ -132,11 +131,11 @@ const FlowSelector = () => {
                               </Box>
                             </Stack>
                           </RadioGroup.ItemText>
-                      </RadioGroup.Item>
-                    );
-                  })}
-                </Stack>
-              </RadioGroup.Root>
+                        </RadioGroup.Item>
+                      );
+                    })}
+                  </Stack>
+                </RadioGroup.Root>
               </Box>
             </Popover.Body>
           </Popover.Content>

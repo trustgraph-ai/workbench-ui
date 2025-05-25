@@ -35,8 +35,6 @@ const App = () => {
     (state) => state.removeActivity,
   );
 
-  const flow = useSessionStore((state) => state.flow);
-
   const setFlowId = useSessionStore((state) => state.setFlowId);
   const setFlow = useSessionStore((state) => state.setFlow);
 
@@ -60,11 +58,12 @@ const App = () => {
         removeActivity(act);
 
         const flowIds = flows.map((fl) => fl[0]);
-
         if (flowIds.includes("default")) {
           setFlowId("default");
-          setFlow(flows.filter((fl) => fl[0] != flow)[0][1]);
+          const flow = flows.filter((fl) => fl[0] == "default")[0][1];
+          setFlow(flow);
         } else {
+          // No default flow, just pick first in the list.
           setFlowId(flows[0][0]);
           setFlow(flows[0][1]);
         }

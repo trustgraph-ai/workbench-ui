@@ -28,7 +28,6 @@ const ChatConversation = () => {
   const setEntities = useWorkbenchStateStore((state) => state.setEntities);
 
   const submit = () => {
-    console.log("Input:", input);
     submitChat(
       socket,
       flowId,

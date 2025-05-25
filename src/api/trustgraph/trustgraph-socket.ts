@@ -625,8 +625,6 @@ export class FlowApi {
   }
 
   embeddings(text: string) {
-    console.log("EMBED>", this.flowId, text);
-
     return this.api
       .makeRequest<EmbeddingsRequest, EmbeddingsResponse>(
         "embeddings",
