@@ -3,13 +3,15 @@ import React, { useEffect, useState } from "react";
 import { Table, Code, Tabs, Box } from "@chakra-ui/react";
 
 import { useProgressStateStore } from "../../state/progress";
-import EditDialog from "./EditDialog";
-import PromptControls from "./PromptControls";
 import { useSocket } from "../../api/trustgraph/socket";
-import EditSystemPrompt from "./EditSystemPrompt";
 import { toaster } from "../ui/toaster";
 
-const PromptTable = () => {
+import EditDialog from "./EditDialog";
+import PromptControls from "./PromptControls";
+import EditSystemPrompt from "./EditSystemPrompt";
+import PromptsTable from './PromptsTable';
+
+const Prompts = () => {
   const addActivity = useProgressStateStore((state) => state.addActivity);
   const removeActivity = useProgressStateStore(
     (state) => state.removeActivity,
@@ -79,6 +81,8 @@ const PromptTable = () => {
   }, [socket]);
 
   const onSelect = (row) => {
+  console.log("SELECT");
+  console.log("SELECT", row);
     setSelected(row[0]);
   };
 
@@ -113,42 +117,7 @@ const PromptTable = () => {
           <Tabs.Trigger value="system">System prompt</Tabs.Trigger>
         </Tabs.List>
         <Tabs.Content value="prompts">
-          <Table.Root
-            sx={{ minWidth: 450 }}
-            aria-label="table of entities"
-            interactive
-          >
-            <Table.Header>
-              <Table.Row>
-                <Table.ColumnHeader>ID</Table.ColumnHeader>
-                <Table.ColumnHeader>Prompt</Table.ColumnHeader>
-                <Table.ColumnHeader>Response</Table.ColumnHeader>
-                <Table.ColumnHeader>Schema?</Table.ColumnHeader>
-              </Table.Row>
-            </Table.Header>
-            <Table.Body>
-              {prompts.map((row, ix) => (
-                <Table.Row key={ix} onClick={() => onSelect(row)}>
-                  <Table.Cell component="th" scope="row" verticalAlign="top">
-                    <Code p={2}>{row[0]}</Code>
-                  </Table.Cell>
-                  <Table.Cell verticalAlign="top">
-                    <Code p={2}>{row[1] ? row[1].prompt : ""}</Code>
-                  </Table.Cell>
-                  <Table.Cell verticalAlign="top">
-                    {row[1]
-                      ? row[1]["response-type"] == "json"
-                        ? "JSON"
-                        : "text"
-                      : "text"}
-                  </Table.Cell>
-                  <Table.Cell verticalAlign="top">
-                    {row[1] ? (row[1].schema ? "yes" : "no") : ""}
-                  </Table.Cell>
-                </Table.Row>
-              ))}
-            </Table.Body>
-          </Table.Root>
+          <PromptsTable prompts={prompts} onSelect={(row) => onSelect(row)}/>
           <PromptControls onUpdate={() => refresh(socket)} />
         </Tabs.Content>
         <Tabs.Content value="system">
@@ -165,4 +134,4 @@ const PromptTable = () => {
   );
 };
 
-export default PromptTable;
+export default Prompts;
