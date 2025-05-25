@@ -20,10 +20,11 @@ const CreateDialog = ({ open, onOpenChange, onSubmit }) => {
 
   useEffect(() => {
     socket
+       .flows()
       .getFlowClasses()
       .then((ids) => {
         return Promise.all(
-          ids.map((id) => socket.getFlowClass(id).then((x) => [id, x])),
+          ids.map((id) => socket.flows().getFlowClass(id).then((x) => [id, x])),
         );
       })
       .then((x) => {

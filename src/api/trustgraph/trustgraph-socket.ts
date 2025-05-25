@@ -248,8 +248,8 @@ export class BaseApi {
     );
   }
 
-    library() {
-      return new LibraryApi(this);
+    librarian() {
+      return new LibrarianApi(this);
   }
 
     flows() {
@@ -270,7 +270,7 @@ export class BaseApi {
 
 }
 
-export class LibraryApi {
+export class LibrarianApi {
 
   constructor(api) {
       this.api = api;
@@ -399,7 +399,7 @@ export class FlowsApi {
   }
 
   getConfigAll() {
-    return this.makeRequest<ConfigRequest, ConfigResponse>(
+    return this.api.makeRequest<ConfigRequest, ConfigResponse>(
       "config",
       {
         operation: "config",
@@ -409,7 +409,7 @@ export class FlowsApi {
   }
 
   getConfig(keys: { type: string; key: string }[]) {
-    return this.makeRequest<ConfigRequest, ConfigResponse>(
+    return this.api.makeRequest<ConfigRequest, ConfigResponse>(
       "config",
       {
         operation: "get",
@@ -420,7 +420,7 @@ export class FlowsApi {
   }
 
   putConfig(values: { type: string; key: string; value: string }[]) {
-    return this.makeRequest<ConfigRequest, ConfigResponse>(
+    return this.api.makeRequest<ConfigRequest, ConfigResponse>(
       "config",
       {
         operation: "put",
@@ -431,7 +431,7 @@ export class FlowsApi {
   }
 
   deleteConfig(keys: { type: string; key: string }) {
-    return this.makeRequest<ConfigRequest, ConfigResponse>(
+    return this.api.makeRequest<ConfigRequest, ConfigResponse>(
       "config",
       {
         operation: "delete",
@@ -442,7 +442,7 @@ export class FlowsApi {
   }
 
   getPrompts() {
-    return this.getConfigAll().then((r) =>
+    return this.api.getConfigAll().then((r) =>
       JSON.parse(r.config.prompt["template-index"]),
     );
   }
@@ -470,7 +470,7 @@ export class FlowsApi {
   }
 
   getFlowClass(name: string) {
-    return this.makeRequest<FlowRequest, FlowResponse>(
+    return this.api.makeRequest<FlowRequest, FlowResponse>(
       "flow",
       {
         operation: "get-class",
@@ -768,8 +768,12 @@ export class ConfigApi {
 
 export class KnowledgeApi {
 
+    constructor(api) {
+        this.api = api;
+    }
+
   getKnowledgeCores() {
-    return this.all.makeRequest<FlowRequest, FlowResponse>(
+    return this.api.makeRequest<FlowRequest, FlowResponse>(
       "knowledge",
       {
         operation: "list-kg-cores",

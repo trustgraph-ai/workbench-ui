@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 
+import { encode as msgpackEncode } from "@msgpack/msgpack";
+
 import { useProgressStateStore } from "../../state/progress";
 import { toaster } from "../ui/toaster";
 import { useSocket } from "../../api/trustgraph/socket";
-import { encode as msgpackEncode } from "@msgpack/msgpack";
 
 import Actions from "./Actions";
 import streamSaver from "streamsaver";
@@ -22,6 +23,7 @@ const KnowledgeCores = () => {
     const act = "Load knowledge cores";
     addActivity(act);
     socket
+      .knowledge()
       .getKnowledgeCores()
       .then((x) => {
         removeActivity(act);
@@ -154,7 +156,7 @@ const KnowledgeCores = () => {
       }
     };
 
-    socket.getKgCore(sels[0], null, receiver).then(() => {
+    socket.knowledge().getKgCore(sels[0], null, receiver).then(() => {
       console.log("I am done");
       toaster.create({
         title: "Download finished",

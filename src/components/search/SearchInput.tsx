@@ -8,10 +8,12 @@ import SearchHelp from "./SearchHelp";
 import ProgressSubmitButton from "../common/ProgressSubmitButton";
 
 interface SearchInputProps {
-  submit: React.FormEventHandler<HTMLFormElement>;
+  submit,
 }
 
-const SearchInput: React.FC<SearchInputProps> = ({ submit }) => {
+const SearchInput = ({
+  submit
+}) =>  {
   const activity = useProgressStateStore((state) => state.activity);
 
   const search = useSearchStateStore((state) => state.input);
@@ -31,6 +33,7 @@ const SearchInput: React.FC<SearchInputProps> = ({ submit }) => {
           <ProgressSubmitButton
             disabled={activity.size > 0}
             working={activity.size > 0}
+            onClick={ () => submit() }
           />
 
           <SearchHelp />

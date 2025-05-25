@@ -27,7 +27,7 @@ const Search = () => {
 
   const search = useSearchStateStore((state) => state.input);
 
-  const submit: React.FormEventHandler<HTMLFormElement> = (e) => {
+  const submit = () => {
     vectorSearch(socket, flowId, addActivity, removeActivity, search)
       .then((x) => {
         setView(x.view);
@@ -40,8 +40,6 @@ const Search = () => {
           type: "error",
         });
       });
-
-    e.preventDefault();
   };
 
   return (
