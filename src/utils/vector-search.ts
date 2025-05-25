@@ -8,7 +8,8 @@ import {
 } from "./row";
 
 export const vectorSearch = (
-  socket,
+    socket,
+    flowId,
   addActivity,
   removeActivity,
   term: string,

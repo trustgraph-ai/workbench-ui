@@ -44,8 +44,8 @@ const FlowSelector = () => {
       .then((x) => {
         removeActivity(act);
         setFlows(x);
-      });
-    q.catch((err) => {
+      })
+        .catch((err) => {
       removeActivity(act);
       toaster.create({
         title: "Error: " + err.toString(),
