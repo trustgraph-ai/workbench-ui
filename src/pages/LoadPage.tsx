@@ -11,9 +11,8 @@ import Url from "../components/load/Url";
 import Keywords from "../components/load/Keywords";
 import Operation from "../components/load/Operation";
 import Content from "../components/load/Content";
-import { useProgressStateStore } from "../state/ProgressState";
-import CenterSpinner from "../components/common/CenterSpinner";
-import { useLoadStateStore } from "../state/LoadState";
+import { useProgressStateStore } from "../state/progress";
+import { useLoadStateStore } from "../state/load";
 import PageHeader from "../components/common/PageHeader";
 import { loadFile, loadText } from "../utils/document-load";
 import { toaster } from "../components/ui/toaster";
@@ -148,7 +147,6 @@ const Load = () => {
         submitFiles={() => onFilesSubmit()}
         submitText={() => onTextSubmit()}
       />
-      <CenterSpinner />
     </>
   );
 };

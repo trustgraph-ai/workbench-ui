@@ -3,9 +3,9 @@ import { useNavigate } from "react-router";
 
 import { Table, Link } from "@chakra-ui/react";
 
-import { useWorkbenchStateStore } from "../../state/WorkbenchState";
-import { useSearchStateStore } from "../../state/SearchState";
-import { Row } from "../state/row";
+import { useWorkbenchStateStore } from "../../state/workbench";
+import { useSearchStateStore } from "../../state/search";
+import { Row } from "../../utils/row";
 
 const Results = () => {
   const view = useSearchStateStore((state) => state.rows);

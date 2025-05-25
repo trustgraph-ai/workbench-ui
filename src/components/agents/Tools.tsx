@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from "react";
 
-import { Table } from "@chakra-ui/react";
-
-import { useProgressStateStore } from "../../state/ProgressState";
+import { useProgressStateStore } from "../../state/progress";
 import EditDialog from "./EditDialog";
 import Controls from "./Controls";
+import ToolsTable from "./ToolsTable";
 import { useSocket } from "../../api/trustgraph/socket";
 import { toaster } from "../ui/toaster";
 
-const ToolTable = () => {
+const Tools = () => {
   const addActivity = useProgressStateStore((state) => state.addActivity);
   const removeActivity = useProgressStateStore(
     (state) => state.removeActivity,
@@ -71,10 +70,6 @@ const ToolTable = () => {
     refresh(socket);
   }, [socket]);
 
-  const onSelect = (row) => {
-    setSelected(row[0]);
-  };
-
   const onComplete = () => {
     setSelected("");
     refresh(socket);
@@ -89,37 +84,14 @@ const ToolTable = () => {
         create={false}
         id={selected}
       />
-      <Table.Root
-        sx={{ minWidth: 450 }}
-        aria-label="table of entities"
-        interactive
-      >
-        <Table.Header>
-          <Table.Row>
-            <Table.ColumnHeader>Tool ID</Table.ColumnHeader>
-            <Table.ColumnHeader>Description</Table.ColumnHeader>
-            <Table.ColumnHeader>Type</Table.ColumnHeader>
-          </Table.Row>
-        </Table.Header>
-        <Table.Body>
-          {tools.map((row, ix) => (
-            <Table.Row key={ix} onClick={() => onSelect(row)}>
-              <Table.Cell component="th" scope="row" verticalAlign="top">
-                {row[0]}
-              </Table.Cell>
-              <Table.Cell verticalAlign="top">
-                {row[1] ? row[1].description : ""}
-              </Table.Cell>
-              <Table.Cell verticalAlign="top">
-                {row[1] ? row[1].type : ""}
-              </Table.Cell>
-            </Table.Row>
-          ))}
-        </Table.Body>
-      </Table.Root>
+      <ToolsTable
+        selected={selected}
+        setSelected={setSelected}
+        tools={tools}
+      />
       <Controls onUpdate={() => refresh(socket)} />
     </>
   );
 };
 
-export default ToolTable;
+export default Tools;

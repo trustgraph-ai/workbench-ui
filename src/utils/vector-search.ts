@@ -5,7 +5,7 @@ import {
   addRowEmbeddings,
   computeCosineSimilarity,
   sortSimilarity,
-} from "../state/row";
+} from "./row";
 
 export const vectorSearch = (
   socket,

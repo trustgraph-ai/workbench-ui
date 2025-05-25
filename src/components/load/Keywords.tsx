@@ -1,6 +1,6 @@
 import React from "react";
 
-import { useLoadStateStore } from "../../state/LoadState";
+import { useLoadStateStore } from "../../state/load";
 import ChipInputField from "../common/ChipInputField";
 
 const Keywords = () => {

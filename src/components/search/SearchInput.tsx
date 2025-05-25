@@ -2,8 +2,8 @@ import React from "react";
 
 import { Input, HStack } from "@chakra-ui/react";
 
-import { useProgressStateStore } from "../../state/ProgressState";
-import { useSearchStateStore } from "../../state/SearchState";
+import { useProgressStateStore } from "../../state/progress";
+import { useSearchStateStore } from "../../state/search";
 import SearchHelp from "./SearchHelp";
 import ProgressSubmitButton from "../common/ProgressSubmitButton";
 

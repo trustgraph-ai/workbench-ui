@@ -2,7 +2,7 @@ import React from "react";
 
 import { Box, Alert } from "@chakra-ui/react";
 
-import { useLoadStateStore } from "../../state/LoadState";
+import { useLoadStateStore } from "../../state/load";
 
 const ProcessedFiles = () => {
   const uploaded = useLoadStateStore((state) => state.uploaded);

@@ -6,7 +6,7 @@ import { Upload, FilePlus } from "lucide-react";
 
 import SelectedFiles from "./SelectedFiles";
 import ProcessedFiles from "./ProcessedFiles";
-import { useLoadStateStore } from "../../state/LoadState";
+import { useLoadStateStore } from "../../state/load";
 
 interface FileUploadProps {
   submit: () => void;

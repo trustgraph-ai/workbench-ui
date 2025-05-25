@@ -18,6 +18,7 @@ const FlowClassesTable = () => {
 
   useEffect(() => {
     const act = "Load flow classes";
+    addActivity(act);
     socket
       .getFlowClasses()
       .then((names) => {

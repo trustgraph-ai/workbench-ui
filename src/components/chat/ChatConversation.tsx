@@ -5,9 +5,9 @@ import InputArea from "./InputArea";
 import EntityList from "../common/EntityList";
 
 import { useSocket } from "../../api/trustgraph/socket";
-import { useWorkbenchStateStore } from "../../state/WorkbenchState";
-import { useProgressStateStore } from "../../state/ProgressState";
-import { useChatStateStore } from "../../state/ChatState";
+import { useWorkbenchStateStore } from "../../state/workbench";
+import { useProgressStateStore } from "../../state/progress";
+import { useChatStateStore } from "../../state/chat";
 import { submitChat } from "./submit";
 
 const ChatConversation = () => {

@@ -2,8 +2,8 @@ import { useNavigate } from "react-router";
 
 import { HStack, Tag } from "@chakra-ui/react";
 
-import { Entity } from "../../state/Entity";
-import { useWorkbenchStateStore } from "../../state/WorkbenchState";
+import { Entity } from "../../state/entity";
+import { useWorkbenchStateStore } from "../../state/workbench";
 
 const EntityList = () => {
   const entities = useWorkbenchStateStore((state) => state.entities);

@@ -1,4 +1,4 @@
-import { RDFS_LABEL } from "../../state/knowledge-graph";
+import { RDFS_LABEL } from "../../utils/knowledge-graph";
 import { Socket } from "../../socket/trustgraph-socket";
 import { Entity } from "../../state/Entity";
 import { Triple, Value } from "../../state/Triple";
