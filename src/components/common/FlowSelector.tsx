@@ -7,7 +7,7 @@ import {
   Popover,
   Portal,
   VStack,
-  RadioCard,
+  RadioGroup,
 } from "@chakra-ui/react";
 
 import { useProgressStateStore } from "../../state/progress";
@@ -68,11 +68,13 @@ const FlowSelector = () => {
   const [open, setOpen] = useState(false);
 
   return (
-    <Popover.Root open={open} onOpenChange={(e) => setOpen(e.open)} size="xl">
+    <Popover.Root open={open} onOpenChange={(e) => setOpen(e.open)} size="xl"
+      positioning={{ placement: "bottom-end" }}
+    >
       <Popover.Trigger asChild>
         <Stack
-          p={2}
-          mr={8}
+          p={3}
+          gap={1}
           borderWidth="1px"
           borderRadius="8px"
           borderColor="border.inverted/20"
@@ -98,7 +100,9 @@ const FlowSelector = () => {
           <Popover.Content>
             <Popover.Arrow />
             <Popover.Body>
-              <RadioCard.Root
+            <Box>
+              <RadioGroup.Root
+              p={5}
                 value={flowId}
                 onValueChange={(x) => {
                   setFlowId(x.value);
@@ -106,19 +110,18 @@ const FlowSelector = () => {
                   if (fl) setFlow(fl[0][1]);
                 }}
               >
-                <RadioCard.Label>Select flow</RadioCard.Label>
-                <VStack columns={[2, null, 3]} gap="0.2rem">
+                <RadioGroup.Label>Select flow</RadioGroup.Label>
+                <Stack gap="0">
                   {flows.map((flow) => {
                     return (
-                      <RadioCard.Item
+                      <RadioGroup.Item
                         key={flow[0]}
                         value={flow[0]}
-                        minWidth="20rem"
                       >
-                        <RadioCard.ItemHiddenInput />
-                        <RadioCard.ItemControl>
-                          <RadioCard.ItemText>
-                            <Stack>
+                        <RadioGroup.ItemHiddenInput />
+                        <RadioGroup.ItemIndicator />
+                          <RadioGroup.ItemText>
+                            <Stack mt={3}>
                               <Box>
                                 <Text fontWeight="semibold">{flow[0]}</Text>
                               </Box>
@@ -128,14 +131,13 @@ const FlowSelector = () => {
                                 </Text>
                               </Box>
                             </Stack>
-                          </RadioCard.ItemText>
-                          <RadioCard.ItemIndicator />
-                        </RadioCard.ItemControl>
-                      </RadioCard.Item>
+                          </RadioGroup.ItemText>
+                      </RadioGroup.Item>
                     );
                   })}
-                </VStack>
-              </RadioCard.Root>
+                </Stack>
+              </RadioGroup.Root>
+              </Box>
             </Popover.Body>
           </Popover.Content>
         </Popover.Positioner>
