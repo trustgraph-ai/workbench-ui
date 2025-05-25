@@ -57,7 +57,7 @@ const KnowledgeCores = () => {
           title: "Flows deleted",
           type: "success",
         });
-        refresh();
+        refresh(socket);
       })
       .catch((e) =>
         toaster.create({
