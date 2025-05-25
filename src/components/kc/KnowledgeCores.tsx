@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from "react";
 
-import { Table, Checkbox } from "@chakra-ui/react";
-
 import { useProgressStateStore } from "../../state/progress";
 import { toaster } from "../ui/toaster";
 import { useSocket } from "../../api/trustgraph/socket";
-import Actions from "./Actions";
-import streamSaver from "streamsaver";
 import { encode as msgpackEncode } from "@msgpack/msgpack";
 
-const KnowledgeCoresTable = () => {
+import Actions from "./Actions";
+import streamSaver from "streamsaver";
+import KnowledgeCoresTable from './KnowledgeCoresTable';
+
+const KnowledgeCores = () => {
   const addActivity = useProgressStateStore((state) => state.addActivity);
   const removeActivity = useProgressStateStore(
     (state) => state.removeActivity,
@@ -178,35 +178,10 @@ const KnowledgeCoresTable = () => {
         onDelete={onDelete}
         onDownload={onDownload}
       />
-      <Table.Root interactive>
-        <Table.Header>
-          <Table.Row>
-            <Table.ColumnHeader></Table.ColumnHeader>
-            <Table.ColumnHeader>ID</Table.ColumnHeader>
-          </Table.Row>
-        </Table.Header>
-        <Table.Body>
-          {view.map((row) => (
-            <Table.Row key={row.id} onClick={() => toggle(row.id)}>
-              <Table.Cell>
-                <Checkbox.Root
-                  size="lg"
-                  variant="solid"
-                  checked={selected.has(row.id)}
-                >
-                  <Checkbox.HiddenInput />
-                  <Checkbox.Control />
-                </Checkbox.Root>
-              </Table.Cell>
-              <Table.Cell component="th" scope="row">
-                {row.id}
-              </Table.Cell>
-            </Table.Row>
-          ))}
-        </Table.Body>
-      </Table.Root>
+      <KnowledgeCoresTable cores={view} selected={selected} toggle={toggle}
+      />
     </>
   );
 };
 
-export default KnowledgeCoresTable;
+export default KnowledgeCores;

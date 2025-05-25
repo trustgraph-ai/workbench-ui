@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+
+import { useEffect } from "react";
 
 import { Box } from "@chakra-ui/react";
 import { BrowserRouter as Router, Routes, Route } from "react-router";
@@ -29,15 +30,12 @@ import { useSessionStore } from "./state/session";
 
 const App = () => {
   const socket = useSocket();
-  const [flows, setFlows] = useState([]);
-  const [selectedFlow, setSelectedFlow] = useState(null);
 
   const addActivity = useProgressStateStore((state) => state.addActivity);
   const removeActivity = useProgressStateStore(
     (state) => state.removeActivity,
   );
 
-  const flowId = useSessionStore((state) => state.flowId);
   const flow = useSessionStore((state) => state.flow);
 
   const setFlowId = useSessionStore((state) => state.setFlowId);

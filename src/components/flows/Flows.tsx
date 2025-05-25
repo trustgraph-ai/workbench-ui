@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
 
-import { Table, Checkbox } from "@chakra-ui/react";
-
 import { useProgressStateStore } from "../../state/progress";
 import { useSocket } from "../../api/trustgraph/socket";
-import Actions from "./Actions";
-import FlowControls from "./FlowControls";
 import { toaster } from "../ui/toaster";
 
-const FlowTable = () => {
+import Actions from "./Actions";
+import FlowControls from "./FlowControls";
+import FlowsTable from './FlowsTable';
+
+const Flows = () => {
   const addActivity = useProgressStateStore((state) => state.addActivity);
   const removeActivity = useProgressStateStore(
     (state) => state.removeActivity,
@@ -95,39 +95,10 @@ const FlowTable = () => {
   return (
     <>
       <Actions selectedCount={selected.size} onDelete={onDelete} />
-
-      <Table.Root interactive>
-        <Table.Header>
-          <Table.Row>
-            <Table.ColumnHeader></Table.ColumnHeader>
-            <Table.ColumnHeader>ID</Table.ColumnHeader>
-            <Table.ColumnHeader>Class name</Table.ColumnHeader>
-            <Table.ColumnHeader>Description</Table.ColumnHeader>
-          </Table.Row>
-        </Table.Header>
-        <Table.Body>
-          {view.map((row: Row) => (
-            <Table.Row onClick={() => toggle(row[0])} key={row[0]}>
-              <Table.Cell>
-                <Checkbox.Root
-                  size="lg"
-                  variant="solid"
-                  checked={selected.has(row[0])}
-                >
-                  <Checkbox.HiddenInput />
-                  <Checkbox.Control />
-                </Checkbox.Root>
-              </Table.Cell>
-              <Table.Cell>{row[0]}</Table.Cell>
-              <Table.Cell>{row[1]["class-name"]}</Table.Cell>
-              <Table.Cell>{row[1].description}</Table.Cell>
-            </Table.Row>
-          ))}
-        </Table.Body>
-      </Table.Root>
+      <FlowsTable flows={view} selected={selected} toggle={toggle} />
       <FlowControls onUpdate={() => refresh(socket)} />
     </>
   );
 };
 
-export default FlowTable;
+export default Flows;
