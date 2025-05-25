@@ -14,7 +14,7 @@ const Flows = () => {
     (state) => state.removeActivity,
   );
 
-  const [view, setView] = useState([]);
+  const [flows, setFlows] = useState([]);
 
   const socket = useSocket();
 
@@ -30,7 +30,7 @@ const Flows = () => {
       })
       .then((x) => {
         removeActivity(act);
-        setView(x);
+        setFlows(x);
       })
       .catch((err) => {
         removeActivity(act);
@@ -68,7 +68,7 @@ const Flows = () => {
 
     console.log("Deleting", ids[0]);
     const prom = socket.stopFlow(ids[0]).then(() => {
-      setView((x) => x.filter((row) => row.id != ids[0]));
+      setFlows((x) => x.filter((row) => row.id != ids[0]));
       setSelected((x) => {
         const newSet = new Set(x);
         x.delete(ids[0]);
@@ -95,7 +95,7 @@ const Flows = () => {
   return (
     <>
       <Actions selectedCount={selected.size} onDelete={onDelete} />
-      <FlowsTable flows={view} selected={selected} toggle={toggle} />
+      <FlowsTable flows={flows} selected={selected} toggle={toggle} />
       <FlowControls onUpdate={() => refresh(socket)} />
     </>
   );

@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Flex, Text, Box, HStack } from "@chakra-ui/react";
+import { Flex, Text, Box, HStack, Heading } from "@chakra-ui/react";
 
 import ColorModeToggle from "../color-mode-toggle";
 import FlowSelector from "./FlowSelector";
@@ -16,7 +16,6 @@ const PageHeader: React.FC<PageHeaderProps> = ({
   description,
   icon,
 }) => {
-
   return (
     <Flex
       mb={8}
