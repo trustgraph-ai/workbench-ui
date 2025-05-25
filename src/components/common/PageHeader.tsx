@@ -51,9 +51,15 @@ const PageHeader: React.FC<PageHeaderProps> = ({
       <Box>
         <HStack>
           <Stack p={2} mr={8}
+            borderWidth="1px"
+            borderRadius="8px"
+            borderColor="border.inverted/20"
+            color="fg.muted"
+            backgroundColor="brand.bg"
             _hover={{
               backgroundColor: "bg.emphasized",
-              color: "brand.solid",
+              borderColor: "border.inverted",
+              color: "fg",
             }}
           >
             <Box>
