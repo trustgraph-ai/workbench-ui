@@ -8,6 +8,8 @@ import { ForceGraph3D } from "react-force-graph";
 import SpriteText from "three-spritetext";
 
 import { useProgressStateStore } from "../../state/progress";
+import { useSessionStore } from "../../state/session";
+
 import { useSocket } from "../../api/trustgraph/socket";
 import { useWorkbenchStateStore } from "../../state/workbench";
 import {
@@ -26,6 +28,7 @@ const GraphView = () => {
   );
 
   const socket = useSocket();
+  const flowId = useSessionStore((state) => state.flowId);
 
   const selected = useWorkbenchStateStore((state) => state.selected);
 
@@ -43,7 +46,7 @@ const GraphView = () => {
 
     const sg = createSubgraph();
 
-    updateSubgraph(socket, selected.uri, sg, addActivity, removeActivity)
+    updateSubgraph(socket, flowId, selected.uri, sg, addActivity, removeActivity)
       .then((sg) => {
         setView(sg);
         removeActivity(act);
@@ -93,7 +96,7 @@ const GraphView = () => {
     const act = "Update subgraph: " + node.label;
     addActivity(act);
 
-    updateSubgraph(socket, node.id, view, addActivity, removeActivity)
+    updateSubgraph(socket, flowId, node.id, view, addActivity, removeActivity)
       .then((sg) => {
         setView(sg);
         removeActivity(act);

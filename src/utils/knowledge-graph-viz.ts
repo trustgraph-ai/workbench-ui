@@ -101,16 +101,19 @@ export const updateSubgraphTriples = (sg: Subgraph, triples: Triple[]) => {
 };
 
 export const updateSubgraph = (
-  socket: Socket,
+    socket: Socket,
+    flowId : string,
   uri: string,
   sg: Subgraph,
   add: (s: string) => void,
   remove: (s: string) => void,
 ) => {
-  return query(socket, uri, add, remove)
-    .then((d) => labelS(socket, d, add, remove))
-    .then((d) => labelP(socket, d, add, remove))
-    .then((d) => labelO(socket, d, add, remove))
+
+    const api = socket.flow(flowId);
+  return query(api, uri, add, remove)
+    .then((d) => labelS(api, d, add, remove))
+    .then((d) => labelP(api, d, add, remove))
+    .then((d) => labelO(api, d, add, remove))
     .then((d) => filterInternals(d))
     .then((d) => updateSubgraphTriples(sg, d));
 };
