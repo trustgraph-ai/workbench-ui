@@ -4,21 +4,19 @@ import TextBuffer from "./TextBuffer";
 import FileUpload from "./FileUpload";
 import { useLoadStateStore } from "../../state/load";
 
-const Content: React.FC<{
-  submitFiles: () => void;
-  submitText: () => void;
-}> = ({ submitFiles, submitText }) => {
+const Content = () => {
+
   const operation = useLoadStateStore((state) => state.operation);
 
   if (operation == "upload-pdf") {
-    return <FileUpload submit={submitFiles} kind="PDF" />;
+    return <FileUpload kind="PDF" />;
   }
 
   if (operation == "upload-text") {
-    return <FileUpload submit={submitFiles} kind="text" />;
+    return <FileUpload kind="text" />;
   }
 
-  return <TextBuffer submit={submitText} />;
+  return <TextBuffer />;
 };
 
 export default Content;

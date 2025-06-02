@@ -79,9 +79,8 @@ const App = () => {
       <Router>
         <Layout>
           <Routes>
-            <Route path="/" element={<LoadPage />} />
+            <Route path="/" element={<ChatPage />} />
             <Route path="/chat" element={<ChatPage />} />
-            <Route path="/load" element={<LoadPage />} />
             <Route path="/search" element={<SearchPage />} />
             <Route path="/entity" element={<EntityPage />} />
             <Route path="/graph" element={<GraphPage />} />

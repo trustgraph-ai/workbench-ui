@@ -9,6 +9,8 @@ import { useSocket } from "../../api/trustgraph/socket";
 import Actions from "./Actions";
 import SubmitDialog from "./SubmitDialog";
 import DocumentTable from "./DocumentTable";
+import DocumentControls from "./DocumentControls";
+import UploadDialog from "../load/UploadDialog";
 
 const Documents = () => {
   const addActivity = useProgressStateStore((state) => state.addActivity);
@@ -19,10 +21,11 @@ const Documents = () => {
   const [view, setView] = useState([]);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [submitOpen, setSubmitOpen] = useState(false);
+  const [uploadOpen, setUploadOpen] = useState(false);
 
   const socket = useSocket();
 
-  useEffect(() => {
+  const refresh = (socket) => {
     const act = "Load library";
     addActivity(act);
     socket
@@ -40,7 +43,11 @@ const Documents = () => {
           type: "error",
         });
       });
-  }, [socket, addActivity, removeActivity]);
+  }
+
+  useEffect(() => {
+    refresh(socket);
+  }, [socket]);
 
   const toggle = (id) => {
     const newSet = new Set(selected);
@@ -157,6 +164,16 @@ const Documents = () => {
     }
   };
 
+  const upload = () => {
+    setUploadOpen(true);
+  }
+
+  const onUploadComplete = () => {
+    console.log("UPLOAD!");
+    setUploadOpen(false);
+    refresh(socket);
+  }
+
   return (
     <>
       <Actions
@@ -173,9 +190,19 @@ const Documents = () => {
         docs={view.filter((x) => selected.has(x.id))}
       />
 
+      <UploadDialog
+        open={uploadOpen}
+        onOpenChange={setUploadOpen}
+        onComplete={onUploadComplete}
+      />
+
       <DocumentTable selected={selected} documents={view} toggle={toggle} />
+
+      <DocumentControls onUpload={upload} />
+
     </>
   );
 };
 
 export default Documents;
+

@@ -31,12 +31,12 @@ class Api:
 
         self.app = web.Application(middlewares=[])
 
+        # Just pass-through some calls to the API back-end
         self.app.add_routes([web.get("/api/socket", self.socket)])
-
         self.app.add_routes([web.get("/api/export-core", self.export_core)])
-
         self.app.add_routes([web.post("/api/import-core", self.import_core)])
 
+        # Everything else gets matched for serving static resources
         self.app.add_routes([web.get("/{tail:.*}", self.everything)])
 
         self.ui = importlib.resources.files().joinpath("ui")

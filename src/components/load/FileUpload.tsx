@@ -5,7 +5,6 @@ import { Button, Box } from "@chakra-ui/react";
 import { Upload, FilePlus } from "lucide-react";
 
 import SelectedFiles from "./SelectedFiles";
-import ProcessedFiles from "./ProcessedFiles";
 import { useLoadStateStore } from "../../state/load";
 
 interface FileUploadProps {
@@ -55,26 +54,12 @@ const FileUpload: React.FC<FileUploadProps> = ({ submit, kind }) => {
           multiple
         />
 
-        <Button
-          mt={5}
-          ml={5}
-          mb={5}
-          variant="solid"
-          colorPalette="brand"
-          onClick={() => submit()}
-          disabled={files.length < 1}
-        >
-          <Upload /> Load
-        </Button>
       </Box>
 
       <Box>
         <SelectedFiles />
       </Box>
 
-      <Box>
-        <ProcessedFiles />
-      </Box>
     </>
   );
 };

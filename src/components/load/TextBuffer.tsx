@@ -8,7 +8,6 @@ import { useLoadStateStore } from "../../state/load";
 import TextAreaField from "../common/TextAreaField";
 
 interface TextBufferProps {
-  submit: () => void;
 }
 
 const TextBuffer: React.FC<TextBufferProps> = ({ submit }) => {
@@ -19,32 +18,12 @@ const TextBuffer: React.FC<TextBufferProps> = ({ submit }) => {
   return (
     <>
       <Box mt={5}>
-        <Button
-          variant="solid"
-          colorPalette="brand"
-          disabled={value.length < 1}
-          onClick={submit}
-        >
-          <Upload /> Load
-        </Button>
-      </Box>
-
-      <Box mt={5}>
         <TextAreaField
           value={value}
           onValueChange={(e) => setValue(e)}
           label="Text content"
           rows={15}
         />
-
-        {textUploads > 0 && (
-          <Box sx={{ ml: 1, mt: 1, mb: 2 }}>
-            <Alert.Root status="success">
-              <Alert.Indicator />
-              <Alert.Title>{textUploads} text uploads</Alert.Title>
-            </Alert.Root>
-          </Box>
-        )}
       </Box>
     </>
   );
