@@ -4,19 +4,23 @@ import { Button, Box } from "@chakra-ui/react";
 
 import { Upload, FilePlus } from "lucide-react";
 
-import IdField from './IdField';
+import IdField from "./IdField";
 
 interface KnowledgeCoreUploadProps {
-  files,
-  setFiles,
-  id, setId,
+  files;
+  setFiles;
+  id;
+  setId;
   submit: () => void;
 }
 
 const KnowledgeCoreUpload: React.FC<KnowledgeCoreUploadProps> = ({
-  submit, files, setFiles, id, setId,
+  submit,
+  files,
+  setFiles,
+  id,
+  setId,
 }) => {
-
   const fl2a = (x: FileList | null): File[] => {
     if (x) return Array.from(x);
     else return [];
@@ -26,11 +30,10 @@ const KnowledgeCoreUpload: React.FC<KnowledgeCoreUploadProps> = ({
 
   return (
     <>
-
       <Box mt={10}>
         <IdField value={id} setValue={setId} />
-        </Box>
-      
+      </Box>
+
       <Box>
         <Button
           mt={5}
@@ -73,17 +76,12 @@ const KnowledgeCoreUpload: React.FC<KnowledgeCoreUploadProps> = ({
       </Box>
 
       <Box>
-        {
-            files.map(
-                (f, ix) =>
-                    <Box key={ix}>Selected: {f.name}</Box>
-            )
-        }
+        {files.map((f, ix) => (
+          <Box key={ix}>Selected: {f.name}</Box>
+        ))}
       </Box>
-
     </>
   );
 };
 
 export default KnowledgeCoreUpload;
-

@@ -5,11 +5,11 @@ import { Box } from "@chakra-ui/react";
 import TextField from "../common/TextField";
 
 interface IdProps {
-  value, setValue
+  value;
+  setValue;
 }
 
-const IdField : React.FC<IdProps> = ({value, setValue}) => {
-
+const IdField: React.FC<IdProps> = ({ value, setValue }) => {
   return (
     <>
       <Box sx={{ m: 2 }}>
@@ -25,4 +25,3 @@ const IdField : React.FC<IdProps> = ({value, setValue}) => {
 };
 
 export default IdField;
-
