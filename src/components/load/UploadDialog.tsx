@@ -31,7 +31,6 @@ import Operation from "./Operation";
 import Content from "./Content";
 
 const SubmitDialog = ({ open, onOpenChange, onComplete }) => {
-
   const socket = useSocket();
 
   const title = useLoadStateStore((state) => state.title);
@@ -150,7 +149,6 @@ const SubmitDialog = ({ open, onOpenChange, onComplete }) => {
   };
 
   const onSubmit = () => {
-
     if (operation == "upload-pdf") {
       onFilesSubmit();
     } else if (operation == "upload-text") {
@@ -158,7 +156,6 @@ const SubmitDialog = ({ open, onOpenChange, onComplete }) => {
     } else {
       onTextSubmit();
     }
-
   };
 
   return (
@@ -178,27 +175,20 @@ const SubmitDialog = ({ open, onOpenChange, onComplete }) => {
               <Dialog.Title>Submit documents for processing</Dialog.Title>
             </Dialog.Header>
             <Dialog.Body>
+              <Title />
+              <Url />
+              <Keywords />
+              <Comments />
 
-
-          <Title />
-          <Url />
-          <Keywords />
-          <Comments />
-
-
-        <Operation />
+              <Operation />
 
               <Content />
-
             </Dialog.Body>
             <Dialog.Footer>
               <Button variant="outline" onClick={() => onOpenChange(false)}>
                 Cancel
               </Button>
-              <Button
-                onClick={() => onSubmit()}
-                colorPalette="brand"
-              >
+              <Button onClick={() => onSubmit()} colorPalette="brand">
                 <SendHorizontal /> Submit
               </Button>
             </Dialog.Footer>
@@ -206,8 +196,6 @@ const SubmitDialog = ({ open, onOpenChange, onComplete }) => {
             <Dialog.CloseTrigger asChild>
               <CloseButton size="sm" />
             </Dialog.CloseTrigger>
-
-
           </Dialog.Content>
         </Dialog.Positioner>
       </Portal>

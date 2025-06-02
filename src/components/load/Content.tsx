@@ -5,7 +5,6 @@ import FileUpload from "./FileUpload";
 import { useLoadStateStore } from "../../state/load";
 
 const Content = () => {
-
   const operation = useLoadStateStore((state) => state.operation);
 
   if (operation == "upload-pdf") {

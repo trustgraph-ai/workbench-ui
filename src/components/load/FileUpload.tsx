@@ -53,13 +53,11 @@ const FileUpload: React.FC<FileUploadProps> = ({ submit, kind }) => {
           }}
           multiple
         />
-
       </Box>
 
       <Box>
         <SelectedFiles />
       </Box>
-
     </>
   );
 };

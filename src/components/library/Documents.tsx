@@ -43,7 +43,7 @@ const Documents = () => {
           type: "error",
         });
       });
-  }
+  };
 
   useEffect(() => {
     refresh(socket);
@@ -166,13 +166,13 @@ const Documents = () => {
 
   const upload = () => {
     setUploadOpen(true);
-  }
+  };
 
   const onUploadComplete = () => {
     console.log("UPLOAD!");
     setUploadOpen(false);
     refresh(socket);
-  }
+  };
 
   return (
     <>
@@ -199,10 +199,8 @@ const Documents = () => {
       <DocumentTable selected={selected} documents={view} toggle={toggle} />
 
       <DocumentControls onUpload={upload} />
-
     </>
   );
 };
 
 export default Documents;
-
