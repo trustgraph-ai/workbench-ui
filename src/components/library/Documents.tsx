@@ -40,7 +40,7 @@ const Documents = () => {
           type: "error",
         });
       });
-  }, [socket]);
+  }, [socket, addActivity, removeActivity]);
 
   const toggle = (id) => {
     const newSet = new Set(selected);

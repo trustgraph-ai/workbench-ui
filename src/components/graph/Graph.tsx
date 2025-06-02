@@ -66,7 +66,7 @@ const GraphView = () => {
           type: "error",
         });
       });
-  }, [selected, addActivity, removeActivity, socket]);
+  }, [selected, addActivity, removeActivity, socket, flowId]);
 
   if (!selected) {
     return (

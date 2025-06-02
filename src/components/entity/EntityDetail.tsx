@@ -48,7 +48,7 @@ const EntityDetail = () => {
           type: "error",
         });
       });
-  }, [selected, socket, addActivity, removeActivity]);
+  }, [selected, socket, addActivity, removeActivity, flowId]);
 
   if (!selected) {
     return (
