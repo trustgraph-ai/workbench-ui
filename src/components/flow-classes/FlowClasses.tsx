@@ -39,7 +39,7 @@ const FlowClassesTable = () => {
           type: "error",
         });
       });
-  }, [socket]);
+  }, [socket, addActivity, removeActivity]);
 
   return (
     <Table.Root sx={{ minWidth: 450 }} aria-label="table of entities">

@@ -13,6 +13,18 @@ export default defineConfig({
         secure: false,
         rewrite: () => "/api/v1/socket",
       },
+      "/api/export-core": {
+        target: "http://localhost:8088/",
+        changeOrigin: true,
+        secure: false,
+          rewrite: (x) => x.replace("/api/export-core", "/api/v1/export-core")
+      },
+      "/api/import-core": {
+        target: "http://localhost:8088/",
+        changeOrigin: true,
+        secure: false,
+          rewrite: (x) => x.replace("/api/import-core", "/api/v1/import-core")
+      },
     },
   },
 });

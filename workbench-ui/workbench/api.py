@@ -27,6 +27,10 @@ class Api:
 
         self.app.add_routes([web.get("/api/socket", self.socket)])
 
+        self.app.add_routes([web.get("/api/socket", self.socket)])
+
+        self.app.add_routes([web.get("/api/socket", self.socket)])
+
         self.app.add_routes([web.get("/{tail:.*}", self.everything)])
 
         self.ui = importlib.resources.files().joinpath("ui")

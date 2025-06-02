@@ -72,7 +72,7 @@ const App = () => {
         removeActivity(act);
         console.log("Error:", err);
       });
-  }, [socket]);
+  }, [socket, addActivity, removeActivity, setFlow, setFlowId]);
 
   return (
     <Box width="100%" minHeight="100vh" bg="colors.background">
