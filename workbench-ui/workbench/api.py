@@ -18,18 +18,24 @@ class Api:
     def __init__(self, **config):
 
         self.port = int(config.get("port", "8888"))
-        self.gateway = config.get("gateway", "ws://api-gateway:8088")
+        self.gateway = config.get("gateway", "http://api-gateway:8088")
 
         if self.gateway[-1] != "/":
             self.gateway += "/"
+
+        self.gateway_ws = self.gateway.replace(
+            "https://", "wss://"
+        ).replace(
+            "http://", "ws://"
+        )
 
         self.app = web.Application(middlewares=[])
 
         self.app.add_routes([web.get("/api/socket", self.socket)])
 
-        self.app.add_routes([web.get("/api/socket", self.socket)])
+        self.app.add_routes([web.get("/api/export-core", self.export_core)])
 
-        self.app.add_routes([web.get("/api/socket", self.socket)])
+        self.app.add_routes([web.post("/api/import-core", self.import_core)])
 
         self.app.add_routes([web.get("/{tail:.*}", self.everything)])
 
@@ -111,6 +117,49 @@ class Api:
             logging.error(f"Exception: {e}")
             raise web.HTTPInternalServerError()
 
+    async def import_core(self, request):
+
+        url = self.gateway + "api/v1/import-core?" + request.query_string
+
+        async def sender():
+            content = request.content
+            data = await content.read(64*1024)
+
+            while len(data) > 0:
+                yield data
+                data = await content.read(64*1024)
+
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url, data=sender()) as resp:
+                return web.Response(status=200)
+
+    async def export_core(self, request):
+
+        url = self.gateway + "api/v1/export-core?" + request.query_string
+
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url) as resp:
+
+                response = web.StreamResponse(
+                    status = 200, reason = "OK",
+                    headers = {"Content-Type": "application/octet-stream"}
+                )
+                await response.prepare(request)
+
+                content = resp.content
+
+                while True:
+
+                    data = await content.read(64*1024)
+
+                    if len(data) == 0: break
+
+                    if data is None: break
+
+                    await response.write(data)
+
+                return response
+
     async def socket(self, request):
 
         # Max message size is 50MB
@@ -118,7 +167,7 @@ class Api:
 
         await ws_server.prepare(request)
 
-        url = self.gateway + "api/v1/socket"
+        url = self.gateway_ws + "api/v1/socket"
 
         running = Running()
 
