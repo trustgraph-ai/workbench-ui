@@ -1,19 +1,21 @@
 import React, { useEffect, useState } from "react";
 
-import { Table, Tag, Checkbox } from "@chakra-ui/react";
-
-import { timeString } from "../../utils/time-string.ts";
-
-import { useQueryClient, useQuery, useMutation } from "@tanstack/react-query";
-
 import {
   createColumnHelper,
   flexRender,
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import { useQueryClient, useQuery, useMutation } from "@tanstack/react-query";
 
 import { v4 as uuidv4 } from "uuid";
+
+import { Table, Tag, Checkbox } from "@chakra-ui/react";
+
+import { timeString } from "../../utils/time-string.ts";
+
+
+import { columns } from '../../model/document-table';
 
 import { useProgressStateStore } from "../../state/progress";
 import { toaster } from "../ui/toaster";
@@ -25,21 +27,6 @@ import DocumentTable from "./DocumentTable";
 import DocumentControls from "./DocumentControls";
 import UploadDialog from "../load/UploadDialog";
 
-type Document = {
-  id: string;
-  title: string;
-  time: number;
-  kind: string;
-  user: string;
-  comments: string;
-  tags: string[];
-  metadata: {
-    s: { v: string; e: boolean };
-    p: { v: string; e: boolean };
-    o: { v: string; e: boolean };
-  }[];
-};
-
 const Documents = () => {
   const [submitOpen, setSubmitOpen] = useState(false);
   const [uploadOpen, setUploadOpen] = useState(false);
@@ -47,67 +34,6 @@ const Documents = () => {
   const library = useLibrary();
   const documents = library.documents ? library.documents : [];
   const deleteDocuments = library.deleteDocuments;
-
-  const columnHelper = createColumnHelper<Document>();
-
-  const selectionState = (table) => {
-    if (table.getIsAllRowsSelected()) return true;
-    if (table.getIsSomeRowsSelected()) return "indeterminate";
-    return false;
-  };
-
-  const columns = [
-    // Checkbox column instead of ID
-    columnHelper.display({
-      id: "select",
-      header: ({ table }) => (
-        <Checkbox.Root
-          size="lg"
-          variant="solid"
-          checked={selectionState(table)}
-          onChange={table.getToggleAllRowsSelectedHandler()}
-        >
-          <Checkbox.HiddenInput />
-          <Checkbox.Control />
-        </Checkbox.Root>
-      ),
-      cell: ({ row }) => (
-        <Checkbox.Root
-          size="lg"
-          variant="solid"
-          checked={row.getIsSelected()}
-          onChange={row.getToggleSelectedHandler()}
-        >
-          <Checkbox.HiddenInput />
-          <Checkbox.Control />
-        </Checkbox.Root>
-      ),
-    }),
-
-    columnHelper.accessor("title", {
-      header: "Title",
-      cell: (info) => info.getValue(),
-    }),
-    columnHelper.accessor("time", {
-      header: "Time",
-      cell: (info) => timeString(info.getValue()),
-    }),
-    // Description column showing comments data
-    columnHelper.accessor("comments", {
-      id: "description",
-      header: "Description",
-      cell: (info) => info.getValue(),
-    }),
-    columnHelper.accessor("tags", {
-      header: "Tags",
-      cell: (info) =>
-        info.getValue()?.map((t) => (
-          <Tag.Root key={t} mr={2}>
-            <Tag.Label>{t}</Tag.Label>
-          </Tag.Root>
-        )),
-    }),
-  ];
 
   const table = useReactTable({
     data: documents,
