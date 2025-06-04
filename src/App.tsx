@@ -11,7 +11,6 @@ import ChatPage from "./pages/ChatPage";
 import SearchPage from "./pages/SearchPage";
 import EntityPage from "./pages/EntityPage";
 import GraphPage from "./pages/GraphPage";
-import LoadPage from "./pages/LoadPage";
 import FlowsPage from "./pages/FlowsPage";
 //import FlowClassesPage from "./pages/FlowClassesPage";
 import LibraryPage from "./pages/LibraryPage";

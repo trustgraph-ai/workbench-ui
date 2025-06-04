@@ -1,6 +1,5 @@
-import { Table, Tag, Checkbox } from "@chakra-ui/react";
+import { Table } from "@chakra-ui/react";
 import { flexRender } from "@tanstack/react-table";
-import { timeString } from "../../utils/time-string.ts";
 
 const DocumentTable = ({ table }) => {
   return (

@@ -21,5 +21,5 @@ export const useActivity = (isActive, description) => {
       addActivity(description);
       return () => removeActivity(description);
     }
-  }, [isActive, description]);
+  }, [isActive, description, addActivity, removeActivity]);
 };

@@ -1,5 +1,3 @@
-import { useEffect } from "react";
-
 import { useQueryClient, useQuery, useMutation } from "@tanstack/react-query";
 
 import { useSocket } from "../api/trustgraph/socket";
@@ -15,8 +13,6 @@ export const useLibrary = () => {
       return socket.librarian().getDocuments();
     },
   });
-
-  const documents = documentsQuery.isSuccess ? documentsQuery.data : [];
 
   const deleteDocumentsMutation = useMutation({
     mutationFn: (ids) => {

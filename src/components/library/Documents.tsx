@@ -1,25 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
-import {
-  createColumnHelper,
-  flexRender,
-  getCoreRowModel,
-  useReactTable,
-} from "@tanstack/react-table";
-import { useQueryClient, useQuery, useMutation } from "@tanstack/react-query";
+import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
 
 import { v4 as uuidv4 } from "uuid";
 
-import { Table, Tag, Checkbox } from "@chakra-ui/react";
+import { columns } from "../../model/document-table";
 
-import { timeString } from "../../utils/time-string.ts";
-
-
-import { columns } from '../../model/document-table';
-
-import { useProgressStateStore } from "../../state/progress";
 import { toaster } from "../ui/toaster";
-import { useSocket } from "../../api/trustgraph/socket";
 import { useLibrary } from "../../state/library.ts";
 import Actions from "./Actions";
 import SubmitDialog from "./SubmitDialog";

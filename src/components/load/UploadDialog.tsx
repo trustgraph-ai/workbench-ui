@@ -1,27 +1,13 @@
-import React, { useEffect, useState, useRef } from "react";
-
 import { SendHorizontal } from "lucide-react";
-import { Upload, FilePlus } from "lucide-react";
 
 import { useLoadStateStore } from "../../state/load";
-import SelectedFiles from "./SelectedFiles";
 import { useProgressStateStore } from "../../state/progress";
 import { loadFile, loadText } from "../../utils/document-load";
 import { toaster } from "../ui/toaster";
 
-import {
-  List,
-  Portal,
-  Button,
-  Dialog,
-  Box,
-  CloseButton,
-} from "@chakra-ui/react";
+import { Portal, Button, Dialog, CloseButton } from "@chakra-ui/react";
 
 import { useSocket } from "../../api/trustgraph/socket";
-import SelectField from "../common/SelectField";
-import SelectOption from "../common/SelectOption";
-import ChipInputField from "../common/ChipInputField";
 
 import Title from "./Title";
 import Comments from "./Comments";
@@ -49,15 +35,6 @@ const SubmitDialog = ({ open, onOpenChange, onComplete }) => {
   const removeActivity = useProgressStateStore(
     (state) => state.removeActivity,
   );
-
-  const kind = operation == "upload-pdf" ? "PDF" : "text";
-
-  const [tags, setTags] = useState([]);
-
-  const fl2a = (x: FileList | null): File[] => {
-    if (x) return Array.from(x);
-    else return [];
-  };
 
   const onFilesSubmit = () => {
     const filesToLoad = [...files];
