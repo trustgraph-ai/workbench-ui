@@ -18,7 +18,7 @@ import { v4 as uuidv4 } from "uuid";
 import { useProgressStateStore } from "../../state/progress";
 import { toaster } from "../ui/toaster";
 import { useSocket } from "../../api/trustgraph/socket";
-import { useLibrary } from '../../state/library.ts';
+import { useLibrary } from "../../state/library.ts";
 import Actions from "./Actions";
 import SubmitDialog from "./SubmitDialog";
 import DocumentTable from "./DocumentTable";

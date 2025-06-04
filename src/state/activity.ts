@@ -1,4 +1,3 @@
-
 //
 // Usage:
 //   useActivity("Doing some whatever activity", booleanExpression);
@@ -24,4 +23,3 @@ export const useActivity = (isActive, description) => {
     }
   }, [isActive, description]);
 };
-

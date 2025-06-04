@@ -1,10 +1,9 @@
-
 import { useEffect } from "react";
 
 import { useQueryClient, useQuery, useMutation } from "@tanstack/react-query";
 
 import { useSocket } from "../api/trustgraph/socket";
-import { useActivity } from './activity';
+import { useActivity } from "./activity";
 
 export const useLibrary = () => {
   const socket = useSocket();
