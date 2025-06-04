@@ -196,6 +196,9 @@ export const useLibrary = () => {
   // Show loading indicators for long-running operations
   useActivity(documentsQuery.isLoading, "Loading documents");
   useActivity(deleteDocumentsMutation.isPending, "Deleting documents");
+  useActivity(submitDocumentsMutation.isPending, "Submitting documents");
+  useActivity(uploadFilesMutation.isPending, "Uploading files");
+  useActivity(uploadTextsMutation.isPending, "Uploading text");
 
   // Return library state and operations for use in components
   return {
