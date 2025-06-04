@@ -100,14 +100,6 @@ const Documents = () => {
     deleteDocuments(selected);
   };
 
-  /**
-   * Handle completion of file upload process
-   * Closes the upload dialog
-   */
-  const onUploadComplete = () => {
-    setUploadOpen(false);
-  };
-
   return (
     <>
       {/* Action buttons for bulk operations on selected documents */}
@@ -130,7 +122,6 @@ const Documents = () => {
       <UploadDialog
         open={uploadOpen}
         onOpenChange={setUploadOpen}
-        onComplete={onUploadComplete}
       />
 
       {/* Main table displaying documents with selection capabilities */}

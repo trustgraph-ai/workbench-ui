@@ -1,17 +1,22 @@
+
 import { useQueryClient, useQuery, useMutation } from "@tanstack/react-query";
+
+import { v4 as uuidv4 } from "uuid";
+
 import { useSocket } from "../api/trustgraph/socket";
 import { useNotification } from "./notify";
 import { useActivity } from "./activity";
-import { v4 as uuidv4 } from "uuid";
+import { fileToBase64 } from '../utils/document-encoding';
+import {
+    prepareMetadata, createDocId,
+} from '../model/document-metadata';
 
 /**
  * Custom hook for managing document library operations
  * Provides functionality for fetching, deleting, and submitting documents
- * @param {Function} notifyDeletion - Optional callback function to execute
- * after successful deletion
  * @returns {Object} Library state and operations
  */
-export const useLibrary = (notifyDeletion?) => {
+export const useLibrary = () => {
   // WebSocket connection for communicating with the librarian service
   const socket = useSocket();
 
@@ -56,8 +61,6 @@ export const useLibrary = (notifyDeletion?) => {
       queryClient.invalidateQueries({ queryKey: ["documents"] });
       // Show success notification
       notify.success("Successful deletion");
-      // Execute optional deletion notification callback
-      if (notifyDeletion) notifyDeletion();
     },
   });
 
@@ -94,10 +97,60 @@ export const useLibrary = (notifyDeletion?) => {
     onSuccess: () => {
       // Invalidate documents cache to refresh the list
       queryClient.invalidateQueries({ queryKey: ["documents"] });
-      // TODO: Fix this notification - should say "Successful submission"
-      notify.success("Successful deletion");
-      // Execute optional deletion notification callback
-      if (notifyDeletion) notifyDeletion();
+      notify.success("Successful submission");
+    },
+  });
+
+  /**
+   * Uploading documents into the library.  Puts the documents in the
+   * library, but does not initiate processing.
+   */
+  const uploadFilesMutation = useMutation({
+      mutationFn: ({ files, params, mimeType, user, onSuccess }) => {
+
+      // Create processing entries for each document
+      return Promise.all(
+        files.map((file) => {
+            
+          // Generate unique doc ID for each document
+          const doc_id = createDocId();
+
+            const meta = prepareMetadata(doc_id, params);
+
+            return fileToBase64(file).then(
+
+                (enc) => {
+
+                    return socket.librarian().loadDocument(
+                        enc,
+                        doc_id,
+                        meta,
+                        mimeType,
+                        params.title,
+                        params.comments,
+                        params.keywords,
+                        user
+                    )
+
+                }
+
+            ).then(() => {
+                // Execute success callback if provided
+                if (onSuccess) onSuccess();
+            })})
+      )
+    },
+    
+    onError: (err) => {
+      console.log("Error:", err);
+      // Show error notification to user
+      notify.error(err.toString());
+    },
+    onSuccess: () => {
+      // Invalidate documents cache to refresh the list
+      queryClient.invalidateQueries({ queryKey: ["documents"] });
+      // Notify
+      notify.success("Successful upload");
     },
   });
 
@@ -122,6 +175,11 @@ export const useLibrary = (notifyDeletion?) => {
     submitDocuments: submitDocumentsMutation.mutate,
     isSubmitting: submitDocumentsMutation.isPending,
     submitError: submitDocumentsMutation.error,
+
+    // Document upload operations
+    uploadFiles: uploadFilesMutation.mutate,
+    isUploadingFiles: uploadFilesMutation.isPending,
+    filesUploadError: uploadFilesMutation.error,
 
     // Manual refetch function
     refetch: documentsQuery.refetch,

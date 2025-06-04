@@ -16,7 +16,7 @@ export interface DocumentParameters {
   comments?: string;
 };
 
-export const create_doc_id = () => {
+export const createDocId = () => {
   return "https://trustgraph.ai/doc/" + uuidv4();
 };
 
