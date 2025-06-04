@@ -1,49 +1,35 @@
 import { Table, Tag, Checkbox } from "@chakra-ui/react";
-
+import { flexRender } from "@tanstack/react-table";
 import { timeString } from "../../utils/time-string.ts";
 
-const DocumentTable = ({ selected, documents, toggle }) => {
+const DocumentTable = ({ table }) => {
   return (
     <>
       <Table.Root interactive>
         <Table.Header>
-          <Table.Row>
-            <Table.ColumnHeader></Table.ColumnHeader>
-            <Table.ColumnHeader>Title</Table.ColumnHeader>
-            <Table.ColumnHeader>Time</Table.ColumnHeader>
-            <Table.ColumnHeader>Description</Table.ColumnHeader>
-            <Table.ColumnHeader>Tags</Table.ColumnHeader>
-          </Table.Row>
+          {table.getHeaderGroups().map((headerGroup) => (
+            <Table.Row key={headerGroup.id}>
+              {headerGroup.headers.map((header) => (
+                <Table.ColumnHeader key={header.id}>
+                  {header.isPlaceholder
+                    ? null
+                    : flexRender(
+                        header.column.columnDef.header,
+                        header.getContext(),
+                      )}
+                </Table.ColumnHeader>
+              ))}
+            </Table.Row>
+          ))}
         </Table.Header>
         <Table.Body>
-          {documents.map((row) => (
-            <Table.Row key={row.id} onClick={() => toggle(row.id)}>
-              <Table.Cell>
-                <Checkbox.Root
-                  size="lg"
-                  variant="solid"
-                  checked={selected.has(row.id)}
-                >
-                  <Checkbox.HiddenInput />
-                  <Checkbox.Control />
-                </Checkbox.Root>
-              </Table.Cell>
-              <Table.Cell onClick={() => toggle(row.id)}>
-                {row.title}
-              </Table.Cell>
-              <Table.Cell onClick={() => toggle(row.id)}>
-                {timeString(row.time)}
-              </Table.Cell>
-              <Table.Cell onClick={() => toggle(row.id)}>
-                {row.comments}
-              </Table.Cell>
-              <Table.Cell onClick={() => toggle(row.id)}>
-                {row.tags.map((t) => (
-                  <Tag.Root key={t} mr={2}>
-                    <Tag.Label>{t}</Tag.Label>
-                  </Tag.Root>
-                ))}
-              </Table.Cell>
+          {table.getRowModel().rows.map((row) => (
+            <Table.Row key={row.id} onClick={row.getToggleSelectedHandler()}>
+              {row.getVisibleCells().map((cell) => (
+                <Table.Cell key={cell.id}>
+                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                </Table.Cell>
+              ))}
             </Table.Row>
           ))}
         </Table.Body>
@@ -53,3 +39,4 @@ const DocumentTable = ({ selected, documents, toggle }) => {
 };
 
 export default DocumentTable;
+

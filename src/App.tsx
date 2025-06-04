@@ -3,10 +3,7 @@ import { useEffect } from "react";
 import { Box } from "@chakra-ui/react";
 import { BrowserRouter as Router, Routes, Route } from "react-router";
 
-import {
-  QueryClient,
-  QueryClientProvider,
-} from '@tanstack/react-query'
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import Layout from "./components/Layout";
 
@@ -83,32 +80,32 @@ const App = () => {
 
   return (
     <QueryClientProvider client={queryClient}>
-    <Box width="100%" minHeight="100vh" bg="colors.background">
-      <Router>
-        <Layout>
-          <Routes>
-            <Route path="/" element={<ChatPage />} />
-            <Route path="/chat" element={<ChatPage />} />
-            <Route path="/search" element={<SearchPage />} />
-            <Route path="/entity" element={<EntityPage />} />
-            <Route path="/graph" element={<GraphPage />} />
-            <Route path="/flows" element={<FlowsPage />} />
-            {/*
+      <Box width="100%" minHeight="100vh" bg="colors.background">
+        <Router>
+          <Layout>
+            <Routes>
+              <Route path="/" element={<ChatPage />} />
+              <Route path="/chat" element={<ChatPage />} />
+              <Route path="/search" element={<SearchPage />} />
+              <Route path="/entity" element={<EntityPage />} />
+              <Route path="/graph" element={<GraphPage />} />
+              <Route path="/flows" element={<FlowsPage />} />
+              {/*
             <Route path="/flow-classes" element={<FlowClassesPage />} />
 */}
-            <Route path="/library" element={<LibraryPage />} />
-            <Route path="/kc" element={<KnowledgeCoresPage />} />
-            <Route path="/procs" element={<ProcessingPage />} />
-            <Route path="/tokencost" element={<TokenCostPage />} />
-            <Route path="/prompts" element={<PromptsPage />} />
-            <Route path="/agents" element={<ToolsPage />} />
-          </Routes>
-        </Layout>
-      </Router>
-      <Progress />
-      <CenterSpinner />
-      <Toaster />
-    </Box>
+              <Route path="/library" element={<LibraryPage />} />
+              <Route path="/kc" element={<KnowledgeCoresPage />} />
+              <Route path="/procs" element={<ProcessingPage />} />
+              <Route path="/tokencost" element={<TokenCostPage />} />
+              <Route path="/prompts" element={<PromptsPage />} />
+              <Route path="/agents" element={<ToolsPage />} />
+            </Routes>
+          </Layout>
+        </Router>
+        <Progress />
+        <CenterSpinner />
+        <Toaster />
+      </Box>
     </QueryClientProvider>
   );
 };
