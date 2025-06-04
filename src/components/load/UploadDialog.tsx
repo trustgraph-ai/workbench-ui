@@ -9,6 +9,10 @@ import { Portal, Button, Dialog, CloseButton } from "@chakra-ui/react";
 
 import { useSocket } from "../../api/trustgraph/socket";
 
+import { prepareMetadata, } from '../../model/document-metadata';
+import {  DocumentParameters, } from '../../model/document-metadata';
+
+console.log(prepareMetadata);
 import Title from "./Title";
 import Comments from "./Comments";
 import Url from "./Url";
@@ -126,6 +130,19 @@ const SubmitDialog = ({ open, onOpenChange, onComplete }) => {
   };
 
   const onSubmit = () => {
+    const metadata = new DocumentParameters({
+      title: title,
+      url: url,
+      keywords: keywords,
+      comments: comments,
+    });
+
+    console.log(metadata);
+
+//prepareMetadata
+
+  console.log("SUBMIT");
+  return;
     if (operation == "upload-pdf") {
       onFilesSubmit();
     } else if (operation == "upload-text") {
