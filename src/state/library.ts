@@ -1,11 +1,13 @@
 import { useQueryClient, useQuery, useMutation } from "@tanstack/react-query";
 
 import { useSocket } from "../api/trustgraph/socket";
+import { useNotification } from './notify';
 import { useActivity } from "./activity";
 
-export const useLibrary = () => {
+export const useLibrary = (notifyDeletion?) => {
   const socket = useSocket();
-  const queryClient = useQueryClient();
+    const queryClient = useQueryClient();
+    const notify = useNotification();
 
   const documentsQuery = useQuery({
     queryKey: ["documents"],
@@ -15,14 +17,23 @@ export const useLibrary = () => {
   });
 
   const deleteDocumentsMutation = useMutation({
-    mutationFn: (ids) => {
+      mutationFn: ({ids, onSuccess}) => {
       return Promise.all(
         ids.map((id) => socket.librarian().removeDocument(id)),
-      );
+      ).then(
+          () => {
+              if (onSuccess) onSuccess();
+          }
+      )
     },
-    onError: (x) => console.log("Error:", x),
+    onError: (err) => {
+        console.log("Error:", err);
+        notify.error(err.toString());
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["documents"] });
+        notify.success("Successful deletion");
+        if (notifyDeletion) notifyDeletion();
     },
   });
 

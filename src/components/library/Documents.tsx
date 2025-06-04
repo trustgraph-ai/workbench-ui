@@ -20,13 +20,22 @@ const Documents = () => {
 
   const library = useLibrary();
   const documents = library.documents ? library.documents : [];
-  const deleteDocuments = library.deleteDocuments;
 
   const table = useReactTable({
     data: documents,
     columns: columns,
     getCoreRowModel: getCoreRowModel(),
   });
+
+  const deleteDocuments = (ids) =>
+      library.deleteDocuments(
+        {
+          ids: ids,
+          onSuccess: () => {
+            table.setRowSelection({});
+          }
+        }
+      );
 
   const selected = table.getSelectedRowModel().rows.map((x) => x.original.id);
 
@@ -96,8 +105,7 @@ const Documents = () => {
   };
 
   const onDelete = () => {
-    const ids = Array.from(selected);
-    deleteDocuments(ids);
+    deleteDocuments(selected);
   };
 
   const upload = () => {
