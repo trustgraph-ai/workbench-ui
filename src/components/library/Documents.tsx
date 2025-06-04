@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from "react";
 
+import {
+  useQueryClient,
+  useQuery,
+  useMutation,
+} from '@tanstack/react-query'
+
 import { v4 as uuidv4 } from "uuid";
 
 import { useProgressStateStore } from "../../state/progress";
@@ -12,42 +18,74 @@ import DocumentTable from "./DocumentTable";
 import DocumentControls from "./DocumentControls";
 import UploadDialog from "../load/UploadDialog";
 
-const Documents = () => {
+export const useActivity = (isActive, description) => {
+
   const addActivity = useProgressStateStore((state) => state.addActivity);
   const removeActivity = useProgressStateStore(
     (state) => state.removeActivity,
   );
 
-  const [view, setView] = useState([]);
+  useEffect(() => {
+    if (isActive) {
+      addActivity(description)
+      return () => removeActivity(description)
+    }
+  }, [isActive, description])
+
+}
+
+const useLibrary = () => {
+
+  const socket = useSocket();
+  const queryClient = useQueryClient();
+
+  const documentsQuery = useQuery({
+    queryKey: ['documents'],
+    queryFn: () => { return socket.librarian().getDocuments(); }
+  });
+
+  const documents = documentsQuery.isSuccess ? documentsQuery.data : [];
+
+  const deleteDocumentsMutation = useMutation({
+    mutationFn: (ids) => {
+      console.log("DELETE", ids);
+      const asd = Promise.all(
+        ids.map(id => socket.librarian().removeDocument(id))
+      );
+      console.log(asd);
+      return asd;
+    },
+    onError: (x) => console.log(x),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['documents'] })
+    }
+  });
+
+  useActivity(documentsQuery.isLoading, "Loading documents");
+  useActivity(deleteDocumentsMutation.isPending, "Deleting documents");
+
+  return {
+    documents: documentsQuery.data,
+    isLoading: documentsQuery.isLoading,
+    isError: documentsQuery.isError,
+    error: documentsQuery.error,
+    deleteDocuments: deleteDocumentsMutation.mutate,
+    isDeleting: deleteDocumentsMutation.isPending,
+    deleteError: deleteDocumentsMutation.error,
+    refetch: documentsQuery.refetch
+  }
+
+};
+
+const Documents = () => {
+
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [submitOpen, setSubmitOpen] = useState(false);
   const [uploadOpen, setUploadOpen] = useState(false);
 
-  const socket = useSocket();
-
-  const refresh = (socket) => {
-    const act = "Load library";
-    addActivity(act);
-    socket
-      .librarian()
-      .getDocuments()
-      .then((x) => {
-        setView(x);
-        removeActivity(act);
-      })
-      .catch((err) => {
-        console.log("Error:", err);
-        removeAct(act);
-        toaster.create({
-          title: "Error: " + err.toString(),
-          type: "error",
-        });
-      });
-  };
-
-  useEffect(() => {
-    refresh(socket);
-  }, [socket]);
+  const library = useLibrary();
+  const documents = library.documents ? library.documents : [];
+  const deleteDocuments = library.deleteDocuments;
 
   const toggle = (id) => {
     const newSet = new Set(selected);
@@ -90,7 +128,7 @@ const Documents = () => {
 
     const proc_id = uuidv4();
 
-    let title = view
+    let title = documents
       .filter((row) => row.id == ids[0])
       .map((row) => row.title)
       .join(",");
@@ -123,46 +161,8 @@ const Documents = () => {
 
   const onDelete = () => {
     const ids = Array.from(selected);
-
-    deleteOne(ids)
-      .then(() => {
-        console.log("Success");
-        toaster.create({
-          title: "Documents deleted",
-          type: "success",
-        });
-      })
-      .catch((e) =>
-        toaster.create({
-          title: "Error: " + e.toString(),
-          type: "error",
-        }),
-      );
-  };
-
-  const deleteOne = (ids) => {
-    // Shouldn't happen, make it a no-op.
-    if (ids.length == 0) return;
-
-    console.log("Deleting", ids[0]);
-    const prom = socket
-      .librarian()
-      .removeDocument(ids[0])
-      .then(() => {
-        setView((x) => x.filter((row) => row.id != ids[0]));
-        setSelected((x) => {
-          const newSet = new Set(x);
-          x.delete(ids[0]);
-          return newSet;
-        });
-      });
-
-    if (ids.length < 2) {
-      return prom;
-    } else {
-      return prom.then(() => deleteOne(ids.slice(1)));
-    }
-  };
+    deleteDocuments(ids);
+  }
 
   const upload = () => {
     setUploadOpen(true);
@@ -171,7 +171,7 @@ const Documents = () => {
   const onUploadComplete = () => {
     console.log("UPLOAD!");
     setUploadOpen(false);
-    refresh(socket);
+//    refresh(socket);
   };
 
   return (
@@ -187,7 +187,7 @@ const Documents = () => {
         open={submitOpen}
         onOpenChange={setSubmitOpen}
         onSubmit={onSubmitConfirm}
-        docs={view.filter((x) => selected.has(x.id))}
+        docs={documents.filter((x) => selected.has(x.id))}
       />
 
       <UploadDialog
@@ -196,7 +196,7 @@ const Documents = () => {
         onComplete={onUploadComplete}
       />
 
-      <DocumentTable selected={selected} documents={view} toggle={toggle} />
+      <DocumentTable selected={selected} documents={documents} toggle={toggle} />
 
       <DocumentControls onUpload={upload} />
     </>

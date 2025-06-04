@@ -3,6 +3,11 @@ import { useEffect } from "react";
 import { Box } from "@chakra-ui/react";
 import { BrowserRouter as Router, Routes, Route } from "react-router";
 
+import {
+  QueryClient,
+  QueryClientProvider,
+} from '@tanstack/react-query'
+
 import Layout from "./components/Layout";
 
 import ChatPage from "./pages/ChatPage";
@@ -26,6 +31,8 @@ import { Toaster } from "./components/ui/ToasterComponent";
 import { useSocket } from "./api/trustgraph/socket";
 import { useProgressStateStore } from "./state/progress";
 import { useSessionStore } from "./state/session";
+
+const queryClient = new QueryClient();
 
 const App = () => {
   const socket = useSocket();
@@ -75,6 +82,7 @@ const App = () => {
   }, [socket, addActivity, removeActivity, setFlow, setFlowId]);
 
   return (
+    <QueryClientProvider client={queryClient}>
     <Box width="100%" minHeight="100vh" bg="colors.background">
       <Router>
         <Layout>
@@ -97,11 +105,11 @@ const App = () => {
           </Routes>
         </Layout>
       </Router>
-
       <Progress />
       <CenterSpinner />
       <Toaster />
     </Box>
+    </QueryClientProvider>
   );
 };
 
