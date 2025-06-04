@@ -95,7 +95,7 @@ type Document = {
 };
 
 const Documents = () => {
-  const [selected, setSelected] = useState<Set<string>>(new Set());
+
   const [submitOpen, setSubmitOpen] = useState(false);
   const [uploadOpen, setUploadOpen] = useState(false);
 
@@ -163,12 +163,13 @@ columnHelper.display({
   }),
 ];
 
-  const toggle = (id) => {
-    const newSet = new Set(selected);
-    if (newSet.has(id)) newSet.delete(id);
-    else newSet.add(id);
-    setSelected(newSet);
-  };
+  const table = useReactTable({
+    data: documents,
+    columns: columns,
+    getCoreRowModel: getCoreRowModel(),
+  });
+
+  const selected = table.getSelectedRowModel().rows.map(x => x.original.id);
 
   const onSubmit = () => {
     setSubmitOpen(true);
@@ -250,16 +251,10 @@ columnHelper.display({
     //    refresh(socket);
   };
 
-  const table = useReactTable({
-    data: documents,
-    columns: columns,
-    getCoreRowModel: getCoreRowModel(),
-  });
-
   return (
     <>
       <Actions
-        selectedCount={selected.size}
+        selectedCount={selected.length}
         onSubmit={onSubmit}
         onEdit={onEdit}
         onDelete={onDelete}
@@ -269,7 +264,7 @@ columnHelper.display({
         open={submitOpen}
         onOpenChange={setSubmitOpen}
         onSubmit={onSubmitConfirm}
-        docs={documents.filter((x) => selected.has(x.id))}
+        docs={table.getSelectedRowModel().rows.map(x => x.original)}
       />
 
       <UploadDialog
