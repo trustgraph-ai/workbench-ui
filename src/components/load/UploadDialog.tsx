@@ -28,6 +28,7 @@ const SubmitDialog = ({ open, onOpenChange }) => {
   const files = useLoadStateStore((state) => state.files);
   const setFiles = useLoadStateStore((state) => state.setFiles);
   const text = useLoadStateStore((state) => state.text);
+  const setText = useLoadStateStore((state) => state.setText);
 
   const onSubmit = () => {
     if (operation == "upload-pdf") {
@@ -76,13 +77,13 @@ const SubmitDialog = ({ open, onOpenChange }) => {
       comments: comments,
     };
 
-    library.uploadText({
-      text: text,
+    library.uploadTexts({
+      texts: [text],
       params: params,
       mimeType: "text/plain",
       user: user,
       onSuccess: () => {
-        setFiles([]);
+        setText("");
         onOpenChange(false);
       },
     });

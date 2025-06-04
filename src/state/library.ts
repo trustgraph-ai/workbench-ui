@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from "uuid";
 import { useSocket } from "../api/trustgraph/socket";
 import { useNotification } from "./notify";
 import { useActivity } from "./activity";
-import { fileToBase64 } from "../utils/document-encoding";
+import { fileToBase64, textToBase64 } from "../utils/document-encoding";
 import { prepareMetadata, createDocId } from "../model/document-metadata";
 
 /**
@@ -134,7 +134,42 @@ export const useLibrary = () => {
         }),
       );
     },
+  });
 
+  /**
+   * Uploading text into the library.  Puts the text in the
+   * library, but does not initiate processing.
+   */
+  const uploadTextsMutation = useMutation({
+    mutationFn: ({ texts, params, mimeType, user, onSuccess }) => {
+      // Create processing entries for each document
+      return Promise.all(
+        texts.map((text) => {
+          // Generate unique doc ID for each document
+          const doc_id = createDocId();
+
+          const enc = textToBase64(text);
+
+          const meta = prepareMetadata(doc_id, params);
+
+          return socket
+            .librarian()
+            .loadDocument(
+              enc,
+              doc_id,
+              meta,
+              mimeType,
+              params.title,
+              params.comments,
+              params.keywords,
+              user,
+            );
+        }),
+      ).then(() => {
+        // Execute success callback if provided
+        if (onSuccess) onSuccess();
+      });
+    },
     onError: (err) => {
       console.log("Error:", err);
       // Show error notification to user
@@ -174,6 +209,11 @@ export const useLibrary = () => {
     uploadFiles: uploadFilesMutation.mutate,
     isUploadingFiles: uploadFilesMutation.isPending,
     filesUploadError: uploadFilesMutation.error,
+
+    // Document upload operations
+    uploadTexts: uploadTextsMutation.mutate,
+    isUploadingTexts: uploadTextsMutation.isPending,
+    textsUploadError: uploadTextsMutation.error,
 
     // Manual refetch function
     refetch: documentsQuery.refetch,
