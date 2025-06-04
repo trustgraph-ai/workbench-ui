@@ -6,8 +6,7 @@ import { useLibrary } from "../../state/library.ts";
 
 import { Portal, Button, Dialog, CloseButton } from "@chakra-ui/react";
 
-import { DocumentParameters } from '../../model/document-metadata';
-
+import { DocumentParameters } from "../../model/document-metadata";
 
 import Title from "./Title";
 import Comments from "./Comments";
@@ -17,7 +16,6 @@ import Operation from "./Operation";
 import Content from "./Content";
 
 const SubmitDialog = ({ open, onOpenChange }) => {
-
   // Hook for accessing library state and operations
   const library = useLibrary();
 
@@ -39,17 +37,16 @@ const SubmitDialog = ({ open, onOpenChange }) => {
     } else {
       onTextSubmit();
     }
-  }
+  };
 
   const onFilesSubmit = () => {
-
     // Shouldn't happen
     if (files.length < 1) throw "Was expecting some files";
 
     // FIXME: Should be in auth
     const user = "trustgraph";
 
-    const params : DocumentParameters = {
+    const params: DocumentParameters = {
       title: title,
       url: url,
       keywords: keywords,
@@ -59,25 +56,20 @@ const SubmitDialog = ({ open, onOpenChange }) => {
     library.uploadFiles({
       files: files,
       params: params,
-      mimeType:
-        (operation == "upload-pdf") ?
-        "application/pdf" :
-        "text/plain",
+      mimeType: operation == "upload-pdf" ? "application/pdf" : "text/plain",
       user: user,
       onSuccess: () => {
         setFiles([]);
         onOpenChange(false);
-      }
-    })
-
-  }
+      },
+    });
+  };
 
   const onTextSubmit = () => {
-
     // FIXME: Should be in auth
     const user = "trustgraph";
 
-    const params : DocumentParameters = {
+    const params: DocumentParameters = {
       title: title,
       url: url,
       keywords: keywords,
@@ -92,10 +84,9 @@ const SubmitDialog = ({ open, onOpenChange }) => {
       onSuccess: () => {
         setFiles([]);
         onOpenChange(false);
-      }
-    })
-
-  }
+      },
+    });
+  };
 
   return (
     <Dialog.Root

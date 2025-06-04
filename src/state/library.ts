@@ -1,4 +1,3 @@
-
 import { useQueryClient, useQuery, useMutation } from "@tanstack/react-query";
 
 import { v4 as uuidv4 } from "uuid";
@@ -6,10 +5,8 @@ import { v4 as uuidv4 } from "uuid";
 import { useSocket } from "../api/trustgraph/socket";
 import { useNotification } from "./notify";
 import { useActivity } from "./activity";
-import { fileToBase64 } from '../utils/document-encoding';
-import {
-    prepareMetadata, createDocId,
-} from '../model/document-metadata';
+import { fileToBase64 } from "../utils/document-encoding";
+import { prepareMetadata, createDocId } from "../model/document-metadata";
 
 /**
  * Custom hook for managing document library operations
@@ -106,41 +103,38 @@ export const useLibrary = () => {
    * library, but does not initiate processing.
    */
   const uploadFilesMutation = useMutation({
-      mutationFn: ({ files, params, mimeType, user, onSuccess }) => {
-
+    mutationFn: ({ files, params, mimeType, user, onSuccess }) => {
       // Create processing entries for each document
       return Promise.all(
         files.map((file) => {
-            
           // Generate unique doc ID for each document
           const doc_id = createDocId();
 
-            const meta = prepareMetadata(doc_id, params);
+          const meta = prepareMetadata(doc_id, params);
 
-            return fileToBase64(file).then(
-
-                (enc) => {
-
-                    return socket.librarian().loadDocument(
-                        enc,
-                        doc_id,
-                        meta,
-                        mimeType,
-                        params.title,
-                        params.comments,
-                        params.keywords,
-                        user
-                    )
-
-                }
-
-            ).then(() => {
-                // Execute success callback if provided
-                if (onSuccess) onSuccess();
-            })})
-      )
+          return fileToBase64(file)
+            .then((enc) => {
+              return socket
+                .librarian()
+                .loadDocument(
+                  enc,
+                  doc_id,
+                  meta,
+                  mimeType,
+                  params.title,
+                  params.comments,
+                  params.keywords,
+                  user,
+                );
+            })
+            .then(() => {
+              // Execute success callback if provided
+              if (onSuccess) onSuccess();
+            });
+        }),
+      );
     },
-    
+
     onError: (err) => {
       console.log("Error:", err);
       // Show error notification to user

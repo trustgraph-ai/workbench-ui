@@ -119,10 +119,7 @@ const Documents = () => {
       />
 
       {/* Dialog for uploading new documents */}
-      <UploadDialog
-        open={uploadOpen}
-        onOpenChange={setUploadOpen}
-      />
+      <UploadDialog open={uploadOpen} onOpenChange={setUploadOpen} />
 
       {/* Main table displaying documents with selection capabilities */}
       <DocumentTable table={table} />

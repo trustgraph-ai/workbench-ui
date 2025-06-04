@@ -1,4 +1,3 @@
-
 import { v4 as uuidv4 } from "uuid";
 
 import { Triple } from "../api/trustgraph/Triple";
@@ -14,7 +13,7 @@ export interface DocumentParameters {
   url?: string;
   keywords?: string[];
   comments?: string;
-};
+}
 
 export const createDocId = () => {
   return "https://trustgraph.ai/doc/" + uuidv4();
@@ -61,4 +60,3 @@ export const prepareMetadata = (doc_id: string, params) => {
 
   return doc_meta;
 };
-

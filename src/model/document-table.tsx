@@ -7,17 +7,18 @@ import { timeString } from "../utils/time-string.ts";
  * Represents a single document with its metadata and properties
  */
 export type Document = {
-  id: string;           // Unique identifier for the document
-  title: string;        // Display title of the document
-  time: number;         // Timestamp (likely Unix timestamp)
-  kind: string;         // Document type/category
-  user: string;         // User who created/owns the document
-  comments: string;     // Description or comments about the document
-  tags: string[];       // Array of tags associated with the document
-  metadata: {           // Structured metadata, subject-predicate-object form
-    s: { v: string; e: boolean };  // Subject with value and enabled flag
-    p: { v: string; e: boolean };  // Predicate with value and enabled flag
-    o: { v: string; e: boolean };  // Object with value and enabled flag
+  id: string; // Unique identifier for the document
+  title: string; // Display title of the document
+  time: number; // Timestamp (likely Unix timestamp)
+  kind: string; // Document type/category
+  user: string; // User who created/owns the document
+  comments: string; // Description or comments about the document
+  tags: string[]; // Array of tags associated with the document
+  metadata: {
+    // Structured metadata, subject-predicate-object form
+    s: { v: string; e: boolean }; // Subject with value and enabled flag
+    p: { v: string; e: boolean }; // Predicate with value and enabled flag
+    o: { v: string; e: boolean }; // Object with value and enabled flag
   }[];
 };
 
@@ -71,19 +72,19 @@ export const columns = [
       </Checkbox.Root>
     ),
   }),
-  
+
   // Title column - displays the document title
   columnHelper.accessor("title", {
     header: "Title",
     cell: (info) => info.getValue(),
   }),
-  
+
   // Time column - displays formatted timestamp
   columnHelper.accessor("time", {
     header: "Time",
     cell: (info) => timeString(info.getValue()), // Convert to readable string
   }),
-  
+
   // Description column - displays document comments/description
   // Note: Maps to 'comments' field but displays as 'Description' for better
   // UX
@@ -92,7 +93,7 @@ export const columns = [
     header: "Description",
     cell: (info) => info.getValue(),
   }),
-  
+
   // Tags column - displays document tags as visual tag components
   columnHelper.accessor("tags", {
     header: "Tags",
@@ -105,4 +106,3 @@ export const columns = [
       )),
   }),
 ];
-
