@@ -17,8 +17,7 @@ import SelectOption from "../common/SelectOption";
 import ChipInputField from "../common/ChipInputField";
 
 const SubmitDialog = ({ open, onOpenChange, onSubmit, docs }) => {
-
-//console.log(docs);
+  //console.log(docs);
 
   const [flows, setFlows] = useState([]);
 

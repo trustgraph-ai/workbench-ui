@@ -39,4 +39,3 @@ const DocumentTable = ({ table }) => {
 };
 
 export default DocumentTable;
-

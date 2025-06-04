@@ -18,66 +18,12 @@ import { v4 as uuidv4 } from "uuid";
 import { useProgressStateStore } from "../../state/progress";
 import { toaster } from "../ui/toaster";
 import { useSocket } from "../../api/trustgraph/socket";
-
+import { useLibrary } from '../../state/library.ts';
 import Actions from "./Actions";
 import SubmitDialog from "./SubmitDialog";
 import DocumentTable from "./DocumentTable";
 import DocumentControls from "./DocumentControls";
 import UploadDialog from "../load/UploadDialog";
-
-export const useActivity = (isActive, description) => {
-  const addActivity = useProgressStateStore((state) => state.addActivity);
-  const removeActivity = useProgressStateStore(
-    (state) => state.removeActivity,
-  );
-
-  useEffect(() => {
-    if (isActive) {
-      addActivity(description);
-      return () => removeActivity(description);
-    }
-  }, [isActive, description]);
-};
-
-const useLibrary = () => {
-  const socket = useSocket();
-  const queryClient = useQueryClient();
-
-  const documentsQuery = useQuery({
-    queryKey: ["documents"],
-    queryFn: () => {
-      return socket.librarian().getDocuments();
-    },
-  });
-
-  const documents = documentsQuery.isSuccess ? documentsQuery.data : [];
-
-  const deleteDocumentsMutation = useMutation({
-    mutationFn: (ids) => {
-      return Promise.all(
-        ids.map((id) => socket.librarian().removeDocument(id)),
-      );
-    },
-    onError: (x) => console.log("Error:", x),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["documents"] });
-    },
-  });
-
-  useActivity(documentsQuery.isLoading, "Loading documents");
-  useActivity(deleteDocumentsMutation.isPending, "Deleting documents");
-
-  return {
-    documents: documentsQuery.data,
-    isLoading: documentsQuery.isLoading,
-    isError: documentsQuery.isError,
-    error: documentsQuery.error,
-    deleteDocuments: deleteDocumentsMutation.mutate,
-    isDeleting: deleteDocumentsMutation.isPending,
-    deleteError: deleteDocumentsMutation.error,
-    refetch: documentsQuery.refetch,
-  };
-};
 
 type Document = {
   id: string;
@@ -95,7 +41,6 @@ type Document = {
 };
 
 const Documents = () => {
-
   const [submitOpen, setSubmitOpen] = useState(false);
   const [uploadOpen, setUploadOpen] = useState(false);
 
@@ -109,59 +54,60 @@ const Documents = () => {
     if (table.getIsAllRowsSelected()) return true;
     if (table.getIsSomeRowsSelected()) return "indeterminate";
     return false;
-  }
+  };
 
-const columns = [
-  // Checkbox column instead of ID
-columnHelper.display({
-  id: 'select',
-  header: ({ table }) => (
-    <Checkbox.Root
-      size="lg"
-      variant="solid"
-      checked={selectionState(table)}
-      onChange={table.getToggleAllRowsSelectedHandler()}
-    >
-      <Checkbox.HiddenInput />
-      <Checkbox.Control />
-    </Checkbox.Root>
-  ),
-  cell: ({ row }) => (
-    <Checkbox.Root
-      size="lg"
-      variant="solid"
-      checked={row.getIsSelected()}
-      onChange={row.getToggleSelectedHandler()}
-    >
-      <Checkbox.HiddenInput />
-      <Checkbox.Control />
-    </Checkbox.Root>
-  ),
-}),
+  const columns = [
+    // Checkbox column instead of ID
+    columnHelper.display({
+      id: "select",
+      header: ({ table }) => (
+        <Checkbox.Root
+          size="lg"
+          variant="solid"
+          checked={selectionState(table)}
+          onChange={table.getToggleAllRowsSelectedHandler()}
+        >
+          <Checkbox.HiddenInput />
+          <Checkbox.Control />
+        </Checkbox.Root>
+      ),
+      cell: ({ row }) => (
+        <Checkbox.Root
+          size="lg"
+          variant="solid"
+          checked={row.getIsSelected()}
+          onChange={row.getToggleSelectedHandler()}
+        >
+          <Checkbox.HiddenInput />
+          <Checkbox.Control />
+        </Checkbox.Root>
+      ),
+    }),
 
-  columnHelper.accessor('title', {
-    header: 'Title',
-    cell: info => info.getValue(),
-  }),
-  columnHelper.accessor('time', {
-    header: 'Time',
-    cell: info => timeString(info.getValue()),
-  }),
-  // Description column showing comments data
-  columnHelper.accessor('comments', {
-    id: 'description',
-    header: 'Description',
-    cell: info => info.getValue(),
-  }),
-  columnHelper.accessor('tags', {
-    header: 'Tags',
-    cell: info => info.getValue()?.map((t) => (
-      <Tag.Root key={t} mr={2}>
-        <Tag.Label>{t}</Tag.Label>
-      </Tag.Root>
-    )),
-  }),
-];
+    columnHelper.accessor("title", {
+      header: "Title",
+      cell: (info) => info.getValue(),
+    }),
+    columnHelper.accessor("time", {
+      header: "Time",
+      cell: (info) => timeString(info.getValue()),
+    }),
+    // Description column showing comments data
+    columnHelper.accessor("comments", {
+      id: "description",
+      header: "Description",
+      cell: (info) => info.getValue(),
+    }),
+    columnHelper.accessor("tags", {
+      header: "Tags",
+      cell: (info) =>
+        info.getValue()?.map((t) => (
+          <Tag.Root key={t} mr={2}>
+            <Tag.Label>{t}</Tag.Label>
+          </Tag.Root>
+        )),
+    }),
+  ];
 
   const table = useReactTable({
     data: documents,
@@ -169,7 +115,7 @@ columnHelper.display({
     getCoreRowModel: getCoreRowModel(),
   });
 
-  const selected = table.getSelectedRowModel().rows.map(x => x.original.id);
+  const selected = table.getSelectedRowModel().rows.map((x) => x.original.id);
 
   const onSubmit = () => {
     setSubmitOpen(true);
@@ -264,7 +210,7 @@ columnHelper.display({
         open={submitOpen}
         onOpenChange={setSubmitOpen}
         onSubmit={onSubmitConfirm}
-        docs={table.getSelectedRowModel().rows.map(x => x.original)}
+        docs={table.getSelectedRowModel().rows.map((x) => x.original)}
       />
 
       <UploadDialog
