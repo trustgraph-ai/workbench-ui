@@ -134,6 +134,16 @@ export const useLibrary = () => {
         }),
       );
     },
+    onError: (err) => {
+      console.log("Error:", err);
+      // Show error notification to user
+      notify.error(err.toString());
+    },
+    onSuccess: () => {
+      // Invalidate documents cache to refresh the list
+      queryClient.invalidateQueries({ queryKey: ["documents"] });
+      notify.success("Successful upload");
+    },
   });
 
   /**
