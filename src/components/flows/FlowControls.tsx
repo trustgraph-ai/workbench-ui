@@ -5,35 +5,23 @@ import { Plus } from "lucide-react";
 import { Button, Box } from "@chakra-ui/react";
 
 import CreateDialog from "./CreateDialog";
-import { useSocket } from "../../api/trustgraph/socket";
 import { toaster } from "../ui/toaster";
+import { useFlows } from "../../state/flows";
 
 const FlowControls = ({ onUpdate }) => {
-  const socket = useSocket();
+  const flowState = useFlows();
 
   const [createOpen, setCreateOpen] = useState(false);
 
   const onCreate = (flowClass, id, description) => {
     console.log(flowClass, id, description);
+    flowState.startFlow({
+      id: id,
+      flowClass: flowClass,
+      description: description,
+      onSuccess: () => {},
+    });
 
-    socket
-      .flows()
-      .startFlow(id, flowClass, description)
-      .then(() => {
-        console.log("Success");
-        setCreateOpen(false);
-        onUpdate();
-        toaster.create({
-          title: "Flow created",
-          type: "success",
-        });
-      })
-      .catch((e) =>
-        toaster.create({
-          title: "Error: " + e.toString(),
-          type: "error",
-        }),
-      );
   };
 
   return (

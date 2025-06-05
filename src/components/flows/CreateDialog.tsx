@@ -4,43 +4,34 @@ import { Plus } from "lucide-react";
 
 import { Portal, Button, Dialog, Box, CloseButton } from "@chakra-ui/react";
 
-import { useSocket } from "../../api/trustgraph/socket";
+import { useFlows } from "../../state/flows";
 import SelectField from "../common/SelectField";
 import SelectOption from "../common/SelectOption";
 import TextField from "../common/TextField";
 
-const CreateDialog = ({ open, onOpenChange, onSubmit }) => {
-  const [flowClasses, setFlowClasses] = useState([]);
+const CreateDialog = ({ open, onOpenChange }) => {
+
+  const flowState = useFlows();
+
+  const flowClasses = flowState.flowClasses ? flowState.flowClasses : [];
+  const startFlow = flowState.startFlow;
 
   const [flowClass, setFlowClass] = useState(undefined);
   const [id, setId] = useState("");
   const [description, setDescription] = useState("");
 
-  const socket = useSocket();
+  const onSubmit = () => {
 
-  useEffect(() => {
-    socket
-      .flows()
-      .getFlowClasses()
-      .then((ids) => {
-        return Promise.all(
-          ids.map((id) =>
-            socket
-              .flows()
-              .getFlowClass(id)
-              .then((x) => [id, x]),
-          ),
-        );
-      })
-      .then((x) => {
-        // Store flow information
-        setFlowClasses(x);
+    flowState.startFlow({
+      id: id,
+      flowClass: flowClass,
+      description: description,
+      onSuccess: () => {
+        onOpenChange(false);
+      },
+    });    
 
-        // Set selected flow to the first, if none set
-        if (!flowClass && x.length > 0) setFlowClass(x[0][0]);
-      })
-      .catch((err) => console.log("Error:", err));
-  }, [socket, flowClass]);
+  }
 
   const flowClassOptions = flowClasses.map((flowClass) => {
     return {
@@ -107,7 +98,7 @@ const CreateDialog = ({ open, onOpenChange, onSubmit }) => {
                 Cancel
               </Button>
               <Button
-                onClick={() => onSubmit(flowClass, id, description)}
+                onClick={() => onSubmit()}
                 colorPalette="brand"
               >
                 <Plus /> Create
