@@ -1,97 +1,52 @@
 import React, { useEffect, useState } from "react";
 
+import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
+
+import { columns } from '../../model/knowledge-core-table';
 import { useProgressStateStore } from "../../state/progress";
 import { toaster } from "../ui/toaster";
 import { useSocket } from "../../api/trustgraph/socket";
+import { useKnowledgeCores } from '../../state/knowledge-cores';
 
+import SelectableTable from '../common/SelectableTable';
 import Actions from "./Actions";
 import KnowledgeCoresTable from "./KnowledgeCoresTable";
 import KnowledgeCoreUpload from "./KnowledgeCoreUpload";
 
 const KnowledgeCores = () => {
-  const addActivity = useProgressStateStore((state) => state.addActivity);
-  const removeActivity = useProgressStateStore(
-    (state) => state.removeActivity,
-  );
-  const [view, setView] = useState([]);
+
+  const state = useKnowledgeCores();
+
+  const knowledgeCores = state.knowledgeCores ?
+  state.knowledgeCores : [];
+
+  console.log(state.knowledgeCores);
+
+  // Initialize React Table with document data and column configuration
+  const table = useReactTable({
+    data: knowledgeCores,
+    columns: columns,
+    getCoreRowModel: getCoreRowModel(),
+  });
+
+  // Get array of selected document IDs from the table selection
+  const selected = table.getSelectedRowModel().rows.map((x) => x.original.id);
 
   const [files, setFiles] = useState([]);
   const [id, setId] = useState("");
 
   const socket = useSocket();
 
-  const refresh = (socket) => {
-    const act = "Load knowledge cores";
-    addActivity(act);
-    socket
-      .knowledge()
-      .getKnowledgeCores()
-      .then((x) => {
-        removeActivity(act);
-        setView(
-          x.map((x) => {
-            return { id: x };
-          }),
-        );
-      })
-      .catch((err) => {
-        console.log("Error:", err);
-        removeActivity(act);
-        toaster.create({
-          title: "Error: " + err.toString(),
-          type: "error",
-        });
-      });
-  };
-
-  useEffect(() => {
-    refresh(socket);
-  }, [socket]);
-
-  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [FIXMEselected, setSelected] = useState<Set<string>>(new Set());
 
   const onDelete = () => {
-    const ids = Array.from(selected);
-
-    deleteOne(ids)
-      .then(() => {
-        console.log("Success");
-        toaster.create({
-          title: "Flows deleted",
-          type: "success",
-        });
-        refresh(socket);
-      })
-      .catch((e) =>
-        toaster.create({
-          title: "Error: " + e.toString(),
-          type: "error",
-        }),
-      );
-  };
-
-  const deleteOne = (ids) => {
-    // Shouldn't happen, make it a no-op.
-    if (ids.length == 0) return;
-
-    console.log("Deleting", ids[0]);
-    const prom = socket
-      .knowledge()
-      .deleteKgCore(ids[0])
-      .then(() => {
-        setView((x) => x.filter((row) => row.id != ids[0]));
-        setSelected((x) => {
-          const newSet = new Set(x);
-          x.delete(ids[0]);
-          return newSet;
-        });
-      });
-
-    if (ids.length < 2) {
-      return prom;
-    } else {
-      return prom.then(() => deleteOne(ids.slice(1)));
-    }
+    state.deleteKnowledgeCores({
+      ids: selected,
+      onSuccess: () => {
+        // Clear row selection after successful deletion
+        table.setRowSelection({});
+      },
+    });
   };
 
   const onDownload = () => {
@@ -146,13 +101,6 @@ const KnowledgeCores = () => {
     });
   };
 
-  const toggle = (id) => {
-    const newSet = new Set(selected);
-    if (newSet.has(id)) newSet.delete(id);
-    else newSet.add(id);
-    setSelected(newSet);
-  };
-
   return (
     <>
       <Actions
@@ -160,7 +108,9 @@ const KnowledgeCores = () => {
         onDelete={onDelete}
         onDownload={onDownload}
       />
-      <KnowledgeCoresTable cores={view} selected={selected} toggle={toggle} />
+
+      <SelectableTable table={table} />
+
       <KnowledgeCoreUpload
         files={files}
         setFiles={setFiles}
