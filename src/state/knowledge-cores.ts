@@ -29,9 +29,13 @@ export const useKnowledgeCores = () => {
       return socket
         .knowledge()
         .getKnowledgeCores()
-          .then((cores) => cores.map((x) => { return { id: x } } ))
+        .then((cores) =>
+          cores.map((x) => {
+            return { id: x };
+          }),
+        );
     },
-  })
+  });
 
   /**
    * Mutation for deleting multiple knowledge cores
@@ -39,7 +43,6 @@ export const useKnowledgeCores = () => {
    */
   const deleteKnowledgeCoresMutation = useMutation({
     mutationFn: ({ ids, onSuccess }) => {
-
       const user = "trustgraph";
 
       // Execute deletion requests in parallel for all knowledge cores
@@ -68,7 +71,6 @@ export const useKnowledgeCores = () => {
 
   // Return knowledge core state and operations for use in components
   return {
-
     // Knowledge cores
     knowledgeCores: query.data,
     isLoading: query.isLoading,
