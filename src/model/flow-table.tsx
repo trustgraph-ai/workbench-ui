@@ -39,7 +39,7 @@ export const columns = [
     header: ({ table }) => (
       // Header checkbox for selecting/deselecting all rows
       <Checkbox.Root
-        size="lg"
+        size="sm"
         variant="solid"
         checked={selectionState(table)}
         onChange={table.getToggleAllRowsSelectedHandler()}
@@ -51,7 +51,7 @@ export const columns = [
     cell: ({ row }) => (
       // Individual row checkbox for selecting/deselecting single rows
       <Checkbox.Root
-        size="lg"
+        size="sm"
         variant="solid"
         checked={row.getIsSelected()}
         onChange={row.getToggleSelectedHandler()}
