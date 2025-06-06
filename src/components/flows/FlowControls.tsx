@@ -13,7 +13,6 @@ const FlowControls = () => {
   const [createOpen, setCreateOpen] = useState(false);
 
   const onCreate = (flowClass, id, description) => {
-    console.log(flowClass, id, description);
     flowState.startFlow({
       id: id,
       flowClass: flowClass,

@@ -34,7 +34,6 @@ const Documents = () => {
   const documents = library.documents ? library.documents : [];
 
   // Initialize React Table with document data and column configuration
-  console.log(documents);
   const table = useReactTable({
     data: documents,
     columns: columns,

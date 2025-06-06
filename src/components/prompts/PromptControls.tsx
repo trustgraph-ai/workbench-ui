@@ -10,7 +10,6 @@ const PromptControls = ({ onUpdate }) => {
   const [createOpen, setCreateOpen] = useState(false);
 
   const onComplete = () => {
-    console.log("COMPLETE!!!");
     onUpdate();
     setCreateOpen(false);
   };
