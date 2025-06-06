@@ -36,7 +36,7 @@ export const useFlows = () => {
               socket
                 .flows()
                 .getFlow(flowId)
-                .then((flow) => [flowId, flow]),
+                  .then((flow) => { return {...flow, id: flowId} }),
             ),
           ),
         );
