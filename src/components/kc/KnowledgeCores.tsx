@@ -1,16 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
 import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
 
 import { columns } from "../../model/knowledge-core-table";
-import { useProgressStateStore } from "../../state/progress";
-import { toaster } from "../ui/toaster";
 import { useSocket } from "../../api/trustgraph/socket";
 import { useKnowledgeCores } from "../../state/knowledge-cores";
 
 import SelectableTable from "../common/SelectableTable";
 import Actions from "./Actions";
-import KnowledgeCoresTable from "./KnowledgeCoresTable";
 import KnowledgeCoreUpload from "./KnowledgeCoreUpload";
 
 const KnowledgeCores = () => {
@@ -34,8 +31,6 @@ const KnowledgeCores = () => {
   const [id, setId] = useState("");
 
   const socket = useSocket();
-
-  const [FIXMEselected, setSelected] = useState<Set<string>>(new Set());
 
   const onDelete = () => {
     state.deleteKnowledgeCores({
