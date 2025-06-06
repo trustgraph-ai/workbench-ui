@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useState, useRef } from "react";
 
 import { Plus } from "lucide-react";
 
@@ -13,7 +13,6 @@ const CreateDialog = ({ open, onOpenChange }) => {
   const flowState = useFlows();
 
   const flowClasses = flowState.flowClasses ? flowState.flowClasses : [];
-  const startFlow = flowState.startFlow;
 
   const [flowClass, setFlowClass] = useState(undefined);
   const [id, setId] = useState("");

@@ -5,10 +5,9 @@ import { Plus } from "lucide-react";
 import { Button, Box } from "@chakra-ui/react";
 
 import CreateDialog from "./CreateDialog";
-import { toaster } from "../ui/toaster";
 import { useFlows } from "../../state/flows";
 
-const FlowControls = ({ onUpdate }) => {
+const FlowControls = () => {
   const flowState = useFlows();
 
   const [createOpen, setCreateOpen] = useState(false);

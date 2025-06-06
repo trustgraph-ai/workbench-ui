@@ -1,13 +1,5 @@
-import React, { useEffect, useState } from "react";
-
-import { Table, Tag } from "@chakra-ui/react";
-
 import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
 
-import { useProgressStateStore } from "../../state/progress";
-import { useSocket } from "../../api/trustgraph/socket";
-import { timeString } from "../../utils/time-string.ts";
-import { toaster } from "../ui/toaster";
 import { useProcessing } from "../../state/processing";
 import BasicTable from "../common/BasicTable";
 

@@ -1,5 +1,3 @@
-import React, { useState } from "react";
-
 import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
 
 import { useFlows } from "../../state/flows";
@@ -7,7 +5,6 @@ import { useFlows } from "../../state/flows";
 import SelectableTable from "../common/SelectableTable";
 import Actions from "./Actions";
 import FlowControls from "./FlowControls";
-import FlowsTable from "./FlowsTable";
 
 import { columns } from "../../model/flow-table";
 
@@ -33,13 +30,6 @@ const Flows = () => {
         table.setRowSelection({});
       },
     });
-  };
-
-  const toggle = (id) => {
-    const newSet = new Set(selected);
-    if (newSet.has(id)) newSet.delete(id);
-    else newSet.add(id);
-    setSelected(newSet);
   };
 
   return (
