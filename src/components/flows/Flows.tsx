@@ -4,15 +4,14 @@ import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
 
 import { useFlows } from "../../state/flows";
 
-import SelectableTable from '../common/SelectableTable';
+import SelectableTable from "../common/SelectableTable";
 import Actions from "./Actions";
 import FlowControls from "./FlowControls";
 import FlowsTable from "./FlowsTable";
 
-import { columns } from '../../model/flow-table';
+import { columns } from "../../model/flow-table";
 
 const Flows = () => {
-
   const flowState = useFlows();
   const flows = flowState.flows ? flowState.flows : [];
 

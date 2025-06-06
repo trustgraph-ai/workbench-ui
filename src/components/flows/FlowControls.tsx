@@ -21,7 +21,6 @@ const FlowControls = ({ onUpdate }) => {
       description: description,
       onSuccess: () => {},
     });
-
   };
 
   return (

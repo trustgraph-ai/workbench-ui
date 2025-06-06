@@ -1,10 +1,10 @@
 import { Table } from "@chakra-ui/react";
 import { flexRender } from "@tanstack/react-table";
 
-const DocumentTable = ({ table }) => {
+const BasicTable = ({ table }) => {
   return (
     <>
-      <Table.Root interactive>
+      <Table.Root>
         <Table.Header>
           {table.getHeaderGroups().map((headerGroup) => (
             <Table.Row key={headerGroup.id}>
@@ -23,7 +23,7 @@ const DocumentTable = ({ table }) => {
         </Table.Header>
         <Table.Body>
           {table.getRowModel().rows.map((row) => (
-            <Table.Row key={row.id} onClick={row.getToggleSelectedHandler()}>
+            <Table.Row key={row.id}>
               {row.getVisibleCells().map((cell) => (
                 <Table.Cell key={cell.id}>
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
@@ -37,4 +37,4 @@ const DocumentTable = ({ table }) => {
   );
 };
 
-export default DocumentTable;
+export default BasicTable;

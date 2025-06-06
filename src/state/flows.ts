@@ -10,7 +10,6 @@ import { useActivity } from "./activity";
  * @returns {Object} Flow state and operations
  */
 export const useFlows = () => {
-
   // WebSocket connection for communicating with the flows service
   const socket = useSocket();
 
@@ -36,7 +35,9 @@ export const useFlows = () => {
               socket
                 .flows()
                 .getFlow(flowId)
-                  .then((flow) => { return {...flow, id: flowId} }),
+                .then((flow) => {
+                  return { ...flow, id: flowId };
+                }),
             ),
           ),
         );
@@ -127,7 +128,6 @@ export const useFlows = () => {
 
   // Return flows state and operations for use in components
   return {
-
     // Flow data and query state
     flows: flowsQuery.data,
     isLoading: flowsQuery.isLoading,

@@ -10,7 +10,6 @@ import SelectOption from "../common/SelectOption";
 import TextField from "../common/TextField";
 
 const CreateDialog = ({ open, onOpenChange }) => {
-
   const flowState = useFlows();
 
   const flowClasses = flowState.flowClasses ? flowState.flowClasses : [];
@@ -21,7 +20,6 @@ const CreateDialog = ({ open, onOpenChange }) => {
   const [description, setDescription] = useState("");
 
   const onSubmit = () => {
-
     flowState.startFlow({
       id: id,
       flowClass: flowClass,
@@ -29,9 +27,8 @@ const CreateDialog = ({ open, onOpenChange }) => {
       onSuccess: () => {
         onOpenChange(false);
       },
-    });    
-
-  }
+    });
+  };
 
   const flowClassOptions = flowClasses.map((flowClass) => {
     return {
@@ -97,10 +94,7 @@ const CreateDialog = ({ open, onOpenChange }) => {
               <Button variant="outline" onClick={() => onOpenChange(false)}>
                 Cancel
               </Button>
-              <Button
-                onClick={() => onSubmit()}
-                colorPalette="brand"
-              >
+              <Button onClick={() => onSubmit()} colorPalette="brand">
                 <Plus /> Create
               </Button>
             </Dialog.Footer>

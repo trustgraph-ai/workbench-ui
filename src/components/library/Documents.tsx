@@ -8,7 +8,7 @@ import { useNotification } from "../../state/notify.ts";
 
 import Actions from "./Actions";
 import SubmitDialog from "./SubmitDialog";
-import DocumentTable from "./DocumentTable";
+import SelectableTable from "../common/SelectableTable";
 import DocumentControls from "./DocumentControls";
 import UploadDialog from "../load/UploadDialog";
 
@@ -123,7 +123,7 @@ const Documents = () => {
       <UploadDialog open={uploadOpen} onOpenChange={setUploadOpen} />
 
       {/* Main table displaying documents with selection capabilities */}
-      <DocumentTable table={table} />
+      <SelectableTable table={table} />
 
       {/* Controls for document operations like upload */}
       <DocumentControls onUpload={() => setUploadOpen(true)} />
