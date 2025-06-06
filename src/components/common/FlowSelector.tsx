@@ -10,10 +10,9 @@ import {
 } from "@chakra-ui/react";
 
 import { useSessionStore } from "../../state/session";
-import { useFlows } from '../../state/flows';
+import { useFlows } from "../../state/flows";
 
 const FlowSelector = () => {
-
   const flowState = useFlows();
   const flows = flowState.flows ? flowState.flows : [];
 
@@ -85,9 +84,7 @@ const FlowSelector = () => {
                                 <Text fontWeight="semibold">{flow.id}</Text>
                               </Box>
                               <Box>
-                                <Text textStyle="xs">
-                                  {flow.description}
-                                </Text>
+                                <Text textStyle="xs">{flow.description}</Text>
                               </Box>
                             </Stack>
                           </RadioGroup.ItemText>
