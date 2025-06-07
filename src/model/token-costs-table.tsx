@@ -1,5 +1,4 @@
 import { createColumnHelper } from "@tanstack/react-table";
-import { Tag } from "@chakra-ui/react";
 
 /**
  * Processing data structure for the processing table
@@ -36,5 +35,4 @@ export const columns = [
     header: "Output cost ($/1Mt)",
     cell: (info) => (info.getValue() * 1000000).toFixed(3),
   }),
-
 ];
