@@ -15,8 +15,6 @@ const KnowledgeCores = () => {
 
   const knowledgeCores = state.knowledgeCores ? state.knowledgeCores : [];
 
-  console.log(state.knowledgeCores);
-
   // Initialize React Table with document data and column configuration
   const table = useReactTable({
     data: knowledgeCores,

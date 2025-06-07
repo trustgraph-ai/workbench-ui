@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 
+import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
+
 import { Table } from "@chakra-ui/react";
 
 import { useProgressStateStore } from "../../state/progress";
@@ -7,8 +9,25 @@ import { useSocket } from "../../api/trustgraph/socket";
 import EditDialog from "./EditDialog";
 import Controls from "./Controls";
 import { toaster } from "../ui/toaster";
+import { useTokenCosts } from '../../state/token-costs';
+import { columns } from '../../model/token-costs-table';
+import ClickableTable from "../common/ClickableTable";
 
 const TokenCostTable = () => {
+
+  const state = useTokenCosts();
+
+const tokenCosts = state.tokenCosts ? state.tokenCosts : [];
+
+
+  // Initialize React Table with document data and column configuration
+  const table = useReactTable({
+    data: tokenCosts,
+    columns: columns,
+    getCoreRowModel: getCoreRowModel(),
+  });
+  
+
   const addActivity = useProgressStateStore((state) => state.addActivity);
   const removeActivity = useProgressStateStore(
     (state) => state.removeActivity,
@@ -58,30 +77,11 @@ const TokenCostTable = () => {
         create={false}
         id={selected}
       />
-      <Table.Root interactive>
-        <Table.Header>
-          <Table.Row>
-            <Table.ColumnHeader>Model</Table.ColumnHeader>
-            <Table.ColumnHeader>Input ($/1Mt)</Table.ColumnHeader>
-            <Table.ColumnHeader>Output ($/1Mt)</Table.ColumnHeader>
-          </Table.Row>
-        </Table.Header>
-        <Table.Body>
-          {view.map((row: Row) => (
-            <Table.Row key={row.model} onClick={() => setSelected(row.model)}>
-              <Table.Cell component="th" scope="row">
-                {row.model}
-              </Table.Cell>
-              <Table.Cell>
-                {(row.input_price * 1000000).toFixed(3)}
-              </Table.Cell>
-              <Table.Cell>
-                {(row.output_price * 1000000).toFixed(3)}
-              </Table.Cell>
-            </Table.Row>
-          ))}
-        </Table.Body>
-      </Table.Root>
+
+      <ClickableTable table={table}
+        onClick={(row) => setSelected(row.original.model)}
+      />
+
       <Controls onUpdate={() => refresh(socket)} />
     </>
   );
