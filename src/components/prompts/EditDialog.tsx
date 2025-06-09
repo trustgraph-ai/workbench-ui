@@ -77,7 +77,11 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
     }
 
     if (create) {
-      createPrompt({ id: newId, prompt: promptStruct, onSuccess: onComplete });
+      createPrompt({
+        id: newId,
+        prompt: promptStruct,
+        onSuccess: onComplete,
+      });
     } else {
       updatePrompt({ id, prompt: promptStruct, onSuccess: onComplete });
     }

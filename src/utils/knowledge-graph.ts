@@ -273,7 +273,8 @@ export const labelO = (
 };
 
 // Triple filter
-export const filter = (triples: Triple[], fn: (t: Triple) => boolean) => triples.filter((t) => fn(t));
+export const filter = (triples: Triple[], fn: (t: Triple) => boolean) =>
+  triples.filter((t) => fn(t));
 
 // Filter out 'structural' edges nobody needs to see
 export const filterInternals = (triples: Triple[]) =>

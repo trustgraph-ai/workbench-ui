@@ -49,11 +49,17 @@ const Prompts = () => {
           <Tabs.Trigger value="system">System prompt</Tabs.Trigger>
         </Tabs.List>
         <Tabs.Content value="prompts">
-          <PromptsTable prompts={promptsState.prompts} onSelect={(row) => onSelect(row)} />
+          <PromptsTable
+            prompts={promptsState.prompts}
+            onSelect={(row) => onSelect(row)}
+          />
           <PromptControls />
         </Tabs.Content>
         <Tabs.Content value="system">
-          <SystemPrompt prompt={promptsState.systemPrompt || ""} onEdit={onSystemEdit} />
+          <SystemPrompt
+            prompt={promptsState.systemPrompt || ""}
+            onEdit={onSystemEdit}
+          />
         </Tabs.Content>
       </Tabs.Root>
     </>

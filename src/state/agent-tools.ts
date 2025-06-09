@@ -79,30 +79,30 @@ export const useAgentTools = () => {
             .config()
             .getConfig([{ type: "agent", key: "tool-index" }])
             .then((res) => JSON.parse(res.values[0].value))
-        .then((existingIds) => {
-          const newIds = [...existingIds, id];
-          return socket
-            .config()
-            .putConfig([
-              {
-                type: "agent",
-                key: "tool-index",
-                value: JSON.stringify(newIds),
-              },
-              {
-                type: "agent",
-                key: "tool." + id,
-                value: JSON.stringify(tool),
-              },
-            ])
-            .then((x) => {
-              if (x["error"]) {
-                console.log("Error:", x);
-                throw x.error.message;
-              }
-              if (onSuccess) onSuccess();
+            .then((existingIds) => {
+              const newIds = [...existingIds, id];
+              return socket
+                .config()
+                .putConfig([
+                  {
+                    type: "agent",
+                    key: "tool-index",
+                    value: JSON.stringify(newIds),
+                  },
+                  {
+                    type: "agent",
+                    key: "tool." + id,
+                    value: JSON.stringify(tool),
+                  },
+                ])
+                .then((x) => {
+                  if (x["error"]) {
+                    console.log("Error:", x);
+                    throw x.error.message;
+                  }
+                  if (onSuccess) onSuccess();
+                });
             });
-        });
     },
     onError: (err) => {
       console.log("Error:", err);
@@ -122,33 +122,35 @@ export const useAgentTools = () => {
             .config()
             .getConfig([{ type: "agent", key: "tool-index" }])
             .then((res) => JSON.parse(res.values[0].value))
-        .then((existingIds) => {
-          const newIds = existingIds.filter((existingId) => existingId !== id);
-          return socket
-            .config()
-            .putConfig([
-              {
-                type: "agent",
-                key: "tool-index",
-                value: JSON.stringify(newIds),
-              },
-            ])
-            .then(() => {
-              return socket.config().deleteConfig([
-                {
-                  type: "agent",
-                  key: "tool." + id,
-                },
-              ]);
-            })
-            .then((x) => {
-              if (x["error"]) {
-                console.log("Error:", x);
-                throw x.error.message;
-              }
-              if (onSuccess) onSuccess();
+            .then((existingIds) => {
+              const newIds = existingIds.filter(
+                (existingId) => existingId !== id,
+              );
+              return socket
+                .config()
+                .putConfig([
+                  {
+                    type: "agent",
+                    key: "tool-index",
+                    value: JSON.stringify(newIds),
+                  },
+                ])
+                .then(() => {
+                  return socket.config().deleteConfig([
+                    {
+                      type: "agent",
+                      key: "tool." + id,
+                    },
+                  ]);
+                })
+                .then((x) => {
+                  if (x["error"]) {
+                    console.log("Error:", x);
+                    throw x.error.message;
+                  }
+                  if (onSuccess) onSuccess();
+                });
             });
-        });
     },
     onError: (err) => {
       console.log("Error:", err);
