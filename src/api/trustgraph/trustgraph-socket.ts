@@ -1060,7 +1060,7 @@ export class KnowledgeApi {
     return this.api.makeRequest<LibraryRequest, LibraryResponse>(
       "knowledge",
       {
-        operation: "delete-kg-core",
+        operation: "load-kg-core",
         id: id,
         user: user ? user : "trustgraph",
         collection: collection ? collection : "default",
