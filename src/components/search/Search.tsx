@@ -1,22 +1,14 @@
-import { toaster } from "../ui/toaster";
 import { useWorkbenchStateStore } from "../../state/workbench";
 import { useSearchStateStore } from "../../state/search";
-import { useSocket } from "../../api/trustgraph/socket";
-import { vectorSearch } from "../../utils/vector-search";
-import { useProgressStateStore } from "../../state/progress";
 import { useSessionStore } from "../../state/session";
+import { useVectorSearch } from "../../state/vector-search";
 
 import SearchInput from "./SearchInput";
 import Results from "./Results";
 
 const Search = () => {
-  const addActivity = useProgressStateStore((state) => state.addActivity);
+  const state = useVectorSearch();
 
-  const removeActivity = useProgressStateStore(
-    (state) => state.removeActivity,
-  );
-
-  const socket = useSocket();
   const flowId = useSessionStore((state) => state.flowId);
 
   const setEntities = useWorkbenchStateStore((state) => state.setEntities);
@@ -27,18 +19,16 @@ const Search = () => {
   const search = useSearchStateStore((state) => state.input);
 
   const submit = () => {
-    vectorSearch(socket, flowId, addActivity, removeActivity, search)
+    console.log(search);
+
+    state
+      .query({ flow: flowId, term: search, limit: 10 })
       .then((x) => {
+        console.log(x);
         setView(x.view);
         setEntities(x.entities);
       })
-      .catch((err) => {
-        console.log("Error: ", err);
-        toaster.create({
-          title: "Error: " + err.toString(),
-          type: "error",
-        });
-      });
+      .catch((err) => console.log("Error:", err));
   };
 
   return (

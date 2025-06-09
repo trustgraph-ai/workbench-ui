@@ -10,7 +10,7 @@ import { useActivity } from "./activity";
  * for AI models
  * @returns {Object} Token cost state and operations
  */
-export const useTriples = ({ flow, s, p, o, limit }) => {
+export const useEmbeddings = ({ flow, term }) => {
   // WebSocket connection for communicating with the configuration service
   const socket = useSocket();
 
@@ -24,11 +24,11 @@ export const useTriples = ({ flow, s, p, o, limit }) => {
    * Uses React Query for caching and background refetching
    */
   const query = useQuery({
-    queryKey: ["triples", { flow, s, p, o, limit }],
+    queryKey: ["embeddings", { flow, term }],
     queryFn: () => {
       return socket
         .flow(flow)
-        .triplesQuery(s, p, o, limit)
+        .embeddings(term)
         .then((x) => {
           if (x["error"]) {
             console.log("Error:", x);
@@ -44,12 +44,12 @@ export const useTriples = ({ flow, s, p, o, limit }) => {
   });
 
   // Show loading indicators for long-running operations
-  useActivity(query.isLoading, "Loading triples");
+  useActivity(query.isLoading, "Compute embeddings");
 
   // Return token cost state and operations for use in components
   return {
     // Token cost query state
-    triples: query.data,
+    embeddings: query.data,
     isLoading: query.isLoading,
     isError: query.isError,
     error: query.error,
