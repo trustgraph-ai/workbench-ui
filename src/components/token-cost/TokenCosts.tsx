@@ -33,7 +33,7 @@ const TokenCostTable = () => {
         onOpenChange={() => setSelected("")}
         onComplete={() => onComplete()}
         create={false}
-        id={selected}
+        model={selected}
       />
 
       <ClickableTable

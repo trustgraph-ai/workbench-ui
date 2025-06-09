@@ -24,9 +24,18 @@ export const useTokenCosts = () => {
    * Uses React Query for caching and background refetching
    */
   const query = useQuery({
-    queryKey: ["documents"],
+    queryKey: ["token-costs"],
     queryFn: () => {
-      return socket.config().getTokenCosts();
+      return socket
+        .config()
+        .getTokenCosts()
+        .then((x) => {
+          if (x["error"]) {
+            console.log("Error:", x);
+            throw x.error.message;
+          }
+          return x;
+        });
     },
   });
 
@@ -35,14 +44,25 @@ export const useTokenCosts = () => {
    * Executes parallel deletion requests and handles success/error states
    */
   const deleteTokenCostsMutation = useMutation({
-    mutationFn: ({ ids, onSuccess }) => {
+    mutationFn: ({ model, onSuccess }) => {
       // Execute deletion requests in parallel for all document IDs
-      return Promise.all(
-        ids.map((id) => socket.librarian().removeDocument(id)),
-      ).then(() => {
-        // Execute success callback if provided
-        if (onSuccess) onSuccess();
-      });
+      return socket
+        .config()
+        .deleteConfig([
+          {
+            type: "token-costs",
+            key: model,
+          },
+        ])
+        .then((x) => {
+          // Execute success callback if provided
+          if (x["error"]) {
+            console.log("Error:", x);
+            throw x.error.message;
+          }
+          // Execute success callback if provided
+          if (onSuccess) onSuccess();
+        });
     },
     onError: (err) => {
       console.log("Error:", err);
@@ -61,25 +81,29 @@ export const useTokenCosts = () => {
    * Mutation for updating token cost
    */
   const updateTokenCostMutation = useMutation({
-    mutationFn: ({ ids, flow, tags, onSuccess }) => {
-      // FIXME: Needs to be properly implemented.
-      // Hardcoded values that should be configurable
-      const user = "trustgraph";
-      const collection = "default";
-
+    mutationFn: ({ model, input_price, output_price, onSuccess }) => {
+      const tokenCost = {
+        input_price: input_price / 1000000,
+        output_price: output_price / 1000000,
+      };
       // Create processing entries for each document
-      return Promise.all(
-        ids.map((id) => {
-          // Generate unique processing ID for each document
-          const proc_id = uuidv4();
-          return socket
-            .librarian()
-            .addProcessing(proc_id, id, flow, user, collection, tags);
-        }),
-      ).then(() => {
-        // Execute success callback if provided
-        if (onSuccess) onSuccess();
-      });
+      return socket
+        .config()
+        .putConfig([
+          {
+            type: "token-costs",
+            key: model,
+            value: JSON.stringify(tokenCost),
+          },
+        ])
+        .then((x) => {
+          // Execute success callback if provided
+          if (x["error"]) {
+            console.log("Error:", x);
+            throw x.error.message;
+          }
+          if (onSuccess) onSuccess();
+        });
     },
     onError: (err) => {
       console.log("Error:", err);
@@ -89,7 +113,7 @@ export const useTokenCosts = () => {
     onSuccess: () => {
       // Invalidate cache to refresh the list
       queryClient.invalidateQueries({ queryKey: ["token-costs"] });
-      notify.success("Successful submission");
+      notify.success("Token costs updated");
     },
   });
 
@@ -112,7 +136,7 @@ export const useTokenCosts = () => {
     deleteError: deleteTokenCostsMutation.error,
 
     // Token cost update operations
-    updateTokenCosts: updateTokenCostMutation.mutate,
+    updateTokenCost: updateTokenCostMutation.mutate,
     isSubmitting: updateTokenCostMutation.isPending,
     submitError: updateTokenCostMutation.error,
 
