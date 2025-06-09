@@ -4,6 +4,7 @@ import { Trash, SendHorizontal } from "lucide-react";
 
 import { Portal, Button, Dialog, Box, CloseButton } from "@chakra-ui/react";
 
+import { usePrompts } from "../../state/prompts";
 import { useSocket } from "../../api/trustgraph/socket";
 import SelectField from "../common/SelectField";
 import TextAreaField from "../common/TextAreaField";
@@ -12,6 +13,7 @@ import { toaster } from "../ui/toaster";
 
 const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
   const socket = useSocket();
+  const { updatePrompt, createPrompt, deletePrompt } = usePrompts();
 
   const [newId, setNewId] = useState("");
   const [prompt, setPrompt] = useState("");
@@ -74,138 +76,20 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
       promptStruct["schema"] = parsedSchema;
     }
 
-    // Create is different from edit existing
     if (create) {
-      // When creating, the order is...
-      // 1) write the prompt template,
-      // 2) get the template index
-      // 3) add this prompt ID to the index if not already there
-
-      socket
-        .config()
-        .putConfig([
-          {
-            type: "prompt",
-            key: "template." + newId,
-            value: JSON.stringify(promptStruct),
-          },
-        ])
-        .then(() =>
-          socket
-            .config()
-            .getConfig([{ type: "prompt", key: "template-index" }]),
-        )
-        .then((x) => {
-          const templates = JSON.parse(x.values[0].value);
-
-          if (!templates.includes(newId)) {
-            templates.push(newId);
-            return socket
-              .config()
-              .putConfig([
-                {
-                  type: "prompt",
-                  key: "template-index",
-                  value: JSON.stringify(templates),
-                },
-              ])
-              .then({});
-          } else {
-            return {};
-          }
-        })
-        .then(() => {
-          toaster.create({
-            title: "Created prompt",
-            type: "success",
-          });
-          onComplete();
-        })
-
-        .catch((err) => {
-          console.log("Error:", err);
-          toaster.create({
-            title: "Error: " + err.toString(),
-            type: "error",
-          });
-        });
+      createPrompt({
+        id: newId,
+        prompt: promptStruct,
+        onSuccess: onComplete,
+      });
     } else {
-      // This is the case for updating an existing template, just over-write
-      // its value.
-      return socket
-        .config()
-        .putConfig([
-          {
-            type: "prompt",
-            key: "template." + id,
-            value: JSON.stringify(promptStruct),
-          },
-        ])
-        .then(() => {
-          toaster.create({
-            title: "Edited prompt",
-            type: "success",
-          });
-          onComplete();
-        })
-        .catch((e) => {
-          console.log("Error:", e);
-          toaster.create({
-            title: "Error: " + e.toString(),
-            type: "error",
-          });
-        });
+      updatePrompt({ id, prompt: promptStruct, onSuccess: onComplete });
     }
   };
 
   const onDelete = () => {
-    // Shouldn't happen, but can't delete a prompt that hasn't been created
-    // yet
     if (create) return;
-
-    // When creating, the order is...
-    // 1) Get the template index
-    // 2) Write back
-    // 3) Delete the prompt
-
-    socket
-      .config()
-      .getConfig([{ type: "prompt", key: "template-index" }])
-      .then((x) => {
-        const templates = JSON.parse(x.values[0].value);
-
-        const newTemplates = templates.filter((x) => x !== id);
-
-        return socket.config().putConfig([
-          {
-            type: "prompt",
-            key: "template-index",
-            value: JSON.stringify(newTemplates),
-          },
-        ]);
-      })
-      .then(() =>
-        socket.config().deleteConfig([
-          {
-            type: "prompt",
-            key: "template." + id,
-          },
-        ]),
-      )
-      .then(() => {
-        toaster.create({
-          title: "Prompt deleted",
-          type: "success",
-        });
-        onComplete();
-      })
-      .catch((err) => {
-        console.log("Error:", err);
-        toaster.create({
-          title: "Error: " + err.toString(),
-          type: "error",
-        });
-      });
+    deletePrompt({ id, onSuccess: onComplete });
   };
 
   return (

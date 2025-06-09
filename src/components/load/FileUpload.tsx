@@ -2,18 +2,16 @@ import React, { useRef } from "react";
 
 import { Button, Box } from "@chakra-ui/react";
 
-import { Upload, FilePlus } from "lucide-react";
+import { FilePlus } from "lucide-react";
 
 import SelectedFiles from "./SelectedFiles";
 import { useLoadStateStore } from "../../state/load";
 
 interface FileUploadProps {
-  submit: () => void;
   kind: string;
 }
 
-const FileUpload: React.FC<FileUploadProps> = ({ submit, kind }) => {
-  const files = useLoadStateStore((state) => state.files);
+const FileUpload: React.FC<FileUploadProps> = ({ kind }) => {
   const setFiles = useLoadStateStore((state) => state.setFiles);
 
   const fl2a = (x: FileList | null): File[] => {

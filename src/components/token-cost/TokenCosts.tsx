@@ -1,88 +1,42 @@
-import React, { useEffect, useState } from "react";
+import { useState } from "react";
 
-import { Table } from "@chakra-ui/react";
+import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
 
-import { useProgressStateStore } from "../../state/progress";
-import { useSocket } from "../../api/trustgraph/socket";
 import EditDialog from "./EditDialog";
 import Controls from "./Controls";
-import { toaster } from "../ui/toaster";
+import { useTokenCosts } from "../../state/token-costs";
+import { columns } from "../../model/token-costs-table";
+import ClickableTable from "../common/ClickableTable";
 
 const TokenCostTable = () => {
-  const addActivity = useProgressStateStore((state) => state.addActivity);
-  const removeActivity = useProgressStateStore(
-    (state) => state.removeActivity,
-  );
+  const state = useTokenCosts();
 
-  const [view, setView] = useState([]);
+  const tokenCosts = state.tokenCosts ? state.tokenCosts : [];
 
-  const socket = useSocket();
-
-  const refresh = (socket) => {
-    const act = "Load token costs...";
-    addActivity(act);
-    socket
-      .config()
-      .getTokenCosts()
-      .then((x) => {
-        setView(x);
-        removeActivity(act);
-      })
-      .catch((err) => {
-        removeActivity(act);
-        console.log("Error:", err);
-        toaster.create({
-          title: "Error: " + err.toString(),
-          type: "error",
-        });
-      });
-  };
-
-  useEffect(() => {
-    refresh(socket);
-  }, [socket]);
+  // Initialize React Table with document data and column configuration
+  const table = useReactTable({
+    data: tokenCosts,
+    columns: columns,
+    getCoreRowModel: getCoreRowModel(),
+  });
 
   const [selected, setSelected] = useState("");
-
-  const onComplete = () => {
-    setSelected("");
-    refresh(socket);
-  };
 
   return (
     <>
       <EditDialog
         open={selected != ""}
         onOpenChange={() => setSelected("")}
-        onComplete={() => onComplete()}
         create={false}
-        id={selected}
+        model={selected}
       />
-      <Table.Root interactive>
-        <Table.Header>
-          <Table.Row>
-            <Table.ColumnHeader>Model</Table.ColumnHeader>
-            <Table.ColumnHeader>Input ($/1Mt)</Table.ColumnHeader>
-            <Table.ColumnHeader>Output ($/1Mt)</Table.ColumnHeader>
-          </Table.Row>
-        </Table.Header>
-        <Table.Body>
-          {view.map((row: Row) => (
-            <Table.Row key={row.model} onClick={() => setSelected(row.model)}>
-              <Table.Cell component="th" scope="row">
-                {row.model}
-              </Table.Cell>
-              <Table.Cell>
-                {(row.input_price * 1000000).toFixed(3)}
-              </Table.Cell>
-              <Table.Cell>
-                {(row.output_price * 1000000).toFixed(3)}
-              </Table.Cell>
-            </Table.Row>
-          ))}
-        </Table.Body>
-      </Table.Root>
-      <Controls onUpdate={() => refresh(socket)} />
+
+      <ClickableTable
+        table={table}
+        onClick={(row) => setSelected(row.original.model)}
+      />
+
+      <Controls />
     </>
   );
 };

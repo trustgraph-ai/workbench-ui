@@ -6,12 +6,10 @@ import { Button, Box } from "@chakra-ui/react";
 
 import EditDialog from "./EditDialog";
 
-const Controls = ({ onUpdate }) => {
+const Controls = () => {
   const [createOpen, setCreateOpen] = useState(false);
 
   const onComplete = () => {
-    console.log("COMPLETE!!!");
-    onUpdate();
     setCreateOpen(false);
   };
 

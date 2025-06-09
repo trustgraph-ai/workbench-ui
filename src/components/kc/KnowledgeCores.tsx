@@ -1,97 +1,40 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
-import { useProgressStateStore } from "../../state/progress";
-import { toaster } from "../ui/toaster";
-import { useSocket } from "../../api/trustgraph/socket";
+import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
 
+import { columns } from "../../model/knowledge-core-table";
+import { useKnowledgeCores } from "../../state/knowledge-cores";
+
+import SelectableTable from "../common/SelectableTable";
 import Actions from "./Actions";
-import KnowledgeCoresTable from "./KnowledgeCoresTable";
-import KnowledgeCoreUpload from "./KnowledgeCoreUpload";
+import Controls from "./Controls";
+import LoadDialog from "./LoadDialog";
 
 const KnowledgeCores = () => {
-  const addActivity = useProgressStateStore((state) => state.addActivity);
-  const removeActivity = useProgressStateStore(
-    (state) => state.removeActivity,
-  );
-  const [view, setView] = useState([]);
+  const state = useKnowledgeCores();
 
-  const [files, setFiles] = useState([]);
-  const [id, setId] = useState("");
+  const knowledgeCores = state.knowledgeCores ? state.knowledgeCores : [];
 
-  const socket = useSocket();
+  const [loadDialogOpen, setLoadDialogOpen] = useState(false);
 
-  const refresh = (socket) => {
-    const act = "Load knowledge cores";
-    addActivity(act);
-    socket
-      .knowledge()
-      .getKnowledgeCores()
-      .then((x) => {
-        removeActivity(act);
-        setView(
-          x.map((x) => {
-            return { id: x };
-          }),
-        );
-      })
-      .catch((err) => {
-        console.log("Error:", err);
-        removeActivity(act);
-        toaster.create({
-          title: "Error: " + err.toString(),
-          type: "error",
-        });
-      });
-  };
+  // Initialize React Table with document data and column configuration
+  const table = useReactTable({
+    data: knowledgeCores,
+    columns: columns,
+    getCoreRowModel: getCoreRowModel(),
+  });
 
-  useEffect(() => {
-    refresh(socket);
-  }, [socket]);
-
-  const [selected, setSelected] = useState<Set<string>>(new Set());
+  // Get array of selected document IDs from the table selection
+  const selected = table.getSelectedRowModel().rows.map((x) => x.original.id);
 
   const onDelete = () => {
-    const ids = Array.from(selected);
-
-    deleteOne(ids)
-      .then(() => {
-        console.log("Success");
-        toaster.create({
-          title: "Flows deleted",
-          type: "success",
-        });
-        refresh(socket);
-      })
-      .catch((e) =>
-        toaster.create({
-          title: "Error: " + e.toString(),
-          type: "error",
-        }),
-      );
-  };
-
-  const deleteOne = (ids) => {
-    // Shouldn't happen, make it a no-op.
-    if (ids.length == 0) return;
-
-    console.log("Deleting", ids[0]);
-    const prom = socket
-      .knowledge()
-      .deleteKgCore(ids[0])
-      .then(() => {
-        setView((x) => x.filter((row) => row.id != ids[0]));
-        setSelected((x) => {
-          const newSet = new Set(x);
-          x.delete(ids[0]);
-          return newSet;
-        });
-      });
-
-    if (ids.length < 2) {
-      return prom;
-    } else {
-      return prom.then(() => deleteOne(ids.slice(1)));
-    }
+    state.deleteKnowledgeCores({
+      ids: selected,
+      onSuccess: () => {
+        // Clear row selection after successful deletion
+        table.setRowSelection({});
+      },
+    });
   };
 
   const onDownload = () => {
@@ -121,52 +64,39 @@ const KnowledgeCores = () => {
     }
   };
 
-  const upload = () => {
-    // Submit button is disabled, shouldn't happen
-    if (files.length == 0) return;
-
-    // Only 1 file can be selected
-    const file = files[0];
-
-    const url =
-      "/api/import-core?" +
-      "id=" +
-      encodeURIComponent(id) +
-      "&user=" +
-      encodeURIComponent("trustgraph");
-
-    fetch(url, {
-      method: "POST",
-      body: file,
-    }).then(() => {
-      console.log("Upload success.");
-      setFiles([]);
-      setId("");
-      refresh(socket);
-    });
+  const onLoad = () => {
+    setLoadDialogOpen(true);
   };
 
-  const toggle = (id) => {
-    const newSet = new Set(selected);
-    if (newSet.has(id)) newSet.delete(id);
-    else newSet.add(id);
-    setSelected(newSet);
+  const handleLoad = (ids, flow) => {
+    state.loadKnowledgeCores({
+      ids: ids,
+      flow: flow,
+      onSuccess: () => {
+        // Clear row selection after successful load
+        table.setRowSelection({});
+      },
+    });
   };
 
   return (
     <>
       <Actions
-        selectedCount={selected.size}
+        selectedCount={selected.length}
         onDelete={onDelete}
         onDownload={onDownload}
+        onLoad={onLoad}
       />
-      <KnowledgeCoresTable cores={view} selected={selected} toggle={toggle} />
-      <KnowledgeCoreUpload
-        files={files}
-        setFiles={setFiles}
-        submit={() => upload()}
-        id={id}
-        setId={setId}
+
+      <SelectableTable table={table} />
+
+      <Controls />
+
+      <LoadDialog
+        open={loadDialogOpen}
+        onOpenChange={setLoadDialogOpen}
+        selectedIds={selected}
+        onLoad={handleLoad}
       />
     </>
   );

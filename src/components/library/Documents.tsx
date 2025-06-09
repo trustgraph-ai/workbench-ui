@@ -1,204 +1,131 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
-import { v4 as uuidv4 } from "uuid";
+import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
 
-import { useProgressStateStore } from "../../state/progress";
-import { toaster } from "../ui/toaster";
-import { useSocket } from "../../api/trustgraph/socket";
+import { columns } from "../../model/document-table";
+import { useLibrary } from "../../state/library.ts";
+import { useNotification } from "../../state/notify.ts";
 
 import Actions from "./Actions";
 import SubmitDialog from "./SubmitDialog";
-import DocumentTable from "./DocumentTable";
+import SelectableTable from "../common/SelectableTable";
 import DocumentControls from "./DocumentControls";
 import UploadDialog from "../load/UploadDialog";
 
+/**
+ * Documents component - Main container for document management interface
+ * Handles document listing, selection, submission, deletion, and upload
+ * operations
+ */
 const Documents = () => {
-  const addActivity = useProgressStateStore((state) => state.addActivity);
-  const removeActivity = useProgressStateStore(
-    (state) => state.removeActivity,
-  );
-
-  const [view, setView] = useState([]);
-  const [selected, setSelected] = useState<Set<string>>(new Set());
+  // State for controlling the submit dialog visibility
   const [submitOpen, setSubmitOpen] = useState(false);
+
+  // State for controlling the upload dialog visibility
   const [uploadOpen, setUploadOpen] = useState(false);
 
-  const socket = useSocket();
+  // Hook for displaying notifications to the user
+  const notify = useNotification();
 
-  const refresh = (socket) => {
-    const act = "Load library";
-    addActivity(act);
-    socket
-      .librarian()
-      .getDocuments()
-      .then((x) => {
-        setView(x);
-        removeActivity(act);
-      })
-      .catch((err) => {
-        console.log("Error:", err);
-        removeAct(act);
-        toaster.create({
-          title: "Error: " + err.toString(),
-          type: "error",
-        });
-      });
-  };
+  // Hook for accessing library state and operations
+  const library = useLibrary();
 
-  useEffect(() => {
-    refresh(socket);
-  }, [socket]);
+  // Get documents from library state, fallback to empty array if undefined
+  const documents = library.documents ? library.documents : [];
 
-  const toggle = (id) => {
-    const newSet = new Set(selected);
-    if (newSet.has(id)) newSet.delete(id);
-    else newSet.add(id);
-    setSelected(newSet);
-  };
+  // Initialize React Table with document data and column configuration
+  const table = useReactTable({
+    data: documents,
+    columns: columns,
+    getCoreRowModel: getCoreRowModel(),
+  });
 
-  const onSubmit = () => {
-    setSubmitOpen(true);
-  };
+  // Get array of selected document IDs from the table selection
+  const selected = table.getSelectedRowModel().rows.map((x) => x.original.id);
 
-  const onSubmitConfirm = (flow, tags) => {
-    setSubmitOpen(false);
-
-    const ids = Array.from(selected);
-
-    submitOne(ids, flow, tags)
-      .then(() => {
-        console.log("Success");
-        setSelected(() => new Set([]));
-        toaster.create({
-          title: "Documents submitted",
-          type: "success",
-        });
-      })
-      .catch((e) =>
-        toaster.create({
-          title: "Error: " + e.toString(),
-          type: "error",
-        }),
-      );
-  };
-
-  const submitOne = (ids, flow, tags) => {
-    // Shouldn't happen, make it a no-op.
-    if (ids.length == 0) return;
-
-    console.log("Submitting", ids[0]);
-
-    const proc_id = uuidv4();
-
-    let title = view
-      .filter((row) => row.id == ids[0])
-      .map((row) => row.title)
-      .join(",");
-
-    if (!title) title = "<no title>";
-
-    const prom = socket
-      .librarian()
-      .addProcessing(proc_id, ids[0], flow, null, null, tags)
-      .then(() => {
-        toaster.create({
-          title: "Submitted " + title,
-          type: "info",
-        });
-      });
-
-    if (ids.length < 2) {
-      return prom;
-    } else {
-      return prom.then(() => submitOne(ids.slice(1), flow, tags));
-    }
-  };
-
-  const onEdit = () => {
-    toaster.create({
-      title: "Not implemented",
-      type: "info",
+  /**
+   * Delete multiple documents by their IDs
+   * Clears table selection on successful deletion
+   * @param {Array} ids - Array of document IDs to delete
+   */
+  const deleteDocuments = (ids) =>
+    library.deleteDocuments({
+      ids: ids,
+      onSuccess: () => {
+        // Clear row selection after successful deletion
+        table.setRowSelection({});
+      },
     });
+
+  /**
+   * Submit multiple documents to a workflow with tags
+   * Clears selection and closes submit dialog on success
+   * @param {Array} ids - Array of document IDs to submit
+   * @param {string} flow - Workflow identifier
+   * @param {Array} tags - Array of tags to apply
+   */
+  const submitDocuments = (ids, flow, tags) =>
+    library.submitDocuments({
+      ids: ids,
+      flow: flow,
+      tags: tags,
+      onSuccess: () => {
+        // Clear selection and close dialog after successful submission
+        table.setRowSelection({});
+        setSubmitOpen(false);
+      },
+    });
+
+  /**
+   * Handle submit confirmation from the submit dialog
+   * @param {string} flow - Selected workflow
+   * @param {Array} tags - Selected tags
+   */
+  const onConfirmSubmit = (flow, tags) => {
+    submitDocuments(selected, flow, tags);
   };
 
+  /**
+   * Handle edit action for selected documents
+   * Currently shows "Not implemented" notification
+   */
+  const onEdit = () => {
+    notify.info("Not implemented");
+  };
+
+  /**
+   * Handle delete action for selected documents
+   */
   const onDelete = () => {
-    const ids = Array.from(selected);
-
-    deleteOne(ids)
-      .then(() => {
-        console.log("Success");
-        toaster.create({
-          title: "Documents deleted",
-          type: "success",
-        });
-      })
-      .catch((e) =>
-        toaster.create({
-          title: "Error: " + e.toString(),
-          type: "error",
-        }),
-      );
-  };
-
-  const deleteOne = (ids) => {
-    // Shouldn't happen, make it a no-op.
-    if (ids.length == 0) return;
-
-    console.log("Deleting", ids[0]);
-    const prom = socket
-      .librarian()
-      .removeDocument(ids[0])
-      .then(() => {
-        setView((x) => x.filter((row) => row.id != ids[0]));
-        setSelected((x) => {
-          const newSet = new Set(x);
-          x.delete(ids[0]);
-          return newSet;
-        });
-      });
-
-    if (ids.length < 2) {
-      return prom;
-    } else {
-      return prom.then(() => deleteOne(ids.slice(1)));
-    }
-  };
-
-  const upload = () => {
-    setUploadOpen(true);
-  };
-
-  const onUploadComplete = () => {
-    console.log("UPLOAD!");
-    setUploadOpen(false);
-    refresh(socket);
+    deleteDocuments(selected);
   };
 
   return (
     <>
+      {/* Action buttons for bulk operations on selected documents */}
       <Actions
-        selectedCount={selected.size}
-        onSubmit={onSubmit}
+        selectedCount={selected.length}
+        onSubmit={() => setSubmitOpen(true)}
         onEdit={onEdit}
         onDelete={onDelete}
       />
 
+      {/* Dialog for submitting documents to workflows */}
       <SubmitDialog
         open={submitOpen}
         onOpenChange={setSubmitOpen}
-        onSubmit={onSubmitConfirm}
-        docs={view.filter((x) => selected.has(x.id))}
+        onSubmit={onConfirmSubmit}
+        docs={table.getSelectedRowModel().rows.map((x) => x.original)}
       />
 
-      <UploadDialog
-        open={uploadOpen}
-        onOpenChange={setUploadOpen}
-        onComplete={onUploadComplete}
-      />
+      {/* Dialog for uploading new documents */}
+      <UploadDialog open={uploadOpen} onOpenChange={setUploadOpen} />
 
-      <DocumentTable selected={selected} documents={view} toggle={toggle} />
+      {/* Main table displaying documents with selection capabilities */}
+      <SelectableTable table={table} />
 
-      <DocumentControls onUpload={upload} />
+      {/* Controls for document operations like upload */}
+      <DocumentControls onUpload={() => setUploadOpen(true)} />
     </>
   );
 };

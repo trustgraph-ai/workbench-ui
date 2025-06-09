@@ -1054,6 +1054,22 @@ export class KnowledgeApi {
   }
 
   /**
+   * Deletes a knowledge graph core
+   */
+  loadKgCore(id: string, flow: string, user?: string, collection?: string) {
+    return this.api.makeRequest<LibraryRequest, LibraryResponse>(
+      "knowledge",
+      {
+        operation: "load-kg-core",
+        id: id,
+        user: user ? user : "trustgraph",
+        collection: collection ? collection : "default",
+      },
+      30000,
+    );
+  }
+
+  /**
    * Retrieves a knowledge graph core with streaming data
    * Uses multi-request pattern for large datasets
    * @param receiver - Callback function to handle streaming data chunks

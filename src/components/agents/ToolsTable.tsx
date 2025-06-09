@@ -1,42 +1,31 @@
-import { Table } from "@chakra-ui/react";
+import { useMemo } from "react";
+import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
+
+import { columns, type AgentTool } from "../../model/agent-tools-table";
+import ClickableTable from "../common/ClickableTable";
 
 const ToolsTable = ({ setSelected, tools }) => {
+  // Transform the raw tools data to match our table structure
+  const tableData: AgentTool[] = useMemo(() => {
+    return tools.map(([id, config]) => ({
+      id,
+      description: config?.description || "",
+      type: config?.type || "",
+    }));
+  }, [tools]);
+
+  // Initialize React Table with tool data and column configuration
+  const table = useReactTable({
+    data: tableData,
+    columns: columns,
+    getCoreRowModel: getCoreRowModel(),
+  });
+
   const onSelect = (row) => {
-    setSelected(row[0]);
+    setSelected(row.original.id);
   };
 
-  return (
-    <>
-      <Table.Root
-        sx={{ minWidth: 450 }}
-        aria-label="table of entities"
-        interactive
-      >
-        <Table.Header>
-          <Table.Row>
-            <Table.ColumnHeader>Tool ID</Table.ColumnHeader>
-            <Table.ColumnHeader>Description</Table.ColumnHeader>
-            <Table.ColumnHeader>Type</Table.ColumnHeader>
-          </Table.Row>
-        </Table.Header>
-        <Table.Body>
-          {tools.map((row, ix) => (
-            <Table.Row key={ix} onClick={() => onSelect(row)}>
-              <Table.Cell component="th" scope="row" verticalAlign="top">
-                {row[0]}
-              </Table.Cell>
-              <Table.Cell verticalAlign="top">
-                {row[1] ? row[1].description : ""}
-              </Table.Cell>
-              <Table.Cell verticalAlign="top">
-                {row[1] ? row[1].type : ""}
-              </Table.Cell>
-            </Table.Row>
-          ))}
-        </Table.Body>
-      </Table.Root>
-    </>
-  );
+  return <ClickableTable table={table} onClick={onSelect} />;
 };
 
 export default ToolsTable;

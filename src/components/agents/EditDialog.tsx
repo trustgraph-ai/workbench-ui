@@ -17,6 +17,7 @@ import {
 } from "@chakra-ui/react";
 
 import { useSocket } from "../../api/trustgraph/socket";
+import { useAgentTools } from "../../state/agent-tools";
 import SelectField from "../common/SelectField";
 import TextAreaField from "../common/TextAreaField";
 import TextField from "../common/TextField";
@@ -24,6 +25,7 @@ import { toaster } from "../ui/toaster";
 
 const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
   const socket = useSocket();
+  const { updateTool, createTool, deleteTool } = useAgentTools();
 
   const [newId, setNewId] = useState("");
   const [description, setDescription] = useState("");
@@ -79,85 +81,10 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
       arguments: args,
     };
 
-    // Create is different from edit existing
     if (create) {
-      // When creating, the order is...
-      // 1) write the tool template,
-      // 2) get the template index
-      // 3) add this tool ID to the index if not already there
-
-      socket
-        .config()
-        .putConfig([
-          {
-            type: "agent",
-            key: "tool." + newId,
-            value: JSON.stringify(toolStruct),
-          },
-        ])
-        .then(() =>
-          socket.config().getConfig([{ type: "agent", key: "tool-index" }]),
-        )
-        .then((x) => {
-          const tools = JSON.parse(x.values[0].value);
-
-          if (!tools.includes(newId)) {
-            tools.push(newId);
-            return socket
-              .config()
-              .putConfig([
-                {
-                  type: "agent",
-                  key: "tool-index",
-                  value: JSON.stringify(tools),
-                },
-              ])
-              .then({});
-          } else {
-            return {};
-          }
-        })
-        .then(() => {
-          toaster.create({
-            title: "Created tool",
-            type: "success",
-          });
-          onComplete();
-        })
-
-        .catch((err) => {
-          console.log("Error:", err);
-          toaster.create({
-            title: "Error: " + err.toString(),
-            type: "error",
-          });
-        });
+      createTool({ id: newId, tool: toolStruct, onSuccess: onComplete });
     } else {
-      // This is the case for updating an existing template, just over-write
-      // its value.
-      return socket
-        .config()
-        .putConfig([
-          {
-            type: "agent",
-            key: "tool." + id,
-            value: JSON.stringify(toolStruct),
-          },
-        ])
-        .then(() => {
-          toaster.create({
-            title: "Edited tool",
-            type: "success",
-          });
-          onComplete();
-        })
-        .catch((e) => {
-          console.log("Error:", e);
-          toaster.create({
-            title: "Error: " + e.toString(),
-            type: "error",
-          });
-        });
+      updateTool({ id, tool: toolStruct, onSuccess: onComplete });
     }
   };
 
@@ -187,53 +114,8 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
   };
 
   const onDelete = () => {
-    // Shouldn't happen, but can't delete a tool that hasn't been created
-    // yet
     if (create) return;
-
-    // When creating, the order is...
-    // 1) Get the tool index
-    // 2) Write back
-    // 3) Delete the tool
-
-    socket
-      .config()
-      .getConfig([{ type: "agent", key: "tool-index" }])
-      .then((x) => {
-        const tools = JSON.parse(x.values[0].value);
-
-        const newTools = tools.filter((x) => x !== id);
-
-        return socket.config().putConfig([
-          {
-            type: "agent",
-            key: "tool-index",
-            value: JSON.stringify(newTools),
-          },
-        ]);
-      })
-      .then(() =>
-        socket.config().deleteConfig([
-          {
-            type: "agent",
-            key: "tool." + id,
-          },
-        ]),
-      )
-      .then(() => {
-        toaster.create({
-          title: "Tool deleted",
-          type: "success",
-        });
-        onComplete();
-      })
-      .catch((err) => {
-        console.log("Error:", err);
-        toaster.create({
-          title: "Error: " + err.toString(),
-          type: "error",
-        });
-      });
+    deleteTool({ id, onSuccess: onComplete });
   };
 
   return (

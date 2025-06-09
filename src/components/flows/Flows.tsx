@@ -1,111 +1,47 @@
-import React, { useEffect, useState } from "react";
+import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
 
-import { useProgressStateStore } from "../../state/progress";
-import { useSocket } from "../../api/trustgraph/socket";
-import { toaster } from "../ui/toaster";
+import { useFlows } from "../../state/flows";
 
+import SelectableTable from "../common/SelectableTable";
 import Actions from "./Actions";
 import FlowControls from "./FlowControls";
-import FlowsTable from "./FlowsTable";
+
+import { columns } from "../../model/flow-table";
 
 const Flows = () => {
-  const addActivity = useProgressStateStore((state) => state.addActivity);
-  const removeActivity = useProgressStateStore(
-    (state) => state.removeActivity,
-  );
+  const flowState = useFlows();
+  const flows = flowState.flows ? flowState.flows : [];
 
-  const [flows, setFlows] = useState([]);
+  // Initialize React Table with document data and column configuration
+  const table = useReactTable({
+    data: flows,
+    columns: columns,
+    getCoreRowModel: getCoreRowModel(),
+  });
 
-  const socket = useSocket();
-
-  const refresh = (socket) => {
-    const act = "Load flows";
-    addActivity(act);
-    socket
-      .flows()
-      .getFlows()
-      .then((ids) => {
-        return Promise.all(
-          ids.map((id) =>
-            socket
-              .flows()
-              .getFlow(id)
-              .then((x) => [id, x]),
-          ),
-        );
-      })
-      .then((x) => {
-        removeActivity(act);
-        setFlows(x);
-      })
-      .catch((err) => {
-        removeActivity(act);
-        console.log("Error:", err);
-      });
-  };
-
-  useEffect(() => {
-    refresh(socket);
-  }, [socket]);
+  // Get array of selected document IDs from the table selection
+  const selected = table.getSelectedRowModel().rows.map((x) => x.original.id);
 
   const onDelete = () => {
     const ids = Array.from(selected);
-
-    deleteOne(ids)
-      .then(() => {
-        console.log("Success");
-        toaster.create({
-          title: "Flows deleted",
-          type: "success",
-        });
-        refresh(socket);
-      })
-      .catch((e) =>
-        toaster.create({
-          title: "Error: " + e.toString(),
-          type: "error",
-        }),
-      );
-  };
-
-  const deleteOne = (ids) => {
-    // Shouldn't happen, make it a no-op.
-    if (ids.length == 0) return;
-
-    console.log("Deleting", ids[0]);
-    const prom = socket
-      .flows()
-      .stopFlow(ids[0])
-      .then(() => {
-        setFlows((x) => x.filter((row) => row.id != ids[0]));
-        setSelected((x) => {
-          const newSet = new Set(x);
-          x.delete(ids[0]);
-          return newSet;
-        });
-      });
-
-    if (ids.length < 2) {
-      return prom;
-    } else {
-      return prom.then(() => deleteOne(ids.slice(1)));
-    }
-  };
-
-  const [selected, setSelected] = useState<Set<string>>(new Set());
-
-  const toggle = (id) => {
-    const newSet = new Set(selected);
-    if (newSet.has(id)) newSet.delete(id);
-    else newSet.add(id);
-    setSelected(newSet);
+    flowState.stopFlows({
+      ids: ids,
+      onSuccess: () => {
+        table.setRowSelection({});
+      },
+    });
   };
 
   return (
     <>
-      <Actions selectedCount={selected.size} onDelete={onDelete} />
-      <FlowsTable flows={flows} selected={selected} toggle={toggle} />
-      <FlowControls onUpdate={() => refresh(socket)} />
+      {/* Action buttons for bulk operations on selected documents */}
+      <Actions selectedCount={selected.length} onDelete={onDelete} />
+
+      {/* Main table displaying documents with selection capabilities */}
+      <SelectableTable table={table} />
+
+      {/* Controls for flow operations - create */}
+      <FlowControls />
     </>
   );
 };

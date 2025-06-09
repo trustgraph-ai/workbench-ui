@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState } from "react";
 
 import {
   Text,
@@ -9,60 +9,18 @@ import {
   RadioGroup,
 } from "@chakra-ui/react";
 
-import { useProgressStateStore } from "../../state/progress";
 import { useSessionStore } from "../../state/session";
-import { toaster } from "../ui/toaster";
-import { useSocket } from "../../api/trustgraph/socket";
+import { useFlows } from "../../state/flows";
 
 const FlowSelector = () => {
+  const flowState = useFlows();
+  const flows = flowState.flows ? flowState.flows : [];
+
   const flowId = useSessionStore((state) => state.flowId);
   const flow = useSessionStore((state) => state.flow);
 
   const setFlowId = useSessionStore((state) => state.setFlowId);
   const setFlow = useSessionStore((state) => state.setFlow);
-
-  const addActivity = useProgressStateStore((state) => state.addActivity);
-  const removeActivity = useProgressStateStore(
-    (state) => state.removeActivity,
-  );
-
-  const [flows, setFlows] = useState([]);
-
-  const socket = useSocket();
-
-  const refresh = (socket) => {
-    const act = "Load flows";
-    addActivity(act);
-    socket
-      .flows()
-      .getFlows()
-      .then((ids) => {
-        return Promise.all(
-          ids.map((id) =>
-            socket
-              .flows()
-              .getFlow(id)
-              .then((x) => [id, x]),
-          ),
-        );
-      })
-      .then((x) => {
-        removeActivity(act);
-        setFlows(x);
-      })
-      .catch((err) => {
-        removeActivity(act);
-        toaster.create({
-          title: "Error: " + err.toString(),
-          type: "error",
-        });
-        console.log("Error:", err);
-      });
-  };
-
-  useEffect(() => {
-    refresh(socket);
-  }, [socket]);
 
   const [open, setOpen] = useState(false);
 
@@ -109,26 +67,24 @@ const FlowSelector = () => {
                   value={flowId}
                   onValueChange={(x) => {
                     setFlowId(x.value);
-                    const fl = flows.filter((fl) => fl[0] === x.value);
-                    if (fl) setFlow(fl[0][1]);
+                    const fl = flows.filter((fl) => fl.id == x.value);
+                    if (fl) setFlow(fl[0]);
                   }}
                 >
                   <RadioGroup.Label>Select flow</RadioGroup.Label>
                   <Stack gap="1">
                     {flows.map((flow) => {
                       return (
-                        <RadioGroup.Item key={flow[0]} value={flow[0]}>
+                        <RadioGroup.Item key={flow.id} value={flow.id}>
                           <RadioGroup.ItemHiddenInput />
                           <RadioGroup.ItemIndicator />
                           <RadioGroup.ItemText>
                             <Stack mt={3} gap={1}>
                               <Box>
-                                <Text fontWeight="semibold">{flow[0]}</Text>
+                                <Text fontWeight="semibold">{flow.id}</Text>
                               </Box>
                               <Box>
-                                <Text textStyle="xs">
-                                  {flow[1].description}
-                                </Text>
+                                <Text textStyle="xs">{flow.description}</Text>
                               </Box>
                             </Stack>
                           </RadioGroup.ItemText>

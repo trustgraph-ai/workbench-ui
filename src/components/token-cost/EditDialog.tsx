@@ -4,47 +4,29 @@ import { Trash, SendHorizontal } from "lucide-react";
 
 import { Portal, Button, Dialog, CloseButton } from "@chakra-ui/react";
 
-import { useSocket } from "../../api/trustgraph/socket";
+import { useTokenCosts } from "../../state/token-costs";
 import TextField from "../common/TextField";
-import { toaster } from "../ui/toaster";
 
-const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
-  const socket = useSocket();
+const EditDialog = ({ open, onOpenChange, model, create }) => {
+  const state = useTokenCosts();
 
-  const [newId, setNewId] = useState("");
+  const [newModel, setNewModel] = useState("");
   const [input, setInput] = useState(0);
   const [output, setOutput] = useState(0);
 
   useEffect(() => {
-    if (!id) return;
+    if (!model) return;
 
-    socket
-      .config()
-      .getConfig([{ type: "token-costs", key: id }])
-      .then((x) => {
-        return JSON.parse(x.values[0].value);
-      })
-      .then((x) => {
-        // Store flow information
-        setInput(x.input_price * 1000000);
-        setOutput(x.output_price * 1000000);
-      })
-      .catch((e) => {
-        console.log("Error:", e);
-        toaster.create({
-          title: "Error: " + e.toString(),
-          type: "error",
-        });
-      });
-  }, [id, create, socket]);
+    const models = state.tokenCosts.filter((row) => row.model == model);
+
+    if (models.length < 1) return;
+
+    setNewModel(model);
+    setInput(models[0].input_price * 1000000);
+    setOutput(models[0].output_price * 1000000);
+  }, [state.tokenCosts, model, create]);
 
   const onEdit = () => {
-    // Build the prompt structure
-    const cost = {
-      input_price: input / 1000000,
-      output_price: output / 1000000,
-    };
-
     // Create is different from edit existing
     if (create) {
       // When creating, the order is...
@@ -52,56 +34,19 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
       // 2) get the template index
       // 3) add this prompt ID to the index if not already there
 
-      socket
-        .config()
-        .putConfig([
-          {
-            type: "token-costs",
-            key: newId,
-            value: JSON.stringify(cost),
-          },
-        ])
-        .then(() => {
-          toaster.create({
-            title: "Created model cost",
-            type: "success",
-          });
-          onComplete();
-        })
-
-        .catch((err) => {
-          console.log("Error:", err);
-          toaster.create({
-            title: "Error: " + err.toString(),
-            type: "error",
-          });
-        });
+      state.updateTokenCost({
+        model: newModel,
+        input_price: input,
+        output_price: output,
+        onSuccess: () => onOpenChange(false),
+      });
     } else {
-      // This is the case for updating an existing template, just over-write
-      // its value.
-      return socket
-        .config()
-        .putConfig([
-          {
-            type: "token-costs",
-            key: id,
-            value: JSON.stringify(cost),
-          },
-        ])
-        .then(() => {
-          toaster.create({
-            title: "Edited model costs",
-            type: "success",
-          });
-          onComplete();
-        })
-        .catch((e) => {
-          console.log("Error:", e);
-          toaster.create({
-            title: "Error: " + e.toString(),
-            type: "error",
-          });
-        });
+      state.updateTokenCost({
+        model: model,
+        input_price: input,
+        output_price: output,
+        onSuccess: () => onOpenChange(false),
+      });
     }
   };
 
@@ -110,33 +55,10 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
     // yet
     if (create) return;
 
-    // When creating, the order is...
-    // 1) Get the template index
-    // 2) Write back
-    // 3) Delete the prompt
-
-    socket
-      .config()
-      .deleteConfig([
-        {
-          type: "token-costs",
-          key: id,
-        },
-      ])
-      .then(() => {
-        toaster.create({
-          title: "Model cost deleted",
-          type: "success",
-        });
-        onComplete();
-      })
-      .catch((err) => {
-        console.log("Error:", err);
-        toaster.create({
-          title: "Error: " + err.toString(),
-          type: "error",
-        });
-      });
+    state.deleteTokenCosts({
+      model: model,
+      onSuccess: () => onOpenChange(false),
+    });
   };
 
   return (
@@ -157,7 +79,7 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
 
               {!create && (
                 <Dialog.Title>
-                  Edit model cost: <code>{id}</code>
+                  Edit model cost: <code>{model}</code>
                 </Dialog.Title>
               )}
             </Dialog.Header>
@@ -166,8 +88,8 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
                 <TextField
                   label="Model ID"
                   placeholder="Enter a unique model ID"
-                  value={newId}
-                  onValueChange={(v) => setNewId(v)}
+                  value={newModel}
+                  onValueChange={(v) => setNewModel(v)}
                   required={true}
                 />
               )}

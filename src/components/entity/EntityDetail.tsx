@@ -1,54 +1,26 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { useNavigate } from "react-router";
 import { Rotate3d, ArrowBigRight } from "lucide-react";
 
 import { Box, Alert, Button, Stack, Heading, HStack } from "@chakra-ui/react";
 
-import { toaster } from "../ui/toaster";
-import { useSocket } from "../../api/trustgraph/socket";
 import { useWorkbenchStateStore } from "../../state/workbench";
-import { getTriples } from "../../utils/knowledge-graph";
-import { useProgressStateStore } from "../../state/progress";
 import { useSessionStore } from "../../state/session";
+import { useEntityDetail } from "../../state/entity-query";
 
 import EntityHelp from "./EntityHelp";
 import ElementNode from "./ElementNode";
 
 const EntityDetail = () => {
-  const addActivity = useProgressStateStore((state) => state.addActivity);
-  const removeActivity = useProgressStateStore(
-    (state) => state.removeActivity,
-  );
-
-  const socket = useSocket();
-  const flowId = useSessionStore((state) => state.flowId);
-
   const navigate = useNavigate();
-
+  const flowId = useSessionStore((state) => state.flowId);
   const selected = useWorkbenchStateStore((state) => state.selected);
 
-  const [detail, setDetail] = useState(undefined);
-
-  useEffect(() => {
-    if (!selected) return;
-
-    const act = "Knowledge graph search: " + selected.label;
-    addActivity(act);
-
-    getTriples(socket, flowId, selected.uri, addActivity, removeActivity)
-      .then((d) => {
-        setDetail(d);
-        removeActivity(act);
-      })
-      .catch((err) => {
-        console.log("Error: ", err);
-        removeActivity(act);
-        toaster.create({
-          title: "Error: " + err.toString(),
-          type: "error",
-        });
-      });
-  }, [selected, socket, addActivity, removeActivity, flowId]);
+  // Use the new Tanstack Query hook for entity details
+  const { detail, isLoading, isError } = useEntityDetail(
+    selected?.uri,
+    flowId,
+  );
 
   if (!selected) {
     return (
@@ -63,14 +35,26 @@ const EntityDetail = () => {
     );
   }
 
-  if (!detail)
+  if (isLoading || !detail)
     return (
       <Box>
         <Alert.Root status="info" variant="outline">
           <Alert.Indicator />
           <Alert.Title>
-            No data to view. Try Chat or Search to find data.
+            {isLoading
+              ? "Loading entity details..."
+              : "No data to view. Try Chat or Search to find data."}
           </Alert.Title>
+        </Alert.Root>
+      </Box>
+    );
+
+  if (isError)
+    return (
+      <Box>
+        <Alert.Root status="error" variant="outline">
+          <Alert.Indicator />
+          <Alert.Title>Error loading entity details.</Alert.Title>
         </Alert.Root>
       </Box>
     );

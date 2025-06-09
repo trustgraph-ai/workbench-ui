@@ -22,7 +22,7 @@ import {
   Search,
   Waypoints,
   Rotate3d,
-  FileUp,
+  //  FileUp,
   Workflow,
   //  ScrollText,
   LibraryBig,
