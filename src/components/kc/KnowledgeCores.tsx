@@ -95,7 +95,7 @@ const KnowledgeCores = () => {
   return (
     <>
       <Actions
-        selectedCount={selected.size}
+        selectedCount={selected.length}
         onDelete={onDelete}
         onDownload={onDownload}
       />
