@@ -17,7 +17,10 @@ const EntityDetail = () => {
   const selected = useWorkbenchStateStore((state) => state.selected);
 
   // Use the new Tanstack Query hook for entity details
-  const { detail, isLoading, isError } = useEntityDetail(selected?.uri, flowId);
+  const { detail, isLoading, isError } = useEntityDetail(
+    selected?.uri,
+    flowId,
+  );
 
   if (!selected) {
     return (
@@ -38,7 +41,9 @@ const EntityDetail = () => {
         <Alert.Root status="info" variant="outline">
           <Alert.Indicator />
           <Alert.Title>
-            {isLoading ? "Loading entity details..." : "No data to view. Try Chat or Search to find data."}
+            {isLoading
+              ? "Loading entity details..."
+              : "No data to view. Try Chat or Search to find data."}
           </Alert.Title>
         </Alert.Root>
       </Box>
@@ -49,9 +54,7 @@ const EntityDetail = () => {
       <Box>
         <Alert.Root status="error" variant="outline">
           <Alert.Indicator />
-          <Alert.Title>
-            Error loading entity details.
-          </Alert.Title>
+          <Alert.Title>Error loading entity details.</Alert.Title>
         </Alert.Root>
       </Box>
     );

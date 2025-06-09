@@ -4,6 +4,7 @@ import { useSocket } from "../api/trustgraph/socket";
 import { useNotification } from "./notify";
 import { useActivity } from "./activity";
 import { getTriples } from "../utils/knowledge-graph";
+import { useProgressStateStore } from "./progress";
 
 /**
  * Custom hook for managing entity detail operations using React Query
@@ -12,9 +13,18 @@ import { getTriples } from "../utils/knowledge-graph";
  * @param flowId - The flow ID to use for the query
  * @returns {Object} Entity detail state and operations
  */
-export const useEntityDetail = (entityUri: string | undefined, flowId: string) => {
+export const useEntityDetail = (
+  entityUri: string | undefined,
+  flowId: string,
+) => {
   // WebSocket connection for communicating with the graph service
   const socket = useSocket();
+
+  const addActivity = useProgressStateStore((state) => state.addActivity);
+
+  const removeActivity = useProgressStateStore(
+    (state) => state.removeActivity,
+  );
 
   // Hook for displaying user notifications
   const notify = useNotification();
@@ -35,15 +45,18 @@ export const useEntityDetail = (entityUri: string | undefined, flowId: string) =
         socket,
         flowId,
         entityUri,
-        (activity: string) => {}, // No-op for activity tracking in query
-        (activity: string) => {}  // No-op for activity tracking in query
+        addActivity,
+        removeActivity,
       );
     },
     enabled: !!entityUri && !!flowId, // Only run query if both entityUri and flowId are available
   });
 
   // Show loading indicators for long-running operations
-  useActivity(query.isLoading, entityUri ? `Knowledge graph search: ${entityUri}` : "Loading entity");
+  useActivity(
+    query.isLoading,
+    entityUri ? `Knowledge graph search: ${entityUri}` : "Loading entity",
+  );
 
   // Handle errors
   if (query.isError && query.error) {

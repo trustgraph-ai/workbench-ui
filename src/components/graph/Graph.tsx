@@ -22,7 +22,12 @@ const GraphView = () => {
   const { width, height, ref } = useResizeDetector({});
 
   // Use the new Tanstack Query hook for graph data
-  const { view, isLoading, isError, updateSubgraph: updateSubgraphMutation } = useGraphSubgraph(selected?.uri, flowId);
+  const {
+    view,
+    isLoading,
+    isError,
+    updateSubgraph: updateSubgraphMutation,
+  } = useGraphSubgraph(selected?.uri, flowId);
 
   if (!selected) {
     return (
@@ -43,7 +48,9 @@ const GraphView = () => {
         <Alert.Root status="info" variant="outline">
           <Alert.Indicator />
           <Alert.Title>
-            {isLoading ? "Building subgraph..." : "No data to view. Try Chat or Search to find data."}
+            {isLoading
+              ? "Building subgraph..."
+              : "No data to view. Try Chat or Search to find data."}
           </Alert.Title>
         </Alert.Root>
       </Box>
@@ -54,9 +61,7 @@ const GraphView = () => {
       <Box>
         <Alert.Root status="error" variant="outline">
           <Alert.Indicator />
-          <Alert.Title>
-            Error loading graph data.
-          </Alert.Title>
+          <Alert.Title>Error loading graph data.</Alert.Title>
         </Alert.Root>
       </Box>
     );

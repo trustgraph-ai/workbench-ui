@@ -3,10 +3,8 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSocket } from "../api/trustgraph/socket";
 import { useNotification } from "./notify";
 import { useActivity } from "./activity";
-import {
-  createSubgraph,
-  updateSubgraph,
-} from "../utils/knowledge-graph-viz";
+import { createSubgraph, updateSubgraph } from "../utils/knowledge-graph-viz";
+import { useProgressStateStore } from "./progress";
 
 /**
  * Custom hook for managing graph visualization operations using React Query
@@ -15,9 +13,18 @@ import {
  * @param flowId - The flow ID to use for the query
  * @returns {Object} Graph state and operations
  */
-export const useGraphSubgraph = (entityUri: string | undefined, flowId: string) => {
+export const useGraphSubgraph = (
+  entityUri: string | undefined,
+  flowId: string,
+) => {
   // WebSocket connection for communicating with the graph service
   const socket = useSocket();
+
+  const addActivity = useProgressStateStore((state) => state.addActivity);
+
+  const removeActivity = useProgressStateStore(
+    (state) => state.removeActivity,
+  );
 
   // Hook for displaying user notifications
   const notify = useNotification();
@@ -37,15 +44,15 @@ export const useGraphSubgraph = (entityUri: string | undefined, flowId: string) 
       }
 
       const sg = createSubgraph();
-      
+
       // Use the existing updateSubgraph utility function for initial load
       return updateSubgraph(
         socket,
         flowId,
         entityUri,
         sg,
-        (activity: string) => {}, // No-op for activity tracking in query
-        (activity: string) => {}  // No-op for activity tracking in query
+        addActivity,
+        removeActivity,
       );
     },
     enabled: !!entityUri && !!flowId, // Only run query if both entityUri and flowId are available
@@ -55,19 +62,28 @@ export const useGraphSubgraph = (entityUri: string | undefined, flowId: string) 
    * Mutation for updating the graph subgraph when nodes are clicked
    */
   const updateMutation = useMutation({
-    mutationFn: async ({ nodeId, currentGraph }: { nodeId: string, currentGraph: any }) => {
+    mutationFn: async ({
+      nodeId,
+      currentGraph,
+    }: {
+      nodeId: string;
+      currentGraph: any;
+    }) => {
       return updateSubgraph(
         socket,
         flowId,
         nodeId,
         currentGraph,
-        (activity: string) => {}, // No-op for activity tracking in mutation
-        (activity: string) => {}  // No-op for activity tracking in mutation
+        addActivity,
+        removeActivity,
       );
     },
     onSuccess: (newGraph) => {
       // Update the cache with the new graph data
-      queryClient.setQueryData(["graph-subgraph", { entityUri, flowId }], newGraph);
+      queryClient.setQueryData(
+        ["graph-subgraph", { entityUri, flowId }],
+        newGraph,
+      );
     },
     onError: (err) => {
       console.log("Graph update error:", err);
@@ -76,7 +92,10 @@ export const useGraphSubgraph = (entityUri: string | undefined, flowId: string) 
   });
 
   // Show loading indicators for long-running operations
-  useActivity(query.isLoading, entityUri ? `Build subgraph: ${entityUri}` : "Loading graph");
+  useActivity(
+    query.isLoading,
+    entityUri ? `Build subgraph: ${entityUri}` : "Loading graph",
+  );
   useActivity(updateMutation.isPending, "Update subgraph");
 
   // Handle query errors
