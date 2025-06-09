@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSocket } from "../api/trustgraph/socket";
 import { useNotification } from "./notify";
 import { useActivity } from "./activity";
-import { createSubgraph, updateSubgraph } from "../utils/knowledge-graph-viz";
+import { createSubgraph, updateSubgraph, Subgraph } from "../utils/knowledge-graph-viz";
 import { useProgressStateStore } from "./progress";
 
 /**
@@ -67,7 +67,7 @@ export const useGraphSubgraph = (
       currentGraph,
     }: {
       nodeId: string;
-      currentGraph: any;
+      currentGraph: Subgraph;
     }) => {
       return updateSubgraph(
         socket,
