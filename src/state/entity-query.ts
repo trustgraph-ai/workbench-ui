@@ -49,7 +49,8 @@ export const useEntityDetail = (
         removeActivity,
       );
     },
-    enabled: !!entityUri && !!flowId, // Only run query if both entityUri and flowId are available
+    // Only run query if both entityUri and flowId are available
+    enabled: !!entityUri && !!flowId, 
   });
 
   // Show loading indicators for long-running operations
