@@ -118,12 +118,10 @@ export const usePrompts = () => {
 
   const createPromptMutation = useMutation({
     mutationFn: ({ id, prompt, onSuccess }) => {
-      return promptsQuery.data
-        ? Promise.resolve(promptsQuery.data.map(([existingId]) => existingId))
-        : socket
-            .config()
-            .getConfig([{ type: "prompt", key: "template-index" }])
-            .then((res) => JSON.parse(res.values[0].value))
+      return socket
+        .config()
+        .getConfig([{ type: "prompt", key: "template-index" }])
+        .then((res) => JSON.parse(res.values[0].value))
         .then((existingIds) => {
           const newIds = [...existingIds, id];
           return socket
@@ -161,14 +159,14 @@ export const usePrompts = () => {
 
   const deletePromptMutation = useMutation({
     mutationFn: ({ id, onSuccess }) => {
-      return promptsQuery.data
-        ? Promise.resolve(promptsQuery.data.map(([existingId]) => existingId))
-        : socket
-            .config()
-            .getConfig([{ type: "prompt", key: "template-index" }])
-            .then((res) => JSON.parse(res.values[0].value))
+      return socket
+        .config()
+        .getConfig([{ type: "prompt", key: "template-index" }])
+        .then((res) => JSON.parse(res.values[0].value))
         .then((existingIds) => {
-          const newIds = existingIds.filter((existingId) => existingId !== id);
+          const newIds = existingIds.filter(
+            (existingId) => existingId !== id,
+          );
           return socket
             .config()
             .putConfig([
