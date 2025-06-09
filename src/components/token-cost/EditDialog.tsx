@@ -27,7 +27,6 @@ const EditDialog = ({ open, onOpenChange, model, create }) => {
   }, [state.tokenCosts, model, create]);
 
   const onEdit = () => {
-
     // Create is different from edit existing
     if (create) {
       // When creating, the order is...

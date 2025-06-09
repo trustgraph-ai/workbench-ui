@@ -1,6 +1,7 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useState, useRef } from "react";
 
 import { SendHorizontal } from "lucide-react";
+import { useFlows } from "../../state/flows";
 
 import {
   List,
@@ -11,47 +12,21 @@ import {
   CloseButton,
 } from "@chakra-ui/react";
 
-import { useSocket } from "../../api/trustgraph/socket";
 import SelectField from "../common/SelectField";
 import SelectOption from "../common/SelectOption";
 import ChipInputField from "../common/ChipInputField";
 
 const SubmitDialog = ({ open, onOpenChange, onSubmit, docs }) => {
-  const [flows, setFlows] = useState([]);
-
-  const socket = useSocket();
-
-  useEffect(() => {
-    socket
-      .flows()
-      .getFlows()
-      .then((ids) => {
-        return Promise.all(
-          ids.map((id) =>
-            socket
-              .flows()
-              .getFlow(id)
-              .then((x) => [id, x]),
-          ),
-        );
-      })
-      .then((x) => {
-        // Store flow information
-        setFlows(x);
-
-        // Set selected flow to the first, if none set
-        if (!flow && x.length > 0) setFlow(x[0][0]);
-      })
-      .catch((err) => console.log("Error:", err));
-  });
+  const flowState = useFlows();
+  const flows = flowState.flows ? flowState.flows : [];
 
   const flowOptions = flows.map((flow) => {
     return {
-      value: flow[0],
-      label: flow[1].description,
+      value: flow.id,
+      label: flow.description,
       description: (
-        <SelectOption title={flow[1].description}>
-          {flow[0]} (class {flow[1]["class-name"]})
+        <SelectOption title={flow.description}>
+          {flow[0]} (class {flow["class-name"]})
         </SelectOption>
       ),
     };
