@@ -21,7 +21,7 @@ export interface WorkbenchState {
 
   // Tool/page navigation
   setTool: (v: string) => void; // Switch to a different tool/page
-  
+
   // Entity list management
   setEntities: (ents: Entity[]) => void; // Update the available entities list
 }

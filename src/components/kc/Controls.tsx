@@ -21,10 +21,7 @@ const Controls = () => {
       >
         <Upload /> Upload
       </Button>
-      <UploadDialog
-        open={uploadOpen}
-        onOpenChange={setUploadOpen}
-      />
+      <UploadDialog open={uploadOpen} onOpenChange={setUploadOpen} />
     </Box>
   );
 };

@@ -17,7 +17,7 @@ const LoadDialog = ({ open, onOpenChange, selectedIds, onLoad }) => {
 
   const onSubmit = () => {
     if (!selectedFlow) return;
-    
+
     onLoad(selectedIds, selectedFlow);
     onOpenChange(false);
   };
@@ -52,7 +52,10 @@ const LoadDialog = ({ open, onOpenChange, selectedIds, onLoad }) => {
               <Dialog.Title>Load Knowledge Cores</Dialog.Title>
             </Dialog.Header>
             <Dialog.Body>
-              <Box>Load {selectedIds.length} knowledge core(s) with the following flow:</Box>
+              <Box>
+                Load {selectedIds.length} knowledge core(s) with the following
+                flow:
+              </Box>
 
               <Box mt={5}>
                 <SelectField

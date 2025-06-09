@@ -25,12 +25,7 @@ const ToolsTable = ({ setSelected, tools }) => {
     setSelected(row.original.id);
   };
 
-  return (
-    <ClickableTable
-      table={table}
-      onClick={onSelect}
-    />
-  );
+  return <ClickableTable table={table} onClick={onSelect} />;
 };
 
 export default ToolsTable;

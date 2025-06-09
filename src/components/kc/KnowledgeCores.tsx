@@ -27,7 +27,6 @@ const KnowledgeCores = () => {
   // Get array of selected document IDs from the table selection
   const selected = table.getSelectedRowModel().rows.map((x) => x.original.id);
 
-
   const onDelete = () => {
     state.deleteKnowledgeCores({
       ids: selected,

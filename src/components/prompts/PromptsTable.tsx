@@ -25,7 +25,12 @@ const PromptsTable = ({ prompts, onSelect }) => {
   return (
     <ClickableTable
       table={table}
-      onClick={(row) => onSelect([row.original.id, prompts.find(([id]) => id === row.original.id)?.[1]])}
+      onClick={(row) =>
+        onSelect([
+          row.original.id,
+          prompts.find(([id]) => id === row.original.id)?.[1],
+        ])
+      }
     />
   );
 };

@@ -11,31 +11,31 @@ export interface LoadState {
   comments: string; // Additional comments or description
   url: string; // Source URL (for web-based content)
   keywords: string[]; // Keywords/tags associated with the document
-  
+
   // Processing configuration
   operation: string; // Type of operation (e.g., "upload-pdf", "upload-text")
-  
+
   // File management
   files: File[]; // Files selected for upload
   uploaded: string[]; // List of successfully uploaded file names
   text: string; // Direct text input content
-  
+
   // State update functions for document metadata
   setTitle: (v: string) => void;
   setComments: (v: string) => void;
   setUrl: (v: string) => void;
   setKeywords: (v: string[]) => void;
-  
+
   // State update functions for processing
   setOperation: (v: string) => void;
-  
+
   // State update functions for file management
   setFiles: (v: File[]) => void;
   setUploaded: (v: string[]) => void;
   setText: (v: string) => void;
   addUploaded: (v: string) => void; // Add a single uploaded file to the list
   removeFile: (v: File) => void; // Remove a file from the selection
-  
+
   // Text upload tracking
   textUploads: number; // Counter for text-based uploads
   setTextUploads: (v: number) => void;

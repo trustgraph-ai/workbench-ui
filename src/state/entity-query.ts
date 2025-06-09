@@ -50,7 +50,7 @@ export const useEntityDetail = (
       );
     },
     // Only run query if both entityUri and flowId are available
-    enabled: !!entityUri && !!flowId, 
+    enabled: !!entityUri && !!flowId,
   });
 
   // Show loading indicators for long-running operations

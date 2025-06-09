@@ -1056,7 +1056,7 @@ export class KnowledgeApi {
   /**
    * Deletes a knowledge graph core
    */
-    loadKgCore(id: string, flow: string, user?: string, collection?: string) {
+  loadKgCore(id: string, flow: string, user?: string, collection?: string) {
     return this.api.makeRequest<LibraryRequest, LibraryResponse>(
       "knowledge",
       {
