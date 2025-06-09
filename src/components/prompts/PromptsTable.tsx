@@ -1,45 +1,32 @@
-import { Table, Code } from "@chakra-ui/react";
+import { useMemo } from "react";
+import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
+
+import { columns, type Prompt } from "../../model/prompts-table";
+import ClickableTable from "../common/ClickableTable";
 
 const PromptsTable = ({ prompts, onSelect }) => {
+  // Transform the raw prompts data to match our table structure
+  const tableData: Prompt[] = useMemo(() => {
+    return prompts.map(([id, config]) => ({
+      id,
+      prompt: config?.prompt || "",
+      responseType: config?.["response-type"] === "json" ? "json" : "text",
+      hasSchema: Boolean(config?.schema),
+    }));
+  }, [prompts]);
+
+  // Initialize React Table with prompt data and column configuration
+  const table = useReactTable({
+    data: tableData,
+    columns: columns,
+    getCoreRowModel: getCoreRowModel(),
+  });
+
   return (
-    <>
-      <Table.Root
-        sx={{ minWidth: 450 }}
-        aria-label="table of entities"
-        interactive
-      >
-        <Table.Header>
-          <Table.Row>
-            <Table.ColumnHeader>ID</Table.ColumnHeader>
-            <Table.ColumnHeader>Prompt</Table.ColumnHeader>
-            <Table.ColumnHeader>Response</Table.ColumnHeader>
-            <Table.ColumnHeader>Schema?</Table.ColumnHeader>
-          </Table.Row>
-        </Table.Header>
-        <Table.Body>
-          {prompts.map((row, ix) => (
-            <Table.Row key={ix} onClick={() => onSelect(row)}>
-              <Table.Cell component="th" scope="row" verticalAlign="top">
-                <Code p={2}>{row[0]}</Code>
-              </Table.Cell>
-              <Table.Cell verticalAlign="top">
-                <Code p={2}>{row[1] ? row[1].prompt : ""}</Code>
-              </Table.Cell>
-              <Table.Cell verticalAlign="top">
-                {row[1]
-                  ? row[1]["response-type"] == "json"
-                    ? "JSON"
-                    : "text"
-                  : "text"}
-              </Table.Cell>
-              <Table.Cell verticalAlign="top">
-                {row[1] ? (row[1].schema ? "yes" : "no") : ""}
-              </Table.Cell>
-            </Table.Row>
-          ))}
-        </Table.Body>
-      </Table.Root>
-    </>
+    <ClickableTable
+      table={table}
+      onClick={(row) => onSelect([row.original.id, prompts.find(([id]) => id === row.original.id)?.[1]])}
+    />
   );
 };
 
