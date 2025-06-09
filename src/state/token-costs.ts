@@ -5,9 +5,10 @@ import { useNotification } from "./notify";
 import { useActivity } from "./activity";
 
 /**
- * Custom hook for managing document library operations
- * Provides functionality for fetching, deleting, and submitting documents
- * @returns {Object} Library state and operations
+ * Custom hook for managing token cost operations
+ * Provides functionality for fetching, deleting, and updating token costs
+ * for AI models
+ * @returns {Object} Token cost state and operations
  */
 export const useTokenCosts = () => {
   // WebSocket connection for communicating with the configuration service
@@ -40,12 +41,12 @@ export const useTokenCosts = () => {
   });
 
   /**
-   * Mutation for deleting multiple documents
-   * Executes parallel deletion requests and handles success/error states
+   * Mutation for deleting a specific model's token costs
+   * Removes the token cost configuration for a given model
    */
   const deleteTokenCostsMutation = useMutation({
     mutationFn: ({ model, onSuccess }) => {
-      // Execute deletion requests in parallel for all document IDs
+      // Delete the token cost configuration for the specified model
       return socket
         .config()
         .deleteConfig([
@@ -55,7 +56,6 @@ export const useTokenCosts = () => {
           },
         ])
         .then((x) => {
-          // Execute success callback if provided
           if (x["error"]) {
             console.log("Error:", x);
             throw x.error.message;
@@ -78,15 +78,19 @@ export const useTokenCosts = () => {
   });
 
   /**
-   * Mutation for updating token cost
+   * Mutation for updating token costs for a specific model
+   * Converts per-million token prices to per-token prices and saves
+   * configuration
    */
   const updateTokenCostMutation = useMutation({
     mutationFn: ({ model, input_price, output_price, onSuccess }) => {
+      // Convert per-million token prices to per-token prices
       const tokenCost = {
         input_price: input_price / 1000000,
         output_price: output_price / 1000000,
       };
-      // Create processing entries for each document
+
+      // Save the token cost configuration for the specified model
       return socket
         .config()
         .putConfig([
@@ -97,11 +101,11 @@ export const useTokenCosts = () => {
           },
         ])
         .then((x) => {
-          // Execute success callback if provided
           if (x["error"]) {
             console.log("Error:", x);
             throw x.error.message;
           }
+          // Execute success callback if provided
           if (onSuccess) onSuccess();
         });
     },
@@ -111,18 +115,18 @@ export const useTokenCosts = () => {
       notify.error(err.toString());
     },
     onSuccess: () => {
-      // Invalidate cache to refresh the list
+      // Invalidate cache to refresh the token costs list
       queryClient.invalidateQueries({ queryKey: ["token-costs"] });
       notify.success("Token costs updated");
     },
   });
 
   // Show loading indicators for long-running operations
-  useActivity(queryClient.isLoading, "Loading token costs");
+  useActivity(query.isLoading, "Loading token costs");
   useActivity(deleteTokenCostsMutation.isPending, "Deleting token costs");
   useActivity(updateTokenCostMutation.isPending, "Updating token costs");
 
-  // Return library state and operations for use in components
+  // Return token cost state and operations for use in components
   return {
     // Token cost query state
     tokenCosts: query.data,
