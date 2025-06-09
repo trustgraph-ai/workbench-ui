@@ -4,61 +4,21 @@ import { SendHorizontal } from "lucide-react";
 
 import { Portal, Button, Dialog, CloseButton } from "@chakra-ui/react";
 
-import { useSocket } from "../../api/trustgraph/socket";
+import { usePrompts } from "../../state/prompts";
 import TextAreaField from "../common/TextAreaField";
-import { toaster } from "../ui/toaster";
 
 const EditDialog = ({ open, onOpenChange, onComplete }) => {
-  const socket = useSocket();
-
+  const { systemPrompt, updateSystemPrompt } = usePrompts();
   const [prompt, setPrompt] = useState("");
 
   useEffect(() => {
-    socket
-      .config()
-      .getConfig([{ type: "prompt", key: "system" }])
-      .then((x) => {
-        return JSON.parse(x.values[0].value);
-      })
-      .then((x) => {
-        // Store flow information
-        setPrompt(x);
-      })
-      .catch((e) => {
-        console.log("Error:", e);
-        toaster.create({
-          title: "Error: " + e.toString(),
-          type: "error",
-        });
-      });
-  }, [socket]);
+    if (systemPrompt) {
+      setPrompt(systemPrompt);
+    }
+  }, [systemPrompt]);
 
   const onEdit = () => {
-    // Build the prompt structure
-
-    return socket
-      .config()
-      .putConfig([
-        {
-          type: "prompt",
-          key: "system",
-          value: JSON.stringify(prompt),
-        },
-      ])
-      .then(() => {
-        toaster.create({
-          title: "Edited prompt",
-          type: "success",
-        });
-        onComplete();
-      })
-      .catch((e) => {
-        console.log("Error:", e);
-        toaster.create({
-          title: "Error: " + e.toString(),
-          type: "error",
-        });
-      });
+    updateSystemPrompt({ prompt, onSuccess: onComplete });
   };
 
   return (
