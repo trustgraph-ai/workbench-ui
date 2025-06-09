@@ -66,6 +66,31 @@ export const useKnowledgeCores = () => {
     },
   });
 
+  /**
+   * Mutation for loading multiple knowledge cores
+   * Executes parallel load requests with specified flow
+   */
+  const loadKnowledgeCoresMutation = useMutation({
+    mutationFn: ({ ids, flow, onSuccess }) => {
+      // Execute load requests in parallel for all knowledge cores
+      return Promise.all(
+        ids.map((id) => socket.knowledge().loadKgCore(id, flow)),
+      ).then(() => {
+        // Execute success callback if provided
+        if (onSuccess) onSuccess();
+      });
+    },
+    onError: (err) => {
+      console.log("Error:", err);
+      // Show error notification to user
+      notify.error(err.toString());
+    },
+    onSuccess: () => {
+      // Show success notification
+      notify.success("Knowledge cores loaded successfully");
+    },
+  });
+
   // Show loading indicators for long-running operations
   useActivity(query.isLoading, "Loading knowledge cores");
 
@@ -81,6 +106,11 @@ export const useKnowledgeCores = () => {
     deleteKnowledgeCores: deleteKnowledgeCoresMutation.mutate,
     isDeleting: deleteKnowledgeCoresMutation.isPending,
     deleteError: deleteKnowledgeCoresMutation.error,
+
+    // Knowledge core loading operations
+    loadKnowledgeCores: loadKnowledgeCoresMutation.mutate,
+    isLoadingCores: loadKnowledgeCoresMutation.isPending,
+    loadError: loadKnowledgeCoresMutation.error,
 
     // Manual refetch function
     refetch: query.refetch,

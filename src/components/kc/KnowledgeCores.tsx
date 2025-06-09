@@ -3,17 +3,19 @@ import React, { useState } from "react";
 import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
 
 import { columns } from "../../model/knowledge-core-table";
-import { useSocket } from "../../api/trustgraph/socket";
 import { useKnowledgeCores } from "../../state/knowledge-cores";
 
 import SelectableTable from "../common/SelectableTable";
 import Actions from "./Actions";
-import KnowledgeCoreUpload from "./KnowledgeCoreUpload";
+import Controls from "./Controls";
+import LoadDialog from "./LoadDialog";
 
 const KnowledgeCores = () => {
   const state = useKnowledgeCores();
 
   const knowledgeCores = state.knowledgeCores ? state.knowledgeCores : [];
+
+  const [loadDialogOpen, setLoadDialogOpen] = useState(false);
 
   // Initialize React Table with document data and column configuration
   const table = useReactTable({
@@ -25,10 +27,6 @@ const KnowledgeCores = () => {
   // Get array of selected document IDs from the table selection
   const selected = table.getSelectedRowModel().rows.map((x) => x.original.id);
 
-  const [files, setFiles] = useState([]);
-  const [id, setId] = useState("");
-
-  const socket = useSocket();
 
   const onDelete = () => {
     state.deleteKnowledgeCores({
@@ -67,28 +65,18 @@ const KnowledgeCores = () => {
     }
   };
 
-  const upload = () => {
-    // Submit button is disabled, shouldn't happen
-    if (files.length == 0) return;
+  const onLoad = () => {
+    setLoadDialogOpen(true);
+  };
 
-    // Only 1 file can be selected
-    const file = files[0];
-
-    const url =
-      "/api/import-core?" +
-      "id=" +
-      encodeURIComponent(id) +
-      "&user=" +
-      encodeURIComponent("trustgraph");
-
-    fetch(url, {
-      method: "POST",
-      body: file,
-    }).then(() => {
-      console.log("Upload success.");
-      setFiles([]);
-      setId("");
-      refresh(socket);
+  const handleLoad = (ids, flow) => {
+    state.loadKnowledgeCores({
+      ids: ids,
+      flow: flow,
+      onSuccess: () => {
+        // Clear row selection after successful load
+        table.setRowSelection({});
+      },
     });
   };
 
@@ -98,16 +86,18 @@ const KnowledgeCores = () => {
         selectedCount={selected.length}
         onDelete={onDelete}
         onDownload={onDownload}
+        onLoad={onLoad}
       />
 
       <SelectableTable table={table} />
 
-      <KnowledgeCoreUpload
-        files={files}
-        setFiles={setFiles}
-        submit={() => upload()}
-        id={id}
-        setId={setId}
+      <Controls />
+
+      <LoadDialog
+        open={loadDialogOpen}
+        onOpenChange={setLoadDialogOpen}
+        selectedIds={selected}
+        onLoad={handleLoad}
       />
     </>
   );

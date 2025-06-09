@@ -1,8 +1,8 @@
-import { Check, Download, Trash } from "lucide-react";
+import { Check, Download, Trash, Play } from "lucide-react";
 
 import { ActionBar, Portal, Button } from "@chakra-ui/react";
 
-const Actions = ({ selectedCount, onDelete, onDownload }) => {
+const Actions = ({ selectedCount, onDelete, onDownload, onLoad }) => {
   return (
     <ActionBar.Root open={selectedCount > 0} colorPalette="blue">
       <Portal>
@@ -16,6 +16,14 @@ const Actions = ({ selectedCount, onDelete, onDownload }) => {
               <Check /> {selectedCount} selected
             </ActionBar.SelectionTrigger>
             <ActionBar.Separator />
+            <Button
+              variant="outline"
+              colorPalette="brand"
+              size="sm"
+              onClick={onLoad}
+            >
+              <Play /> Load
+            </Button>
             {selectedCount == 1 && (
               <Button
                 variant="outline"
