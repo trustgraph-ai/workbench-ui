@@ -11,24 +11,24 @@ import SelectOption from "../common/SelectOption";
 const LoadDialog = ({ open, onOpenChange, selectedIds, onLoad }) => {
   const flowState = useFlows();
 
-  const flowClasses = flowState.flowClasses ? flowState.flowClasses : [];
+  const flows = flowState.flows ? flowState.flows : [];
 
-  const [flowClass, setFlowClass] = useState(undefined);
+  const [selectedFlow, setSelectedFlow] = useState(undefined);
 
   const onSubmit = () => {
-    if (!flowClass) return;
+    if (!selectedFlow) return;
     
-    onLoad(selectedIds, flowClass);
+    onLoad(selectedIds, selectedFlow);
     onOpenChange(false);
   };
 
-  const flowClassOptions = flowClasses.map((flowClass) => {
+  const flowOptions = flows.map((flow) => {
     return {
-      value: flowClass[0],
-      label: flowClass[1].description,
+      value: flow.id,
+      label: flow.description || flow.id,
       description: (
-        <SelectOption title={flowClass[1].description}>
-          {flowClass[0]}
+        <SelectOption title={flow.description || flow.id}>
+          {flow.id}
         </SelectOption>
       ),
     };
@@ -57,10 +57,10 @@ const LoadDialog = ({ open, onOpenChange, selectedIds, onLoad }) => {
               <Box mt={5}>
                 <SelectField
                   label="Processing flow"
-                  items={flowClassOptions}
-                  value={flowClass}
+                  items={flowOptions}
+                  value={selectedFlow}
                   onValueChange={(x) => {
-                    setFlowClass(x);
+                    setSelectedFlow(x);
                   }}
                   contentRef={contentRef}
                 />
@@ -73,7 +73,7 @@ const LoadDialog = ({ open, onOpenChange, selectedIds, onLoad }) => {
               <Button
                 onClick={() => onSubmit()}
                 colorPalette="brand"
-                disabled={!flowClass}
+                disabled={!selectedFlow}
               >
                 <Play /> Load
               </Button>
