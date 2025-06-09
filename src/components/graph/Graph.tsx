@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef } from "react";
 
 import { Box, Alert, Heading, HStack } from "@chakra-ui/react";
 
@@ -7,66 +7,22 @@ import { useResizeDetector } from "react-resize-detector";
 import { ForceGraph3D } from "react-force-graph";
 import SpriteText from "three-spritetext";
 
-import { useProgressStateStore } from "../../state/progress";
 import { useSessionStore } from "../../state/session";
-
-import { useSocket } from "../../api/trustgraph/socket";
 import { useWorkbenchStateStore } from "../../state/workbench";
-import {
-  createSubgraph,
-  updateSubgraph,
-} from "../../utils/knowledge-graph-viz";
+import { useGraphSubgraph } from "../../state/graph-query";
 import GraphHelp from "./GraphHelp";
-import { toaster } from "../ui/toaster";
 
 import { system } from "../../theme";
 
 const GraphView = () => {
-  const addActivity = useProgressStateStore((state) => state.addActivity);
-  const removeActivity = useProgressStateStore(
-    (state) => state.removeActivity,
-  );
-
-  const socket = useSocket();
   const flowId = useSessionStore((state) => state.flowId);
-
   const selected = useWorkbenchStateStore((state) => state.selected);
 
   const fgRef = useRef();
-
   const { width, height, ref } = useResizeDetector({});
 
-  const [view, setView] = useState(undefined);
-
-  useEffect(() => {
-    if (!selected) return;
-
-    const act = "Build subgraph: " + selected.label;
-    addActivity(act);
-
-    const sg = createSubgraph();
-
-    updateSubgraph(
-      socket,
-      flowId,
-      selected.uri,
-      sg,
-      addActivity,
-      removeActivity,
-    )
-      .then((sg) => {
-        setView(sg);
-        removeActivity(act);
-      })
-      .catch((err) => {
-        console.log("Error: ", err);
-        removeActivity(act);
-        toaster.create({
-          title: "Error: " + err.toString(),
-          type: "error",
-        });
-      });
-  }, [selected, addActivity, removeActivity, socket, flowId]);
+  // Use the new Tanstack Query hook for graph data
+  const { view, isLoading, isError, updateSubgraph: updateSubgraphMutation } = useGraphSubgraph(selected?.uri, flowId);
 
   if (!selected) {
     return (
@@ -81,13 +37,25 @@ const GraphView = () => {
     );
   }
 
-  if (!view)
+  if (isLoading || !view)
     return (
       <Box>
         <Alert.Root status="info" variant="outline">
           <Alert.Indicator />
           <Alert.Title>
-            No data to view. Try Chat or Search to find data.
+            {isLoading ? "Building subgraph..." : "No data to view. Try Chat or Search to find data."}
+          </Alert.Title>
+        </Alert.Root>
+      </Box>
+    );
+
+  if (isError)
+    return (
+      <Box>
+        <Alert.Root status="error" variant="outline">
+          <Alert.Indicator />
+          <Alert.Title>
+            Error loading graph data.
           </Alert.Title>
         </Alert.Root>
       </Box>
@@ -100,22 +68,8 @@ const GraphView = () => {
     );
 
   const nodeClick = (node) => {
-    const act = "Update subgraph: " + node.label;
-    addActivity(act);
-
-    updateSubgraph(socket, flowId, node.id, view, addActivity, removeActivity)
-      .then((sg) => {
-        setView(sg);
-        removeActivity(act);
-      })
-      .catch((err) => {
-        removeActivity(act);
-        console.log("Error: ", err);
-        toaster.create({
-          title: "Error: " + err.toString(),
-          type: "error",
-        });
-      });
+    // Use the mutation from the query hook to update the subgraph
+    updateSubgraphMutation({ nodeId: node.id, currentGraph: view });
   };
 
   // Ideally this would be based on themes, but the 3d graph stuff

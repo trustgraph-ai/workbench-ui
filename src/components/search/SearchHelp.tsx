@@ -20,7 +20,7 @@ const SearchHelp = () => {
           <CircleHelp />
         </IconButton>
       </Popover.Trigger>
-      
+
       {/* Portal ensures popover renders at document root level */}
       <Portal>
         <Popover.Positioner>
