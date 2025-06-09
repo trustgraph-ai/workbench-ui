@@ -22,16 +22,11 @@ const TokenCostTable = () => {
 
   const [selected, setSelected] = useState("");
 
-  const onComplete = () => {
-    setSelected("");
-  };
-
   return (
     <>
       <EditDialog
         open={selected != ""}
         onOpenChange={() => setSelected("")}
-        onComplete={() => onComplete()}
         create={false}
         model={selected}
       />

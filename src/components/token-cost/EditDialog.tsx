@@ -5,11 +5,9 @@ import { Trash, SendHorizontal } from "lucide-react";
 import { Portal, Button, Dialog, CloseButton } from "@chakra-ui/react";
 
 import { useTokenCosts } from "../../state/token-costs";
-import { useSocket } from "../../api/trustgraph/socket";
 import TextField from "../common/TextField";
-import { toaster } from "../ui/toaster";
 
-const EditDialog = ({ open, onOpenChange, onComplete, model, create }) => {
+const EditDialog = ({ open, onOpenChange, model, create }) => {
   const state = useTokenCosts();
 
   const [newModel, setNewModel] = useState("");
@@ -26,14 +24,9 @@ const EditDialog = ({ open, onOpenChange, onComplete, model, create }) => {
     setNewModel(model);
     setInput(models[0].input_price * 1000000);
     setOutput(models[0].output_price * 1000000);
-  }, [state, model, create]);
+  }, [state.tokenCosts, model, create]);
 
   const onEdit = () => {
-    // Build the prompt structure
-    const cost = {
-      input_price: input / 1000000,
-      output_price: output / 1000000,
-    };
 
     // Create is different from edit existing
     if (create) {
