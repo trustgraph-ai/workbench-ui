@@ -19,6 +19,7 @@ import ProcessingPage from "./pages/ProcessingPage";
 import TokenCostPage from "./pages/TokenCostPage";
 import PromptsPage from "./pages/PromptsPage";
 import ToolsPage from "./pages/ToolsPage";
+import McpToolsPage from "./pages/McpToolsPage";
 
 import CenterSpinner from "./components/common/CenterSpinner";
 import Progress from "./components/common/Progress";
@@ -98,6 +99,7 @@ const App = () => {
               <Route path="/tokencost" element={<TokenCostPage />} />
               <Route path="/prompts" element={<PromptsPage />} />
               <Route path="/agents" element={<ToolsPage />} />
+              <Route path="/mcp-tools" element={<McpToolsPage />} />
             </Routes>
           </Layout>
         </Router>

@@ -119,9 +119,11 @@ const Sidebar = () => {
         <NavItem to="/tokencost" icon={HandCoins} label="Token Cost" />
         <NavItem to="/prompts" icon={MessageCircleCode} label="Prompts" />
         <NavItem to="/agents" icon={Hammer} label="Agent Tools" />
+        <NavItem to="/mcp-tools" icon={Hammer} label="MCP Tools" />
       </VStack>
     </Box>
   );
 };
 
 export default Sidebar;
+
