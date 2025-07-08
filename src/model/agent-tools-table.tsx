@@ -6,6 +6,7 @@ import { createColumnHelper } from "@tanstack/react-table";
  */
 export type AgentTool = {
   id: string; // Unique identifier for the tool
+  name: string; // Human-readable name for the tool
   description: string; // Description of what the tool does
   type: string; // Type of the tool
 };
@@ -21,6 +22,12 @@ export const columns = [
   // Tool ID column - displays the tool identifier
   columnHelper.accessor("id", {
     header: "Tool ID",
+    cell: (info) => info.getValue(),
+  }),
+
+  // Name column - displays the human-readable tool name
+  columnHelper.accessor("name", {
+    header: "Name",
     cell: (info) => info.getValue(),
   }),
 

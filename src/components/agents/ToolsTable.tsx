@@ -9,6 +9,7 @@ const ToolsTable = ({ setSelected, tools }) => {
   const tableData: AgentTool[] = useMemo(() => {
     return tools.map(([id, config]) => ({
       id,
+      name: config?.name || "",
       description: config?.description || "",
       type: config?.type || "",
     }));
