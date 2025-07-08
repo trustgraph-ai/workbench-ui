@@ -1062,6 +1062,7 @@ export class KnowledgeApi {
       {
         operation: "load-kg-core",
         id: id,
+        flow: flow,
         user: user ? user : "trustgraph",
         collection: collection ? collection : "default",
       },
