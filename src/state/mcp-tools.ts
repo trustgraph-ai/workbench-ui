@@ -31,6 +31,7 @@ export const useMcpTools = () => {
         .getValues("mcp")
         .then((values) => {
           // Parse tool configurations and pair them with their IDs
+          // MCP tools have simplified structure: { name: string, url: string }
           return values.map((item) => [item.key, JSON.parse(item.value)]);
         });
     },

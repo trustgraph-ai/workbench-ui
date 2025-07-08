@@ -1,16 +1,16 @@
 import { useMemo } from "react";
 import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
 
-import { columns, type AgentTool } from "../../model/agent-tools-table";
+import { columns, type McpTool } from "../../model/mcp-tools-table";
 import ClickableTable from "../common/ClickableTable";
 
 const McpToolsTable = ({ setSelected, tools }) => {
   // Transform the raw tools data to match our table structure
-  const tableData: AgentTool[] = useMemo(() => {
+  const tableData: McpTool[] = useMemo(() => {
     return tools.map(([id, config]) => ({
       id,
-      description: config?.description || "",
-      type: config?.type || "",
+      name: config?.name || "",
+      url: config?.url || "",
     }));
   }, [tools]);
 

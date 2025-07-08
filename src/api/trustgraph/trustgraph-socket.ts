@@ -991,7 +991,7 @@ export class ConfigApi {
         type: type,
       },
       60000,
-    ).then((r) => r.directory);
+    ).then((r) => r);
   }
 
   /**
@@ -1005,7 +1005,7 @@ export class ConfigApi {
         type: type,
       },
       60000,
-    ).then((r) => r.directory.values);
+    ).then((r) => r.values);
   }
 
   /**
