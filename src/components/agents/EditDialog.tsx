@@ -28,6 +28,7 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
   const { updateTool, createTool, deleteTool } = useAgentTools();
 
   const [newId, setNewId] = useState("");
+  const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [type, setType] = useState("knowledge-query");
   const [args, setArgs] = useState([]);
@@ -45,6 +46,7 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
       })
       .then((x) => {
         // Store flow information
+        setName(x.name || "");
         setDescription(x.description);
         setType(x.type);
         setArgs(x.arguments);
@@ -69,6 +71,11 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
       label: "Knowledge query",
       description: "Uses the GraphRAG service for knowledge",
     },
+    {
+      value: "mcp-tool",
+      label: "MCP Tool",
+      description: "Uses the mcp-tool service to access a remote MCP tool",
+    },
   ];
 
   const contentRef = useRef<HTMLDivElement>(null);
@@ -76,6 +83,8 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
   const onEdit = () => {
     // Build the tool structure
     const toolStruct = {
+      id: create ? newId : id,
+      name: name,
       description: description,
       type: type,
       arguments: args,
@@ -150,6 +159,14 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
                   required={true}
                 />
               )}
+
+              <TextField
+                label="Tool Name"
+                placeholder="Enter a human-readable name for the tool"
+                value={name}
+                onValueChange={(v) => setName(v)}
+                required={true}
+              />
 
               <TextAreaField
                 label="Description of the tool"

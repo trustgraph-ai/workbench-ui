@@ -981,6 +981,34 @@ export class ConfigApi {
   }
 
   /**
+   * Lists available configuration types
+   */
+  list(type: string) {
+    return this.api.makeRequest<ConfigRequest, ConfigResponse>(
+      "config",
+      {
+        operation: "list",
+        type: type,
+      },
+      60000,
+    ).then((r) => r);
+  }
+
+  /**
+   * Retrieves all key/values for a specific type
+   */
+  getValues(type: string) {
+    return this.api.makeRequest<ConfigRequest, ConfigResponse>(
+      "config",
+      {
+        operation: "getvalues",
+        type: type,
+      },
+      60000,
+    ).then((r) => r.values);
+  }
+
+  /**
    * Retrieves token cost information for different AI models
    * Useful for cost tracking and optimization
    */
@@ -1062,6 +1090,7 @@ export class KnowledgeApi {
       {
         operation: "load-kg-core",
         id: id,
+        flow: flow,
         user: user ? user : "trustgraph",
         collection: collection ? collection : "default",
       },

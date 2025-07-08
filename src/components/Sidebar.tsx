@@ -18,6 +18,7 @@ const ChakraNavLink = chakra(ReactRouterNavLink);
 import {
   TestTube2,
   Hammer,
+  Plug,
   MessageSquareText,
   Search,
   Waypoints,
@@ -119,9 +120,11 @@ const Sidebar = () => {
         <NavItem to="/tokencost" icon={HandCoins} label="Token Cost" />
         <NavItem to="/prompts" icon={MessageCircleCode} label="Prompts" />
         <NavItem to="/agents" icon={Hammer} label="Agent Tools" />
+        <NavItem to="/mcp-tools" icon={Plug} label="MCP Tools" />
       </VStack>
     </Box>
   );
 };
 
 export default Sidebar;
+
