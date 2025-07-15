@@ -21,5 +21,8 @@ jobs:
       - name: Install Typescript support
         run: npm install
 
+      - name: Run tests
+        run: npm test -- --run
+
       - name: Build
         run: make service-package VERSION=0.0.0

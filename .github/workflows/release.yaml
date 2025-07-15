@@ -40,6 +40,9 @@ jobs:
       - name: Install Typescript support
         run: npm install
 
+      - name: Run tests
+        run: npm test -- --run
+
       - name: Extract metadata for container
         id: meta
         uses: docker/metadata-action@v4
