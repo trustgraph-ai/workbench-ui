@@ -727,7 +727,6 @@ export class FlowApi {
 
   /**
    * Interacts with an AI agent that provides streaming responses
-   * Note: This implementation appears to have some issues and inconsistencies
    */
   agent(
     question: string,
@@ -745,44 +744,77 @@ export class FlowApi {
       request: {
         question: question,
       },
+      flow: this.flowId,
     });
 
     const err = (e: string) => {
       error(e);
       console.log("Error:", e);
+      // Clean up on error
+      if (this.api.inflight[mid]) {
+        clearTimeout(this.api.inflight[mid].timeoutId);
+        delete this.api.inflight[mid];
+      }
     };
 
     // Handle agent responses - different types trigger different callbacks
-    const ok = (e: ApiResponse) => {
-      const resp = e.response as AgentResponse;
+    const ok = (e: any) => {
+      console.log("Agent response received:", e);
+      
+      // Handle different response structures
+      let resp;
+      if (e.response) {
+        resp = e.response;
+      } else if (e.thought || e.observation || e.answer) {
+        resp = e;
+      } else {
+        console.log("Unknown response format:", e);
+        return;
+      }
+      
+      // Check for backend errors
+      if (resp.error) {
+        const errorMessage = resp.error.message || "Unknown agent error";
+        err(`Agent error: ${errorMessage}`);
+        return;
+      }
+      
       if (resp.thought) think(resp.thought);
       if (resp.observation) observe(resp.observation);
       if (resp.answer) {
         answer(resp.answer);
         // Clean up when final answer is received
-        // Note: This code has syntax errors and inconsistent property access
-        clearTimeout(this.api, inflight[mid].timeoutId);
-        delete this.inflight[mid];
+        if (this.api.inflight[mid]) {
+          clearTimeout(this.api.inflight[mid].timeoutId);
+          delete this.api.inflight[mid];
+        }
       }
     };
 
     const timeout = 60000;
     const retries = 2;
 
-    // Manual inflight tracking (inconsistent with rest of API)
-    this.inflight[mid] = {
-      success: ok,
-      error: err,
-      timeoutId: setTimeout(() => this.timeout(mid), timeout),
+    // Define timeout handler
+    const timeoutHandler = () => {
+      if (this.api.inflight[mid]) {
+        err("Request timeout");
+      }
+    };
+
+    // Manual inflight tracking (consistent with BaseApi pattern)
+    this.api.inflight[mid] = {
+      onReceived: ok,
+      onError: err,
+      timeoutId: setTimeout(timeoutHandler, timeout),
       timeout: timeout,
       retries: retries,
     };
 
     // Send message if WebSocket is available
-    if (this.ws) {
-      this.ws.send(msg);
+    if (this.api.ws) {
+      this.api.ws.send(msg);
     } else {
-      // TODO: Queue for later sending when connection is available
+      err("WebSocket not available");
     }
   }
 
