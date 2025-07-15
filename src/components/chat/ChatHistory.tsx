@@ -4,6 +4,7 @@ import { Box, Text, VStack, HStack, Avatar, Spacer } from "@chakra-ui/react";
 
 import { useChatStateStore } from "../../state/chat";
 import ChatMessage from "./ChatMessage";
+import ChatModeSelector from "./ChatModeSelector";
 
 const ChatHistory = () => {
   const messages = useChatStateStore((state) => state.messages);
@@ -34,6 +35,7 @@ const ChatHistory = () => {
             <Avatar.Fallback name="Bot" />
           </Avatar.Root>
           <Text fontWeight="bold">Assistant</Text>
+          <ChatModeSelector />
           <Spacer />
           <Text fontSize="sm" color="fg.muted">
             Online

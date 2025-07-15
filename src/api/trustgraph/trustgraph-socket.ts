@@ -727,7 +727,6 @@ export class FlowApi {
 
   /**
    * Interacts with an AI agent that provides streaming responses
-   * Note: This implementation appears to have some issues and inconsistencies
    */
   agent(
     question: string,
@@ -736,54 +735,41 @@ export class FlowApi {
     answer: (s: string) => void, // Called when agent provides answer
     error: (s: string) => void, // Called on errors
   ) {
-    const mid = this.api.getNextId();
-
-    // Manually construct message (bypasses normal request flow)
-    const msg = JSON.stringify({
-      id: mid,
-      service: "agent",
-      request: {
-        question: question,
-      },
-    });
-
-    const err = (e: string) => {
-      error(e);
-      console.log("Error:", e);
-    };
-
-    // Handle agent responses - different types trigger different callbacks
-    const ok = (e: ApiResponse) => {
-      const resp = e.response as AgentResponse;
-      if (resp.thought) think(resp.thought);
-      if (resp.observation) observe(resp.observation);
-      if (resp.answer) {
-        answer(resp.answer);
-        // Clean up when final answer is received
-        // Note: This code has syntax errors and inconsistent property access
-        clearTimeout(this.api, inflight[mid].timeoutId);
-        delete this.inflight[mid];
+    // Create a receiver function to handle streaming responses
+    const receiver = (response: any) => {
+      console.log("Agent response received:", response);
+      
+      // Check for backend errors
+      if (response.error) {
+        const errorMessage = response.error.message || "Unknown agent error";
+        error(`Agent error: ${errorMessage}`);
+        return true; // End streaming on error
       }
+      
+      // Handle different response types
+      if (response.thought) think(response.thought);
+      if (response.observation) observe(response.observation);
+      if (response.answer) {
+        answer(response.answer);
+        return true; // End streaming when final answer is received
+      }
+      
+      return false; // Continue streaming
     };
 
-    const timeout = 60000;
-    const retries = 2;
-
-    // Manual inflight tracking (inconsistent with rest of API)
-    this.inflight[mid] = {
-      success: ok,
-      error: err,
-      timeoutId: setTimeout(() => this.timeout(mid), timeout),
-      timeout: timeout,
-      retries: retries,
-    };
-
-    // Send message if WebSocket is available
-    if (this.ws) {
-      this.ws.send(msg);
-    } else {
-      // TODO: Queue for later sending when connection is available
-    }
+    // Use the existing makeRequestMulti infrastructure
+    return this.api.makeRequestMulti(
+      "agent",
+      { question: question },
+      receiver,
+      120000, // 120 second timeout
+      2, // 2 retries
+      this.flowId
+    ).catch((err) => {
+      // Handle any errors from makeRequestMulti
+      const errorMessage = err instanceof Error ? err.message : err?.toString() || "Unknown error";
+      error(`Agent request failed: ${errorMessage}`);
+    });
   }
 
   /**
