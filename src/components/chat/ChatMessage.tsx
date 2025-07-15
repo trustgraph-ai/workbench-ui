@@ -1,5 +1,6 @@
 import { Box, Flex, Text, Avatar, Badge } from "@chakra-ui/react";
 import { Brain, Eye, CheckCircle } from "lucide-react";
+import Markdown from 'react-markdown-it';
 
 const ChatMessage = ({ message }) => {
   const isUser = message.role === "human";
@@ -76,7 +77,7 @@ const ChatMessage = ({ message }) => {
             </Badge>
           </Flex>
         )}
-        <Text>{message.text}</Text>
+        <Markdown>{message.text}</Markdown>
       </Box>
 
       {isUser && (
