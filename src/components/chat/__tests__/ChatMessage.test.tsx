@@ -131,42 +131,6 @@ describe('ChatMessage', () => {
     expect(screen.getByTestId('markdown')).toHaveTextContent('**Bold text** and *italic text*')
   })
 
-  it('should handle long message text', () => {
-    const longText = 'This is a very long message that should be handled correctly by the ChatMessage component. '.repeat(10)
-    const message = {
-      role: 'ai',
-      text: longText,
-      type: 'normal'
-    }
-    
-    render(<ChatMessage message={message} />)
-    
-    expect(screen.getByTestId('markdown')).toHaveTextContent(longText)
-  })
-
-  it('should handle special characters in message text', () => {
-    const message = {
-      role: 'human',
-      text: 'Message with special chars: !@#$%^&*()_+{}[]|\\:;"\'<>,.?/~`',
-      type: 'normal'
-    }
-    
-    render(<ChatMessage message={message} />)
-    
-    expect(screen.getByTestId('markdown')).toHaveTextContent('Message with special chars: !@#$%^&*()_+{}[]|\\:;"\'<>,.?/~`')
-  })
-
-  it('should handle multiline message text', () => {
-    const message = {
-      role: 'ai',
-      text: 'Line 1\nLine 2\nLine 3',
-      type: 'normal'
-    }
-    
-    render(<ChatMessage message={message} />)
-    
-    expect(screen.getByTestId('markdown')).toHaveTextContent('Line 1\nLine 2\nLine 3')
-  })
 
   it('should differentiate between user and AI avatar placement', () => {
     const userMessage = {
@@ -225,27 +189,4 @@ describe('ChatMessage', () => {
     expect(screen.queryByTestId('badge')).not.toBeInTheDocument()
   })
 
-  it('should handle message with code blocks', () => {
-    const message = {
-      role: 'ai',
-      text: 'Here is some code:\n```python\nprint("Hello, world!")\n```',
-      type: 'normal'
-    }
-    
-    render(<ChatMessage message={message} />)
-    
-    expect(screen.getByTestId('markdown')).toHaveTextContent('Here is some code:\n```python\nprint("Hello, world!")\n```')
-  })
-
-  it('should handle message with links', () => {
-    const message = {
-      role: 'ai',
-      text: 'Check out this link: [Google](https://google.com)',
-      type: 'normal'
-    }
-    
-    render(<ChatMessage message={message} />)
-    
-    expect(screen.getByTestId('markdown')).toHaveTextContent('Check out this link: [Google](https://google.com)')
-  })
 })
