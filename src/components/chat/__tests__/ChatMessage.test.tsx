@@ -2,16 +2,37 @@ import { describe, it, expect, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import ChatMessage from '../ChatMessage'
 
+// Helper function to filter out Chakra UI props
+const filterChakraProps = (props: any) => {
+  const chakraProps = [
+    'alignItems', 'justifyContent', 'direction', 'gap', 'p', 'px', 'py', 'pt', 'pb', 'pl', 'pr',
+    'm', 'mx', 'my', 'mt', 'mb', 'ml', 'mr', 'w', 'h', 'maxW', 'maxH', 'minW', 'minH',
+    'bg', 'color', 'borderRadius', 'borderWidth', 'borderColor', 'borderStyle', 'boxShadow',
+    'display', 'position', 'top', 'right', 'bottom', 'left', 'zIndex', 'overflow', 'textAlign',
+    'fontSize', 'fontWeight', 'lineHeight', 'letterSpacing', 'textTransform', 'textDecoration',
+    'opacity', 'visibility', 'cursor', 'pointerEvents', 'userSelect', 'resize', 'outline',
+    'transform', 'transformOrigin', 'transition', 'animation', 'colorPalette', 'variant',
+    'size', 'loading', 'disabled', 'checked', 'selected', 'active', 'focus', 'hover',
+    'flexDirection', 'flexWrap', 'flex', 'flexGrow', 'flexShrink', 'flexBasis', 'alignSelf',
+    'justifySelf', 'order', 'gridColumn', 'gridRow', 'gridArea', 'gridTemplateColumns',
+    'gridTemplateRows', 'gridGap', 'rowGap', 'columnGap', 'placeItems', 'placeContent',
+    'placeSelf', 'area', 'colSpan', 'rowSpan', 'start', 'end'
+  ]
+  const filtered = { ...props }
+  chakraProps.forEach(prop => delete filtered[prop])
+  return filtered
+}
+
 // Mock Chakra UI components
 vi.mock('@chakra-ui/react', () => ({
-  Box: ({ children, ...props }: any) => <div data-testid="box" {...props}>{children}</div>,
-  Flex: ({ children, ...props }: any) => <div data-testid="flex" {...props}>{children}</div>,
-  Text: ({ children, ...props }: any) => <p data-testid="text" {...props}>{children}</p>,
+  Box: ({ children, ...props }: any) => <div data-testid="box" {...filterChakraProps(props)}>{children}</div>,
+  Flex: ({ children, ...props }: any) => <div data-testid="flex" {...filterChakraProps(props)}>{children}</div>,
+  Text: ({ children, ...props }: any) => <p data-testid="text" {...filterChakraProps(props)}>{children}</p>,
   Avatar: {
-    Root: ({ children, ...props }: any) => <div data-testid="avatar-root" {...props}>{children}</div>,
-    Fallback: ({ name, ...props }: any) => <div data-testid="avatar-fallback" {...props}>{name}</div>,
+    Root: ({ children, ...props }: any) => <div data-testid="avatar-root" {...filterChakraProps(props)}>{children}</div>,
+    Fallback: ({ name, ...props }: any) => <div data-testid="avatar-fallback" {...filterChakraProps(props)}>{name}</div>,
   },
-  Badge: ({ children, ...props }: any) => <span data-testid="badge" {...props}>{children}</span>,
+  Badge: ({ children, ...props }: any) => <span data-testid="badge" {...filterChakraProps(props)}>{children}</span>,
 }))
 
 // Mock react-markdown-it
