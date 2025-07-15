@@ -735,87 +735,41 @@ export class FlowApi {
     answer: (s: string) => void, // Called when agent provides answer
     error: (s: string) => void, // Called on errors
   ) {
-    const mid = this.api.getNextId();
-
-    // Manually construct message (bypasses normal request flow)
-    const msg = JSON.stringify({
-      id: mid,
-      service: "agent",
-      request: {
-        question: question,
-      },
-      flow: this.flowId,
-    });
-
-    const err = (e: string) => {
-      error(e);
-      console.log("Error:", e);
-      // Clean up on error
-      if (this.api.inflight[mid]) {
-        clearTimeout(this.api.inflight[mid].timeoutId);
-        delete this.api.inflight[mid];
-      }
-    };
-
-    // Handle agent responses - different types trigger different callbacks
-    const ok = (e: any) => {
-      console.log("Agent response received:", e);
-      
-      // Handle different response structures
-      let resp;
-      if (e.response) {
-        resp = e.response;
-      } else if (e.thought || e.observation || e.answer) {
-        resp = e;
-      } else {
-        console.log("Unknown response format:", e);
-        return;
-      }
+    // Create a receiver function to handle streaming responses
+    const receiver = (response: any) => {
+      console.log("Agent response received:", response);
       
       // Check for backend errors
-      if (resp.error) {
-        const errorMessage = resp.error.message || "Unknown agent error";
-        err(`Agent error: ${errorMessage}`);
-        return;
+      if (response.error) {
+        const errorMessage = response.error.message || "Unknown agent error";
+        error(`Agent error: ${errorMessage}`);
+        return true; // End streaming on error
       }
       
-      if (resp.thought) think(resp.thought);
-      if (resp.observation) observe(resp.observation);
-      if (resp.answer) {
-        answer(resp.answer);
-        // Clean up when final answer is received
-        if (this.api.inflight[mid]) {
-          clearTimeout(this.api.inflight[mid].timeoutId);
-          delete this.api.inflight[mid];
-        }
+      // Handle different response types
+      if (response.thought) think(response.thought);
+      if (response.observation) observe(response.observation);
+      if (response.answer) {
+        answer(response.answer);
+        return true; // End streaming when final answer is received
       }
+      
+      return false; // Continue streaming
     };
 
-    const timeout = 60000;
-    const retries = 2;
-
-    // Define timeout handler
-    const timeoutHandler = () => {
-      if (this.api.inflight[mid]) {
-        err("Request timeout");
-      }
-    };
-
-    // Manual inflight tracking (consistent with BaseApi pattern)
-    this.api.inflight[mid] = {
-      onReceived: ok,
-      onError: err,
-      timeoutId: setTimeout(timeoutHandler, timeout),
-      timeout: timeout,
-      retries: retries,
-    };
-
-    // Send message if WebSocket is available
-    if (this.api.ws) {
-      this.api.ws.send(msg);
-    } else {
-      err("WebSocket not available");
-    }
+    // Use the existing makeRequestMulti infrastructure
+    return this.api.makeRequestMulti(
+      "agent",
+      { question: question },
+      receiver,
+      120000, // 120 second timeout
+      2, // 2 retries
+      this.flowId
+    ).catch((err) => {
+      // Handle any errors from makeRequestMulti
+      const errorMessage = err instanceof Error ? err.message : err?.toString() || "Unknown error";
+      error(`Agent request failed: ${errorMessage}`);
+    });
   }
 
   /**
