@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React from "react";
 import { Select, Portal, createListCollection } from "@chakra-ui/react";
+import { useChatStateStore, ChatMode } from "../../state/chat";
 
 const ChatModeSelector = () => {
-  const [value, setValue] = useState("graph-rag");
+  const chatMode = useChatStateStore((state) => state.chatMode);
+  const setChatMode = useChatStateStore((state) => state.setChatMode);
   
   const chatModes = [
     { value: "graph-rag", label: "Graph RAG" },
@@ -15,8 +17,8 @@ const ChatModeSelector = () => {
   return (
     <Select.Root
       collection={collection}
-      value={[value]}
-      onValueChange={(e) => setValue(e.value[0])}
+      value={[chatMode]}
+      onValueChange={(e) => setChatMode(e.value[0] as ChatMode)}
       size="sm"
       width="150px"
     >
