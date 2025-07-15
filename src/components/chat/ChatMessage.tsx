@@ -1,4 +1,5 @@
 import { Box, Flex, Text, Avatar } from "@chakra-ui/react";
+import Markdown from 'react-markdown-it';
 
 const ChatMessage = ({ message }) => {
   const isUser = message.role === "human";
@@ -19,7 +20,9 @@ const ChatMessage = ({ message }) => {
         px={4}
         py={2}
       >
-        <Text>{message.text}</Text>
+        <Markdown>
+          {message.text}
+        </Markdown>
       </Box>
 
       {isUser && (
