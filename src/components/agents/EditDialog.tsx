@@ -32,6 +32,8 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
   const [description, setDescription] = useState("");
   const [type, setType] = useState("knowledge-query");
   const [args, setArgs] = useState([]);
+  const [templateId, setTemplateId] = useState("");
+  const [mcpToolId, setMcpToolId] = useState("");
 
   const [editArgIx, setEditArgIx] = useState(-1);
 
@@ -40,7 +42,7 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
 
     socket
       .config()
-      .getConfig([{ type: "agent", key: "tool." + id }])
+      .getConfig([{ type: "tool", key: id }])
       .then((x) => {
         return JSON.parse(x.values[0].value);
       })
@@ -49,7 +51,11 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
         setName(x.name || "");
         setDescription(x.description);
         setType(x.type);
-        setArgs(x.arguments);
+        setArgs(x.arguments || []);
+        // Handle both old 'template' and new 'template_id' attributes
+        setTemplateId(x.template_id || x.template || "");
+        // Handle both old 'mcp-tool' and new 'mcp_tool_id' attributes
+        setMcpToolId(x.mcp_tool_id || x["mcp-tool"] || "");
       })
       .catch((e) => {
         console.log("Error:", e);
@@ -76,6 +82,11 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
       label: "MCP Tool",
       description: "Uses the mcp-tool service to access a remote MCP tool",
     },
+    {
+      value: "prompt",
+      label: "Prompt Template",
+      description: "Executes a prompt template with variables",
+    },
   ];
 
   const contentRef = useRef<HTMLDivElement>(null);
@@ -88,6 +99,8 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
       description: description,
       type: type,
       arguments: args,
+      ...(type === "prompt" && templateId && { template: templateId }),
+      ...(type === "mcp-tool" && mcpToolId && { "mcp-tool": mcpToolId }),
     };
 
     if (create) {
@@ -183,6 +196,26 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
                 onValueChange={(v) => setType(v)}
                 contentRef={contentRef}
               />
+
+              {type === "prompt" && (
+                <TextField
+                  label="Template ID"
+                  placeholder="Enter the prompt template ID"
+                  value={templateId}
+                  onValueChange={(v) => setTemplateId(v)}
+                  required={true}
+                />
+              )}
+
+              {type === "mcp-tool" && (
+                <TextField
+                  label="MCP Tool ID"
+                  placeholder="Enter the MCP tool ID"
+                  value={mcpToolId}
+                  onValueChange={(v) => setMcpToolId(v)}
+                  required={true}
+                />
+              )}
 
               <Table.Root interactive size="xs">
                 <Table.Header>
