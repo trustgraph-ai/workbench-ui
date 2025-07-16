@@ -6,7 +6,7 @@ import { createColumnHelper } from "@tanstack/react-table";
  */
 export type McpTool = {
   id: string; // Unique identifier for the tool
-  name: string; // Name of the MCP tool
+  "remote-name": string; // Remote name of the MCP tool
   url: string; // MCP endpoint URL
 };
 
@@ -24,9 +24,9 @@ export const columns = [
     cell: (info) => info.getValue(),
   }),
 
-  // Name column - displays the tool name
-  columnHelper.accessor("name", {
-    header: "Name",
+  // Remote Name column - displays the remote tool name
+  columnHelper.accessor("remote-name", {
+    header: "Remote Name",
     cell: (info) => info.getValue(),
   }),
 

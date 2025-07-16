@@ -21,39 +21,21 @@ export const useAgentTools = () => {
   const notify = useNotification();
 
   // Query to fetch all agent tools
-  // First gets the tool index (list of tool IDs), then fetches each tool's configuration
+  // Gets all tools directly from the 'tool' configuration type
   const toolsQuery = useQuery({
     queryKey: ["agent-tools"],
     queryFn: () => {
-      // Step 1: Get the tool index (array of tool IDs)
+      // Get all tools using the getValues operation
       return socket
         .config()
-        .getConfig([{ type: "agent", key: "tool-index" }])
-        .then((res) => {
-          if (res["error"]) {
-            console.log("Error:", res);
-            throw res.error.message;
-          }
-          const toolIds = JSON.parse(res.values[0].value);
-
-          // Step 2: Fetch configuration for each tool using their IDs
-          return socket
-            .config()
-            .getConfig(
-              toolIds.map((id) => ({
-                type: "agent",
-                key: "tool." + id,
-              })),
-            )
-            .then((r) => {
-              if (r["error"]) {
-                console.log("Error:", r);
-                throw r.error.message;
-              }
-              // Parse tool configurations and pair them with their IDs
-              const config = r.values.map((c) => JSON.parse(c.value));
-              return toolIds.map((id, ix) => [id, config[ix]]);
-            });
+        .getValues("tool")
+        .then((values) => {
+          // Parse tool configurations and pair them with their IDs
+          return values.map((item) => [item.key, JSON.parse(item.value)]);
+        })
+        .catch((err) => {
+          console.log("Error:", err);
+          throw err;
         });
     },
   });
@@ -66,8 +48,8 @@ export const useAgentTools = () => {
         .config()
         .putConfig([
           {
-            type: "agent",
-            key: "tool." + id,
+            type: "tool",
+            key: id,
             value: JSON.stringify(tool),
           },
         ])
@@ -92,40 +74,26 @@ export const useAgentTools = () => {
   });
 
   // Mutation for creating a new tool
-  // Updates both the tool index and creates the tool configuration
+  // Creates the tool configuration directly
   const createToolMutation = useMutation({
     mutationFn: ({ id, tool, onSuccess }) => {
-      // Step 1: Get current tool index
+      // Create the new tool configuration
       return socket
         .config()
-        .getConfig([{ type: "agent", key: "tool-index" }])
-        .then((res) => JSON.parse(res.values[0].value))
-        .then((existingIds) => {
-          // Step 2: Add new tool ID to the index
-          const newIds = [...existingIds, id];
-          // Step 3: Update both the tool index and create the new tool configuration
-          return socket
-            .config()
-            .putConfig([
-              {
-                type: "agent",
-                key: "tool-index",
-                value: JSON.stringify(newIds),
-              },
-              {
-                type: "agent",
-                key: "tool." + id,
-                value: JSON.stringify(tool),
-              },
-            ])
-            .then((x) => {
-              if (x["error"]) {
-                console.log("Error:", x);
-                throw x.error.message;
-              }
-              // Execute callback if provided
-              if (onSuccess) onSuccess();
-            });
+        .putConfig([
+          {
+            type: "tool",
+            key: id,
+            value: JSON.stringify(tool),
+          },
+        ])
+        .then((x) => {
+          if (x["error"]) {
+            console.log("Error:", x);
+            throw x.error.message;
+          }
+          // Execute callback if provided
+          if (onSuccess) onSuccess();
         });
     },
     onError: (err) => {
@@ -140,46 +108,25 @@ export const useAgentTools = () => {
   });
 
   // Mutation for deleting a tool
-  // Removes the tool from both the index and deletes its configuration
+  // Deletes the tool configuration directly
   const deleteToolMutation = useMutation({
     mutationFn: ({ id, onSuccess }) => {
-      // Step 1: Get current tool index
+      // Delete the tool configuration
       return socket
         .config()
-        .getConfig([{ type: "agent", key: "tool-index" }])
-        .then((res) => JSON.parse(res.values[0].value))
-        .then((existingIds) => {
-          // Step 2: Remove the tool ID from the index
-          const newIds = existingIds.filter(
-            (existingId) => existingId !== id,
-          );
-          // Step 3: Update the tool index
-          return socket
-            .config()
-            .putConfig([
-              {
-                type: "agent",
-                key: "tool-index",
-                value: JSON.stringify(newIds),
-              },
-            ])
-            .then(() => {
-              // Step 4: Delete the tool configuration
-              return socket.config().deleteConfig([
-                {
-                  type: "agent",
-                  key: "tool." + id,
-                },
-              ]);
-            })
-            .then((x) => {
-              if (x["error"]) {
-                console.log("Error:", x);
-                throw x.error.message;
-              }
-              // Execute callback if provided
-              if (onSuccess) onSuccess();
-            });
+        .deleteConfig([
+          {
+            type: "tool",
+            key: id,
+          },
+        ])
+        .then((x) => {
+          if (x["error"]) {
+            console.log("Error:", x);
+            throw x.error.message;
+          }
+          // Execute callback if provided
+          if (onSuccess) onSuccess();
         });
     },
     onError: (err) => {
