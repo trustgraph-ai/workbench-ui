@@ -99,8 +99,8 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
   // Create options for MCP tools select menu
   const mcpToolOptions = mcpTools.map(([id, tool]) => ({
     value: id,
-    label: tool.name || id,
-    description: tool.url || "",
+    label: id,
+    description: id,
   }));
 
   const onEdit = () => {
