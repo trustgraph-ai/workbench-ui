@@ -18,6 +18,7 @@ import {
 
 import { useSocket } from "../../api/trustgraph/socket";
 import { useAgentTools } from "../../state/agent-tools";
+import { useMcpTools } from "../../state/mcp-tools";
 import SelectField from "../common/SelectField";
 import TextAreaField from "../common/TextAreaField";
 import TextField from "../common/TextField";
@@ -26,6 +27,7 @@ import { toaster } from "../ui/toaster";
 const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
   const socket = useSocket();
   const { updateTool, createTool, deleteTool } = useAgentTools();
+  const { tools: mcpTools } = useMcpTools();
 
   const [newId, setNewId] = useState("");
   const [name, setName] = useState("");
@@ -93,6 +95,13 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
   ];
 
   const contentRef = useRef<HTMLDivElement>(null);
+
+  // Create options for MCP tools select menu
+  const mcpToolOptions = mcpTools.map(([id, tool]) => ({
+    value: id,
+    label: tool.name || id,
+    description: tool.url || "",
+  }));
 
   const onEdit = () => {
     // Build the tool structure
@@ -212,12 +221,12 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
               )}
 
               {type === "mcp-tool" && (
-                <TextField
+                <SelectField
                   label="MCP Tool ID"
-                  placeholder="Enter the MCP tool ID"
+                  items={mcpToolOptions}
                   value={mcpToolId}
                   onValueChange={(v) => setMcpToolId(v)}
-                  required={true}
+                  contentRef={contentRef}
                 />
               )}
 
