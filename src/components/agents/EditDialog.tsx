@@ -19,6 +19,7 @@ import {
 import { useSocket } from "../../api/trustgraph/socket";
 import { useAgentTools } from "../../state/agent-tools";
 import { useMcpTools } from "../../state/mcp-tools";
+import { usePrompts } from "../../state/prompts";
 import SelectField from "../common/SelectField";
 import TextAreaField from "../common/TextAreaField";
 import TextField from "../common/TextField";
@@ -28,6 +29,7 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
   const socket = useSocket();
   const { updateTool, createTool, deleteTool } = useAgentTools();
   const { tools: mcpTools } = useMcpTools();
+  const { prompts } = usePrompts();
 
   const [newId, setNewId] = useState("");
   const [name, setName] = useState("");
@@ -98,6 +100,13 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
 
   // Create options for MCP tools select menu
   const mcpToolOptions = mcpTools.map(([id, tool]) => ({
+    value: id,
+    label: id,
+    description: id,
+  }));
+
+  // Create options for prompt templates select menu
+  const promptTemplateOptions = prompts.map(([id, prompt]) => ({
     value: id,
     label: id,
     description: id,
@@ -211,12 +220,12 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
               />
 
               {type === "prompt" && (
-                <TextField
+                <SelectField
                   label="Template ID"
-                  placeholder="Enter the prompt template ID"
+                  items={promptTemplateOptions}
                   value={templateId}
                   onValueChange={(v) => setTemplateId(v)}
-                  required={true}
+                  contentRef={contentRef}
                 />
               )}
 
