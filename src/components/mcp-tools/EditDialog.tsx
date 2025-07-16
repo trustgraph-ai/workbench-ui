@@ -18,12 +18,13 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
   const socket = useSocket();
   const { updateTool, createTool, deleteTool } = useMcpTools();
 
-  const [name, setName] = useState("");
+  const [newId, setNewId] = useState("");
+  const [remoteName, setRemoteName] = useState("");
   const [url, setUrl] = useState("");
 
 
   useEffect(() => {
-    if (!id) return;
+    if (!id || create) return;
 
     socket
       .config()
@@ -32,9 +33,10 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
         return JSON.parse(x.values[0].value);
       })
       .then((x) => {
+        console.log("Loaded MCP tool data:", x);
         // Store MCP tool information
-        setName(x.name);
-        setUrl(x.url);
+        setRemoteName(x["remote-name"] || "");
+        setUrl(x.url || "");
       })
       .catch((e) => {
         console.log("Error:", e);
@@ -45,17 +47,26 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
       });
   }, [id, create, socket]);
 
+  // Clear form when dialog is opened for creation
+  useEffect(() => {
+    if (create) {
+      setNewId("");
+      setRemoteName("");
+      setUrl("");
+    }
+  }, [create, open]);
+
 
 
   const onEdit = () => {
     // Build the MCP tool structure
     const toolStruct = {
-      name: name,
+      "remote-name": remoteName,
       url: url,
     };
 
     if (create) {
-      createTool({ id: name, tool: toolStruct, onSuccess: onComplete });
+      createTool({ id: newId, tool: toolStruct, onSuccess: onComplete });
     } else {
       updateTool({ id, tool: toolStruct, onSuccess: onComplete });
     }
@@ -90,11 +101,21 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
               )}
             </Dialog.Header>
             <Dialog.Body>
+              {create && (
+                <TextField
+                  label="Tool ID"
+                  placeholder="Enter a unique tool ID"
+                  value={newId}
+                  onValueChange={(v) => setNewId(v)}
+                  required={true}
+                />
+              )}
+
               <TextField
-                label="Name"
-                placeholder="Enter tool name (used as ID)"
-                value={name}
-                onValueChange={(v) => setName(v)}
+                label="Remote Name"
+                placeholder="Enter the remote MCP tool name"
+                value={remoteName}
+                onValueChange={(v) => setRemoteName(v)}
                 required={true}
               />
 

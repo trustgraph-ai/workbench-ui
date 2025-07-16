@@ -9,7 +9,7 @@ const McpToolsTable = ({ setSelected, tools }) => {
   const tableData: McpTool[] = useMemo(() => {
     return tools.map(([id, config]) => ({
       id,
-      name: config?.name || "",
+      "remote-name": config?.["remote-name"] || "",
       url: config?.url || "",
     }));
   }, [tools]);
