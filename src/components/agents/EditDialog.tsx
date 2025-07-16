@@ -34,6 +34,7 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
   const [args, setArgs] = useState([]);
   const [templateId, setTemplateId] = useState("");
   const [mcpToolId, setMcpToolId] = useState("");
+  const [collection, setCollection] = useState("");
 
   const [editArgIx, setEditArgIx] = useState(-1);
 
@@ -56,6 +57,8 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
         setTemplateId(x.template_id || x.template || "");
         // Handle both old 'mcp-tool' and new 'mcp_tool_id' attributes
         setMcpToolId(x.mcp_tool_id || x["mcp-tool"] || "");
+        // Handle collection attribute for knowledge-query tools
+        setCollection(x.collection || "");
       })
       .catch((e) => {
         console.log("Error:", e);
@@ -101,6 +104,7 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
       arguments: args,
       ...(type === "prompt" && templateId && { template: templateId }),
       ...(type === "mcp-tool" && mcpToolId && { "mcp-tool": mcpToolId }),
+      ...(type === "knowledge-query" && collection && { collection: collection }),
     };
 
     if (create) {
@@ -214,6 +218,16 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
                   value={mcpToolId}
                   onValueChange={(v) => setMcpToolId(v)}
                   required={true}
+                />
+              )}
+
+              {type === "knowledge-query" && (
+                <TextField
+                  label="Collection"
+                  placeholder="Enter the knowledge collection (optional)"
+                  value={collection}
+                  onValueChange={(v) => setCollection(v)}
+                  required={false}
                 />
               )}
 
