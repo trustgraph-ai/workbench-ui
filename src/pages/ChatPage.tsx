@@ -9,7 +9,7 @@ const Chat = () => {
     <>
       <PageHeader
         icon={<MessageSquareText />}
-        title="Graph RAG chat"
+        title="Assistant"
         description="Converse with the knowledge-graph assistant in natural language"
       />
 

@@ -107,7 +107,7 @@ const Sidebar = () => {
 
       <VStack gap={1} align="stretch" mt={5}>
         <NavItem to="/search" icon={Search} label="Vector Search" />
-        <NavItem to="/chat" icon={MessageSquareText} label="Graph RAG Chat" />
+        <NavItem to="/chat" icon={MessageSquareText} label="Assistant" />
         <NavItem to="/entity" icon={Waypoints} label="Relationships" />
         <NavItem to="/graph" icon={Rotate3d} label="Graph Visualizer" />
         <NavItem to="/library" icon={LibraryBig} label="Library" />
