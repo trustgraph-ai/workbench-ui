@@ -47,7 +47,7 @@ const InputArea: React.FC<InputAreaProps> = ({ onSubmit }) => {
         <ProgressSubmitButton
           disabled={activity.size > 0}
           working={activity.size > 0}
-          onclick={() => submit()}
+          onClick={() => submit()}
         />
 
         <ChatHelp />
