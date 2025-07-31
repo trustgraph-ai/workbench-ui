@@ -4,6 +4,7 @@ import { X } from "lucide-react";
 
 import { useNodeDetails } from "../../state/node-details";
 import { useSessionStore } from "../../state/session";
+import NodePropertiesTable from "./NodePropertiesTable";
 
 interface NodeDetailsDrawerProps {
   node: {
@@ -51,20 +52,11 @@ const NodeDetailsDrawer: React.FC<NodeDetailsDrawerProps> = ({ node, isOpen, onC
             </button>
           </Drawer.CloseTrigger>
           <Drawer.Header>
-            <Drawer.Title>Node Details</Drawer.Title>
+            <Drawer.Title>{node?.label || node?.id || 'Node Details'}</Drawer.Title>
           </Drawer.Header>
           <Drawer.Body>
             {node && (
               <VStack align="start" spacing={6}>
-                <div>
-                  <Text fontWeight="bold">Node ID:</Text>
-                  <Text>{node.id}</Text>
-                </div>
-                <div>
-                  <Text fontWeight="bold">Node Label:</Text>
-                  <Text>{node.label}</Text>
-                </div>
-                
                 {outboundRelationshipsWithLabels && outboundRelationshipsWithLabels.length > 0 && (
                   <div style={{ width: "100%" }}>
                     <Heading size="sm" mb={3}>Outgoing Relationships</Heading>
@@ -94,14 +86,7 @@ const NodeDetailsDrawer: React.FC<NodeDetailsDrawerProps> = ({ node, isOpen, onC
                 {propertiesWithLabels && propertiesWithLabels.length > 0 && (
                   <div style={{ width: "100%" }}>
                     <Heading size="sm" mb={3}>Properties</Heading>
-                    <List.Root>
-                      {propertiesWithLabels.map((property, index) => (
-                        <List.Item key={index}>
-                          <Text fontWeight="bold">{property.predicate.label}:</Text>{" "}
-                          <Text>{property.value}</Text>
-                        </List.Item>
-                      ))}
-                    </List.Root>
+                    <NodePropertiesTable properties={propertiesWithLabels} />
                   </div>
                 )}
               </VStack>

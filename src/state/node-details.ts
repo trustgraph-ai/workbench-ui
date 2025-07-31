@@ -377,17 +377,23 @@ export const useNodeDetails = (nodeId: string | undefined, flowId: string) => {
   /**
    * Combine properties with their labels and values
    * Creates array of {predicate: {uri, label}, value} objects
+   * Excludes label properties since they're already displayed at the top
    */
   const propertiesWithLabels = useMemo(() => {
     if (!propertiesQuery.data) return [];
     
-    return propertiesQuery.data.map(triple => ({
-      predicate: {
-        uri: triple.p?.v || '',
-        label: propertyLabelsQuery.data?.[triple.p?.v || ''] || triple.p?.v || ''
-      },
-      value: triple.o?.v || ''
-    }));
+    return propertiesQuery.data
+      .filter(triple => {
+        // Exclude label properties (RDFS_LABEL) since node label is already shown
+        return triple.p?.v !== RDFS_LABEL;
+      })
+      .map(triple => ({
+        predicate: {
+          uri: triple.p?.v || '',
+          label: propertyLabelsQuery.data?.[triple.p?.v || ''] || triple.p?.v || ''
+        },
+        value: triple.o?.v || ''
+      }));
   }, [propertiesQuery.data, propertyLabelsQuery.data]);
 
   // Show loading indicators for long-running operations
