@@ -1,6 +1,7 @@
 import React, { useRef } from "react";
 
 import { Box, Alert, Heading, HStack } from "@chakra-ui/react";
+import { useColorModeValue } from "../ui/color-mode";
 
 import { useResizeDetector } from "react-resize-detector";
 
@@ -28,6 +29,44 @@ const GraphView = () => {
     isError,
     updateSubgraph: updateSubgraphMutation,
   } = useGraphSubgraph(selected?.uri, flowId);
+
+  // Theme-aware colors that respond to light/dark mode
+  const borderColor = useColorModeValue(
+    system.token("colors.gray.300"), // light mode
+    system.token("colors.gray.600")  // dark mode
+  );
+  
+  const backgroundColor = useColorModeValue(
+    system.token("colors.gray.50"),  // light mode
+    system.token("colors.gray.800")  // dark mode
+  );
+  
+  const nodeColor = useColorModeValue(
+    system.token("colors.gray.800"),     // light mode
+    system.token("colors.gray.100")      // dark mode
+  );
+  
+  const nodeTextColor = useColorModeValue(
+    system.token("colors.mintCream.700"), // light mode
+    system.token("colors.mintCream.300")  // dark mode
+  );
+  
+  const linkColor = useColorModeValue(
+    system.token("colors.gray.500"), // light mode
+    system.token("colors.gray.500")  // dark mode
+  );
+
+console.log(linkColor);
+  
+  const linkTextColor = useColorModeValue(
+    system.token("colors.yellowNeutral.700"), // light mode
+    system.token("colors.yellowNeutral.300")  // dark mode
+  );
+  
+  const linkParticleColor = useColorModeValue(
+    system.token("colors.deepPlum.700"), // light mode
+    system.token("colors.deepPlum.600")  // dark mode
+  );
 
   if (!selected) {
     return (
@@ -80,6 +119,7 @@ const GraphView = () => {
   // Ideally this would be based on themes, but the 3d graph stuff
   // doesn't use CSS variables which is what the theme stuff is based
   // on.
+  /*
   const borderColor = system.token("colors.gray.600");
   const backgroundColor = system.token("colors.gray.800");
   const nodeColor = system.token("colors.gray.100");
@@ -87,7 +127,7 @@ const GraphView = () => {
   const linkColor = system.token("colors.green.500");
   const linkTextColor = system.token("colors.tgBlue.300");
   const linkParticleColor = system.token("colors.tgGreen.600");
-
+*/
   return (
     <>
       <HStack mb={8}>
@@ -129,7 +169,7 @@ const GraphView = () => {
           linkDirectionalArrowLength={2.5}
           linkDirectionalArrowRelPos={0.75}
           linkOpacity={0.6}
-          linkColor={linkColor}
+          linkColor={() => linkColor}
           linkWidth="2"
           linkThreeObjectExtend={true}
           linkThreeObject={(link) => {
