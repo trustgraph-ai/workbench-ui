@@ -22,11 +22,11 @@ export const useNodeDetails = (nodeId: string | undefined, flowId: string) => {
   const notify = useNotification();
 
   /**
-   * Query for fetching triples where the node is the subject
+   * Query for fetching outbound triples where the node is the subject
    * Uses React Query for caching and background refetching
    */
-  const triplesQuery = useQuery({
-    queryKey: ["node-details-triples", { nodeId, flowId }],
+  const outboundTriplesQuery = useQuery({
+    queryKey: ["node-details-outbound-triples", { nodeId, flowId }],
     queryFn: () => {
       if (!nodeId) {
         throw new Error("Node ID is required");
@@ -45,7 +45,39 @@ export const useNodeDetails = (nodeId: string | undefined, flowId: string) => {
           return triples;
         })
         .catch((err) => {
-          console.error("Error fetching node triples:", err);
+          console.error("Error fetching outbound triples:", err);
+          notify.error(err);
+          throw err;
+        });
+    },
+    enabled: !!nodeId && !!flowId,
+  });
+
+  /**
+   * Query for fetching inbound triples where the node is the object
+   * Uses React Query for caching and background refetching
+   */
+  const inboundTriplesQuery = useQuery({
+    queryKey: ["node-details-inbound-triples", { nodeId, flowId }],
+    queryFn: () => {
+      if (!nodeId) {
+        throw new Error("Node ID is required");
+      }
+
+      const objectValue: Value = { v: nodeId, e: true };
+      
+      return socket
+        .flow(flowId)
+        .triplesQuery(undefined, undefined, objectValue, 20)
+        .then((triples) => {
+          if (!Array.isArray(triples)) {
+            console.error("Expected triples array, got:", triples);
+            throw new Error("Invalid triples response");
+          }
+          return triples;
+        })
+        .catch((err) => {
+          console.error("Error fetching inbound triples:", err);
           notify.error(err);
           throw err;
         });
@@ -54,19 +86,19 @@ export const useNodeDetails = (nodeId: string | undefined, flowId: string) => {
   });
 
   // Show loading indicators for long-running operations
-  useActivity(triplesQuery.isLoading, "Loading node details");
+  useActivity(outboundTriplesQuery.isLoading || inboundTriplesQuery.isLoading, "Loading node details");
 
   /**
-   * Process triples to extract outbound navigable relationships
+   * Process outbound triples to extract navigable relationships
    * Filters for entity relationships (o.e === true) and removes duplicates
    */
   const outboundRelationships = useMemo(() => {
-    if (!triplesQuery.data) return [];
+    if (!outboundTriplesQuery.data) return [];
     
     // Filter for entity relationships and extract unique predicates
     const uniqueRelationships = new Set<string>();
     
-    triplesQuery.data.forEach(triple => {
+    outboundTriplesQuery.data.forEach(triple => {
       // Check if object is an entity (o.e === true)
       if (triple.o && triple.o.e === true && triple.p && triple.p.v) {
         uniqueRelationships.add(triple.p.v);
@@ -75,20 +107,59 @@ export const useNodeDetails = (nodeId: string | undefined, flowId: string) => {
     
     // Convert Set to array
     return Array.from(uniqueRelationships);
-  }, [triplesQuery.data]);
+  }, [outboundTriplesQuery.data]);
+
+  /**
+   * Process inbound triples to extract navigable relationships
+   * Filters for entity relationships (s.e === true) and removes duplicates
+   */
+  const inboundRelationships = useMemo(() => {
+    if (!inboundTriplesQuery.data) return [];
+    
+    // Filter for entity relationships and extract unique predicates
+    const uniqueRelationships = new Set<string>();
+    
+    inboundTriplesQuery.data.forEach(triple => {
+      // Check if subject is an entity (s.e === true)
+      if (triple.s && triple.s.e === true && triple.p && triple.p.v) {
+        uniqueRelationships.add(triple.p.v);
+      }
+    });
+    
+    // Convert Set to array
+    return Array.from(uniqueRelationships);
+  }, [inboundTriplesQuery.data]);
 
   // Return node details state and operations for use in components
   return {
     // Raw triples data
-    triples: triplesQuery.data,
-    triplesLoading: triplesQuery.isLoading,
-    triplesError: triplesQuery.isError,
-    triplesErrorMessage: triplesQuery.error,
+    outboundTriples: outboundTriplesQuery.data,
+    inboundTriples: inboundTriplesQuery.data,
+    
+    // Loading states
+    triplesLoading: outboundTriplesQuery.isLoading || inboundTriplesQuery.isLoading,
+    outboundTriplesLoading: outboundTriplesQuery.isLoading,
+    inboundTriplesLoading: inboundTriplesQuery.isLoading,
+    
+    // Error states
+    triplesError: outboundTriplesQuery.isError || inboundTriplesQuery.isError,
+    outboundTriplesError: outboundTriplesQuery.isError,
+    inboundTriplesError: inboundTriplesQuery.isError,
+    
+    // Error messages
+    outboundTriplesErrorMessage: outboundTriplesQuery.error,
+    inboundTriplesErrorMessage: inboundTriplesQuery.error,
 
     // Processed data
     outboundRelationships,
+    inboundRelationships,
 
-    // Manual refetch function
-    refetch: triplesQuery.refetch,
+    // Manual refetch functions
+    refetchOutbound: outboundTriplesQuery.refetch,
+    refetchInbound: inboundTriplesQuery.refetch,
+    refetch: () => {
+      outboundTriplesQuery.refetch();
+      inboundTriplesQuery.refetch();
+    },
   };
 };

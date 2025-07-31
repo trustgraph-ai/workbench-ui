@@ -18,7 +18,7 @@ const NodeDetailsDrawer: React.FC<NodeDetailsDrawerProps> = ({ node, isOpen, onC
   const flowId = useSessionStore((state) => state.flowId);
   
   // Fetch node details directly in the drawer
-  const { outboundRelationships, triplesLoading } = useNodeDetails(node?.id, flowId);
+  const { outboundRelationships, inboundRelationships, triplesLoading } = useNodeDetails(node?.id, flowId);
   return (
     <Drawer.Root 
       open={isOpen} 
@@ -70,6 +70,19 @@ const NodeDetailsDrawer: React.FC<NodeDetailsDrawerProps> = ({ node, isOpen, onC
                     <Heading size="sm" mb={3}>Outgoing Relationships</Heading>
                     <List.Root>
                       {outboundRelationships.map((relationship, index) => (
+                        <List.Item key={index}>
+                          {relationship}
+                        </List.Item>
+                      ))}
+                    </List.Root>
+                  </div>
+                )}
+
+                {inboundRelationships && inboundRelationships.length > 0 && (
+                  <div style={{ width: "100%" }}>
+                    <Heading size="sm" mb={3}>Incoming Relationships</Heading>
+                    <List.Root>
+                      {inboundRelationships.map((relationship, index) => (
                         <List.Item key={index}>
                           {relationship}
                         </List.Item>
