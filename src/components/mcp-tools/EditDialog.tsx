@@ -2,12 +2,7 @@ import React, { useEffect, useState } from "react";
 
 import { Trash, SendHorizontal } from "lucide-react";
 
-import {
-  Portal,
-  Button,
-  Dialog,
-  CloseButton,
-} from "@chakra-ui/react";
+import { Portal, Button, Dialog, CloseButton } from "@chakra-ui/react";
 
 import { useSocket } from "../../api/trustgraph/socket";
 import { useMcpTools } from "../../state/mcp-tools";
@@ -21,7 +16,6 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
   const [newId, setNewId] = useState("");
   const [remoteName, setRemoteName] = useState("");
   const [url, setUrl] = useState("");
-
 
   useEffect(() => {
     if (!id || create) return;
@@ -56,8 +50,6 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
     }
   }, [create, open]);
 
-
-
   const onEdit = () => {
     // Build the MCP tool structure
     const toolStruct = {
@@ -71,7 +63,6 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
       updateTool({ id, tool: toolStruct, onSuccess: onComplete });
     }
   };
-
 
   const onDelete = () => {
     if (create) return;

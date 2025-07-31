@@ -15,7 +15,6 @@ export const config = defineConfig({
   theme: {
     tokens: {
       colors: {
-
         // Colours from the website at coolors.co, palette from Claude
         airForceBlue: {
           50: { value: "#EDF5F9" },
@@ -27,7 +26,7 @@ export const config = defineConfig({
           600: { value: "#4A7BA2" },
           700: { value: "#3F6B90" },
           800: { value: "#345B7E" },
-          900: { value: "#294B6C" },        
+          900: { value: "#294B6C" },
         },
         skyBlue: {
           50: { value: "#F0F7FA" },
@@ -39,7 +38,7 @@ export const config = defineConfig({
           600: { value: "#72A4BC" },
           700: { value: "#6191AA" },
           800: { value: "#507E98" },
-          900: { value: "#3F6B86" },      
+          900: { value: "#3F6B86" },
         },
         deepPlum: {
           50: { value: "#F9F8F9" },
@@ -106,19 +105,19 @@ export const config = defineConfig({
           900: { value: "#3A312B" }, // Very dark warm neutral
         },
 
-yellowNeutral: {
-  50: { value: "#FEFEF8" },
-  100: { value: "#FCFCF0" },
-  200: { value: "#F8F6E1" },
-  300: { value: "#F3F0D2" },
-  400: { value: "#E8E2B8" },
-  500: { value: "#DDD49E" }, // Much more yellow and lighter
-  600: { value: "#CFC284" },
-  700: { value: "#BAA56A" },
-  800: { value: "#8A7F52" }, // Lighter but still usable for backgrounds
-  900: { value: "#5A5238" }, // Warmer yellow-brown
-},
-        
+        yellowNeutral: {
+          50: { value: "#FEFEF8" },
+          100: { value: "#FCFCF0" },
+          200: { value: "#F8F6E1" },
+          300: { value: "#F3F0D2" },
+          400: { value: "#E8E2B8" },
+          500: { value: "#DDD49E" }, // Much more yellow and lighter
+          600: { value: "#CFC284" },
+          700: { value: "#BAA56A" },
+          800: { value: "#8A7F52" }, // Lighter but still usable for backgrounds
+          900: { value: "#5A5238" }, // Warmer yellow-brown
+        },
+
         // White variant and green variant, may be useful for agent dialog
         mintCream: {
           50: { value: "#FDFEFD" },
@@ -145,16 +144,16 @@ yellowNeutral: {
           900: { value: "#508658" },
         },
         neutralGreen: {
-  50: { value: "#FDFEFD" },
-  100: { value: "#EFF7F6" }, // Original color moved up
-  200: { value: "#DEF0ED" },
-  300: { value: "#CDE9E4" },
-  400: { value: "#BCE2DB" },
-  500: { value: "#9DD4CA" }, // Usable mid-tone
-  600: { value: "#7EC6B9" },
-  700: { value: "#5FB8A8" },
-  800: { value: "#479085" }, // Slightly desaturated from #4A9A8A
-  900: { value: "#337062" }, // Slightly desaturated from #357C6C
+          50: { value: "#FDFEFD" },
+          100: { value: "#EFF7F6" }, // Original color moved up
+          200: { value: "#DEF0ED" },
+          300: { value: "#CDE9E4" },
+          400: { value: "#BCE2DB" },
+          500: { value: "#9DD4CA" }, // Usable mid-tone
+          600: { value: "#7EC6B9" },
+          700: { value: "#5FB8A8" },
+          800: { value: "#479085" }, // Slightly desaturated from #4A9A8A
+          900: { value: "#337062" }, // Slightly desaturated from #357C6C
         },
 
         // Colours from logos
@@ -438,8 +437,6 @@ yellowNeutral: {
               _dark: "{colors.neutralGreen.500}",
             },
           },
-
-
         },
       },
     },

@@ -1,6 +1,6 @@
 import { Box, Flex, Text, Avatar, Badge } from "@chakra-ui/react";
 import { Brain, Eye, CheckCircle } from "lucide-react";
-import Markdown from 'react-markdown-it';
+import Markdown from "react-markdown-it";
 
 const ChatMessage = ({ message }) => {
   const isUser = message.role === "human";
@@ -70,9 +70,9 @@ const ChatMessage = ({ message }) => {
         {typeStyles.badge && (
           <Flex align="center" mb={2}>
             {typeStyles.icon}
-            <Badge 
-              ml={2} 
-              size="sm" 
+            <Badge
+              ml={2}
+              size="sm"
               colorPalette={typeStyles.badgeColor}
               variant="subtle"
             >

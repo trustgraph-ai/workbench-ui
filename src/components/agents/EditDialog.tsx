@@ -122,7 +122,8 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
       arguments: args,
       ...(type === "prompt" && templateId && { template: templateId }),
       ...(type === "mcp-tool" && mcpToolId && { "mcp-tool": mcpToolId }),
-      ...(type === "knowledge-query" && collection && { collection: collection }),
+      ...(type === "knowledge-query" &&
+        collection && { collection: collection }),
     };
 
     if (create) {

@@ -5,7 +5,7 @@ import { useChatStateStore, ChatMode } from "../../state/chat";
 const ChatModeSelector = () => {
   const chatMode = useChatStateStore((state) => state.chatMode);
   const setChatMode = useChatStateStore((state) => state.setChatMode);
-  
+
   const chatModes = [
     { value: "graph-rag", label: "Graph RAG" },
     { value: "agent", label: "Agent" },

@@ -113,10 +113,12 @@ export const useChat = () => {
 
     try {
       // Use a simple system prompt for basic LLM
-      const response = await socket.flow(flowId).textCompletion(
-        "You are a helpful assistant. Provide clear and concise responses.",
-        input
-      );
+      const response = await socket
+        .flow(flowId)
+        .textCompletion(
+          "You are a helpful assistant. Provide clear and concise responses.",
+          input,
+        );
       addMessage("ai", response);
       removeActivity(activity);
 
