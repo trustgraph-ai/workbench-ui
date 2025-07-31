@@ -2,6 +2,9 @@ import React from "react";
 import { Drawer, Text, VStack, Heading, List } from "@chakra-ui/react";
 import { X } from "lucide-react";
 
+import { useNodeDetails } from "../../state/node-details";
+import { useSessionStore } from "../../state/session";
+
 interface NodeDetailsDrawerProps {
   node: {
     id: string;
@@ -9,10 +12,13 @@ interface NodeDetailsDrawerProps {
   } | null;
   isOpen: boolean;
   onClose: () => void;
-  outboundRelationships?: string[];
 }
 
-const NodeDetailsDrawer: React.FC<NodeDetailsDrawerProps> = ({ node, isOpen, onClose, outboundRelationships }) => {
+const NodeDetailsDrawer: React.FC<NodeDetailsDrawerProps> = ({ node, isOpen, onClose }) => {
+  const flowId = useSessionStore((state) => state.flowId);
+  
+  // Fetch node details directly in the drawer
+  const { outboundRelationships, triplesLoading } = useNodeDetails(node?.id, flowId);
   return (
     <Drawer.Root 
       open={isOpen} 

@@ -11,7 +11,6 @@ import SpriteText from "three-spritetext";
 import { useSessionStore } from "../../state/session";
 import { useWorkbenchStateStore } from "../../state/workbench";
 import { useGraphSubgraph } from "../../state/graph-query";
-import { useNodeDetails } from "../../state/node-details";
 import GraphHelp from "./GraphHelp";
 import NodeDetailsDrawer from "./NodeDetailsDrawer";
 
@@ -35,22 +34,6 @@ const GraphView = () => {
     isError,
     updateSubgraph: updateSubgraphMutation,
   } = useGraphSubgraph(selected?.uri, flowId);
-
-  // Fetch node details including outbound relationships
-  const {
-    triples,
-    triplesLoading,
-    triplesError,
-    outboundRelationships
-  } = useNodeDetails(selectedNode?.id, flowId);
-
-  // Log triples when they change
-  useEffect(() => {
-    if (triples && selectedNode) {
-      console.log(`Edges for node ${selectedNode.id}:`, triples);
-      console.log(`Outbound relationships:`, outboundRelationships);
-    }
-  }, [triples, selectedNode, outboundRelationships]);
 
   // Theme-aware colors that respond to light/dark mode
   const borderColor = useColorModeValue(
@@ -237,7 +220,6 @@ const GraphView = () => {
         node={selectedNode}
         isOpen={isDrawerOpen}
         onClose={handleCloseDrawer}
-        outboundRelationships={outboundRelationships}
       />
     </>
   );
