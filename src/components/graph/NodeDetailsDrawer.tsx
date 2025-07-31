@@ -12,9 +12,10 @@ interface NodeDetailsDrawerProps {
 }
 
 const NodeDetailsDrawer: React.FC<NodeDetailsDrawerProps> = ({ node, isOpen, onClose }) => {
+  console.log("Drawer rendering with node:", node);
+  
   return (
-    <Drawer.Root open={isOpen} onOpenChange={(e) => !e.open && onClose()} placement="end" size="sm">
-      <Drawer.Backdrop />
+    <Drawer.Root open={isOpen} onOpenChange={(e) => !e.open && onClose()} placement="end" size="sm" modal={false}>
       <Drawer.Positioner>
         <Drawer.Content>
           <Drawer.CloseTrigger asChild>
