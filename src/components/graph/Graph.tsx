@@ -56,6 +56,11 @@ const GraphView = () => {
     system.token("colors.mintCream.300")  // dark mode
   );
   
+  const selectedNodeTextColor = useColorModeValue(
+    system.token("colors.warmOrange.700"), // light mode
+    system.token("colors.warmOrange.300")  // dark mode
+  );
+  
   const linkColor = useColorModeValue(
     system.token("colors.gray.500"), // light mode
     system.token("colors.gray.500")  // dark mode
@@ -158,7 +163,7 @@ const GraphView = () => {
           backgroundColor={backgroundColor}
           nodeThreeObject={(node) => {
             const sprite = new SpriteText(wrap(node.label, 30));
-            sprite.color = nodeTextColor;
+            sprite.color = selectedNode?.id === node.id ? selectedNodeTextColor : nodeTextColor;
             sprite.textHeight = 4;
             return sprite;
           }}
