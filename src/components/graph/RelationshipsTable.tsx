@@ -13,17 +13,14 @@ interface RelationshipsTableProps {
     uri: string;
     label: string;
   }>;
+  onRelationshipClick: (relationshipUri: string, direction: "incoming" | "outgoing") => void;
 }
 
 const RelationshipsTable: React.FC<RelationshipsTableProps> = ({ 
   outboundRelationships, 
-  inboundRelationships 
+  inboundRelationships,
+  onRelationshipClick 
 }) => {
-  // Click handler for relationship URIs
-  const handleRelationshipClick = (uri: string) => {
-    console.log("Relationship URI clicked:", uri);
-  };
-
   // Combine and transform relationships data to match the NodeRelationship interface
   const tableData: NodeRelationship[] = [
     // Add outbound relationships
@@ -31,14 +28,14 @@ const RelationshipsTable: React.FC<RelationshipsTableProps> = ({
       relationship: rel.label,
       direction: "outgoing" as const,
       uri: rel.uri,
-      onRelationshipClick: handleRelationshipClick,
+      onRelationshipClick: (uri: string) => onRelationshipClick(uri, "outgoing"),
     })),
     // Add inbound relationships
     ...inboundRelationships.map(rel => ({
       relationship: rel.label,
       direction: "incoming" as const,
       uri: rel.uri,
-      onRelationshipClick: handleRelationshipClick,
+      onRelationshipClick: (uri: string) => onRelationshipClick(uri, "incoming"),
     })),
   ];
 

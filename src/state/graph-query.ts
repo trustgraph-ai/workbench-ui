@@ -6,6 +6,7 @@ import { useActivity } from "./activity";
 import {
   createSubgraph,
   updateSubgraph,
+  updateSubgraphByRelationship,
   Subgraph,
 } from "../utils/knowledge-graph-viz";
 import { useProgressStateStore } from "./progress";
@@ -95,12 +96,52 @@ export const useGraphSubgraph = (
     },
   });
 
+  /**
+   * Mutation for expanding the graph by following specific relationships
+   */
+  const relationshipNavigationMutation = useMutation({
+    mutationFn: async ({
+      selectedNodeId,
+      relationshipUri,
+      direction,
+      currentGraph,
+    }: {
+      selectedNodeId: string;
+      relationshipUri: string;
+      direction: "incoming" | "outgoing";
+      currentGraph: Subgraph;
+    }) => {
+      return updateSubgraphByRelationship(
+        socket,
+        flowId,
+        selectedNodeId,
+        relationshipUri,
+        direction,
+        currentGraph,
+        addActivity,
+        removeActivity,
+      );
+    },
+    onSuccess: (newGraph) => {
+      // Update the cache with the new graph data
+      queryClient.setQueryData(
+        ["graph-subgraph", { entityUri, flowId }],
+        newGraph,
+      );
+    },
+    onError: (err) => {
+      console.log("Relationship navigation error:", err);
+      notify.error(err.toString());
+    },
+  });
+
   // Show loading indicators for long-running operations
   useActivity(
     query.isLoading,
     entityUri ? `Build subgraph: ${entityUri}` : "Loading graph",
   );
   useActivity(updateMutation.isPending, "Update subgraph");
+  useActivity(relationshipNavigationMutation.isPending, "Following relationship");
 
   // Handle query errors
   if (query.isError && query.error) {
@@ -118,6 +159,10 @@ export const useGraphSubgraph = (
     // Graph update operations
     updateSubgraph: updateMutation.mutate,
     isUpdating: updateMutation.isPending,
+
+    // Relationship navigation operations
+    navigateByRelationship: relationshipNavigationMutation.mutate,
+    isNavigating: relationshipNavigationMutation.isPending,
 
     // Manual refetch function
     refetch: query.refetch,

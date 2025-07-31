@@ -14,9 +14,10 @@ interface NodeDetailsDrawerProps {
   } | null;
   isOpen: boolean;
   onClose: () => void;
+  onRelationshipClick: (relationshipUri: string, direction: "incoming" | "outgoing") => void;
 }
 
-const NodeDetailsDrawer: React.FC<NodeDetailsDrawerProps> = ({ node, isOpen, onClose }) => {
+const NodeDetailsDrawer: React.FC<NodeDetailsDrawerProps> = ({ node, isOpen, onClose, onRelationshipClick }) => {
   const flowId = useSessionStore((state) => state.flowId);
   
   // Fetch node details directly in the drawer
@@ -65,6 +66,7 @@ const NodeDetailsDrawer: React.FC<NodeDetailsDrawerProps> = ({ node, isOpen, onC
                     <RelationshipsTable 
                       outboundRelationships={outboundRelationshipsWithLabels || []}
                       inboundRelationships={inboundRelationshipsWithLabels || []}
+                      onRelationshipClick={onRelationshipClick}
                     />
                   </div>
                 )}

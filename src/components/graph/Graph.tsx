@@ -33,6 +33,7 @@ const GraphView = () => {
     isLoading,
     isError,
     updateSubgraph: updateSubgraphMutation,
+    navigateByRelationship,
   } = useGraphSubgraph(selected?.uri, flowId);
 
   // Theme-aware colors that respond to light/dark mode
@@ -143,6 +144,22 @@ const GraphView = () => {
     setSelectedNode(null);
   };
 
+  const handleRelationshipClick = (relationshipUri: string, direction: "incoming" | "outgoing") => {
+    if (!selectedNode || !view) {
+      console.warn("No selected node or graph view available");
+      return;
+    }
+
+    console.log(`Following ${direction} relationship:`, relationshipUri, "from node:", selectedNode.id);
+    
+    navigateByRelationship({
+      selectedNodeId: selectedNode.id,
+      relationshipUri,
+      direction,
+      currentGraph: view,
+    });
+  };
+
   return (
     <>
       <HStack mb={8}>
@@ -220,6 +237,7 @@ const GraphView = () => {
         node={selectedNode}
         isOpen={isDrawerOpen}
         onClose={handleCloseDrawer}
+        onRelationshipClick={handleRelationshipClick}
       />
     </>
   );

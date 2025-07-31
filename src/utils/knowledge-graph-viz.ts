@@ -116,3 +116,45 @@ export const updateSubgraph = (
     .then((d) => filterInternals(d))
     .then((d) => updateSubgraphTriples(sg, d));
 };
+
+export const updateSubgraphByRelationship = (
+  socket: Socket,
+  flowId: string,
+  selectedNodeId: string,
+  relationshipUri: string,
+  direction: "incoming" | "outgoing",
+  sg: Subgraph,
+  add: (s: string) => void,
+  remove: (s: string) => void,
+) => {
+  const api = socket.flow(flowId);
+  const activityName = `Following ${direction} relationship: ${relationshipUri}`;
+  
+  add(activityName);
+  
+  // Build the query based on direction
+  const queryPromise = direction === "outgoing" 
+    ? api.triplesQuery(
+        { v: selectedNodeId, e: true },  // s = selectedNode
+        { v: relationshipUri, e: true }, // p = relationship
+        undefined,                       // o = ??? (what we want to find)
+        20 // Limit results
+      )
+    : api.triplesQuery(
+        undefined,                       // s = ??? (what we want to find) 
+        { v: relationshipUri, e: true }, // p = relationship
+        { v: selectedNodeId, e: true },  // o = selectedNode
+        20 // Limit results
+      );
+  
+  return queryPromise
+    .then((triples) => {
+      remove(activityName);
+      return triples;
+    })
+    .then((d) => labelS(api, d, add, remove))
+    .then((d) => labelP(api, d, add, remove))
+    .then((d) => labelO(api, d, add, remove))
+    .then((d) => filterInternals(d))
+    .then((d) => updateSubgraphTriples(sg, d));
+};
