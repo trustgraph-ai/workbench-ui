@@ -92,6 +92,20 @@ export const config = defineConfig({
           900: { value: "#A44A11" },
         },
 
+        // More desaturated orange
+        warmNeutral: {
+          50: { value: "#FDFCFB" },
+          100: { value: "#FAF8F6" },
+          200: { value: "#F5F1ED" },
+          300: { value: "#EFEAE4" },
+          400: { value: "#E0D5CA" },
+          500: { value: "#D1C1B0" }, // Desaturated warm base
+          600: { value: "#B8A394" },
+          700: { value: "#9F8578" },
+          800: { value: "#6B5B52" }, // Dark enough for backgrounds
+          900: { value: "#3A312B" }, // Very dark warm neutral
+        },
+        
         // White variant and green variant, may be useful for agent dialog
         mintCream: {
           50: { value: "#FDFEFD" },
@@ -142,18 +156,6 @@ export const config = defineConfig({
           700: { value: "#409A53" }, // Your dark mode hover color
           800: { value: "#34844A" },
           900: { value: "#296F3E" },
-        },
-        tgOrange: {
-          50: { value: "#EBF2FF" },
-          100: { value: "#D6E4FF" },
-          200: { value: "#ADC8FF" },
-          300: { value: "#85ADFF" },
-          400: { value: "#6693FB" },
-          500: { value: "#5285ED" }, // Your light color
-          600: { value: "#4275DD" }, // Your lightmid color
-          700: { value: "#3A6FD4" }, // Your darkmid color
-          800: { value: "#2F5EC0" }, // Your dark color
-          900: { value: "#234CA6" },
         },
         gray: {
           50: { value: "#F7FAFC" }, // Lightest
@@ -281,44 +283,44 @@ export const config = defineConfig({
         warmBrand: {
           solid: {
             value: {
-              base: "{colors.warmOrange.900}",
-              _dark: "{colors.warmOrange.100}",
+              base: "{colors.warmNeutral.900}",
+              _dark: "{colors.warmNeutral.100}",
             },
           },
           contrast: {
             value: {
-              base: "{colors.warmOrange.100}",
-              _dark: "{colors.warmOrange.900}",
+              base: "{colors.warmNeutral.100}",
+              _dark: "{colors.warmNeutral.900}",
             },
           },
           fg: {
             value: {
-              base: "{colors.warmOrange.700}",
-              _dark: "{colors.warmOrange.200}",
+              base: "{colors.warmNeutral.700}",
+              _dark: "{colors.warmNeutral.200}",
             },
           },
           muted: {
             value: {
-              base: "{colors.warmOrange.100}",
-              _dark: "{colors.warmOrange.900}",
+              base: "{colors.warmNeutral.100}",
+              _dark: "{colors.warmNeutral.900}",
             },
           },
           subtle: {
             value: {
-              base: "{colors.warmOrange.200}",
-              _dark: "{colors.warmOrange.700}",
+              base: "{colors.warmNeutral.200}",
+              _dark: "{colors.warmNeutral.700}",
             },
           },
           emphasized: {
             value: {
-              base: "{colors.warmOrange.300}",
-              _dark: "{colors.warmOrange.600}",
+              base: "{colors.warmNeutral.300}",
+              _dark: "{colors.warmNeutral.600}",
             },
           },
           focusRing: {
             value: {
-              base: "{colors.warmOrange.500}",
-              _dark: "{colors.warmOrange.500}",
+              base: "{colors.warmNeutral.500}",
+              _dark: "{colors.warmNeutral.500}",
             },
           },
         },
@@ -326,44 +328,44 @@ export const config = defineConfig({
         insightfulBrand: {
           solid: {
             value: {
-              base: "{colors.sageGreen.900}",
-              _dark: "{colors.sageGreen.100}",
+              base: "{colors.mintCream.900}",
+              _dark: "{colors.mintCream.100}",
             },
           },
           contrast: {
             value: {
-              base: "{colors.sageGreen.100}",
-              _dark: "{colors.sageGreen.900}",
+              base: "{colors.mintCream.100}",
+              _dark: "{colors.mintCream.900}",
             },
           },
           fg: {
             value: {
-              base: "{colors.sageGreen.700}",
-              _dark: "{colors.sageGreen.200}",
+              base: "{colors.mintCream.700}",
+              _dark: "{colors.mintCream.200}",
             },
           },
           muted: {
             value: {
-              base: "{colors.sageGreen.100}",
-              _dark: "{colors.sageGreen.900}",
+              base: "{colors.mintCream.100}",
+              _dark: "{colors.mintCream.900}",
             },
           },
           subtle: {
             value: {
-              base: "{colors.sageGreen.200}",
-              _dark: "{colors.sageGreen.700}",
+              base: "{colors.mintCream.200}",
+              _dark: "{colors.mintCream.700}",
             },
           },
           emphasized: {
             value: {
-              base: "{colors.sageGreen.300}",
-              _dark: "{colors.sageGreen.600}",
+              base: "{colors.mintCream.300}",
+              _dark: "{colors.mintCream.600}",
             },
           },
           focusRing: {
             value: {
-              base: "{colors.sageGreen.500}",
-              _dark: "{colors.sageGreen.500}",
+              base: "{colors.mintCream.500}",
+              _dark: "{colors.mintCream.500}",
             },
           },
 
