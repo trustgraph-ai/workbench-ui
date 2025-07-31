@@ -5,6 +5,7 @@ import { useSocket } from "../api/trustgraph/socket";
 import { useNotification } from "./notify";
 import { useActivity } from "./activity";
 import { Value } from "../api/trustgraph/Triple";
+import { RDFS_LABEL } from "../utils/knowledge-graph";
 
 /**
  * Custom hook for managing node details operations
@@ -86,7 +87,13 @@ export const useNodeDetails = (nodeId: string | undefined, flowId: string) => {
   });
 
   // Show loading indicators for long-running operations
-  useActivity(outboundTriplesQuery.isLoading || inboundTriplesQuery.isLoading, "Loading node details");
+  useActivity(
+    outboundTriplesQuery.isLoading || 
+    inboundTriplesQuery.isLoading || 
+    outboundLabelsQuery.isLoading || 
+    inboundLabelsQuery.isLoading, 
+    "Loading node details"
+  );
 
   /**
    * Process outbound triples to extract navigable relationships
@@ -130,6 +137,111 @@ export const useNodeDetails = (nodeId: string | undefined, flowId: string) => {
     return Array.from(uniqueRelationships);
   }, [inboundTriplesQuery.data]);
 
+  /**
+   * Fetch labels for outbound relationship URIs
+   * Uses dependent query that only runs when outbound relationships are available
+   */
+  const outboundLabelsQuery = useQuery({
+    queryKey: ["relationship-labels-outbound", { nodeId, flowId, relationships: outboundRelationships }],
+    queryFn: async () => {
+      if (!outboundRelationships.length) return {};
+
+      const labelMap: Record<string, string> = {};
+      
+      // Fetch labels for each relationship URI
+      await Promise.all(
+        outboundRelationships.map(async (relationshipURI) => {
+          try {
+            const subjectValue: Value = { v: relationshipURI, e: true };
+            const predicateValue: Value = { v: RDFS_LABEL, e: true };
+            
+            const labelTriples = await socket
+              .flow(flowId)
+              .triplesQuery(subjectValue, predicateValue, undefined, 1);
+            
+            // Extract label from the first result, or use URI as fallback
+            if (labelTriples && labelTriples.length > 0 && labelTriples[0].o) {
+              labelMap[relationshipURI] = labelTriples[0].o.v;
+            } else {
+              labelMap[relationshipURI] = relationshipURI;
+            }
+          } catch (error) {
+            console.warn(`Failed to fetch label for ${relationshipURI}:`, error);
+            labelMap[relationshipURI] = relationshipURI;
+          }
+        })
+      );
+      
+      return labelMap;
+    },
+    enabled: !!nodeId && !!flowId && outboundRelationships.length > 0,
+  });
+
+  /**
+   * Fetch labels for inbound relationship URIs
+   * Uses dependent query that only runs when inbound relationships are available
+   */
+  const inboundLabelsQuery = useQuery({
+    queryKey: ["relationship-labels-inbound", { nodeId, flowId, relationships: inboundRelationships }],
+    queryFn: async () => {
+      if (!inboundRelationships.length) return {};
+
+      const labelMap: Record<string, string> = {};
+      
+      // Fetch labels for each relationship URI
+      await Promise.all(
+        inboundRelationships.map(async (relationshipURI) => {
+          try {
+            const subjectValue: Value = { v: relationshipURI, e: true };
+            const predicateValue: Value = { v: RDFS_LABEL, e: true };
+            
+            const labelTriples = await socket
+              .flow(flowId)
+              .triplesQuery(subjectValue, predicateValue, undefined, 1);
+            
+            // Extract label from the first result, or use URI as fallback
+            if (labelTriples && labelTriples.length > 0 && labelTriples[0].o) {
+              labelMap[relationshipURI] = labelTriples[0].o.v;
+            } else {
+              labelMap[relationshipURI] = relationshipURI;
+            }
+          } catch (error) {
+            console.warn(`Failed to fetch label for ${relationshipURI}:`, error);
+            labelMap[relationshipURI] = relationshipURI;
+          }
+        })
+      );
+      
+      return labelMap;
+    },
+    enabled: !!nodeId && !!flowId && inboundRelationships.length > 0,
+  });
+
+  /**
+   * Combine relationship URIs with their labels
+   */
+  const outboundRelationshipsWithLabels = useMemo(() => {
+    if (!outboundLabelsQuery.data) {
+      return outboundRelationships.map(uri => ({ uri, label: uri }));
+    }
+    
+    return outboundRelationships.map(uri => ({
+      uri,
+      label: outboundLabelsQuery.data[uri] || uri
+    }));
+  }, [outboundRelationships, outboundLabelsQuery.data]);
+
+  const inboundRelationshipsWithLabels = useMemo(() => {
+    if (!inboundLabelsQuery.data) {
+      return inboundRelationships.map(uri => ({ uri, label: uri }));
+    }
+    
+    return inboundRelationships.map(uri => ({
+      uri,
+      label: inboundLabelsQuery.data[uri] || uri
+    }));
+  }, [inboundRelationships, inboundLabelsQuery.data]);
+
   // Return node details state and operations for use in components
   return {
     // Raw triples data
@@ -138,28 +250,52 @@ export const useNodeDetails = (nodeId: string | undefined, flowId: string) => {
     
     // Loading states
     triplesLoading: outboundTriplesQuery.isLoading || inboundTriplesQuery.isLoading,
+    labelsLoading: outboundLabelsQuery.isLoading || inboundLabelsQuery.isLoading,
+    isLoading: outboundTriplesQuery.isLoading || inboundTriplesQuery.isLoading || outboundLabelsQuery.isLoading || inboundLabelsQuery.isLoading,
+    
     outboundTriplesLoading: outboundTriplesQuery.isLoading,
     inboundTriplesLoading: inboundTriplesQuery.isLoading,
+    outboundLabelsLoading: outboundLabelsQuery.isLoading,
+    inboundLabelsLoading: inboundLabelsQuery.isLoading,
     
     // Error states
     triplesError: outboundTriplesQuery.isError || inboundTriplesQuery.isError,
+    labelsError: outboundLabelsQuery.isError || inboundLabelsQuery.isError,
+    hasError: outboundTriplesQuery.isError || inboundTriplesQuery.isError || outboundLabelsQuery.isError || inboundLabelsQuery.isError,
+    
     outboundTriplesError: outboundTriplesQuery.isError,
     inboundTriplesError: inboundTriplesQuery.isError,
+    outboundLabelsError: outboundLabelsQuery.isError,
+    inboundLabelsError: inboundLabelsQuery.isError,
     
     // Error messages
     outboundTriplesErrorMessage: outboundTriplesQuery.error,
     inboundTriplesErrorMessage: inboundTriplesQuery.error,
+    outboundLabelsErrorMessage: outboundLabelsQuery.error,
+    inboundLabelsErrorMessage: inboundLabelsQuery.error,
 
-    // Processed data
+    // Processed data - URIs only (for backward compatibility)
     outboundRelationships,
     inboundRelationships,
+    
+    // Processed data - with labels
+    outboundRelationshipsWithLabels,
+    inboundRelationshipsWithLabels,
 
     // Manual refetch functions
-    refetchOutbound: outboundTriplesQuery.refetch,
-    refetchInbound: inboundTriplesQuery.refetch,
+    refetchOutbound: () => {
+      outboundTriplesQuery.refetch();
+      outboundLabelsQuery.refetch();
+    },
+    refetchInbound: () => {
+      inboundTriplesQuery.refetch();
+      inboundLabelsQuery.refetch();
+    },
     refetch: () => {
       outboundTriplesQuery.refetch();
       inboundTriplesQuery.refetch();
+      outboundLabelsQuery.refetch();
+      inboundLabelsQuery.refetch();
     },
   };
 };
