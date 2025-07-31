@@ -86,15 +86,6 @@ export const useNodeDetails = (nodeId: string | undefined, flowId: string) => {
     enabled: !!nodeId && !!flowId,
   });
 
-  // Show loading indicators for long-running operations
-  useActivity(
-    outboundTriplesQuery.isLoading || 
-    inboundTriplesQuery.isLoading || 
-    outboundLabelsQuery.isLoading || 
-    inboundLabelsQuery.isLoading, 
-    "Loading node details"
-  );
-
   /**
    * Process outbound triples to extract navigable relationships
    * Filters for entity relationships (o.e === true) and removes duplicates
@@ -241,6 +232,15 @@ export const useNodeDetails = (nodeId: string | undefined, flowId: string) => {
       label: inboundLabelsQuery.data[uri] || uri
     }));
   }, [inboundRelationships, inboundLabelsQuery.data]);
+
+  // Show loading indicators for long-running operations
+  useActivity(
+    outboundTriplesQuery.isLoading || 
+    inboundTriplesQuery.isLoading || 
+    outboundLabelsQuery.isLoading || 
+    inboundLabelsQuery.isLoading, 
+    "Loading node details"
+  );
 
   // Return node details state and operations for use in components
   return {
