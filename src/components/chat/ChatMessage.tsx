@@ -11,30 +11,31 @@ const ChatMessage = ({ message }) => {
     switch (messageType) {
       case "thinking":
         return {
-          bg: "blue.50",
-          borderColor: "blue.200",
+          bg: "warmBrand.contrast",
+          borderColor: "warmBrand.muted",
           borderWidth: "1px",
           icon: <Brain size={14} />,
           badge: "Thinking",
-          badgeColor: "blue",
+          badgeColor: "warmBrand",
+          color: "warmBrand.fg",
         };
       case "observation":
         return {
-          bg: "orange.50",
-          borderColor: "orange.200",
+          bg: "insightfulBrand.contrast",
+          borderColor: "insightfulBrand.muted",
           borderWidth: "1px",
           icon: <Eye size={14} />,
           badge: "Observation",
-          badgeColor: "orange",
+          badgeColor: "insightfulBrand",
         };
       case "answer":
         return {
-          bg: "green.50",
-          borderColor: "green.200",
+          bg: "bg",
+          borderColor: "brand.solid",
           borderWidth: "1px",
           icon: <CheckCircle size={14} />,
           badge: "Answer",
-          badgeColor: "green",
+          badgeColor: "bgbrand.muted",
         };
       default:
         return {
