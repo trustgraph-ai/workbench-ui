@@ -1,0 +1,63 @@
+// Import state management hooks for different parts of the application
+import { useWorkbenchStateStore } from "../../state/workbench";
+import { useSearchStateStore } from "../../state/search";
+import { useSessionStore } from "../../state/session";
+import { useVectorSearch } from "../../state/vector-search";
+
+// Import child components for search functionality
+import SearchInput from "./SearchInput";
+import Results from "./Results";
+
+/**
+ * Main search component that handles vector search functionality
+ * Combines search input and results display with state management
+ */
+const Search = () => {
+  // Get vector search service instance
+  const state = useVectorSearch();
+
+  // Get current flow ID from session state
+  const flowId = useSessionStore((state) => state.flowId);
+
+  // Get function to update entities in workbench state
+  const setEntities = useWorkbenchStateStore((state) => state.setEntities);
+
+  // Get current search results and setter from search state
+  const view = useSearchStateStore((state) => state.rows);
+  const setView = useSearchStateStore((state) => state.setRows);
+
+  // Get current search input from search state
+  const search = useSearchStateStore((state) => state.input);
+
+  /**
+   * Handles search submission by querying the vector search service
+   * Updates both search results view and workbench entities on success
+   */
+  const submit = () => {
+    console.log(search);
+
+    // Perform vector search query with current flow, search term, and limit
+    state
+      .query({ flow: flowId, term: search, limit: 10 })
+      .then((x) => {
+        console.log(x);
+        // Update search results view
+        setView(x.view);
+        // Update workbench entities for potential visualization
+        setEntities(x.entities);
+      })
+      .catch((err) => console.log("Error:", err));
+  };
+
+  return (
+    <>
+      {/* Search input component with submit handler */}
+      <SearchInput submit={submit} />
+
+      {/* Conditionally render results if any exist */}
+      {view.length > 0 && <Results />}
+    </>
+  );
+};
+
+export default Search;

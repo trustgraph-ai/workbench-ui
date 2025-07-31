@@ -2,13 +2,13 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as gcp from "@pulumi/gcp";
 import { local } from "@pulumi/command";
-import * as fs from 'fs';
+//import * as fs from 'fs';
 
 const cfg = new pulumi.Config();
 
 function get(tag : string) {
 
-    let val = cfg.get(tag);
+    const val = cfg.get(tag);
 
     if (!val) {
         console.log("ERROR: The '" + tag + "' config is mandatory");
@@ -32,7 +32,7 @@ const project = get("gcp-project");
 const region = get("gcp-region");
 const cloudRunRegion = get("cloud-run-region");
 const environment = get("environment");
-const domain = get("domain");
+//const domain = get("domain");
 const minScale = get("min-scale");
 const maxScale = get("max-scale");
 
@@ -182,7 +182,7 @@ const allUsersPolicy = gcp.organizations.getIAMPolicy(
     }
 );
 
-const noAuthPolicy = new gcp.cloudrun.IamPolicy(
+/*const _noAuthPolicy =*/ new gcp.cloudrun.IamPolicy(
     "no-auth-policy",
     {
 	location: service.location,
@@ -233,7 +233,7 @@ domainMapping.statuses.apply(
 
 	    let mapping : { [k : string] : string[] } = {};
 	    
-	    for(var i = 0; i < rrs.length; i++) {
+	    for(let i = 0; i < rrs.length; i++) {
 		if (rrs[i].rrdata) {
 
 		    const rr = rrs[i].rrdata;
@@ -242,16 +242,22 @@ domainMapping.statuses.apply(
 		    if (!rr || !tp) continue;
 
 		    if (mapping[tp])
-			mapping[tp].push(rr);
+                        mapping = {
+                            ...mapping,
+                            [tp]: [...mapping[tp], rr],
+                        };
 		    else
-			mapping[tp] = [rr];
+			mapping = {
+                            ...mapping,
+                            [tp]: [rr],
+                        };
 
 		}
 	    }
 
-	    for (let tp in mapping) {
+	    for (const tp in mapping) {
 
-		const recordSet = new gcp.dns.RecordSet(
+		new gcp.dns.RecordSet(
 		    "resource-record-" + tp,
 		    {
 			name: hostname + ".",
@@ -297,7 +303,7 @@ const serviceMon = new gcp.monitoring.GenericService(
     }
 );
 
-const latencySlo = new gcp.monitoring.Slo(
+new gcp.monitoring.Slo(
     "latency-slo",
     {
 	service: serviceMon.serviceId,
@@ -316,7 +322,7 @@ const latencySlo = new gcp.monitoring.Slo(
     }
 );
 
-const availabilitySlo = new gcp.monitoring.Slo(
+new gcp.monitoring.Slo(
     "availability-slo",
     {
 	service: serviceMon.serviceId,

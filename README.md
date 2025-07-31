@@ -1,5 +1,5 @@
 
-# Data Workbench for TrustGraph
+# Test Suite for TrustGraph
 
 ## Setup for Python
 
