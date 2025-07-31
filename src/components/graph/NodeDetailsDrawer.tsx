@@ -12,12 +12,22 @@ interface NodeDetailsDrawerProps {
 }
 
 const NodeDetailsDrawer: React.FC<NodeDetailsDrawerProps> = ({ node, isOpen, onClose }) => {
-  console.log("Drawer rendering with node:", node);
-  
   return (
-    <Drawer.Root open={isOpen} onOpenChange={(e) => !e.open && onClose()} placement="end" size="sm" modal={false}>
-      <Drawer.Positioner>
-        <Drawer.Content>
+    <Drawer.Root 
+      open={isOpen} 
+      onOpenChange={(e) => {
+        // Only call onClose when explicitly closing the drawer
+        if (!e.open) {
+          onClose();
+        }
+      }} 
+      placement="end" 
+      size="sm" 
+      modal={false}
+      closeOnInteractOutside={false}
+    >
+      <Drawer.Positioner style={{ pointerEvents: "none" }}>
+        <Drawer.Content style={{ pointerEvents: "auto" }}>
           <Drawer.CloseTrigger asChild>
             <button
               style={{

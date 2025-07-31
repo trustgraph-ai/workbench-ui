@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 
 import { Box, Alert, Heading, HStack } from "@chakra-ui/react";
 import { useColorModeValue } from "../ui/color-mode";
@@ -76,6 +76,13 @@ const GraphView = () => {
     system.token("colors.deepPlum.600")  // dark mode
   );
 
+  // Ensure drawer opens when node is selected
+  useEffect(() => {
+    if (selectedNode && !isDrawerOpen) {
+      setIsDrawerOpen(true);
+    }
+  }, [selectedNode, isDrawerOpen]);
+
   if (!selected) {
     return (
       <Box>
@@ -123,14 +130,8 @@ const GraphView = () => {
     // Set the selected node in state
     setSelectedNode(node);
     
-    // Open drawer if not already open
-    if (!isDrawerOpen) {
-      setIsDrawerOpen(true);
-    }
-    
     // Log the node ID and label when a node is clicked
     console.log("Node selected:", node.id, "Label:", node.label);
-    console.log("Full node object:", node);
     
     // For now, commenting out the navigation to focus on selection
     // updateSubgraphMutation({ nodeId: node.id, currentGraph: view });
@@ -175,6 +176,11 @@ const GraphView = () => {
             return sprite;
           }}
           onNodeClick={nodeClick}
+          onBackgroundClick={() => {
+            console.log("Background clicked - deselecting node");
+            setSelectedNode(null);
+            setIsDrawerOpen(false);
+          }}
           onNodeDragEnd={(node) => {
             node.fx = node.x;
             node.fy = node.y;
