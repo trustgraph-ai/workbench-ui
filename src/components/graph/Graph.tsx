@@ -1,6 +1,7 @@
-import React, { useRef } from "react";
+import React, { useRef, useState, useEffect } from "react";
 
 import { Box, Alert, Heading, HStack } from "@chakra-ui/react";
+import { useColorModeValue } from "../ui/color-mode";
 
 import { useResizeDetector } from "react-resize-detector";
 
@@ -11,6 +12,7 @@ import { useSessionStore } from "../../state/session";
 import { useWorkbenchStateStore } from "../../state/workbench";
 import { useGraphSubgraph } from "../../state/graph-query";
 import GraphHelp from "./GraphHelp";
+import NodeDetailsDrawer from "./NodeDetailsDrawer";
 
 import { system } from "../../theme";
 
@@ -20,6 +22,10 @@ const GraphView = () => {
 
   const fgRef = useRef();
   const { width, height, ref } = useResizeDetector({});
+  
+  // State to track the selected node
+  const [selectedNode, setSelectedNode] = useState(null);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   // Use the new Tanstack Query hook for graph data
   const {
@@ -27,7 +33,56 @@ const GraphView = () => {
     isLoading,
     isError,
     updateSubgraph: updateSubgraphMutation,
+    navigateByRelationship,
   } = useGraphSubgraph(selected?.uri, flowId);
+
+  // Theme-aware colors that respond to light/dark mode
+  const borderColor = useColorModeValue(
+    system.token("colors.gray.300"), // light mode
+    system.token("colors.gray.600")  // dark mode
+  );
+  
+  const backgroundColor = useColorModeValue(
+    system.token("colors.gray.50"),  // light mode
+    system.token("colors.gray.800")  // dark mode
+  );
+  
+  const nodeColor = useColorModeValue(
+    system.token("colors.gray.800"),     // light mode
+    system.token("colors.gray.100")      // dark mode
+  );
+  
+  const nodeTextColor = useColorModeValue(
+    system.token("colors.mintCream.700"), // light mode
+    system.token("colors.mintCream.300")  // dark mode
+  );
+  
+  const selectedNodeTextColor = useColorModeValue(
+    system.token("colors.warmOrange.700"), // light mode
+    system.token("colors.warmOrange.300")  // dark mode
+  );
+  
+  const linkColor = useColorModeValue(
+    system.token("colors.gray.500"), // light mode
+    system.token("colors.gray.500")  // dark mode
+  );
+  
+  const linkTextColor = useColorModeValue(
+    system.token("colors.yellowNeutral.700"), // light mode
+    system.token("colors.yellowNeutral.300")  // dark mode
+  );
+  
+  const linkParticleColor = useColorModeValue(
+    system.token("colors.deepPlum.700"), // light mode
+    system.token("colors.deepPlum.600")  // dark mode
+  );
+
+  // Ensure drawer opens when node is selected
+  useEffect(() => {
+    if (selectedNode && !isDrawerOpen) {
+      setIsDrawerOpen(true);
+    }
+  }, [selectedNode, isDrawerOpen]);
 
   if (!selected) {
     return (
@@ -73,20 +128,37 @@ const GraphView = () => {
     );
 
   const nodeClick = (node) => {
-    // Use the mutation from the query hook to update the subgraph
-    updateSubgraphMutation({ nodeId: node.id, currentGraph: view });
+    // Set the selected node in state
+    setSelectedNode(node);
+    
+    // Log the node ID and label when a node is clicked
+    console.log("Node selected:", node.id, "Label:", node.label);
+    
+    // For now, commenting out the navigation to focus on selection
+    // updateSubgraphMutation({ nodeId: node.id, currentGraph: view });
+  };
+  
+  const handleCloseDrawer = () => {
+    // Close drawer and unselect the node
+    setIsDrawerOpen(false);
+    setSelectedNode(null);
   };
 
-  // Ideally this would be based on themes, but the 3d graph stuff
-  // doesn't use CSS variables which is what the theme stuff is based
-  // on.
-  const borderColor = system.token("colors.gray.600");
-  const backgroundColor = system.token("colors.gray.800");
-  const nodeColor = system.token("colors.gray.100");
-  const nodeTextColor = system.token("colors.yellow.300");
-  const linkColor = system.token("colors.green.500");
-  const linkTextColor = system.token("colors.tgBlue.300");
-  const linkParticleColor = system.token("colors.tgGreen.600");
+  const handleRelationshipClick = (relationshipUri: string, direction: "incoming" | "outgoing") => {
+    if (!selectedNode || !view) {
+      console.warn("No selected node or graph view available");
+      return;
+    }
+
+    console.log(`Following ${direction} relationship:`, relationshipUri, "from node:", selectedNode.id);
+    
+    navigateByRelationship({
+      selectedNodeId: selectedNode.id,
+      relationshipUri,
+      direction,
+      currentGraph: view,
+    });
+  };
 
   return (
     <>
@@ -116,11 +188,16 @@ const GraphView = () => {
           backgroundColor={backgroundColor}
           nodeThreeObject={(node) => {
             const sprite = new SpriteText(wrap(node.label, 30));
-            sprite.color = nodeTextColor;
+            sprite.color = selectedNode?.id === node.id ? selectedNodeTextColor : nodeTextColor;
             sprite.textHeight = 4;
             return sprite;
           }}
           onNodeClick={nodeClick}
+          onBackgroundClick={() => {
+            console.log("Background clicked - deselecting node");
+            setSelectedNode(null);
+            setIsDrawerOpen(false);
+          }}
           onNodeDragEnd={(node) => {
             node.fx = node.x;
             node.fy = node.y;
@@ -129,7 +206,7 @@ const GraphView = () => {
           linkDirectionalArrowLength={2.5}
           linkDirectionalArrowRelPos={0.75}
           linkOpacity={0.6}
-          linkColor={linkColor}
+          linkColor={() => linkColor}
           linkWidth="2"
           linkThreeObjectExtend={true}
           linkThreeObject={(link) => {
@@ -155,6 +232,13 @@ const GraphView = () => {
           }}
         />
       </Box>
+      
+      <NodeDetailsDrawer 
+        node={selectedNode}
+        isOpen={isDrawerOpen}
+        onClose={handleCloseDrawer}
+        onRelationshipClick={handleRelationshipClick}
+      />
     </>
   );
 };

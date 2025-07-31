@@ -44,16 +44,19 @@ export const updateSubgraphTriples = (sg: Subgraph, triples: Triple[]) => {
   const linkIds = new Set<string>(sg.links.map((n) => n.id));
 
   for (const t of triples) {
+    // Skip triples where the object is a literal (property edges)
+    // These are now shown in the node details drawer instead
+    if (!t.o.e) {
+      continue;
+    }
     // Source has a URI, that can be its unique ID
     const sourceId = t.s.v;
 
-    // Same for target, unless it's a literal, in which case
-    // use an ID which is unique to this edge so that it gets its
-    // own node
-    const targetId = t.o.e ? t.o.v : t.s.v + "@@" + t.p.v + "@@" + t.o.e;
+    // Target is always an entity now (we filtered out literals above)
+    const targetId = t.o.v;
 
     // Links have an ID so that this edge is unique
-    const linkId = t.s.v + "@@" + t.p.v + "@@" + t.o.e;
+    const linkId = t.s.v + "@@" + t.p.v + "@@" + t.o.v;
 
     if (!nodeIds.has(sourceId)) {
       const n: Node = {
@@ -110,6 +113,48 @@ export const updateSubgraph = (
 ) => {
   const api = socket.flow(flowId);
   return query(api, uri, add, remove)
+    .then((d) => labelS(api, d, add, remove))
+    .then((d) => labelP(api, d, add, remove))
+    .then((d) => labelO(api, d, add, remove))
+    .then((d) => filterInternals(d))
+    .then((d) => updateSubgraphTriples(sg, d));
+};
+
+export const updateSubgraphByRelationship = (
+  socket: Socket,
+  flowId: string,
+  selectedNodeId: string,
+  relationshipUri: string,
+  direction: "incoming" | "outgoing",
+  sg: Subgraph,
+  add: (s: string) => void,
+  remove: (s: string) => void,
+) => {
+  const api = socket.flow(flowId);
+  const activityName = `Following ${direction} relationship: ${relationshipUri}`;
+  
+  add(activityName);
+  
+  // Build the query based on direction
+  const queryPromise = direction === "outgoing" 
+    ? api.triplesQuery(
+        { v: selectedNodeId, e: true },  // s = selectedNode
+        { v: relationshipUri, e: true }, // p = relationship
+        undefined,                       // o = ??? (what we want to find)
+        20 // Limit results
+      )
+    : api.triplesQuery(
+        undefined,                       // s = ??? (what we want to find) 
+        { v: relationshipUri, e: true }, // p = relationship
+        { v: selectedNodeId, e: true },  // o = selectedNode
+        20 // Limit results
+      );
+  
+  return queryPromise
+    .then((triples) => {
+      remove(activityName);
+      return triples;
+    })
     .then((d) => labelS(api, d, add, remove))
     .then((d) => labelP(api, d, add, remove))
     .then((d) => labelO(api, d, add, remove))
