@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 
 import { Box, Alert, Heading, HStack } from "@chakra-ui/react";
 import { useColorModeValue } from "../ui/color-mode";
@@ -21,6 +21,9 @@ const GraphView = () => {
 
   const fgRef = useRef();
   const { width, height, ref } = useResizeDetector({});
+  
+  // State to track the selected node
+  const [selectedNode, setSelectedNode] = useState(null);
 
   // Use the new Tanstack Query hook for graph data
   const {
@@ -110,8 +113,11 @@ const GraphView = () => {
     );
 
   const nodeClick = (node) => {
-    // Log the node ID when a node is clicked
-    console.log("Node selected:", node.id);
+    // Set the selected node in state
+    setSelectedNode(node);
+    
+    // Log the node ID and label when a node is clicked
+    console.log("Node selected:", node.id, "Label:", node.label);
     
     // For now, commenting out the navigation to focus on selection
     // updateSubgraphMutation({ nodeId: node.id, currentGraph: view });
