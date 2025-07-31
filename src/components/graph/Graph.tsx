@@ -1,20 +1,23 @@
 import React, { useRef, useState, useEffect } from "react";
 
 import { Box, Alert, Heading, HStack } from "@chakra-ui/react";
-import { useColorModeValue } from "../ui/color-mode";
 
 import { useResizeDetector } from "react-resize-detector";
 
 import { ForceGraph3D } from "react-force-graph";
 import SpriteText from "three-spritetext";
 
+import {
+   useBorderColor, useBackgroundColor, useNodeColor, useNodeTextColor,
+   useSelectedNodeTextColor, useLinkColor, useLinkTextColor,
+   useLinkParticleColor
+} from '../ui/graph-colors';
+
 import { useSessionStore } from "../../state/session";
 import { useWorkbenchStateStore } from "../../state/workbench";
 import { useGraphSubgraph } from "../../state/graph-query";
 import GraphHelp from "./GraphHelp";
 import NodeDetailsDrawer from "./NodeDetailsDrawer";
-
-import { system } from "../../theme";
 
 const GraphView = () => {
   const flowId = useSessionStore((state) => state.flowId);
@@ -27,6 +30,15 @@ const GraphView = () => {
   const [selectedNode, setSelectedNode] = useState(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
+  const borderColor = useBorderColor();
+  const backgroundColor = useBackgroundColor();
+  const nodeColor = useNodeColor();
+  const nodeTextColor = useNodeTextColor();
+  const selectedNodeTextColor = useSelectedNodeTextColor();
+  const linkColor = useLinkColor();
+  const linkTextColor = useLinkTextColor();
+  const linkParticleColor = useLinkParticleColor();
+
   // Use the new Tanstack Query hook for graph data
   const {
     view,
@@ -35,47 +47,6 @@ const GraphView = () => {
     updateSubgraph: updateSubgraphMutation,
     navigateByRelationship,
   } = useGraphSubgraph(selected?.uri, flowId);
-
-  // Theme-aware colors that respond to light/dark mode
-  const borderColor = useColorModeValue(
-    system.token("colors.gray.300"), // light mode
-    system.token("colors.gray.600")  // dark mode
-  );
-  
-  const backgroundColor = useColorModeValue(
-    system.token("colors.gray.50"),  // light mode
-    system.token("colors.gray.800")  // dark mode
-  );
-  
-  const nodeColor = useColorModeValue(
-    system.token("colors.gray.800"),     // light mode
-    system.token("colors.gray.100")      // dark mode
-  );
-  
-  const nodeTextColor = useColorModeValue(
-    system.token("colors.mintCream.700"), // light mode
-    system.token("colors.mintCream.300")  // dark mode
-  );
-  
-  const selectedNodeTextColor = useColorModeValue(
-    system.token("colors.warmOrange.700"), // light mode
-    system.token("colors.warmOrange.300")  // dark mode
-  );
-  
-  const linkColor = useColorModeValue(
-    system.token("colors.gray.500"), // light mode
-    system.token("colors.gray.500")  // dark mode
-  );
-  
-  const linkTextColor = useColorModeValue(
-    system.token("colors.yellowNeutral.700"), // light mode
-    system.token("colors.yellowNeutral.300")  // dark mode
-  );
-  
-  const linkParticleColor = useColorModeValue(
-    system.token("colors.deepPlum.700"), // light mode
-    system.token("colors.deepPlum.600")  // dark mode
-  );
 
   // Ensure drawer opens when node is selected
   useEffect(() => {

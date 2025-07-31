@@ -18,7 +18,7 @@ const Card: React.FC<CardProps> = ({
     <Box borderRadius="lg" boxShadow="sm" p={5} border="1px" height="100%">
       <Flex alignItems="center" mb={description ? 2 : 4}>
         {icon && (
-          <Box mr={3} color="brand.solid">
+          <Box mr={3} color="primary.solid">
             {icon}
           </Box>
         )}

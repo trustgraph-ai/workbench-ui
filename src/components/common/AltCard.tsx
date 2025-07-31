@@ -18,7 +18,7 @@ const AltCard: React.FC<AltCardProps> = ({
     <Box borderRadius="lg" boxShadow="sm" p={5} border="1px" height="100%">
       <Flex alignItems="center" mb={description ? 2 : 4}>
         {icon && (
-          <Box mr={3} color="altBrand.solid">
+          <Box mr={3} color="accent.solid">
             {icon}
           </Box>
         )}

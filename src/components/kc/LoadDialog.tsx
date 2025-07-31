@@ -75,7 +75,7 @@ const LoadDialog = ({ open, onOpenChange, selectedIds, onLoad }) => {
               </Button>
               <Button
                 onClick={() => onSubmit()}
-                colorPalette="brand"
+                colorPalette="primary"
                 disabled={!selectedFlow}
               >
                 <Play /> Load

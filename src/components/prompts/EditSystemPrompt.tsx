@@ -50,7 +50,7 @@ const EditDialog = ({ open, onOpenChange, onComplete }) => {
               <Button variant="outline" onClick={() => onOpenChange(false)}>
                 Cancel
               </Button>
-              <Button onClick={() => onEdit()} colorPalette="brand">
+              <Button onClick={() => onEdit()} colorPalette="primary">
                 <SendHorizontal /> Submit
               </Button>
             </Dialog.Footer>

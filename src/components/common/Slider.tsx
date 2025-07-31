@@ -32,8 +32,8 @@ const Slider: React.FC<SliderProps> = ({
       >
         <ChakraSlider.ValueText />
         <ChakraSlider.Control>
-          <ChakraSlider.Track bg="{colors.brand.muted}">
-            <ChakraSlider.Range bg="{colors.brand.solid}" />
+          <ChakraSlider.Track bg="{colors.primary.muted}">
+            <ChakraSlider.Range bg="{colors.primary.solid}" />
           </ChakraSlider.Track>
           <ChakraSlider.Thumbs rounded={11} />
         </ChakraSlider.Control>

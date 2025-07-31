@@ -10,7 +10,7 @@ const Controls = ({ onUpload }) => {
         ml={5}
         mb={5}
         variant="solid"
-        colorPalette="brand"
+        colorPalette="primary"
         onClick={() => onUpload()}
       >
         <Plus /> Upload Documents

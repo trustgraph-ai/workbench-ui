@@ -13,7 +13,7 @@ const EntityNode: React.FC<{ value: Value }> = ({ value }) => {
       asChild
       variant="subtle"
       color="text"
-      backgroundColor="brand.contrast"
+      backgroundColor="primary.contrast"
     >
       <Button
         size="xs"

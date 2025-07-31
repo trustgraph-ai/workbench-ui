@@ -50,7 +50,7 @@ const Results = () => {
           <Table.Row key={row.uri}>
             <Table.Cell component="th" scope="row" verticalAlign="top">
               {/* Clickable entity name that navigates to detail page */}
-              <Link colorPalette="brand" onClick={() => select(row)}>
+              <Link colorPalette="primary" onClick={() => select(row)}>
                 {row.label}
               </Link>
             </Table.Cell>

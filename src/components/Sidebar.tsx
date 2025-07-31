@@ -50,9 +50,9 @@ const NavItem: React.FC<NavItemProps> = ({ to, icon, label }) => {
           borderRadius="lg"
           role="group"
           cursor="pointer"
-          bg={isActive ? "{colors.brand.solid}" : "transparent"}
-          color={isActive ? "colors.brand.solid" : "gray.500"}
-          _hover={{ bg: isActive ? "colors.brand.contrast" : "gray.200" }}
+          bg={isActive ? "{colors.primary.solid}" : "transparent"}
+          color={isActive ? "colors.primary.solid" : "gray.500"}
+          _hover={{ bg: isActive ? "colors.primary.contrast" : "gray.200" }}
           transition="all 0.2s"
         >
           <Icon as={icon} mr={4} fontSize="16" />
@@ -76,13 +76,13 @@ const Sidebar = () => {
       boxShadow="sm"
     >
       <Flex h="20" alignItems="center" mx="8" justifyContent="space-between">
-        <Box color="{colors.brand.fg}">
+        <Box color="{colors.primary.fg}">
           <TestTube2 />
         </Box>
         <Heading
           fontSize="2xl"
           fontWeight="bold"
-          color="brand.solid"
+          color="primary.solid"
           display={{
             base: "none",
             md: "block",

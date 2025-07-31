@@ -12,7 +12,7 @@ const Actions = ({ selectedCount, onSubmit, onEdit, onDelete }) => {
           <ActionBar.Content
             background="{colors.bg.muted}"
             color="fg"
-            colorPalette="brand"
+            colorPalette="primary"
           >
             <ActionBar.SelectionTrigger>
               <Check /> {selectedCount} selected

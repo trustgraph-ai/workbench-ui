@@ -40,7 +40,7 @@ const KnowledgeCoreUpload: React.FC<KnowledgeCoreUploadProps> = ({
           mb={5}
           component="label"
           variant="solid"
-          colorPalette="brand"
+          colorPalette="primary"
           onClick={() => fileInput.current.click()}
         >
           <FilePlus /> Select files
@@ -67,7 +67,7 @@ const KnowledgeCoreUpload: React.FC<KnowledgeCoreUploadProps> = ({
           ml={5}
           mb={5}
           variant="solid"
-          colorPalette="brand"
+          colorPalette="primary"
           onClick={() => submit()}
           disabled={files.length < 1}
         >

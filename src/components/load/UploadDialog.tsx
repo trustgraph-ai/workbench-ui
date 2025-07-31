@@ -117,7 +117,7 @@ const SubmitDialog = ({ open, onOpenChange }) => {
               <Button variant="outline" onClick={() => onOpenChange(false)}>
                 Cancel
               </Button>
-              <Button onClick={() => onSubmit()} colorPalette="brand">
+              <Button onClick={() => onSubmit()} colorPalette="primary">
                 <SendHorizontal /> Submit
               </Button>
             </Dialog.Footer>

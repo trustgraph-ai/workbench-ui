@@ -89,7 +89,7 @@ const SubmitDialog = ({ open, onOpenChange, onSubmit, docs }) => {
               </Button>
               <Button
                 onClick={() => onSubmit(flow, tags)}
-                colorPalette="brand"
+                colorPalette="primary"
               >
                 <SendHorizontal /> Submit
               </Button>

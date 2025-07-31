@@ -127,7 +127,7 @@ const EditDialog = ({ open, onOpenChange, model, create }) => {
                   <Trash /> Delete
                 </Button>
               )}
-              <Button onClick={() => onEdit()} colorPalette="brand">
+              <Button onClick={() => onEdit()} colorPalette="primary">
                 <SendHorizontal /> Submit
               </Button>
             </Dialog.Footer>
