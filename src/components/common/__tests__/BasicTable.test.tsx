@@ -1,396 +1,404 @@
-import { describe, it, expect, vi } from 'vitest'
-import { render, screen } from '@testing-library/react'
-import BasicTable from '../BasicTable'
+import { describe, it, expect, vi } from "vitest";
+import { render, screen } from "@testing-library/react";
+import BasicTable from "../BasicTable";
 
 // Mock Chakra UI components
-vi.mock('@chakra-ui/react', () => ({
+vi.mock("@chakra-ui/react", () => ({
   Table: {
-    Root: ({ children }: any) => <table data-testid="table-root">{children}</table>,
-    Header: ({ children }: any) => <thead data-testid="table-header">{children}</thead>,
-    Body: ({ children }: any) => <tbody data-testid="table-body">{children}</tbody>,
+    Root: ({ children }: any) => (
+      <table data-testid="table-root">{children}</table>
+    ),
+    Header: ({ children }: any) => (
+      <thead data-testid="table-header">{children}</thead>
+    ),
+    Body: ({ children }: any) => (
+      <tbody data-testid="table-body">{children}</tbody>
+    ),
     Row: ({ children }: any) => <tr data-testid="table-row">{children}</tr>,
-    ColumnHeader: ({ children }: any) => <th data-testid="table-column-header">{children}</th>,
+    ColumnHeader: ({ children }: any) => (
+      <th data-testid="table-column-header">{children}</th>
+    ),
     Cell: ({ children }: any) => <td data-testid="table-cell">{children}</td>,
   },
-}))
+}));
 
 // Mock TanStack React Table
-vi.mock('@tanstack/react-table', () => ({
+vi.mock("@tanstack/react-table", () => ({
   flexRender: vi.fn((content, context) => content),
-}))
+}));
 
-describe('BasicTable', () => {
+describe("BasicTable", () => {
   const mockTable = {
     getHeaderGroups: vi.fn(),
     getRowModel: vi.fn(),
-  }
+  };
 
   beforeEach(() => {
-    vi.clearAllMocks()
-  })
+    vi.clearAllMocks();
+  });
 
-  it('should render table structure', () => {
-    mockTable.getHeaderGroups.mockReturnValue([])
-    mockTable.getRowModel.mockReturnValue({ rows: [] })
-    
-    render(<BasicTable table={mockTable} />)
-    
-    expect(screen.getByTestId('table-root')).toBeInTheDocument()
-    expect(screen.getByTestId('table-header')).toBeInTheDocument()
-    expect(screen.getByTestId('table-body')).toBeInTheDocument()
-  })
+  it("should render table structure", () => {
+    mockTable.getHeaderGroups.mockReturnValue([]);
+    mockTable.getRowModel.mockReturnValue({ rows: [] });
 
-  it('should render header groups', () => {
+    render(<BasicTable table={mockTable} />);
+
+    expect(screen.getByTestId("table-root")).toBeInTheDocument();
+    expect(screen.getByTestId("table-header")).toBeInTheDocument();
+    expect(screen.getByTestId("table-body")).toBeInTheDocument();
+  });
+
+  it("should render header groups", () => {
     const mockHeaderGroups = [
       {
-        id: 'header-group-1',
+        id: "header-group-1",
         headers: [
           {
-            id: 'header-1',
+            id: "header-1",
             isPlaceholder: false,
             column: {
               columnDef: {
-                header: 'Column 1'
-              }
+                header: "Column 1",
+              },
             },
-            getContext: () => ({})
+            getContext: () => ({}),
           },
           {
-            id: 'header-2',
+            id: "header-2",
             isPlaceholder: false,
             column: {
               columnDef: {
-                header: 'Column 2'
-              }
+                header: "Column 2",
+              },
             },
-            getContext: () => ({})
-          }
-        ]
-      }
-    ]
-    
-    mockTable.getHeaderGroups.mockReturnValue(mockHeaderGroups)
-    mockTable.getRowModel.mockReturnValue({ rows: [] })
-    
-    render(<BasicTable table={mockTable} />)
-    
-    expect(screen.getByText('Column 1')).toBeInTheDocument()
-    expect(screen.getByText('Column 2')).toBeInTheDocument()
-  })
+            getContext: () => ({}),
+          },
+        ],
+      },
+    ];
 
-  it('should not render placeholder headers', () => {
+    mockTable.getHeaderGroups.mockReturnValue(mockHeaderGroups);
+    mockTable.getRowModel.mockReturnValue({ rows: [] });
+
+    render(<BasicTable table={mockTable} />);
+
+    expect(screen.getByText("Column 1")).toBeInTheDocument();
+    expect(screen.getByText("Column 2")).toBeInTheDocument();
+  });
+
+  it("should not render placeholder headers", () => {
     const mockHeaderGroups = [
       {
-        id: 'header-group-1',
+        id: "header-group-1",
         headers: [
           {
-            id: 'header-1',
+            id: "header-1",
             isPlaceholder: true,
             column: {
               columnDef: {
-                header: 'Placeholder Column'
-              }
+                header: "Placeholder Column",
+              },
             },
-            getContext: () => ({})
+            getContext: () => ({}),
           },
           {
-            id: 'header-2',
+            id: "header-2",
             isPlaceholder: false,
             column: {
               columnDef: {
-                header: 'Visible Column'
-              }
+                header: "Visible Column",
+              },
             },
-            getContext: () => ({})
-          }
-        ]
-      }
-    ]
-    
-    mockTable.getHeaderGroups.mockReturnValue(mockHeaderGroups)
-    mockTable.getRowModel.mockReturnValue({ rows: [] })
-    
-    render(<BasicTable table={mockTable} />)
-    
-    expect(screen.queryByText('Placeholder Column')).not.toBeInTheDocument()
-    expect(screen.getByText('Visible Column')).toBeInTheDocument()
-  })
+            getContext: () => ({}),
+          },
+        ],
+      },
+    ];
 
-  it('should render table rows', () => {
+    mockTable.getHeaderGroups.mockReturnValue(mockHeaderGroups);
+    mockTable.getRowModel.mockReturnValue({ rows: [] });
+
+    render(<BasicTable table={mockTable} />);
+
+    expect(screen.queryByText("Placeholder Column")).not.toBeInTheDocument();
+    expect(screen.getByText("Visible Column")).toBeInTheDocument();
+  });
+
+  it("should render table rows", () => {
     const mockRows = [
       {
-        id: 'row-1',
+        id: "row-1",
         getVisibleCells: () => [
           {
-            id: 'cell-1',
+            id: "cell-1",
             column: {
               columnDef: {
-                cell: 'Cell 1'
-              }
+                cell: "Cell 1",
+              },
             },
-            getContext: () => ({})
+            getContext: () => ({}),
           },
           {
-            id: 'cell-2',
+            id: "cell-2",
             column: {
               columnDef: {
-                cell: 'Cell 2'
-              }
+                cell: "Cell 2",
+              },
             },
-            getContext: () => ({})
-          }
-        ]
-      }
-    ]
-    
-    mockTable.getHeaderGroups.mockReturnValue([])
-    mockTable.getRowModel.mockReturnValue({ rows: mockRows })
-    
-    render(<BasicTable table={mockTable} />)
-    
-    expect(screen.getByText('Cell 1')).toBeInTheDocument()
-    expect(screen.getByText('Cell 2')).toBeInTheDocument()
-  })
+            getContext: () => ({}),
+          },
+        ],
+      },
+    ];
 
-  it('should render multiple rows', () => {
+    mockTable.getHeaderGroups.mockReturnValue([]);
+    mockTable.getRowModel.mockReturnValue({ rows: mockRows });
+
+    render(<BasicTable table={mockTable} />);
+
+    expect(screen.getByText("Cell 1")).toBeInTheDocument();
+    expect(screen.getByText("Cell 2")).toBeInTheDocument();
+  });
+
+  it("should render multiple rows", () => {
     const mockRows = [
       {
-        id: 'row-1',
+        id: "row-1",
         getVisibleCells: () => [
           {
-            id: 'cell-1-1',
+            id: "cell-1-1",
             column: {
               columnDef: {
-                cell: 'Row 1 Cell 1'
-              }
+                cell: "Row 1 Cell 1",
+              },
             },
-            getContext: () => ({})
-          }
-        ]
+            getContext: () => ({}),
+          },
+        ],
       },
       {
-        id: 'row-2',
+        id: "row-2",
         getVisibleCells: () => [
           {
-            id: 'cell-2-1',
+            id: "cell-2-1",
             column: {
               columnDef: {
-                cell: 'Row 2 Cell 1'
-              }
+                cell: "Row 2 Cell 1",
+              },
             },
-            getContext: () => ({})
-          }
-        ]
-      }
-    ]
-    
-    mockTable.getHeaderGroups.mockReturnValue([])
-    mockTable.getRowModel.mockReturnValue({ rows: mockRows })
-    
-    render(<BasicTable table={mockTable} />)
-    
-    expect(screen.getByText('Row 1 Cell 1')).toBeInTheDocument()
-    expect(screen.getByText('Row 2 Cell 1')).toBeInTheDocument()
-  })
+            getContext: () => ({}),
+          },
+        ],
+      },
+    ];
 
-  it('should render complete table with headers and rows', () => {
+    mockTable.getHeaderGroups.mockReturnValue([]);
+    mockTable.getRowModel.mockReturnValue({ rows: mockRows });
+
+    render(<BasicTable table={mockTable} />);
+
+    expect(screen.getByText("Row 1 Cell 1")).toBeInTheDocument();
+    expect(screen.getByText("Row 2 Cell 1")).toBeInTheDocument();
+  });
+
+  it("should render complete table with headers and rows", () => {
     const mockHeaderGroups = [
       {
-        id: 'header-group-1',
+        id: "header-group-1",
         headers: [
           {
-            id: 'header-1',
+            id: "header-1",
             isPlaceholder: false,
             column: {
               columnDef: {
-                header: 'Name'
-              }
+                header: "Name",
+              },
             },
-            getContext: () => ({})
+            getContext: () => ({}),
           },
           {
-            id: 'header-2',
+            id: "header-2",
             isPlaceholder: false,
             column: {
               columnDef: {
-                header: 'Age'
-              }
+                header: "Age",
+              },
             },
-            getContext: () => ({})
-          }
-        ]
-      }
-    ]
-    
+            getContext: () => ({}),
+          },
+        ],
+      },
+    ];
+
     const mockRows = [
       {
-        id: 'row-1',
+        id: "row-1",
         getVisibleCells: () => [
           {
-            id: 'cell-1-1',
+            id: "cell-1-1",
             column: {
               columnDef: {
-                cell: 'John'
-              }
+                cell: "John",
+              },
             },
-            getContext: () => ({})
+            getContext: () => ({}),
           },
           {
-            id: 'cell-1-2',
+            id: "cell-1-2",
             column: {
               columnDef: {
-                cell: '25'
-              }
+                cell: "25",
+              },
             },
-            getContext: () => ({})
-          }
-        ]
+            getContext: () => ({}),
+          },
+        ],
       },
       {
-        id: 'row-2',
+        id: "row-2",
         getVisibleCells: () => [
           {
-            id: 'cell-2-1',
+            id: "cell-2-1",
             column: {
               columnDef: {
-                cell: 'Jane'
-              }
+                cell: "Jane",
+              },
             },
-            getContext: () => ({})
+            getContext: () => ({}),
           },
           {
-            id: 'cell-2-2',
+            id: "cell-2-2",
             column: {
               columnDef: {
-                cell: '30'
-              }
+                cell: "30",
+              },
             },
-            getContext: () => ({})
-          }
-        ]
-      }
-    ]
-    
-    mockTable.getHeaderGroups.mockReturnValue(mockHeaderGroups)
-    mockTable.getRowModel.mockReturnValue({ rows: mockRows })
-    
-    render(<BasicTable table={mockTable} />)
-    
+            getContext: () => ({}),
+          },
+        ],
+      },
+    ];
+
+    mockTable.getHeaderGroups.mockReturnValue(mockHeaderGroups);
+    mockTable.getRowModel.mockReturnValue({ rows: mockRows });
+
+    render(<BasicTable table={mockTable} />);
+
     // Check headers
-    expect(screen.getByText('Name')).toBeInTheDocument()
-    expect(screen.getByText('Age')).toBeInTheDocument()
-    
+    expect(screen.getByText("Name")).toBeInTheDocument();
+    expect(screen.getByText("Age")).toBeInTheDocument();
+
     // Check rows
-    expect(screen.getByText('John')).toBeInTheDocument()
-    expect(screen.getByText('25')).toBeInTheDocument()
-    expect(screen.getByText('Jane')).toBeInTheDocument()
-    expect(screen.getByText('30')).toBeInTheDocument()
-  })
+    expect(screen.getByText("John")).toBeInTheDocument();
+    expect(screen.getByText("25")).toBeInTheDocument();
+    expect(screen.getByText("Jane")).toBeInTheDocument();
+    expect(screen.getByText("30")).toBeInTheDocument();
+  });
 
-  it('should handle empty table', () => {
-    mockTable.getHeaderGroups.mockReturnValue([])
-    mockTable.getRowModel.mockReturnValue({ rows: [] })
-    
-    render(<BasicTable table={mockTable} />)
-    
-    expect(screen.getByTestId('table-root')).toBeInTheDocument()
-    expect(screen.getByTestId('table-header')).toBeInTheDocument()
-    expect(screen.getByTestId('table-body')).toBeInTheDocument()
-  })
+  it("should handle empty table", () => {
+    mockTable.getHeaderGroups.mockReturnValue([]);
+    mockTable.getRowModel.mockReturnValue({ rows: [] });
 
-  it('should handle table with headers but no rows', () => {
+    render(<BasicTable table={mockTable} />);
+
+    expect(screen.getByTestId("table-root")).toBeInTheDocument();
+    expect(screen.getByTestId("table-header")).toBeInTheDocument();
+    expect(screen.getByTestId("table-body")).toBeInTheDocument();
+  });
+
+  it("should handle table with headers but no rows", () => {
     const mockHeaderGroups = [
       {
-        id: 'header-group-1',
+        id: "header-group-1",
         headers: [
           {
-            id: 'header-1',
+            id: "header-1",
             isPlaceholder: false,
             column: {
               columnDef: {
-                header: 'Empty Table Header'
-              }
+                header: "Empty Table Header",
+              },
             },
-            getContext: () => ({})
-          }
-        ]
-      }
-    ]
-    
-    mockTable.getHeaderGroups.mockReturnValue(mockHeaderGroups)
-    mockTable.getRowModel.mockReturnValue({ rows: [] })
-    
-    render(<BasicTable table={mockTable} />)
-    
-    expect(screen.getByText('Empty Table Header')).toBeInTheDocument()
-  })
+            getContext: () => ({}),
+          },
+        ],
+      },
+    ];
 
-  it('should handle table with rows but no headers', () => {
+    mockTable.getHeaderGroups.mockReturnValue(mockHeaderGroups);
+    mockTable.getRowModel.mockReturnValue({ rows: [] });
+
+    render(<BasicTable table={mockTable} />);
+
+    expect(screen.getByText("Empty Table Header")).toBeInTheDocument();
+  });
+
+  it("should handle table with rows but no headers", () => {
     const mockRows = [
       {
-        id: 'row-1',
+        id: "row-1",
         getVisibleCells: () => [
           {
-            id: 'cell-1',
+            id: "cell-1",
             column: {
               columnDef: {
-                cell: 'Orphan Cell'
-              }
+                cell: "Orphan Cell",
+              },
             },
-            getContext: () => ({})
-          }
-        ]
-      }
-    ]
-    
-    mockTable.getHeaderGroups.mockReturnValue([])
-    mockTable.getRowModel.mockReturnValue({ rows: mockRows })
-    
-    render(<BasicTable table={mockTable} />)
-    
-    expect(screen.getByText('Orphan Cell')).toBeInTheDocument()
-  })
+            getContext: () => ({}),
+          },
+        ],
+      },
+    ];
 
-  it('should handle multiple header groups', () => {
+    mockTable.getHeaderGroups.mockReturnValue([]);
+    mockTable.getRowModel.mockReturnValue({ rows: mockRows });
+
+    render(<BasicTable table={mockTable} />);
+
+    expect(screen.getByText("Orphan Cell")).toBeInTheDocument();
+  });
+
+  it("should handle multiple header groups", () => {
     const mockHeaderGroups = [
       {
-        id: 'header-group-1',
+        id: "header-group-1",
         headers: [
           {
-            id: 'header-1',
+            id: "header-1",
             isPlaceholder: false,
             column: {
               columnDef: {
-                header: 'Group 1 Header'
-              }
+                header: "Group 1 Header",
+              },
             },
-            getContext: () => ({})
-          }
-        ]
+            getContext: () => ({}),
+          },
+        ],
       },
       {
-        id: 'header-group-2',
+        id: "header-group-2",
         headers: [
           {
-            id: 'header-2',
+            id: "header-2",
             isPlaceholder: false,
             column: {
               columnDef: {
-                header: 'Group 2 Header'
-              }
+                header: "Group 2 Header",
+              },
             },
-            getContext: () => ({})
-          }
-        ]
-      }
-    ]
-    
-    mockTable.getHeaderGroups.mockReturnValue(mockHeaderGroups)
-    mockTable.getRowModel.mockReturnValue({ rows: [] })
-    
-    render(<BasicTable table={mockTable} />)
-    
-    expect(screen.getByText('Group 1 Header')).toBeInTheDocument()
-    expect(screen.getByText('Group 2 Header')).toBeInTheDocument()
-  })
-})
+            getContext: () => ({}),
+          },
+        ],
+      },
+    ];
+
+    mockTable.getHeaderGroups.mockReturnValue(mockHeaderGroups);
+    mockTable.getRowModel.mockReturnValue({ rows: [] });
+
+    render(<BasicTable table={mockTable} />);
+
+    expect(screen.getByText("Group 1 Header")).toBeInTheDocument();
+    expect(screen.getByText("Group 2 Header")).toBeInTheDocument();
+  });
+});

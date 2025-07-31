@@ -1,4 +1,3 @@
-
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
@@ -8,12 +7,12 @@ export default defineConfig({
   server: {
     proxy: {
       "/api/socket": {
-//        target: "wss://broker.app.trustgraph.ai/",
+        //        target: "wss://broker.app.trustgraph.ai/",
         target: "ws://localhost:8088/",
         changeOrigin: true,
         ws: true,
         secure: false,
-//          rewrite: () => "/api/v1/socket?token=Ky3X4us4lsHO4lVg4sZB1UPi9qBFZCvVLdTzHHMYTHk&entity=mark%40trustgraph.ai%2Fdocker-compose",
+        //          rewrite: () => "/api/v1/socket?token=Ky3X4us4lsHO4lVg4sZB1UPi9qBFZCvVLdTzHHMYTHk&entity=mark%40trustgraph.ai%2Fdocker-compose",
         rewrite: () => "/api/v1/socket",
       },
       "/api/export-core": {

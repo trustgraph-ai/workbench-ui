@@ -15,6 +15,148 @@ export const config = defineConfig({
   theme: {
     tokens: {
       colors: {
+        // Colours from the website at coolors.co, palette from Claude
+        airForceBlue: {
+          50: { value: "#EDF5F9" },
+          100: { value: "#DBEAF3" },
+          200: { value: "#B7D5E7" },
+          300: { value: "#93C0DB" },
+          400: { value: "#6FABCF" },
+          500: { value: "#558BB4" }, // Base color
+          600: { value: "#4A7BA2" },
+          700: { value: "#3F6B90" },
+          800: { value: "#345B7E" },
+          900: { value: "#294B6C" },
+        },
+        skyBlue: {
+          50: { value: "#F0F7FA" },
+          100: { value: "#E1EFF5" },
+          200: { value: "#C3DFEB" },
+          300: { value: "#A5CFE1" },
+          400: { value: "#94C3D7" },
+          500: { value: "#83B7CE" }, // Base color
+          600: { value: "#72A4BC" },
+          700: { value: "#6191AA" },
+          800: { value: "#507E98" },
+          900: { value: "#3F6B86" },
+        },
+        deepPlum: {
+          50: { value: "#F9F8F9" },
+          100: { value: "#F3F1F3" },
+          200: { value: "#E7E3E7" },
+          300: { value: "#DBD5DB" },
+          400: { value: "#CFC7CF" },
+          500: { value: "#A394A3" }, // Lightened base for usability
+          600: { value: "#7A6B7A" },
+          700: { value: "#5C4D5C" },
+          800: { value: "#3D2E3D" },
+          900: { value: "#250219" }, // Original color
+        },
+        darkViolet: {
+          50: { value: "#FAF9FB" },
+          100: { value: "#F5F3F6" },
+          200: { value: "#EBE7ED" },
+          300: { value: "#E1DBE4" },
+          400: { value: "#D7CFDB" },
+          500: { value: "#9A7BA2" }, // Lightened base for usability
+          600: { value: "#7A5B82" },
+          700: { value: "#5F4268" },
+          800: { value: "#4F2F56" },
+          900: { value: "#3F1D44" }, // Original color
+        },
+        thistle: {
+          50: { value: "#FDFCFE" },
+          100: { value: "#FAF8FC" },
+          200: { value: "#F5F0F9" },
+          300: { value: "#F0E8F6" },
+          400: { value: "#E5D4F1" },
+          500: { value: "#DAC0EC" }, // Base color
+          600: { value: "#C8A5E0" },
+          700: { value: "#B68AD4" },
+          800: { value: "#A46FC8" },
+          900: { value: "#8B4FB5" },
+        },
+
+        // Triadic based on above primary, palette by Claude
+        warmOrange: {
+          50: { value: "#FEFAF8" },
+          100: { value: "#FDF5F0" },
+          200: { value: "#FBEBE1" },
+          300: { value: "#F9E1D2" },
+          400: { value: "#F8BF9B" },
+          500: { value: "#F79D65" }, // Base color
+          600: { value: "#F5853E" },
+          700: { value: "#E66B1A" },
+          800: { value: "#C55A15" },
+          900: { value: "#A44A11" },
+        },
+
+        // More desaturated orange
+        warmNeutral: {
+          50: { value: "#FDFCFB" },
+          100: { value: "#FAF8F6" },
+          200: { value: "#F5F1ED" },
+          300: { value: "#EFEAE4" },
+          400: { value: "#E0D5CA" },
+          500: { value: "#D1C1B0" }, // Desaturated warm base
+          600: { value: "#B8A394" },
+          700: { value: "#9F8578" },
+          800: { value: "#6B5B52" }, // Dark enough for backgrounds
+          900: { value: "#3A312B" }, // Very dark warm neutral
+        },
+
+        yellowNeutral: {
+          50: { value: "#FEFEF8" },
+          100: { value: "#FCFCF0" },
+          200: { value: "#F8F6E1" },
+          300: { value: "#F3F0D2" },
+          400: { value: "#E8E2B8" },
+          500: { value: "#DDD49E" }, // Much more yellow and lighter
+          600: { value: "#CFC284" },
+          700: { value: "#BAA56A" },
+          800: { value: "#8A7F52" }, // Lighter but still usable for backgrounds
+          900: { value: "#5A5238" }, // Warmer yellow-brown
+        },
+
+        // White variant and green variant, may be useful for agent dialog
+        mintCream: {
+          50: { value: "#FDFEFD" },
+          100: { value: "#EFF7F6" }, // Original color moved up
+          200: { value: "#DEF0ED" },
+          300: { value: "#CDE9E4" },
+          400: { value: "#BCE2DB" },
+          500: { value: "#9DD4CA" }, // Usable mid-tone
+          600: { value: "#7EC6B9" },
+          700: { value: "#5FB8A8" },
+          800: { value: "#4A9A8A" },
+          900: { value: "#357C6C" },
+        },
+        sageGreen: {
+          50: { value: "#F7FAF8" },
+          100: { value: "#EFF5F1" },
+          200: { value: "#DFEBE3" },
+          300: { value: "#CFE1D5" },
+          400: { value: "#B9D1BE" },
+          500: { value: "#A4C2A8" }, // Base color
+          600: { value: "#8FB394" },
+          700: { value: "#7AA480" },
+          800: { value: "#65956C" },
+          900: { value: "#508658" },
+        },
+        neutralGreen: {
+          50: { value: "#FDFEFD" },
+          100: { value: "#EFF7F6" }, // Original color moved up
+          200: { value: "#DEF0ED" },
+          300: { value: "#CDE9E4" },
+          400: { value: "#BCE2DB" },
+          500: { value: "#9DD4CA" }, // Usable mid-tone
+          600: { value: "#7EC6B9" },
+          700: { value: "#5FB8A8" },
+          800: { value: "#479085" }, // Slightly desaturated from #4A9A8A
+          900: { value: "#337062" }, // Slightly desaturated from #357C6C
+        },
+
+        // Colours from logos
         tgBlue: {
           50: { value: "#EBF2FF" },
           100: { value: "#D6E4FF" },
@@ -75,88 +217,224 @@ export const config = defineConfig({
         brand: {
           solid: {
             value: {
-              base: "{colors.tgBlue.500}",
-              _dark: "{colors.tgBlue.500}",
+              base: "{colors.airForceBlue.500}",
+              _dark: "{colors.airForceBlue.500}",
             },
           },
           contrast: {
             value: {
-              base: "{colors.tgBlue.100}",
-              _dark: "{colors.tgBlue.900}",
+              base: "{colors.airForceBlue.100}",
+              _dark: "{colors.airForceBlue.900}",
             },
           },
           fg: {
             value: {
-              base: "{colors.tgBlue.700}",
-              _dark: "{colors.tgBlue.300}",
+              base: "{colors.airForceBlue.700}",
+              _dark: "{colors.airForceBlue.300}",
             },
           },
           muted: {
             value: {
-              base: "{colors.tgBlue.100}",
-              _dark: "{colors.tgBlue.900}",
+              base: "{colors.airForceBlue.100}",
+              _dark: "{colors.airForceBlue.900}",
             },
           },
           subtle: {
             value: {
-              base: "{colors.tgBlue.200}",
-              _dark: "{colors.tgBlue.800}",
+              base: "{colors.airForceBlue.200}",
+              _dark: "{colors.airForceBlue.800}",
             },
           },
           emphasized: {
             value: {
-              base: "{colors.tgBlue.300}",
-              _dark: "{colors.tgBlue.700}",
+              base: "{colors.airForceBlue.300}",
+              _dark: "{colors.airForceBlue.700}",
             },
           },
           focusRing: {
             value: {
-              base: "{colors.tgBlue.400}",
-              _dark: "{colors.tgBlue.600}",
+              base: "{colors.airForceBlue.400}",
+              _dark: "{colors.airForceBlue.600}",
             },
           },
         },
+
         altBrand: {
           solid: {
             value: {
-              base: "{colors.tgGreen.900}",
-              _dark: "{colors.tgGreen.100}",
+              base: "{colors.skyBlue.900}",
+              _dark: "{colors.skyBlue.100}",
             },
           },
           contrast: {
             value: {
-              base: "{colors.tgGreen.100}",
-              _dark: "{colors.tgGreen.900}",
+              base: "{colors.skyBlue.100}",
+              _dark: "{colors.skyBlue.900}",
             },
           },
           fg: {
             value: {
-              base: "{colors.tgGreen.700}",
-              _dark: "{colors.tgGreen.200}",
+              base: "{colors.skyBlue.700}",
+              _dark: "{colors.skyBlue.200}",
             },
           },
           muted: {
             value: {
-              base: "{colors.tgGreen.100}",
-              _dark: "{colors.tgGreen.900}",
+              base: "{colors.skyBlue.100}",
+              _dark: "{colors.skyBlue.900}",
             },
           },
           subtle: {
             value: {
-              base: "{colors.tgGreen.200}",
-              _dark: "{colors.tgGreen.700}",
+              base: "{colors.skyBlue.200}",
+              _dark: "{colors.skyBlue.700}",
             },
           },
           emphasized: {
             value: {
-              base: "{colors.tgGreen.300}",
-              _dark: "{colors.tgGreen.600}",
+              base: "{colors.skyBlue.300}",
+              _dark: "{colors.skyBlue.600}",
             },
           },
           focusRing: {
             value: {
-              base: "{colors.tgGreen.500}",
-              _dark: "{colors.tgGreen.500}",
+              base: "{colors.skyBlue.500}",
+              _dark: "{colors.skyBlue.500}",
+            },
+          },
+        },
+
+        warmBrand: {
+          solid: {
+            value: {
+              base: "{colors.warmNeutral.900}",
+              _dark: "{colors.warmNeutral.100}",
+            },
+          },
+          contrast: {
+            value: {
+              base: "{colors.warmNeutral.100}",
+              _dark: "{colors.warmNeutral.900}",
+            },
+          },
+          fg: {
+            value: {
+              base: "{colors.warmNeutral.700}",
+              _dark: "{colors.warmNeutral.200}",
+            },
+          },
+          muted: {
+            value: {
+              base: "{colors.warmNeutral.100}",
+              _dark: "{colors.warmNeutral.900}",
+            },
+          },
+          subtle: {
+            value: {
+              base: "{colors.warmNeutral.200}",
+              _dark: "{colors.warmNeutral.700}",
+            },
+          },
+          emphasized: {
+            value: {
+              base: "{colors.warmNeutral.300}",
+              _dark: "{colors.warmNeutral.600}",
+            },
+          },
+          focusRing: {
+            value: {
+              base: "{colors.warmNeutral.500}",
+              _dark: "{colors.warmNeutral.500}",
+            },
+          },
+        },
+
+        yellowBrand: {
+          solid: {
+            value: {
+              base: "{colors.yellowNeutral.900}",
+              _dark: "{colors.yellowNeutral.100}",
+            },
+          },
+          contrast: {
+            value: {
+              base: "{colors.yellowNeutral.100}",
+              _dark: "{colors.yellowNeutral.900}",
+            },
+          },
+          fg: {
+            value: {
+              base: "{colors.yellowNeutral.700}",
+              _dark: "{colors.yellowNeutral.200}",
+            },
+          },
+          muted: {
+            value: {
+              base: "{colors.yellowNeutral.100}",
+              _dark: "{colors.yellowNeutral.900}",
+            },
+          },
+          subtle: {
+            value: {
+              base: "{colors.yellowNeutral.200}",
+              _dark: "{colors.yellowNeutral.700}",
+            },
+          },
+          emphasized: {
+            value: {
+              base: "{colors.yellowNeutral.300}",
+              _dark: "{colors.yellowNeutral.600}",
+            },
+          },
+          focusRing: {
+            value: {
+              base: "{colors.yellowNeutral.500}",
+              _dark: "{colors.yellowNeutral.500}",
+            },
+          },
+        },
+
+        insightfulBrand: {
+          solid: {
+            value: {
+              base: "{colors.neutralGreen.900}",
+              _dark: "{colors.neutralGreen.100}",
+            },
+          },
+          contrast: {
+            value: {
+              base: "{colors.neutralGreen.100}",
+              _dark: "{colors.neutralGreen.900}",
+            },
+          },
+          fg: {
+            value: {
+              base: "{colors.neutralGreen.700}",
+              _dark: "{colors.neutralGreen.200}",
+            },
+          },
+          muted: {
+            value: {
+              base: "{colors.neutralGreen.100}",
+              _dark: "{colors.neutralGreen.900}",
+            },
+          },
+          subtle: {
+            value: {
+              base: "{colors.neutralGreen.200}",
+              _dark: "{colors.neutralGreen.700}",
+            },
+          },
+          emphasized: {
+            value: {
+              base: "{colors.neutralGreen.300}",
+              _dark: "{colors.neutralGreen.600}",
+            },
+          },
+          focusRing: {
+            value: {
+              base: "{colors.neutralGreen.500}",
+              _dark: "{colors.neutralGreen.500}",
             },
           },
         },

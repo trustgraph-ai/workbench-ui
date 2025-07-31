@@ -1,6 +1,6 @@
 import { Box, Flex, Text, Avatar, Badge } from "@chakra-ui/react";
 import { Brain, Eye, CheckCircle } from "lucide-react";
-import Markdown from 'react-markdown-it';
+import Markdown from "react-markdown-it";
 
 const ChatMessage = ({ message }) => {
   const isUser = message.role === "human";
@@ -11,30 +11,33 @@ const ChatMessage = ({ message }) => {
     switch (messageType) {
       case "thinking":
         return {
-          bg: "blue.50",
-          borderColor: "blue.200",
+          bg: "yellowBrand.contrast",
+          borderColor: "yellowBrand.muted",
           borderWidth: "1px",
           icon: <Brain size={14} />,
           badge: "Thinking",
-          badgeColor: "blue",
+          badgeColor: "yellowBrand",
+          color: "yellowBrand.fg",
         };
       case "observation":
         return {
-          bg: "orange.50",
-          borderColor: "orange.200",
+          bg: "warmBrand.contrast",
+          borderColor: "warmBrand.muted",
           borderWidth: "1px",
           icon: <Eye size={14} />,
           badge: "Observation",
-          badgeColor: "orange",
+          badgeColor: "warmBrand",
+          color: "warmBrand.fg",
         };
       case "answer":
         return {
-          bg: "green.50",
-          borderColor: "green.200",
+          bg: "insightfulBrand.contrast",
+          borderColor: "insightfulBrand.muted",
           borderWidth: "1px",
           icon: <CheckCircle size={14} />,
           badge: "Answer",
-          badgeColor: "green",
+          badgeColor: "insightfulBrand",
+          color: "insightfulBrand.fg",
         };
       default:
         return {
@@ -67,9 +70,9 @@ const ChatMessage = ({ message }) => {
         {typeStyles.badge && (
           <Flex align="center" mb={2}>
             {typeStyles.icon}
-            <Badge 
-              ml={2} 
-              size="sm" 
+            <Badge
+              ml={2}
+              size="sm"
               colorPalette={typeStyles.badgeColor}
               variant="subtle"
             >

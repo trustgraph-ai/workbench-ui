@@ -738,14 +738,14 @@ export class FlowApi {
     // Create a receiver function to handle streaming responses
     const receiver = (response: any) => {
       console.log("Agent response received:", response);
-      
+
       // Check for backend errors
       if (response.error) {
         const errorMessage = response.error.message || "Unknown agent error";
         error(`Agent error: ${errorMessage}`);
         return true; // End streaming on error
       }
-      
+
       // Handle different response types
       if (response.thought) think(response.thought);
       if (response.observation) observe(response.observation);
@@ -753,23 +753,28 @@ export class FlowApi {
         answer(response.answer);
         return true; // End streaming when final answer is received
       }
-      
+
       return false; // Continue streaming
     };
 
     // Use the existing makeRequestMulti infrastructure
-    return this.api.makeRequestMulti(
-      "agent",
-      { question: question },
-      receiver,
-      120000, // 120 second timeout
-      2, // 2 retries
-      this.flowId
-    ).catch((err) => {
-      // Handle any errors from makeRequestMulti
-      const errorMessage = err instanceof Error ? err.message : err?.toString() || "Unknown error";
-      error(`Agent request failed: ${errorMessage}`);
-    });
+    return this.api
+      .makeRequestMulti(
+        "agent",
+        { question: question },
+        receiver,
+        120000, // 120 second timeout
+        2, // 2 retries
+        this.flowId,
+      )
+      .catch((err) => {
+        // Handle any errors from makeRequestMulti
+        const errorMessage =
+          err instanceof Error
+            ? err.message
+            : err?.toString() || "Unknown error";
+        error(`Agent request failed: ${errorMessage}`);
+      });
   }
 
   /**
@@ -970,28 +975,32 @@ export class ConfigApi {
    * Lists available configuration types
    */
   list(type: string) {
-    return this.api.makeRequest<ConfigRequest, ConfigResponse>(
-      "config",
-      {
-        operation: "list",
-        type: type,
-      },
-      60000,
-    ).then((r) => r);
+    return this.api
+      .makeRequest<ConfigRequest, ConfigResponse>(
+        "config",
+        {
+          operation: "list",
+          type: type,
+        },
+        60000,
+      )
+      .then((r) => r);
   }
 
   /**
    * Retrieves all key/values for a specific type
    */
   getValues(type: string) {
-    return this.api.makeRequest<ConfigRequest, ConfigResponse>(
-      "config",
-      {
-        operation: "getvalues",
-        type: type,
-      },
-      60000,
-    ).then((r) => r.values);
+    return this.api
+      .makeRequest<ConfigRequest, ConfigResponse>(
+        "config",
+        {
+          operation: "getvalues",
+          type: type,
+        },
+        60000,
+      )
+      .then((r) => r.values);
   }
 
   /**
