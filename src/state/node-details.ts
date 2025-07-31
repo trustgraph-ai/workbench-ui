@@ -12,12 +12,15 @@ import { RDFS_LABEL } from "../utils/knowledge-graph";
  * These common URIs are mapped directly without knowledge graph queries
  */
 const STANDARD_URI_LABELS: Record<string, string> = {
-  "https://schema.org/subjectOf": "Subject Of",
-  "https://schema.org/description": "Description", 
-  "https://schema.org/copyrightHolder": "Copyright Holder",
-  "https://schema.org/copyrightNotice": "Copyright Notice",
-  "https://schema.org/keywords": "Keywords",
+  "https://schema.org/subjectOf": "subject of",
+  "https://schema.org/description": "description", 
+  "https://schema.org/copyrightHolder": "copyright holder",
+  "https://schema.org/copyrightNotice": "copyright notice",
+  "https://schema.org/keywords": "keywords",
   "https://schema.org/name": "Name",
+  "https://schema.org/author": "author",
+  "https://schema.org/publication": "publication",
+  "https://schema.org/url": "url",
   "http://www.w3.org/2004/02/skos/core#definition": "Definition",
 };
 

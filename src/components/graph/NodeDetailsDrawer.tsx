@@ -5,6 +5,7 @@ import { X } from "lucide-react";
 import { useNodeDetails } from "../../state/node-details";
 import { useSessionStore } from "../../state/session";
 import NodePropertiesTable from "./NodePropertiesTable";
+import RelationshipsTable from "./RelationshipsTable";
 
 interface NodeDetailsDrawerProps {
   node: {
@@ -57,29 +58,14 @@ const NodeDetailsDrawer: React.FC<NodeDetailsDrawerProps> = ({ node, isOpen, onC
           <Drawer.Body>
             {node && (
               <VStack align="start" spacing={6}>
-                {outboundRelationshipsWithLabels && outboundRelationshipsWithLabels.length > 0 && (
+                {((outboundRelationshipsWithLabels && outboundRelationshipsWithLabels.length > 0) || 
+                  (inboundRelationshipsWithLabels && inboundRelationshipsWithLabels.length > 0)) && (
                   <div style={{ width: "100%" }}>
-                    <Heading size="sm" mb={3}>Outgoing Relationships</Heading>
-                    <List.Root>
-                      {outboundRelationshipsWithLabels.map((relationship, index) => (
-                        <List.Item key={index}>
-                          {relationship.label}
-                        </List.Item>
-                      ))}
-                    </List.Root>
-                  </div>
-                )}
-
-                {inboundRelationshipsWithLabels && inboundRelationshipsWithLabels.length > 0 && (
-                  <div style={{ width: "100%" }}>
-                    <Heading size="sm" mb={3}>Incoming Relationships</Heading>
-                    <List.Root>
-                      {inboundRelationshipsWithLabels.map((relationship, index) => (
-                        <List.Item key={index}>
-                          {relationship.label}
-                        </List.Item>
-                      ))}
-                    </List.Root>
+                    <Heading size="sm" mb={3}>Relationships</Heading>
+                    <RelationshipsTable 
+                      outboundRelationships={outboundRelationshipsWithLabels || []}
+                      inboundRelationships={inboundRelationshipsWithLabels || []}
+                    />
                   </div>
                 )}
 
