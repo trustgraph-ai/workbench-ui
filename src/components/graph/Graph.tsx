@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect, useMemo } from "react";
+import React, { useRef, useState, useEffect } from "react";
 
 import { Box, Alert, Heading, HStack } from "@chakra-ui/react";
 import { useColorModeValue } from "../ui/color-mode";
@@ -11,7 +11,7 @@ import SpriteText from "three-spritetext";
 import { useSessionStore } from "../../state/session";
 import { useWorkbenchStateStore } from "../../state/workbench";
 import { useGraphSubgraph } from "../../state/graph-query";
-import { useTriples } from "../../state/triples";
+import { useNodeDetails } from "../../state/node-details";
 import GraphHelp from "./GraphHelp";
 import NodeDetailsDrawer from "./NodeDetailsDrawer";
 
@@ -36,39 +36,13 @@ const GraphView = () => {
     updateSubgraph: updateSubgraphMutation,
   } = useGraphSubgraph(selected?.uri, flowId);
 
-  // Fetch triples/edges for the selected node
+  // Fetch node details including outbound relationships
   const {
     triples,
-    isLoading: triplesLoading,
-    isError: triplesError
-  } = useTriples({
-    flow: flowId,
-    s: selectedNode ? { v: selectedNode.id, e: true } : undefined, // Subject as Value type
-    p: undefined, // Any predicate
-    o: undefined, // Any object
-    limit: 20 // Limit to 20 edges for now
-  });
-
-  // Filter for outbound navigable relationships (where o.e === true)
-  const outboundRelationships = useMemo(() => {
-    if (!triples) return [];
-    
-    // The triples should be an array directly based on the API
-    const triplesList = Array.isArray(triples) ? triples : [];
-    
-    // Filter for entity relationships and extract unique predicates
-    const uniqueRelationships = new Set<string>();
-    
-    triplesList.forEach(triple => {
-      // Check if object is an entity (o.e === true)
-      if (triple.o && triple.o.e === true && triple.p && triple.p.v) {
-        uniqueRelationships.add(triple.p.v);
-      }
-    });
-    
-    // Convert Set to array
-    return Array.from(uniqueRelationships);
-  }, [triples]);
+    triplesLoading,
+    triplesError,
+    outboundRelationships
+  } = useNodeDetails(selectedNode?.id, flowId);
 
   // Log triples when they change
   useEffect(() => {
