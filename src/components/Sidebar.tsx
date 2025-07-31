@@ -82,7 +82,7 @@ const Sidebar = () => {
         <Heading
           fontSize="2xl"
           fontWeight="bold"
-          color="#5285ed"
+          color="brand.solid"
           display={{
             base: "none",
             md: "block",
