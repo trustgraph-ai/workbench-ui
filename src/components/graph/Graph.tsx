@@ -11,6 +11,7 @@ import SpriteText from "three-spritetext";
 import { useSessionStore } from "../../state/session";
 import { useWorkbenchStateStore } from "../../state/workbench";
 import { useGraphSubgraph } from "../../state/graph-query";
+import { useTriples } from "../../state/triples";
 import GraphHelp from "./GraphHelp";
 import NodeDetailsDrawer from "./NodeDetailsDrawer";
 
@@ -34,6 +35,26 @@ const GraphView = () => {
     isError,
     updateSubgraph: updateSubgraphMutation,
   } = useGraphSubgraph(selected?.uri, flowId);
+
+  // Fetch triples/edges for the selected node
+  const {
+    triples,
+    isLoading: triplesLoading,
+    isError: triplesError
+  } = useTriples({
+    flow: flowId,
+    s: selectedNode ? { v: selectedNode.id, e: true } : undefined, // Subject as Value type
+    p: undefined, // Any predicate
+    o: undefined, // Any object
+    limit: 20 // Limit to 20 edges for now
+  });
+
+  // Log triples when they change
+  useEffect(() => {
+    if (triples && selectedNode) {
+      console.log(`Edges for node ${selectedNode.id}:`, triples);
+    }
+  }, [triples, selectedNode]);
 
   // Theme-aware colors that respond to light/dark mode
   const borderColor = useColorModeValue(
