@@ -28,7 +28,7 @@ const FlowControls = () => {
         ml={5}
         mb={5}
         variant="solid"
-        colorPalette="brand"
+        colorPalette="primary"
         onClick={() => setCreateOpen(true)}
       >
         <Plus /> Create

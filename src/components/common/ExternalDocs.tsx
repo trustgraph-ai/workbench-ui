@@ -8,7 +8,7 @@ const ExternalDocs: React.FC<
   }>
 > = ({ href, children }) => {
   return (
-    <Link href={href} target="_blank" colorPalette="altBrand">
+    <Link href={href} target="_blank" colorPalette="accent">
       {children}
     </Link>
   );

@@ -40,7 +40,7 @@ const FlowSelector = () => {
           borderRadius="8px"
           borderColor="border.inverted/20"
           color="fg.muted"
-          backgroundColor="brand.bg"
+          backgroundColor="primary.bg"
           _hover={{
             backgroundColor: "bg.emphasized",
             borderColor: "border.inverted",

@@ -10,7 +10,7 @@ const Actions = ({ selectedCount, onDelete, onDownload, onLoad }) => {
           <ActionBar.Content
             background="{colors.bg.muted}"
             color="fg"
-            colorPalette="brand"
+            colorPalette="primary"
           >
             <ActionBar.SelectionTrigger>
               <Check /> {selectedCount} selected
@@ -18,7 +18,7 @@ const Actions = ({ selectedCount, onDelete, onDownload, onLoad }) => {
             <ActionBar.Separator />
             <Button
               variant="outline"
-              colorPalette="brand"
+              colorPalette="primary"
               size="sm"
               onClick={onLoad}
             >
@@ -27,7 +27,7 @@ const Actions = ({ selectedCount, onDelete, onDownload, onLoad }) => {
             {selectedCount == 1 && (
               <Button
                 variant="outline"
-                colorPalette="brand"
+                colorPalette="primary"
                 size="sm"
                 onClick={onDownload}
               >

@@ -93,7 +93,7 @@ const CreateDialog = ({ open, onOpenChange }) => {
               <Button variant="outline" onClick={() => onOpenChange(false)}>
                 Cancel
               </Button>
-              <Button onClick={() => onSubmit()} colorPalette="brand">
+              <Button onClick={() => onSubmit()} colorPalette="primary">
                 <Plus /> Create
               </Button>
             </Dialog.Footer>

@@ -29,7 +29,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ kind }) => {
           mb={5}
           component="label"
           variant="solid"
-          colorPalette="brand"
+          colorPalette="primary"
           onClick={() => fileInput.current.click()}
         >
           <FilePlus /> Select {kind} files

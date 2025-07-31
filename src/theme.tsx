@@ -1,3 +1,17 @@
+//
+// The theme lives here.
+//
+// To theme this app, you need:
+// - 5 colour ramps.  Easiest way to do this is to use the colour design
+//   of our website.  Or use the background image, or screenshot the page.
+//   Then feed it into coolors.co.  Image picker, and extra 5 colours
+//   which work well together, and Export -> Open in generator.  You've got
+//   5 base colours, but they'll need adjusting.  Feed them into Claude, and
+//   ask Claude to make a colour ramp.  You can cut'n'paste a colour ramp
+//   from this file from below to show Claude the structure to create.
+//   That's 5 general theme colours sorted.
+
+
 import { createSystem, defaultConfig, defineConfig } from "@chakra-ui/react";
 
 export const config = defineConfig({
@@ -15,7 +29,9 @@ export const config = defineConfig({
   theme: {
     tokens: {
       colors: {
-        // Colours from the website at coolors.co, palette from Claude
+
+        // General theme colours, using a consistent palette e.g. made from
+        // the company website or site design
         airForceBlue: {
           50: { value: "#EDF5F9" },
           100: { value: "#DBEAF3" },
@@ -77,7 +93,12 @@ export const config = defineConfig({
           900: { value: "#8B4FB5" },
         },
 
-        // Triadic based on above primary, palette by Claude
+        // Extra colours which aren't part of the map
+
+        // Desaturated orange
+
+        // On medium-saturation orange, useful for accents where the
+        // palette colours aren't provding accents.
         warmOrange: {
           50: { value: "#FEFAF8" },
           100: { value: "#FDF5F0" },
@@ -91,7 +112,8 @@ export const config = defineConfig({
           900: { value: "#A44A11" },
         },
 
-        // More desaturated orange
+        // A desaturated orange, this provides a more neutral base for
+        // backgrounds - warmOrange is too saturated at the darker end
         warmNeutral: {
           50: { value: "#FDFCFB" },
           100: { value: "#FAF8F6" },
@@ -105,6 +127,7 @@ export const config = defineConfig({
           900: { value: "#3A312B" }, // Very dark warm neutral
         },
 
+        // A desaturated yellow, harmonious with the orange
         yellowNeutral: {
           50: { value: "#FEFEF8" },
           100: { value: "#FCFCF0" },
@@ -118,19 +141,7 @@ export const config = defineConfig({
           900: { value: "#5A5238" }, // Warmer yellow-brown
         },
 
-        // White variant and green variant, may be useful for agent dialog
-        mintCream: {
-          50: { value: "#FDFEFD" },
-          100: { value: "#EFF7F6" }, // Original color moved up
-          200: { value: "#DEF0ED" },
-          300: { value: "#CDE9E4" },
-          400: { value: "#BCE2DB" },
-          500: { value: "#9DD4CA" }, // Usable mid-tone
-          600: { value: "#7EC6B9" },
-          700: { value: "#5FB8A8" },
-          800: { value: "#4A9A8A" },
-          900: { value: "#357C6C" },
-        },
+        // Greens are useful for answers and success.  Here are some.
         sageGreen: {
           50: { value: "#F7FAF8" },
           100: { value: "#EFF5F1" },
@@ -156,31 +167,21 @@ export const config = defineConfig({
           900: { value: "#337062" }, // Slightly desaturated from #357C6C
         },
 
-        // Colours from logos
-        tgBlue: {
-          50: { value: "#EBF2FF" },
-          100: { value: "#D6E4FF" },
-          200: { value: "#ADC8FF" },
-          300: { value: "#85ADFF" },
-          400: { value: "#6693FB" },
-          500: { value: "#5285ED" }, // Your light color
-          600: { value: "#4275DD" }, // Your lightmid color
-          700: { value: "#3A6FD4" }, // Your darkmid color
-          800: { value: "#2F5EC0" }, // Your dark color
-          900: { value: "#234CA6" },
+        // Useful for off-white 'paper' colours.
+        mintCream: {
+          50: { value: "#FDFEFD" },
+          100: { value: "#EFF7F6" }, // Original color moved up
+          200: { value: "#DEF0ED" },
+          300: { value: "#CDE9E4" },
+          400: { value: "#BCE2DB" },
+          500: { value: "#9DD4CA" }, // Usable mid-tone
+          600: { value: "#7EC6B9" },
+          700: { value: "#5FB8A8" },
+          800: { value: "#4A9A8A" },
+          900: { value: "#357C6C" },
         },
-        tgGreen: {
-          50: { value: "#E9FBF0" },
-          100: { value: "#D1F7DE" },
-          200: { value: "#A8EEBF" },
-          300: { value: "#86E5A1" },
-          400: { value: "#65C97A" }, // Your light mode color
-          500: { value: "#55B96A" }, // Your hover light mode color
-          600: { value: "#4EAF63" }, // Your dark mode color
-          700: { value: "#409A53" }, // Your dark mode hover color
-          800: { value: "#34844A" },
-          900: { value: "#296F3E" },
-        },
+
+        // Slightly blue-gray
         gray: {
           50: { value: "#F7FAFC" }, // Lightest
           100: { value: "#EDF2F7" },
@@ -194,11 +195,13 @@ export const config = defineConfig({
           900: { value: "#171923" }, // Darkest
         },
       },
+
       fonts: {
         heading: { value: "Montserrat, sans-serif" },
         body: { value: "Montserrat, sans-serif" },
         mono: { value: "Roboto mono, monospace" },
       },
+
     },
     semanticTokens: {
       colors: {
@@ -214,7 +217,8 @@ export const config = defineConfig({
             _dark: "{colors.gray.100}",
           },
         },
-        brand: {
+
+        primary: {
           solid: {
             value: {
               base: "{colors.airForceBlue.500}",
@@ -259,52 +263,53 @@ export const config = defineConfig({
           },
         },
 
-        altBrand: {
+        accent: {
           solid: {
             value: {
-              base: "{colors.skyBlue.900}",
-              _dark: "{colors.skyBlue.100}",
+              base: "{colors.deepPlum.900}",
+              _dark: "{colors.deepPlum.100}",
             },
           },
           contrast: {
             value: {
-              base: "{colors.skyBlue.100}",
-              _dark: "{colors.skyBlue.900}",
+              base: "{colors.deepPlum.100}",
+              _dark: "{colors.deepPlum.900}",
             },
           },
           fg: {
             value: {
-              base: "{colors.skyBlue.700}",
-              _dark: "{colors.skyBlue.200}",
+              base: "{colors.deepPlum.700}",
+              _dark: "{colors.deepPlum.200}",
             },
           },
           muted: {
             value: {
-              base: "{colors.skyBlue.100}",
-              _dark: "{colors.skyBlue.900}",
+              base: "{colors.deepPlum.100}",
+              _dark: "{colors.deepPlum.900}",
             },
           },
           subtle: {
             value: {
-              base: "{colors.skyBlue.200}",
-              _dark: "{colors.skyBlue.700}",
+              base: "{colors.deepPlum.200}",
+              _dark: "{colors.deepPlum.700}",
             },
           },
           emphasized: {
             value: {
-              base: "{colors.skyBlue.300}",
-              _dark: "{colors.skyBlue.600}",
+              base: "{colors.deepPlum.300}",
+              _dark: "{colors.deepPlum.600}",
             },
           },
           focusRing: {
             value: {
-              base: "{colors.skyBlue.500}",
-              _dark: "{colors.skyBlue.500}",
+              base: "{colors.deepPlum.500}",
+              _dark: "{colors.deepPlum.500}",
             },
           },
         },
 
-        warmBrand: {
+        // Palettes for message callouts
+        observing: {
           solid: {
             value: {
               base: "{colors.warmNeutral.900}",
@@ -348,53 +353,52 @@ export const config = defineConfig({
             },
           },
         },
-
-        yellowBrand: {
+        thinking: {
           solid: {
             value: {
-              base: "{colors.yellowNeutral.900}",
-              _dark: "{colors.yellowNeutral.100}",
+              base: "{colors.deepPlum.800}",
+              _dark: "{colors.deepPlum.200}",
             },
           },
           contrast: {
             value: {
-              base: "{colors.yellowNeutral.100}",
-              _dark: "{colors.yellowNeutral.900}",
+              base: "{colors.deepPlum.200}",
+              _dark: "{colors.deepPlum.800}",
             },
           },
           fg: {
             value: {
-              base: "{colors.yellowNeutral.700}",
-              _dark: "{colors.yellowNeutral.200}",
+              base: "{colors.deepPlum.600}",
+              _dark: "{colors.deepPlum.300}",
             },
           },
           muted: {
             value: {
-              base: "{colors.yellowNeutral.100}",
-              _dark: "{colors.yellowNeutral.900}",
+              base: "{colors.deepPlum.200}",
+              _dark: "{colors.deepPlum.700}",
             },
           },
           subtle: {
             value: {
-              base: "{colors.yellowNeutral.200}",
-              _dark: "{colors.yellowNeutral.700}",
+              base: "{colors.deepPlum.300}",
+              _dark: "{colors.deepPlum.600}",
             },
           },
           emphasized: {
             value: {
-              base: "{colors.yellowNeutral.300}",
-              _dark: "{colors.yellowNeutral.600}",
+              base: "{colors.deepPlum.400}",
+              _dark: "{colors.deepPlum.500}",
             },
           },
           focusRing: {
             value: {
-              base: "{colors.yellowNeutral.500}",
-              _dark: "{colors.yellowNeutral.500}",
+              base: "{colors.deepPlum.500}",
+              _dark: "{colors.deepPlum.500}",
             },
           },
         },
 
-        insightfulBrand: {
+        insightful: {
           solid: {
             value: {
               base: "{colors.neutralGreen.900}",

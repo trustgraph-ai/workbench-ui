@@ -11,37 +11,37 @@ const ChatMessage = ({ message }) => {
     switch (messageType) {
       case "thinking":
         return {
-          bg: "yellowBrand.contrast",
-          borderColor: "yellowBrand.muted",
+          bg: "thinking.contrast",
+          borderColor: "thinking.muted",
           borderWidth: "1px",
           icon: <Brain size={14} />,
           badge: "Thinking",
-          badgeColor: "yellowBrand",
-          color: "yellowBrand.fg",
+          badgeColor: "thinking",
+          color: "collout1.fg",
         };
       case "observation":
         return {
-          bg: "warmBrand.contrast",
-          borderColor: "warmBrand.muted",
+          bg: "observing.contrast",
+          borderColor: "observing.muted",
           borderWidth: "1px",
           icon: <Eye size={14} />,
           badge: "Observation",
-          badgeColor: "warmBrand",
-          color: "warmBrand.fg",
+          badgeColor: "observing",
+          color: "observing.fg",
         };
       case "answer":
         return {
-          bg: "insightfulBrand.contrast",
-          borderColor: "insightfulBrand.muted",
+          bg: "insightful.contrast",
+          borderColor: "insightful.muted",
           borderWidth: "1px",
           icon: <CheckCircle size={14} />,
           badge: "Answer",
-          badgeColor: "insightfulBrand",
-          color: "insightfulBrand.fg",
+          badgeColor: "insightful",
+          color: "insightful.fg",
         };
       default:
         return {
-          bg: isUser ? "brand.solid" : "bg",
+          bg: isUser ? "primary.solid" : "bg",
           color: isUser ? "fg.inverted" : "fg",
         };
     }
@@ -52,7 +52,7 @@ const ChatMessage = ({ message }) => {
   return (
     <Flex w="100%" justify={isUser ? "flex-end" : "flex-start"} mb={2}>
       {!isUser && (
-        <Avatar.Root size="sm" colorPalette="altBrand" mr={3}>
+        <Avatar.Root size="sm" colorPalette="accent" mr={3}>
           <Avatar.Fallback name="Bot" />
         </Avatar.Root>
       )}
@@ -84,7 +84,7 @@ const ChatMessage = ({ message }) => {
       </Box>
 
       {isUser && (
-        <Avatar.Root size="sm" colorPalette="brand" ml={3}>
+        <Avatar.Root size="sm" colorPalette="primary" ml={3}>
           <Avatar.Fallback name="User" />
         </Avatar.Root>
       )}

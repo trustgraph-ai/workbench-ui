@@ -21,7 +21,7 @@ const ProgressSubmitButton: React.FC<ProgressSubmitButtonProps> = ({
         variant="subtle"
         disabled={disabled}
         loading={working}
-        color="brand"
+        color="primary"
         onClick={() => onClick()}
       >
         Send <SendHorizontal />

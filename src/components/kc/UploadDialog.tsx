@@ -74,7 +74,7 @@ const UploadDialog = ({ open, onOpenChange }) => {
               <Box mt={5}>
                 <Button
                   variant="solid"
-                  colorPalette="brand"
+                  colorPalette="primary"
                   onClick={() => fileInput.current.click()}
                 >
                   <FilePlus /> Select file
@@ -109,7 +109,7 @@ const UploadDialog = ({ open, onOpenChange }) => {
               </Button>
               <Button
                 onClick={() => upload()}
-                colorPalette="brand"
+                colorPalette="primary"
                 disabled={files.length < 1 || !id}
               >
                 <Upload /> Load

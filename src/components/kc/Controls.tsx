@@ -16,7 +16,7 @@ const Controls = () => {
         ml={5}
         mb={5}
         variant="solid"
-        colorPalette="brand"
+        colorPalette="primary"
         onClick={() => setUploadOpen(true)}
       >
         <Upload /> Upload

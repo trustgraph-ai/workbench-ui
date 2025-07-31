@@ -31,7 +31,7 @@ const ChatHistory = () => {
     >
       <Box bg="bg.emphasized" p={4} borderBottomWidth="1px">
         <HStack>
-          <Avatar.Root size="sm" colorPalette="altBrand" mr={4}>
+          <Avatar.Root size="sm" colorPalette="accent" mr={4}>
             <Avatar.Fallback name="Bot" />
           </Avatar.Root>
           <Text fontWeight="bold">Assistant</Text>

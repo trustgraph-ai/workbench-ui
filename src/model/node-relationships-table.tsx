@@ -31,7 +31,7 @@ export const columns = [
       const onRelationshipClick = info.row.original.onRelationshipClick;
       
       // Determine theme variant based on direction
-      const variant = direction === "outgoing" ? "brand" : "warmBrand";
+      const variant = direction === "outgoing" ? "primary" : "warmBrand";
       
       return (
         <Button

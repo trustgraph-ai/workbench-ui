@@ -23,7 +23,7 @@ const EntityList = () => {
           asChild
           size="sm"
           key={ix}
-          color="brand.solid"
+          color="primary.solid"
           bgColor="bg"
           variant="surface"
         >

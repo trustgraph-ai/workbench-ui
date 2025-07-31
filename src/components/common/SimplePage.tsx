@@ -12,22 +12,22 @@ const SimplePage: React.FC<
   return (
     <>
       <UnauthedHeader />
-      <Flex minH="100vh" align="center" justify="center" bg="brand.900">
+      <Flex minH="100vh" align="center" justify="center" bg="primary.900">
         <Container maxW="md" py={12}>
           <Box
-            bg="brand.800"
+            bg="primary.800"
             p={8}
             borderRadius="md"
             boxShadow="lg"
             borderWidth="1px"
-            borderColor="brand.muted"
+            borderColor="primary.muted"
           >
             <Stack spacing={6}>
               <Heading
                 as="h1"
                 fontSize="2xl"
                 textAlign="center"
-                color="brand.400"
+                color="primary.400"
                 mb={2}
               >
                 {title}
