@@ -87,6 +87,39 @@ export const useNodeDetails = (nodeId: string | undefined, flowId: string) => {
   });
 
   /**
+   * Query for fetching properties where the node is the subject and object is a literal
+   * Uses React Query for caching and background refetching
+   */
+  const propertiesQuery = useQuery({
+    queryKey: ["node-details-properties", { nodeId, flowId }],
+    queryFn: () => {
+      if (!nodeId) {
+        throw new Error("Node ID is required");
+      }
+
+      const subjectValue: Value = { v: nodeId, e: true };
+      
+      return socket
+        .flow(flowId)
+        .triplesQuery(subjectValue, undefined, undefined, 50) // More limit for properties
+        .then((triples) => {
+          if (!Array.isArray(triples)) {
+            console.error("Expected triples array, got:", triples);
+            throw new Error("Invalid triples response");
+          }
+          // Filter for properties (where o.e === false)
+          return triples.filter(triple => triple.o && triple.o.e === false);
+        })
+        .catch((err) => {
+          console.error("Error fetching properties:", err);
+          notify.error(err);
+          throw err;
+        });
+    },
+    enabled: !!nodeId && !!flowId,
+  });
+
+  /**
    * Process outbound triples to extract navigable relationships
    * Filters for entity relationships (o.e === true) and removes duplicates
    */
@@ -127,6 +160,26 @@ export const useNodeDetails = (nodeId: string | undefined, flowId: string) => {
     // Convert Set to array
     return Array.from(uniqueRelationships);
   }, [inboundTriplesQuery.data]);
+
+  /**
+   * Process properties to extract unique property URIs
+   * Properties are triples where o.e === false (literals)
+   */
+  const propertyURIs = useMemo(() => {
+    if (!propertiesQuery.data) return [];
+    
+    // Extract unique property predicates
+    const uniqueProperties = new Set<string>();
+    
+    propertiesQuery.data.forEach(triple => {
+      if (triple.p && triple.p.v) {
+        uniqueProperties.add(triple.p.v);
+      }
+    });
+    
+    // Convert Set to array
+    return Array.from(uniqueProperties);
+  }, [propertiesQuery.data]);
 
   /**
    * Fetch labels for outbound relationship URIs
@@ -210,6 +263,46 @@ export const useNodeDetails = (nodeId: string | undefined, flowId: string) => {
   });
 
   /**
+   * Fetch labels for property URIs
+   * Uses dependent query that only runs when properties are available
+   */
+  const propertyLabelsQuery = useQuery({
+    queryKey: ["property-labels", { nodeId, flowId, properties: propertyURIs }],
+    queryFn: async () => {
+      if (!propertyURIs.length) return {};
+
+      const labelMap: Record<string, string> = {};
+      
+      // Fetch labels for each property URI
+      await Promise.all(
+        propertyURIs.map(async (propertyURI) => {
+          try {
+            const subjectValue: Value = { v: propertyURI, e: true };
+            const predicateValue: Value = { v: RDFS_LABEL, e: true };
+            
+            const labelTriples = await socket
+              .flow(flowId)
+              .triplesQuery(subjectValue, predicateValue, undefined, 1);
+            
+            // Extract label from the first result, or use URI as fallback
+            if (labelTriples && labelTriples.length > 0 && labelTriples[0].o) {
+              labelMap[propertyURI] = labelTriples[0].o.v;
+            } else {
+              labelMap[propertyURI] = propertyURI;
+            }
+          } catch (error) {
+            console.warn(`Failed to fetch label for ${propertyURI}:`, error);
+            labelMap[propertyURI] = propertyURI;
+          }
+        })
+      );
+      
+      return labelMap;
+    },
+    enabled: !!nodeId && !!flowId && propertyURIs.length > 0,
+  });
+
+  /**
    * Combine relationship URIs with their labels
    */
   const outboundRelationshipsWithLabels = useMemo(() => {
@@ -234,12 +327,30 @@ export const useNodeDetails = (nodeId: string | undefined, flowId: string) => {
     }));
   }, [inboundRelationships, inboundLabelsQuery.data]);
 
+  /**
+   * Combine properties with their labels and values
+   * Creates array of {predicate: {uri, label}, value} objects
+   */
+  const propertiesWithLabels = useMemo(() => {
+    if (!propertiesQuery.data) return [];
+    
+    return propertiesQuery.data.map(triple => ({
+      predicate: {
+        uri: triple.p?.v || '',
+        label: propertyLabelsQuery.data?.[triple.p?.v || ''] || triple.p?.v || ''
+      },
+      value: triple.o?.v || ''
+    }));
+  }, [propertiesQuery.data, propertyLabelsQuery.data]);
+
   // Show loading indicators for long-running operations
   useActivity(
     outboundTriplesQuery.isLoading || 
     inboundTriplesQuery.isLoading || 
+    propertiesQuery.isLoading ||
     outboundLabelsQuery.isLoading || 
-    inboundLabelsQuery.isLoading, 
+    inboundLabelsQuery.isLoading ||
+    propertyLabelsQuery.isLoading, 
     "Loading node details"
   );
 
@@ -248,21 +359,26 @@ export const useNodeDetails = (nodeId: string | undefined, flowId: string) => {
     // Raw triples data
     outboundTriples: outboundTriplesQuery.data,
     inboundTriples: inboundTriplesQuery.data,
+    properties: propertiesQuery.data,
     
     // Loading states
     triplesLoading: outboundTriplesQuery.isLoading || inboundTriplesQuery.isLoading,
-    labelsLoading: outboundLabelsQuery.isLoading || inboundLabelsQuery.isLoading,
-    isLoading: outboundTriplesQuery.isLoading || inboundTriplesQuery.isLoading || outboundLabelsQuery.isLoading || inboundLabelsQuery.isLoading,
+    propertiesLoading: propertiesQuery.isLoading,
+    labelsLoading: outboundLabelsQuery.isLoading || inboundLabelsQuery.isLoading || propertyLabelsQuery.isLoading,
+    isLoading: outboundTriplesQuery.isLoading || inboundTriplesQuery.isLoading || propertiesQuery.isLoading || outboundLabelsQuery.isLoading || inboundLabelsQuery.isLoading || propertyLabelsQuery.isLoading,
     
     outboundTriplesLoading: outboundTriplesQuery.isLoading,
     inboundTriplesLoading: inboundTriplesQuery.isLoading,
+    propertiesQueryLoading: propertiesQuery.isLoading,
     outboundLabelsLoading: outboundLabelsQuery.isLoading,
     inboundLabelsLoading: inboundLabelsQuery.isLoading,
+    propertyLabelsLoading: propertyLabelsQuery.isLoading,
     
     // Error states
     triplesError: outboundTriplesQuery.isError || inboundTriplesQuery.isError,
-    labelsError: outboundLabelsQuery.isError || inboundLabelsQuery.isError,
-    hasError: outboundTriplesQuery.isError || inboundTriplesQuery.isError || outboundLabelsQuery.isError || inboundLabelsQuery.isError,
+    propertiesError: propertiesQuery.isError,
+    labelsError: outboundLabelsQuery.isError || inboundLabelsQuery.isError || propertyLabelsQuery.isError,
+    hasError: outboundTriplesQuery.isError || inboundTriplesQuery.isError || propertiesQuery.isError || outboundLabelsQuery.isError || inboundLabelsQuery.isError || propertyLabelsQuery.isError,
     
     outboundTriplesError: outboundTriplesQuery.isError,
     inboundTriplesError: inboundTriplesQuery.isError,
@@ -272,16 +388,20 @@ export const useNodeDetails = (nodeId: string | undefined, flowId: string) => {
     // Error messages
     outboundTriplesErrorMessage: outboundTriplesQuery.error,
     inboundTriplesErrorMessage: inboundTriplesQuery.error,
+    propertiesErrorMessage: propertiesQuery.error,
     outboundLabelsErrorMessage: outboundLabelsQuery.error,
     inboundLabelsErrorMessage: inboundLabelsQuery.error,
+    propertyLabelsErrorMessage: propertyLabelsQuery.error,
 
     // Processed data - URIs only (for backward compatibility)
     outboundRelationships,
     inboundRelationships,
+    propertyURIs,
     
     // Processed data - with labels
     outboundRelationshipsWithLabels,
     inboundRelationshipsWithLabels,
+    propertiesWithLabels,
 
     // Manual refetch functions
     refetchOutbound: () => {
@@ -292,11 +412,17 @@ export const useNodeDetails = (nodeId: string | undefined, flowId: string) => {
       inboundTriplesQuery.refetch();
       inboundLabelsQuery.refetch();
     },
+    refetchProperties: () => {
+      propertiesQuery.refetch();
+      propertyLabelsQuery.refetch();
+    },
     refetch: () => {
       outboundTriplesQuery.refetch();
       inboundTriplesQuery.refetch();
+      propertiesQuery.refetch();
       outboundLabelsQuery.refetch();
       inboundLabelsQuery.refetch();
+      propertyLabelsQuery.refetch();
     },
   };
 };

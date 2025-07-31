@@ -18,7 +18,7 @@ const NodeDetailsDrawer: React.FC<NodeDetailsDrawerProps> = ({ node, isOpen, onC
   const flowId = useSessionStore((state) => state.flowId);
   
   // Fetch node details directly in the drawer
-  const { outboundRelationshipsWithLabels, inboundRelationshipsWithLabels, isLoading } = useNodeDetails(node?.id, flowId);
+  const { outboundRelationshipsWithLabels, inboundRelationshipsWithLabels, propertiesWithLabels, isLoading } = useNodeDetails(node?.id, flowId);
   return (
     <Drawer.Root 
       open={isOpen} 
@@ -85,6 +85,20 @@ const NodeDetailsDrawer: React.FC<NodeDetailsDrawerProps> = ({ node, isOpen, onC
                       {inboundRelationshipsWithLabels.map((relationship, index) => (
                         <List.Item key={index}>
                           {relationship.label}
+                        </List.Item>
+                      ))}
+                    </List.Root>
+                  </div>
+                )}
+
+                {propertiesWithLabels && propertiesWithLabels.length > 0 && (
+                  <div style={{ width: "100%" }}>
+                    <Heading size="sm" mb={3}>Properties</Heading>
+                    <List.Root>
+                      {propertiesWithLabels.map((property, index) => (
+                        <List.Item key={index}>
+                          <Text fontWeight="bold">{property.predicate.label}:</Text>{" "}
+                          <Text>{property.value}</Text>
                         </List.Item>
                       ))}
                     </List.Root>
