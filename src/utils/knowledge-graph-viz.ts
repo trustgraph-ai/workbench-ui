@@ -44,16 +44,19 @@ export const updateSubgraphTriples = (sg: Subgraph, triples: Triple[]) => {
   const linkIds = new Set<string>(sg.links.map((n) => n.id));
 
   for (const t of triples) {
+    // Skip triples where the object is a literal (property edges)
+    // These are now shown in the node details drawer instead
+    if (!t.o.e) {
+      continue;
+    }
     // Source has a URI, that can be its unique ID
     const sourceId = t.s.v;
 
-    // Same for target, unless it's a literal, in which case
-    // use an ID which is unique to this edge so that it gets its
-    // own node
-    const targetId = t.o.e ? t.o.v : t.s.v + "@@" + t.p.v + "@@" + t.o.e;
+    // Target is always an entity now (we filtered out literals above)
+    const targetId = t.o.v;
 
     // Links have an ID so that this edge is unique
-    const linkId = t.s.v + "@@" + t.p.v + "@@" + t.o.e;
+    const linkId = t.s.v + "@@" + t.p.v + "@@" + t.o.v;
 
     if (!nodeIds.has(sourceId)) {
       const n: Node = {
