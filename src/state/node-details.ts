@@ -21,7 +21,8 @@ const STANDARD_URI_LABELS: Record<string, string> = {
   "https://schema.org/author": "author",
   "https://schema.org/publication": "publication",
   "https://schema.org/url": "url",
-  "http://www.w3.org/2004/02/skos/core#definition": "Definition",
+    "http://www.w3.org/2004/02/skos/core#definition": "Definition",
+    "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": "type",
 };
 
 /**
