@@ -18,7 +18,7 @@ const NodeDetailsDrawer: React.FC<NodeDetailsDrawerProps> = ({ node, isOpen, onC
   const flowId = useSessionStore((state) => state.flowId);
   
   // Fetch node details directly in the drawer
-  const { outboundRelationships, inboundRelationships, triplesLoading } = useNodeDetails(node?.id, flowId);
+  const { outboundRelationshipsWithLabels, inboundRelationshipsWithLabels, isLoading } = useNodeDetails(node?.id, flowId);
   return (
     <Drawer.Root 
       open={isOpen} 
@@ -65,26 +65,26 @@ const NodeDetailsDrawer: React.FC<NodeDetailsDrawerProps> = ({ node, isOpen, onC
                   <Text>{node.label}</Text>
                 </div>
                 
-                {outboundRelationships && outboundRelationships.length > 0 && (
+                {outboundRelationshipsWithLabels && outboundRelationshipsWithLabels.length > 0 && (
                   <div style={{ width: "100%" }}>
                     <Heading size="sm" mb={3}>Outgoing Relationships</Heading>
                     <List.Root>
-                      {outboundRelationships.map((relationship, index) => (
+                      {outboundRelationshipsWithLabels.map((relationship, index) => (
                         <List.Item key={index}>
-                          {relationship}
+                          {relationship.label}
                         </List.Item>
                       ))}
                     </List.Root>
                   </div>
                 )}
 
-                {inboundRelationships && inboundRelationships.length > 0 && (
+                {inboundRelationshipsWithLabels && inboundRelationshipsWithLabels.length > 0 && (
                   <div style={{ width: "100%" }}>
                     <Heading size="sm" mb={3}>Incoming Relationships</Heading>
                     <List.Root>
-                      {inboundRelationships.map((relationship, index) => (
+                      {inboundRelationshipsWithLabels.map((relationship, index) => (
                         <List.Item key={index}>
-                          {relationship}
+                          {relationship.label}
                         </List.Item>
                       ))}
                     </List.Root>

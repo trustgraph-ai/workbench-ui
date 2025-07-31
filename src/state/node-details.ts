@@ -94,7 +94,7 @@ export const useNodeDetails = (nodeId: string | undefined, flowId: string) => {
     if (!outboundTriplesQuery.data) return [];
     
     // Filter for entity relationships and extract unique predicates
-    const uniqueRelationships = new Set<string>();
+      const uniqueRelationships = new Set<string>();
     
     outboundTriplesQuery.data.forEach(triple => {
       // Check if object is an entity (o.e === true)
@@ -135,6 +135,7 @@ export const useNodeDetails = (nodeId: string | undefined, flowId: string) => {
   const outboundLabelsQuery = useQuery({
     queryKey: ["relationship-labels-outbound", { nodeId, flowId, relationships: outboundRelationships }],
     queryFn: async () => {
+
       if (!outboundRelationships.length) return {};
 
       const labelMap: Record<string, string> = {};
