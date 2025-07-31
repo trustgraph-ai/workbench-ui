@@ -55,8 +55,6 @@ const GraphView = () => {
     system.token("colors.gray.500"), // light mode
     system.token("colors.gray.500")  // dark mode
   );
-
-console.log(linkColor);
   
   const linkTextColor = useColorModeValue(
     system.token("colors.yellowNeutral.700"), // light mode
@@ -112,22 +110,13 @@ console.log(linkColor);
     );
 
   const nodeClick = (node) => {
-    // Use the mutation from the query hook to update the subgraph
-    updateSubgraphMutation({ nodeId: node.id, currentGraph: view });
+    // Log the node ID when a node is clicked
+    console.log("Node selected:", node.id);
+    
+    // For now, commenting out the navigation to focus on selection
+    // updateSubgraphMutation({ nodeId: node.id, currentGraph: view });
   };
 
-  // Ideally this would be based on themes, but the 3d graph stuff
-  // doesn't use CSS variables which is what the theme stuff is based
-  // on.
-  /*
-  const borderColor = system.token("colors.gray.600");
-  const backgroundColor = system.token("colors.gray.800");
-  const nodeColor = system.token("colors.gray.100");
-  const nodeTextColor = system.token("colors.yellow.300");
-  const linkColor = system.token("colors.green.500");
-  const linkTextColor = system.token("colors.tgBlue.300");
-  const linkParticleColor = system.token("colors.tgGreen.600");
-*/
   return (
     <>
       <HStack mb={8}>
