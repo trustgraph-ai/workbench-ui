@@ -12,6 +12,7 @@ import { useSessionStore } from "../../state/session";
 import { useWorkbenchStateStore } from "../../state/workbench";
 import { useGraphSubgraph } from "../../state/graph-query";
 import GraphHelp from "./GraphHelp";
+import NodeDetailsDrawer from "./NodeDetailsDrawer";
 
 import { system } from "../../theme";
 
@@ -24,6 +25,7 @@ const GraphView = () => {
   
   // State to track the selected node
   const [selectedNode, setSelectedNode] = useState(null);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   // Use the new Tanstack Query hook for graph data
   const {
@@ -115,12 +117,17 @@ const GraphView = () => {
   const nodeClick = (node) => {
     // Set the selected node in state
     setSelectedNode(node);
+    setIsDrawerOpen(true);
     
     // Log the node ID and label when a node is clicked
     console.log("Node selected:", node.id, "Label:", node.label);
     
     // For now, commenting out the navigation to focus on selection
     // updateSubgraphMutation({ nodeId: node.id, currentGraph: view });
+  };
+  
+  const handleCloseDrawer = () => {
+    setIsDrawerOpen(false);
   };
 
   return (
@@ -190,6 +197,12 @@ const GraphView = () => {
           }}
         />
       </Box>
+      
+      <NodeDetailsDrawer 
+        node={selectedNode}
+        isOpen={isDrawerOpen}
+        onClose={handleCloseDrawer}
+      />
     </>
   );
 };
