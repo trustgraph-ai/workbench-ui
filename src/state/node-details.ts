@@ -8,6 +8,28 @@ import { Value } from "../api/trustgraph/Triple";
 import { RDFS_LABEL } from "../utils/knowledge-graph";
 
 /**
+ * Standard URI to label mappings
+ * These common URIs are mapped directly without knowledge graph queries
+ */
+const STANDARD_URI_LABELS: Record<string, string> = {
+  "https://schema.org/subjectOf": "Subject Of",
+  "https://schema.org/description": "Description", 
+  "https://schema.org/copyrightHolder": "Copyright Holder",
+  "https://schema.org/copyrightNotice": "Copyright Notice",
+  "https://schema.org/keywords": "Keywords",
+  "https://schema.org/name": "Name",
+};
+
+/**
+ * Get label for a URI, checking standard mappings first
+ * @param uri - The URI to get a label for
+ * @returns The label if found in standard mappings, undefined otherwise
+ */
+const getStandardLabel = (uri: string): string | undefined => {
+  return STANDARD_URI_LABELS[uri];
+};
+
+/**
  * Custom hook for managing node details operations
  * Provides functionality for fetching triples and processing outbound relationships
  * for a selected graph node
@@ -196,6 +218,14 @@ export const useNodeDetails = (nodeId: string | undefined, flowId: string) => {
       // Fetch labels for each relationship URI
       await Promise.all(
         outboundRelationships.map(async (relationshipURI) => {
+          // Check standard mappings first
+          const standardLabel = getStandardLabel(relationshipURI);
+          if (standardLabel) {
+            labelMap[relationshipURI] = standardLabel;
+            return;
+          }
+
+          // If not in standard mappings, query the knowledge graph
           try {
             const subjectValue: Value = { v: relationshipURI, e: true };
             const predicateValue: Value = { v: RDFS_LABEL, e: true };
@@ -236,6 +266,14 @@ export const useNodeDetails = (nodeId: string | undefined, flowId: string) => {
       // Fetch labels for each relationship URI
       await Promise.all(
         inboundRelationships.map(async (relationshipURI) => {
+          // Check standard mappings first
+          const standardLabel = getStandardLabel(relationshipURI);
+          if (standardLabel) {
+            labelMap[relationshipURI] = standardLabel;
+            return;
+          }
+
+          // If not in standard mappings, query the knowledge graph
           try {
             const subjectValue: Value = { v: relationshipURI, e: true };
             const predicateValue: Value = { v: RDFS_LABEL, e: true };
@@ -276,6 +314,14 @@ export const useNodeDetails = (nodeId: string | undefined, flowId: string) => {
       // Fetch labels for each property URI
       await Promise.all(
         propertyURIs.map(async (propertyURI) => {
+          // Check standard mappings first
+          const standardLabel = getStandardLabel(propertyURI);
+          if (standardLabel) {
+            labelMap[propertyURI] = standardLabel;
+            return;
+          }
+
+          // If not in standard mappings, query the knowledge graph
           try {
             const subjectValue: Value = { v: propertyURI, e: true };
             const predicateValue: Value = { v: RDFS_LABEL, e: true };
