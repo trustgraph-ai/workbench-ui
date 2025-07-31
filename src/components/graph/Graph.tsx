@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, useMemo } from "react";
 
 import { Box, Alert, Heading, HStack } from "@chakra-ui/react";
 import { useColorModeValue } from "../ui/color-mode";
@@ -49,12 +49,34 @@ const GraphView = () => {
     limit: 20 // Limit to 20 edges for now
   });
 
+  // Filter for outbound navigable relationships (where o.e === true)
+  const outboundRelationships = useMemo(() => {
+    if (!triples) return [];
+    
+    // The triples should be an array directly based on the API
+    const triplesList = Array.isArray(triples) ? triples : [];
+    
+    // Filter for entity relationships and extract unique predicates
+    const uniqueRelationships = new Set<string>();
+    
+    triplesList.forEach(triple => {
+      // Check if object is an entity (o.e === true)
+      if (triple.o && triple.o.e === true && triple.p && triple.p.v) {
+        uniqueRelationships.add(triple.p.v);
+      }
+    });
+    
+    // Convert Set to array
+    return Array.from(uniqueRelationships);
+  }, [triples]);
+
   // Log triples when they change
   useEffect(() => {
     if (triples && selectedNode) {
       console.log(`Edges for node ${selectedNode.id}:`, triples);
+      console.log(`Outbound relationships:`, outboundRelationships);
     }
-  }, [triples, selectedNode]);
+  }, [triples, selectedNode, outboundRelationships]);
 
   // Theme-aware colors that respond to light/dark mode
   const borderColor = useColorModeValue(
@@ -241,6 +263,7 @@ const GraphView = () => {
         node={selectedNode}
         isOpen={isDrawerOpen}
         onClose={handleCloseDrawer}
+        outboundRelationships={outboundRelationships}
       />
     </>
   );

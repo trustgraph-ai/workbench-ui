@@ -1,5 +1,5 @@
 import React from "react";
-import { Drawer, Text, VStack } from "@chakra-ui/react";
+import { Drawer, Text, VStack, Heading, List } from "@chakra-ui/react";
 import { X } from "lucide-react";
 
 interface NodeDetailsDrawerProps {
@@ -9,9 +9,10 @@ interface NodeDetailsDrawerProps {
   } | null;
   isOpen: boolean;
   onClose: () => void;
+  outboundRelationships?: string[];
 }
 
-const NodeDetailsDrawer: React.FC<NodeDetailsDrawerProps> = ({ node, isOpen, onClose }) => {
+const NodeDetailsDrawer: React.FC<NodeDetailsDrawerProps> = ({ node, isOpen, onClose, outboundRelationships }) => {
   return (
     <Drawer.Root 
       open={isOpen} 
@@ -48,7 +49,7 @@ const NodeDetailsDrawer: React.FC<NodeDetailsDrawerProps> = ({ node, isOpen, onC
           </Drawer.Header>
           <Drawer.Body>
             {node && (
-              <VStack align="start" spacing={4}>
+              <VStack align="start" spacing={6}>
                 <div>
                   <Text fontWeight="bold">Node ID:</Text>
                   <Text>{node.id}</Text>
@@ -57,6 +58,19 @@ const NodeDetailsDrawer: React.FC<NodeDetailsDrawerProps> = ({ node, isOpen, onC
                   <Text fontWeight="bold">Node Label:</Text>
                   <Text>{node.label}</Text>
                 </div>
+                
+                {outboundRelationships && outboundRelationships.length > 0 && (
+                  <div style={{ width: "100%" }}>
+                    <Heading size="sm" mb={3}>Outgoing Relationships</Heading>
+                    <List.Root>
+                      {outboundRelationships.map((relationship, index) => (
+                        <List.Item key={index}>
+                          {relationship}
+                        </List.Item>
+                      ))}
+                    </List.Root>
+                  </div>
+                )}
               </VStack>
             )}
           </Drawer.Body>
