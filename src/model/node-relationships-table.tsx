@@ -1,5 +1,5 @@
 import { createColumnHelper } from "@tanstack/react-table";
-import { ChevronRight } from "lucide-react";
+import { ArrowRight, ArrowLeft } from "lucide-react";
 import { Button } from "@chakra-ui/react";
 
 /**
@@ -48,9 +48,9 @@ export const columns = [
           }}
         >
           <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-            {direction === "incoming" && <ChevronRight size={16} />}
+            {direction === "incoming" && <ArrowLeft size={16} />}
             <span>{relationship}</span>
-            {direction === "outgoing" && <ChevronRight size={16} />}
+            {direction === "outgoing" && <ArrowRight size={16} />}
           </div>
         </Button>
       );
