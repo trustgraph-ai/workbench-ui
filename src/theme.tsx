@@ -10,7 +10,17 @@
 //   ask Claude to make a colour ramp.  You can cut'n'paste a colour ramp
 //   from this file from below to show Claude the structure to create.
 //   That's 5 general theme colours sorted.
-
+// - There are a few other colours which follow.  The graph UI can have
+//   its own colours, but they need to be sympathetic to the overall
+//   palette.
+// - There are some colours which form the callouts for thinking, observing
+//   and answer in the agent assistant.
+// - After the colour ramps are defined there are palettes which specify
+//   how the colours are used.  These specify combinations for dark/light
+//   mode.
+//
+// Claude Code knows how to manage this file, given base colours, it can
+// adjust everything that's here.
 
 import { createSystem, defaultConfig, defineConfig } from "@chakra-ui/react";
 
