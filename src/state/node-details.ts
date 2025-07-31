@@ -18,6 +18,7 @@ const STANDARD_URI_LABELS: Record<string, string> = {
   "https://schema.org/copyrightNotice": "Copyright Notice",
   "https://schema.org/keywords": "Keywords",
   "https://schema.org/name": "Name",
+  "http://www.w3.org/2004/02/skos/core#definition": "Definition",
 };
 
 /**
