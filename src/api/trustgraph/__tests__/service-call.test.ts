@@ -1,11 +1,20 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { ServiceCall, SOCKET_RECONNECTION_TIMEOUT } from "../service-call";
 
+// Mock WebSocket constants
+vi.stubGlobal("WebSocket", {
+  OPEN: 1,
+  CONNECTING: 0,
+  CLOSING: 2,
+  CLOSED: 3,
+});
+
 // Mock Socket interface
 const mockSocket = {
   inflight: {},
   ws: {
     send: vi.fn(),
+    readyState: 1, // WebSocket.OPEN
   },
   reopen: vi.fn(),
 };
@@ -29,6 +38,7 @@ describe("ServiceCall", () => {
     mockSocket.inflight = {};
     mockSocket.ws = {
       send: vi.fn(),
+      readyState: 1, // WebSocket.OPEN
     };
     mockSocket.reopen.mockClear();
 
@@ -113,10 +123,16 @@ describe("ServiceCall", () => {
     serviceCall.start();
 
     expect(mockSocket.reopen).toHaveBeenCalled();
-    expect(mockSetTimeout).toHaveBeenCalledWith(
-      expect.any(Function),
-      SOCKET_RECONNECTION_TIMEOUT,
-    );
+    
+    // With exponential backoff, the delay should be calculated as:
+    // SOCKET_RECONNECTION_TIMEOUT * Math.pow(2, 3 - retries) + random
+    // Since retries is decremented to 2 after start(), it's 3 - 2 = 1
+    // So base delay is 2000 * 2^1 = 4000, plus random up to 1000
+    // The delay should be between 4000 and 5000ms (capped at 30000)
+    const callArgs = mockSetTimeout.mock.calls[0];
+    expect(callArgs[0]).toEqual(expect.any(Function));
+    expect(callArgs[1]).toBeGreaterThanOrEqual(4000);
+    expect(callArgs[1]).toBeLessThanOrEqual(5000);
   });
 
   it("should handle missing WebSocket connection", () => {
@@ -124,10 +140,14 @@ describe("ServiceCall", () => {
 
     serviceCall.start();
 
-    expect(mockSetTimeout).toHaveBeenCalledWith(
-      expect.any(Function),
-      SOCKET_RECONNECTION_TIMEOUT,
-    );
+    // Should trigger reopen and schedule with exponential backoff
+    expect(mockSocket.reopen).toHaveBeenCalled();
+    
+    // Same calculation as above - base delay 4000ms + random up to 1000ms
+    const callArgs = mockSetTimeout.mock.calls[0];
+    expect(callArgs[0]).toEqual(expect.any(Function));
+    expect(callArgs[1]).toBeGreaterThanOrEqual(4000);
+    expect(callArgs[1]).toBeLessThanOrEqual(5000);
   });
 
   it("should not process response if already complete", () => {
