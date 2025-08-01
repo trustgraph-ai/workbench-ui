@@ -130,8 +130,8 @@ export class ServiceCall {
       return; // Exit early - no more attempts
     }
 
-    // Check if WebSocket connection is available
-    if (this.socket.ws) {
+    // Check if WebSocket connection is available and ready
+    if (this.socket.ws && this.socket.ws.readyState === WebSocket.OPEN) {
       try {
         // Attempt to send the message as JSON
         this.socket.ws.send(JSON.stringify(this.msg));
@@ -145,10 +145,17 @@ export class ServiceCall {
         console.log("Error:", e);
         console.log("Message send failure, retry...");
 
-        // Schedule retry after reconnection timeout
+        // Calculate backoff delay with jitter
+        const backoffDelay = Math.min(
+          SOCKET_RECONNECTION_TIMEOUT * Math.pow(2, 3 - this.retries) + 
+          Math.random() * 1000,
+          30000 // Max 30 seconds
+        );
+
+        // Schedule retry with backoff
         this.timeoutId = setTimeout(
           this.attempt.bind(this),
-          SOCKET_RECONNECTION_TIMEOUT,
+          backoffDelay,
         );
 
         console.log("Reopen...");
@@ -156,9 +163,25 @@ export class ServiceCall {
         this.socket.reopen();
       }
     } else {
-      // No WebSocket connection available, wait and try again
-      // This handles the case where the socket is still connecting
-      setTimeout(this.attempt.bind(this), SOCKET_RECONNECTION_TIMEOUT);
+      // No WebSocket connection available or not ready
+      // Check if socket is connecting
+      if (this.socket.ws && this.socket.ws.readyState === WebSocket.CONNECTING) {
+        // Wait a bit longer for connection to establish
+        setTimeout(this.attempt.bind(this), 500);
+      } else {
+        // Socket is closed or closing, trigger reopen
+        console.log("Socket not ready, reopening...");
+        this.socket.reopen();
+        
+        // Calculate backoff delay
+        const backoffDelay = Math.min(
+          SOCKET_RECONNECTION_TIMEOUT * Math.pow(2, 3 - this.retries) + 
+          Math.random() * 1000,
+          30000
+        );
+        
+        setTimeout(this.attempt.bind(this), backoffDelay);
+      }
     }
   }
 }
