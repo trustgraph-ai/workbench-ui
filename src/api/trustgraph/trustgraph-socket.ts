@@ -130,6 +130,9 @@ export class BaseApi {
   id: number; // Counter for generating unique message IDs
   inflight: { [key: string]: ServiceCall } = {}; // Track active requests by
   // message ID
+  reconnectAttempts: number = 0; // Track reconnection attempts
+  maxReconnectAttempts: number = 10; // Maximum reconnection attempts
+  reconnectTimer?: number; // Timer for reconnection attempts
 
   constructor() {
     this.tag = makeid(16); // Generate unique client tag
@@ -141,12 +144,47 @@ export class BaseApi {
    * Establishes WebSocket connection and sets up event handlers
    */
   openSocket() {
-    this.ws = new WebSocket(SOCKET_URL);
+    // Don't create multiple connections
+    if (this.ws && (this.ws.readyState === WebSocket.CONNECTING || 
+                    this.ws.readyState === WebSocket.OPEN)) {
+      return;
+    }
 
-    // Handle incoming messages from server
-    const onMessage = (message: MessageEvent) => {
-      if (!message.data) return;
+    // Clean up old socket if exists
+    if (this.ws) {
+      this.ws.removeEventListener("message", this.onMessage);
+      this.ws.removeEventListener("close", this.onClose);
+      this.ws.removeEventListener("open", this.onOpen);
+      this.ws.removeEventListener("error", this.onError);
+      this.ws = undefined;
+    }
 
+    try {
+      this.ws = new WebSocket(SOCKET_URL);
+    } catch (e) {
+      console.error("[socket creation error]", e);
+      this.scheduleReconnect();
+      return;
+    }
+
+    // Bind event handlers to maintain proper 'this' context
+    this.onMessage = this.onMessage.bind(this);
+    this.onClose = this.onClose.bind(this);
+    this.onOpen = this.onOpen.bind(this);
+    this.onError = this.onError.bind(this);
+
+    // Attach event listeners
+    this.ws.addEventListener("message", this.onMessage);
+    this.ws.addEventListener("close", this.onClose);
+    this.ws.addEventListener("open", this.onOpen);
+    this.ws.addEventListener("error", this.onError);
+  }
+
+  // Handle incoming messages from server
+  onMessage(message: MessageEvent) {
+    if (!message.data) return;
+
+    try {
       const obj = JSON.parse(message.data);
 
       // Skip messages without ID (can't route them)
@@ -155,31 +193,67 @@ export class BaseApi {
       // Route response to the corresponding inflight request
       if (this.inflight[obj.id]) {
         this.inflight[obj.id].onReceived(obj.response);
-      } else {
-        // Message ID not recognized - likely already processed or timed out
-        // Commented out to reduce noise:
-        // console.log("Message ID", obj.id, "not known");
       }
-    };
+    } catch (e) {
+      console.error("[socket message parse error]", e);
+    }
+  }
 
-    // Handle connection closure - automatically attempt reconnection
-    const onClose = () => {
-      console.log("[socket close]");
-      this.ws = undefined;
-      setTimeout(() => {
-        this.reopen();
-      }, SOCKET_RECONNECTION_TIMEOUT);
-    };
+  // Handle connection closure - automatically attempt reconnection
+  onClose(event: CloseEvent) {
+    console.log("[socket close]", event.code, event.reason);
+    this.ws = undefined;
+    this.scheduleReconnect();
+  }
 
-    // Log successful connection
-    const onOpen = () => {
-      console.log("[socket open]");
-    };
+  // Handle successful connection
+  onOpen() {
+    console.log("[socket open]");
+    this.reconnectAttempts = 0; // Reset reconnection attempts on success
+    
+    // Clear any pending reconnect timer
+    if (this.reconnectTimer) {
+      clearTimeout(this.reconnectTimer);
+      this.reconnectTimer = undefined;
+    }
+  }
 
-    // Attach event listeners
-    this.ws.addEventListener("message", onMessage);
-    this.ws.addEventListener("close", onClose);
-    this.ws.addEventListener("open", onOpen);
+  // Handle socket errors
+  onError(event: Event) {
+    console.error("[socket error]", event);
+  }
+
+  /**
+   * Schedules a reconnection attempt with exponential backoff
+   */
+  scheduleReconnect() {
+    // Don't schedule if already scheduled
+    if (this.reconnectTimer) return;
+
+    this.reconnectAttempts++;
+    
+    if (this.reconnectAttempts > this.maxReconnectAttempts) {
+      console.error("[socket] Max reconnection attempts reached");
+      // Notify all pending requests of the failure
+      for (const mid in this.inflight) {
+        this.inflight[mid].error(new Error("WebSocket connection failed"));
+      }
+      return;
+    }
+
+    // Calculate exponential backoff with jitter
+    const backoffDelay = Math.min(
+      SOCKET_RECONNECTION_TIMEOUT * Math.pow(2, this.reconnectAttempts - 1) + 
+      Math.random() * 1000,
+      30000 // Max 30 seconds
+    );
+
+    console.log(`[socket] Reconnecting in ${backoffDelay}ms (attempt ${this.reconnectAttempts})`);
+
+    this.reconnectTimer = setTimeout(() => {
+      this.reconnectTimer = undefined;
+      this.reopen();
+    }, backoffDelay);
   }
 
   /**
@@ -187,6 +261,11 @@ export class BaseApi {
    */
   reopen() {
     console.log("[socket reopen]");
+    // Check if we're already connected or connecting
+    if (this.ws && (this.ws.readyState === WebSocket.OPEN || 
+                    this.ws.readyState === WebSocket.CONNECTING)) {
+      return;
+    }
     this.openSocket();
   }
 
@@ -194,14 +273,29 @@ export class BaseApi {
    * Closes the WebSocket connection and cleans up
    */
   close() {
-    // Note: Could potentially leak WebSocket references if event listeners
-    // aren't removed
-    // Currently commented out to avoid potential issues
-    // with handler references
+    // Clear reconnection timer
+    if (this.reconnectTimer) {
+      clearTimeout(this.reconnectTimer);
+      this.reconnectTimer = undefined;
+    }
+
+    // Clean up WebSocket
     if (this.ws) {
+      // Remove event listeners to prevent memory leaks
+      this.ws.removeEventListener("message", this.onMessage);
+      this.ws.removeEventListener("close", this.onClose);
+      this.ws.removeEventListener("open", this.onOpen);
+      this.ws.removeEventListener("error", this.onError);
+      
       this.ws.close();
       this.ws = undefined;
     }
+
+    // Clear any remaining inflight requests
+    for (const mid in this.inflight) {
+      this.inflight[mid].error(new Error("Socket closed"));
+    }
+    this.inflight = {};
   }
 
   /**
