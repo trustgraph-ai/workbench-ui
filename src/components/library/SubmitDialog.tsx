@@ -37,8 +37,10 @@ const SubmitDialog = ({ open, onOpenChange, onSubmit, docs }) => {
 
   // Set default flow when flows are loaded or dialog opens
   useEffect(() => {
+    console.log("SubmitDialog useEffect - open:", open, "flows:", flows, "current flow:", flow);
     if (open && flows.length > 0 && !flow) {
-      setFlow([flows[0].id]);
+      console.log("Setting default flow to:", flows[0].id);
+      setFlow(flows[0].id);
     }
   }, [open, flows, flow]);
 
@@ -78,6 +80,7 @@ const SubmitDialog = ({ open, onOpenChange, onSubmit, docs }) => {
                   items={flowOptions}
                   value={flow}
                   onValueChange={(x) => {
+                    console.log("Flow selection changed to:", x);
                     setFlow(x);
                   }}
                   contentRef={contentRef}
