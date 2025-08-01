@@ -1,3 +1,5 @@
+// Constant defining the delay before attempting to reconnect a WebSocket
+// (2 seconds)
 export const SOCKET_RECONNECTION_TIMEOUT = 2000;
 
 export class ServiceCallMulti {
@@ -83,25 +85,56 @@ export class ServiceCallMulti {
       delete this.socket.inflight[this.mid];
 
       this.error("Ran out of retries");
+      return; // Exit early - no more attempts
     }
 
-    if (this.socket.ws) {
+    // Check if WebSocket connection is available and ready
+    if (this.socket.ws && this.socket.ws.readyState === WebSocket.OPEN) {
       try {
         this.socket.ws.send(JSON.stringify(this.msg));
-        this.timeoutId = setTimeout(this.onTimeout, this.timeout);
+        this.timeoutId = setTimeout(this.onTimeout.bind(this), this.timeout);
 
         return;
       } catch (e) {
         console.log("Error:", e);
         console.log("Message send failure, retry...");
 
-        this.timeoutId = setTimeout(
-          this.attempt,
-          SOCKET_RECONNECTION_TIMEOUT,
+        // Calculate backoff delay with jitter
+        const backoffDelay = Math.min(
+          SOCKET_RECONNECTION_TIMEOUT * Math.pow(2, 3 - this.retries) + 
+          Math.random() * 1000,
+          30000 // Max 30 seconds
         );
+
+        this.timeoutId = setTimeout(
+          this.attempt.bind(this),
+          backoffDelay,
+        );
+
+        console.log("Reopen...");
+        // Attempt to reopen the WebSocket connection
+        this.socket.reopen();
       }
     } else {
-      setTimeout(this.attempt, SOCKET_RECONNECTION_TIMEOUT);
+      // No WebSocket connection available or not ready
+      // Check if socket is connecting
+      if (this.socket.ws && this.socket.ws.readyState === WebSocket.CONNECTING) {
+        // Wait a bit longer for connection to establish
+        setTimeout(this.attempt.bind(this), 500);
+      } else {
+        // Socket is closed or closing, trigger reopen
+        console.log("Socket not ready, reopening...");
+        this.socket.reopen();
+        
+        // Calculate backoff delay
+        const backoffDelay = Math.min(
+          SOCKET_RECONNECTION_TIMEOUT * Math.pow(2, 3 - this.retries) + 
+          Math.random() * 1000,
+          30000
+        );
+        
+        setTimeout(this.attempt.bind(this), backoffDelay);
+      }
     }
   }
 }
