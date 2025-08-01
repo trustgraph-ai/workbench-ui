@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 
 import { SendHorizontal } from "lucide-react";
 import { useFlows } from "../../state/flows";
@@ -34,6 +34,13 @@ const SubmitDialog = ({ open, onOpenChange, onSubmit, docs }) => {
 
   const [flow, setFlow] = useState(undefined);
   const [tags, setTags] = useState([]);
+
+  // Set default flow when flows are loaded or dialog opens
+  useEffect(() => {
+    if (open && flows.length > 0 && !flow) {
+      setFlow(flows[0].id);
+    }
+  }, [open, flows, flow]);
 
   const contentRef = useRef<HTMLDivElement>(null);
 
