@@ -123,7 +123,7 @@ describe("ServiceCall", () => {
     serviceCall.start();
 
     expect(mockSocket.reopen).toHaveBeenCalled();
-    
+
     // With exponential backoff, the delay should be calculated as:
     // SOCKET_RECONNECTION_TIMEOUT * Math.pow(2, 3 - retries) + random
     // Since retries is decremented to 2 after start(), it's 3 - 2 = 1
@@ -142,7 +142,7 @@ describe("ServiceCall", () => {
 
     // Should trigger reopen and schedule with exponential backoff
     expect(mockSocket.reopen).toHaveBeenCalled();
-    
+
     // Same calculation as above - base delay 4000ms + random up to 1000ms
     const callArgs = mockSetTimeout.mock.calls[0];
     expect(callArgs[0]).toEqual(expect.any(Function));

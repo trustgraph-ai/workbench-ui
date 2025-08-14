@@ -39,7 +39,6 @@ export const config = defineConfig({
   theme: {
     tokens: {
       colors: {
-
         // General theme colours, using a consistent palette e.g. made from
         // the company website or site design
         airForceBlue: {
@@ -211,7 +210,6 @@ export const config = defineConfig({
         body: { value: "Montserrat, sans-serif" },
         mono: { value: "Roboto mono, monospace" },
       },
-
     },
     semanticTokens: {
       colors: {

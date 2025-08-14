@@ -101,15 +101,12 @@ export class ServiceCallMulti {
 
         // Calculate backoff delay with jitter
         const backoffDelay = Math.min(
-          SOCKET_RECONNECTION_TIMEOUT * Math.pow(2, 3 - this.retries) + 
-          Math.random() * 1000,
-          30000 // Max 30 seconds
+          SOCKET_RECONNECTION_TIMEOUT * Math.pow(2, 3 - this.retries) +
+            Math.random() * 1000,
+          30000, // Max 30 seconds
         );
 
-        this.timeoutId = setTimeout(
-          this.attempt.bind(this),
-          backoffDelay,
-        );
+        this.timeoutId = setTimeout(this.attempt.bind(this), backoffDelay);
 
         console.log("Reopen...");
         // Attempt to reopen the WebSocket connection
@@ -118,21 +115,24 @@ export class ServiceCallMulti {
     } else {
       // No WebSocket connection available or not ready
       // Check if socket is connecting
-      if (this.socket.ws && this.socket.ws.readyState === WebSocket.CONNECTING) {
+      if (
+        this.socket.ws &&
+        this.socket.ws.readyState === WebSocket.CONNECTING
+      ) {
         // Wait a bit longer for connection to establish
         setTimeout(this.attempt.bind(this), 500);
       } else {
         // Socket is closed or closing, trigger reopen
         console.log("Socket not ready, reopening...");
         this.socket.reopen();
-        
+
         // Calculate backoff delay
         const backoffDelay = Math.min(
-          SOCKET_RECONNECTION_TIMEOUT * Math.pow(2, 3 - this.retries) + 
-          Math.random() * 1000,
-          30000
+          SOCKET_RECONNECTION_TIMEOUT * Math.pow(2, 3 - this.retries) +
+            Math.random() * 1000,
+          30000,
         );
-        
+
         setTimeout(this.attempt.bind(this), backoffDelay);
       }
     }

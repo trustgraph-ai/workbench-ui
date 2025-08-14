@@ -26,7 +26,7 @@ export const columns = [
 
   // Value column - displays the property value
   columnHelper.accessor("value", {
-    header: "Value", 
+    header: "Value",
     cell: (info) => info.getValue(),
   }),
 ];

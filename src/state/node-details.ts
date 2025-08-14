@@ -13,7 +13,7 @@ import { RDFS_LABEL } from "../utils/knowledge-graph";
  */
 const STANDARD_URI_LABELS: Record<string, string> = {
   "https://schema.org/subjectOf": "subject of",
-  "https://schema.org/description": "description", 
+  "https://schema.org/description": "description",
   "https://schema.org/copyrightHolder": "copyright holder",
   "https://schema.org/copyrightNotice": "copyright notice",
   "https://schema.org/keywords": "keywords",
@@ -21,8 +21,8 @@ const STANDARD_URI_LABELS: Record<string, string> = {
   "https://schema.org/author": "author",
   "https://schema.org/publication": "publication",
   "https://schema.org/url": "url",
-    "http://www.w3.org/2004/02/skos/core#definition": "Definition",
-    "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": "type",
+  "http://www.w3.org/2004/02/skos/core#definition": "Definition",
+  "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": "type",
 };
 
 /**
@@ -42,7 +42,10 @@ const getStandardLabel = (uri: string): string | undefined => {
  * @param flowId - The flow ID to use for the query
  * @returns {Object} Node details state and processed data
  */
-export const useNodeDetails = (nodeId: string | undefined, flowId: string) => {
+export const useNodeDetails = (
+  nodeId: string | undefined,
+  flowId: string,
+) => {
   // WebSocket connection for communicating with the graph service
   const socket = useSocket();
 
@@ -61,7 +64,7 @@ export const useNodeDetails = (nodeId: string | undefined, flowId: string) => {
       }
 
       const subjectValue: Value = { v: nodeId, e: true };
-      
+
       return socket
         .flow(flowId)
         .triplesQuery(subjectValue, undefined, undefined, 20)
@@ -93,7 +96,7 @@ export const useNodeDetails = (nodeId: string | undefined, flowId: string) => {
       }
 
       const objectValue: Value = { v: nodeId, e: true };
-      
+
       return socket
         .flow(flowId)
         .triplesQuery(undefined, undefined, objectValue, 20)
@@ -125,7 +128,7 @@ export const useNodeDetails = (nodeId: string | undefined, flowId: string) => {
       }
 
       const subjectValue: Value = { v: nodeId, e: true };
-      
+
       return socket
         .flow(flowId)
         .triplesQuery(subjectValue, undefined, undefined, 50) // More limit for properties
@@ -135,7 +138,7 @@ export const useNodeDetails = (nodeId: string | undefined, flowId: string) => {
             throw new Error("Invalid triples response");
           }
           // Filter for properties (where o.e === false)
-          return triples.filter(triple => triple.o && triple.o.e === false);
+          return triples.filter((triple) => triple.o && triple.o.e === false);
         })
         .catch((err) => {
           console.error("Error fetching properties:", err);
@@ -152,17 +155,17 @@ export const useNodeDetails = (nodeId: string | undefined, flowId: string) => {
    */
   const outboundRelationships = useMemo(() => {
     if (!outboundTriplesQuery.data) return [];
-    
+
     // Filter for entity relationships and extract unique predicates
-      const uniqueRelationships = new Set<string>();
-    
-    outboundTriplesQuery.data.forEach(triple => {
+    const uniqueRelationships = new Set<string>();
+
+    outboundTriplesQuery.data.forEach((triple) => {
       // Check if object is an entity (o.e === true)
       if (triple.o && triple.o.e === true && triple.p && triple.p.v) {
         uniqueRelationships.add(triple.p.v);
       }
     });
-    
+
     // Convert Set to array
     return Array.from(uniqueRelationships);
   }, [outboundTriplesQuery.data]);
@@ -173,17 +176,17 @@ export const useNodeDetails = (nodeId: string | undefined, flowId: string) => {
    */
   const inboundRelationships = useMemo(() => {
     if (!inboundTriplesQuery.data) return [];
-    
+
     // Filter for entity relationships and extract unique predicates
     const uniqueRelationships = new Set<string>();
-    
-    inboundTriplesQuery.data.forEach(triple => {
+
+    inboundTriplesQuery.data.forEach((triple) => {
       // Check if subject is an entity (s.e === true)
       if (triple.s && triple.s.e === true && triple.p && triple.p.v) {
         uniqueRelationships.add(triple.p.v);
       }
     });
-    
+
     // Convert Set to array
     return Array.from(uniqueRelationships);
   }, [inboundTriplesQuery.data]);
@@ -194,16 +197,16 @@ export const useNodeDetails = (nodeId: string | undefined, flowId: string) => {
    */
   const propertyURIs = useMemo(() => {
     if (!propertiesQuery.data) return [];
-    
+
     // Extract unique property predicates
     const uniqueProperties = new Set<string>();
-    
-    propertiesQuery.data.forEach(triple => {
+
+    propertiesQuery.data.forEach((triple) => {
       if (triple.p && triple.p.v) {
         uniqueProperties.add(triple.p.v);
       }
     });
-    
+
     // Convert Set to array
     return Array.from(uniqueProperties);
   }, [propertiesQuery.data]);
@@ -213,13 +216,15 @@ export const useNodeDetails = (nodeId: string | undefined, flowId: string) => {
    * Uses dependent query that only runs when outbound relationships are available
    */
   const outboundLabelsQuery = useQuery({
-    queryKey: ["relationship-labels-outbound", { nodeId, flowId, relationships: outboundRelationships }],
+    queryKey: [
+      "relationship-labels-outbound",
+      { nodeId, flowId, relationships: outboundRelationships },
+    ],
     queryFn: async () => {
-
       if (!outboundRelationships.length) return {};
 
       const labelMap: Record<string, string> = {};
-      
+
       // Fetch labels for each relationship URI
       await Promise.all(
         outboundRelationships.map(async (relationshipURI) => {
@@ -234,24 +239,31 @@ export const useNodeDetails = (nodeId: string | undefined, flowId: string) => {
           try {
             const subjectValue: Value = { v: relationshipURI, e: true };
             const predicateValue: Value = { v: RDFS_LABEL, e: true };
-            
+
             const labelTriples = await socket
               .flow(flowId)
               .triplesQuery(subjectValue, predicateValue, undefined, 1);
-            
+
             // Extract label from the first result, or use URI as fallback
-            if (labelTriples && labelTriples.length > 0 && labelTriples[0].o) {
+            if (
+              labelTriples &&
+              labelTriples.length > 0 &&
+              labelTriples[0].o
+            ) {
               labelMap[relationshipURI] = labelTriples[0].o.v;
             } else {
               labelMap[relationshipURI] = relationshipURI;
             }
           } catch (error) {
-            console.warn(`Failed to fetch label for ${relationshipURI}:`, error);
+            console.warn(
+              `Failed to fetch label for ${relationshipURI}:`,
+              error,
+            );
             labelMap[relationshipURI] = relationshipURI;
           }
-        })
+        }),
       );
-      
+
       return labelMap;
     },
     enabled: !!nodeId && !!flowId && outboundRelationships.length > 0,
@@ -262,12 +274,15 @@ export const useNodeDetails = (nodeId: string | undefined, flowId: string) => {
    * Uses dependent query that only runs when inbound relationships are available
    */
   const inboundLabelsQuery = useQuery({
-    queryKey: ["relationship-labels-inbound", { nodeId, flowId, relationships: inboundRelationships }],
+    queryKey: [
+      "relationship-labels-inbound",
+      { nodeId, flowId, relationships: inboundRelationships },
+    ],
     queryFn: async () => {
       if (!inboundRelationships.length) return {};
 
       const labelMap: Record<string, string> = {};
-      
+
       // Fetch labels for each relationship URI
       await Promise.all(
         inboundRelationships.map(async (relationshipURI) => {
@@ -282,24 +297,31 @@ export const useNodeDetails = (nodeId: string | undefined, flowId: string) => {
           try {
             const subjectValue: Value = { v: relationshipURI, e: true };
             const predicateValue: Value = { v: RDFS_LABEL, e: true };
-            
+
             const labelTriples = await socket
               .flow(flowId)
               .triplesQuery(subjectValue, predicateValue, undefined, 1);
-            
+
             // Extract label from the first result, or use URI as fallback
-            if (labelTriples && labelTriples.length > 0 && labelTriples[0].o) {
+            if (
+              labelTriples &&
+              labelTriples.length > 0 &&
+              labelTriples[0].o
+            ) {
               labelMap[relationshipURI] = labelTriples[0].o.v;
             } else {
               labelMap[relationshipURI] = relationshipURI;
             }
           } catch (error) {
-            console.warn(`Failed to fetch label for ${relationshipURI}:`, error);
+            console.warn(
+              `Failed to fetch label for ${relationshipURI}:`,
+              error,
+            );
             labelMap[relationshipURI] = relationshipURI;
           }
-        })
+        }),
       );
-      
+
       return labelMap;
     },
     enabled: !!nodeId && !!flowId && inboundRelationships.length > 0,
@@ -310,12 +332,15 @@ export const useNodeDetails = (nodeId: string | undefined, flowId: string) => {
    * Uses dependent query that only runs when properties are available
    */
   const propertyLabelsQuery = useQuery({
-    queryKey: ["property-labels", { nodeId, flowId, properties: propertyURIs }],
+    queryKey: [
+      "property-labels",
+      { nodeId, flowId, properties: propertyURIs },
+    ],
     queryFn: async () => {
       if (!propertyURIs.length) return {};
 
       const labelMap: Record<string, string> = {};
-      
+
       // Fetch labels for each property URI
       await Promise.all(
         propertyURIs.map(async (propertyURI) => {
@@ -330,13 +355,17 @@ export const useNodeDetails = (nodeId: string | undefined, flowId: string) => {
           try {
             const subjectValue: Value = { v: propertyURI, e: true };
             const predicateValue: Value = { v: RDFS_LABEL, e: true };
-            
+
             const labelTriples = await socket
               .flow(flowId)
               .triplesQuery(subjectValue, predicateValue, undefined, 1);
-            
+
             // Extract label from the first result, or use URI as fallback
-            if (labelTriples && labelTriples.length > 0 && labelTriples[0].o) {
+            if (
+              labelTriples &&
+              labelTriples.length > 0 &&
+              labelTriples[0].o
+            ) {
               labelMap[propertyURI] = labelTriples[0].o.v;
             } else {
               labelMap[propertyURI] = propertyURI;
@@ -345,9 +374,9 @@ export const useNodeDetails = (nodeId: string | undefined, flowId: string) => {
             console.warn(`Failed to fetch label for ${propertyURI}:`, error);
             labelMap[propertyURI] = propertyURI;
           }
-        })
+        }),
       );
-      
+
       return labelMap;
     },
     enabled: !!nodeId && !!flowId && propertyURIs.length > 0,
@@ -358,23 +387,23 @@ export const useNodeDetails = (nodeId: string | undefined, flowId: string) => {
    */
   const outboundRelationshipsWithLabels = useMemo(() => {
     if (!outboundLabelsQuery.data) {
-      return outboundRelationships.map(uri => ({ uri, label: uri }));
+      return outboundRelationships.map((uri) => ({ uri, label: uri }));
     }
-    
-    return outboundRelationships.map(uri => ({
+
+    return outboundRelationships.map((uri) => ({
       uri,
-      label: outboundLabelsQuery.data[uri] || uri
+      label: outboundLabelsQuery.data[uri] || uri,
     }));
   }, [outboundRelationships, outboundLabelsQuery.data]);
 
   const inboundRelationshipsWithLabels = useMemo(() => {
     if (!inboundLabelsQuery.data) {
-      return inboundRelationships.map(uri => ({ uri, label: uri }));
+      return inboundRelationships.map((uri) => ({ uri, label: uri }));
     }
-    
-    return inboundRelationships.map(uri => ({
+
+    return inboundRelationships.map((uri) => ({
       uri,
-      label: inboundLabelsQuery.data[uri] || uri
+      label: inboundLabelsQuery.data[uri] || uri,
     }));
   }, [inboundRelationships, inboundLabelsQuery.data]);
 
@@ -385,30 +414,33 @@ export const useNodeDetails = (nodeId: string | undefined, flowId: string) => {
    */
   const propertiesWithLabels = useMemo(() => {
     if (!propertiesQuery.data) return [];
-    
+
     return propertiesQuery.data
-      .filter(triple => {
+      .filter((triple) => {
         // Exclude label properties (RDFS_LABEL) since node label is already shown
         return triple.p?.v !== RDFS_LABEL;
       })
-      .map(triple => ({
+      .map((triple) => ({
         predicate: {
-          uri: triple.p?.v || '',
-          label: propertyLabelsQuery.data?.[triple.p?.v || ''] || triple.p?.v || ''
+          uri: triple.p?.v || "",
+          label:
+            propertyLabelsQuery.data?.[triple.p?.v || ""] ||
+            triple.p?.v ||
+            "",
         },
-        value: triple.o?.v || ''
+        value: triple.o?.v || "",
       }));
   }, [propertiesQuery.data, propertyLabelsQuery.data]);
 
   // Show loading indicators for long-running operations
   useActivity(
-    outboundTriplesQuery.isLoading || 
-    inboundTriplesQuery.isLoading || 
-    propertiesQuery.isLoading ||
-    outboundLabelsQuery.isLoading || 
-    inboundLabelsQuery.isLoading ||
-    propertyLabelsQuery.isLoading, 
-    "Loading node details"
+    outboundTriplesQuery.isLoading ||
+      inboundTriplesQuery.isLoading ||
+      propertiesQuery.isLoading ||
+      outboundLabelsQuery.isLoading ||
+      inboundLabelsQuery.isLoading ||
+      propertyLabelsQuery.isLoading,
+    "Loading node details",
   );
 
   // Return node details state and operations for use in components
@@ -417,31 +449,50 @@ export const useNodeDetails = (nodeId: string | undefined, flowId: string) => {
     outboundTriples: outboundTriplesQuery.data,
     inboundTriples: inboundTriplesQuery.data,
     properties: propertiesQuery.data,
-    
+
     // Loading states
-    triplesLoading: outboundTriplesQuery.isLoading || inboundTriplesQuery.isLoading,
+    triplesLoading:
+      outboundTriplesQuery.isLoading || inboundTriplesQuery.isLoading,
     propertiesLoading: propertiesQuery.isLoading,
-    labelsLoading: outboundLabelsQuery.isLoading || inboundLabelsQuery.isLoading || propertyLabelsQuery.isLoading,
-    isLoading: outboundTriplesQuery.isLoading || inboundTriplesQuery.isLoading || propertiesQuery.isLoading || outboundLabelsQuery.isLoading || inboundLabelsQuery.isLoading || propertyLabelsQuery.isLoading,
-    
+    labelsLoading:
+      outboundLabelsQuery.isLoading ||
+      inboundLabelsQuery.isLoading ||
+      propertyLabelsQuery.isLoading,
+    isLoading:
+      outboundTriplesQuery.isLoading ||
+      inboundTriplesQuery.isLoading ||
+      propertiesQuery.isLoading ||
+      outboundLabelsQuery.isLoading ||
+      inboundLabelsQuery.isLoading ||
+      propertyLabelsQuery.isLoading,
+
     outboundTriplesLoading: outboundTriplesQuery.isLoading,
     inboundTriplesLoading: inboundTriplesQuery.isLoading,
     propertiesQueryLoading: propertiesQuery.isLoading,
     outboundLabelsLoading: outboundLabelsQuery.isLoading,
     inboundLabelsLoading: inboundLabelsQuery.isLoading,
     propertyLabelsLoading: propertyLabelsQuery.isLoading,
-    
+
     // Error states
     triplesError: outboundTriplesQuery.isError || inboundTriplesQuery.isError,
     propertiesError: propertiesQuery.isError,
-    labelsError: outboundLabelsQuery.isError || inboundLabelsQuery.isError || propertyLabelsQuery.isError,
-    hasError: outboundTriplesQuery.isError || inboundTriplesQuery.isError || propertiesQuery.isError || outboundLabelsQuery.isError || inboundLabelsQuery.isError || propertyLabelsQuery.isError,
-    
+    labelsError:
+      outboundLabelsQuery.isError ||
+      inboundLabelsQuery.isError ||
+      propertyLabelsQuery.isError,
+    hasError:
+      outboundTriplesQuery.isError ||
+      inboundTriplesQuery.isError ||
+      propertiesQuery.isError ||
+      outboundLabelsQuery.isError ||
+      inboundLabelsQuery.isError ||
+      propertyLabelsQuery.isError,
+
     outboundTriplesError: outboundTriplesQuery.isError,
     inboundTriplesError: inboundTriplesQuery.isError,
     outboundLabelsError: outboundLabelsQuery.isError,
     inboundLabelsError: inboundLabelsQuery.isError,
-    
+
     // Error messages
     outboundTriplesErrorMessage: outboundTriplesQuery.error,
     inboundTriplesErrorMessage: inboundTriplesQuery.error,
@@ -454,7 +505,7 @@ export const useNodeDetails = (nodeId: string | undefined, flowId: string) => {
     outboundRelationships,
     inboundRelationships,
     propertyURIs,
-    
+
     // Processed data - with labels
     outboundRelationshipsWithLabels,
     inboundRelationshipsWithLabels,

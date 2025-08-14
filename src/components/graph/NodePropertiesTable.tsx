@@ -14,9 +14,11 @@ interface NodePropertiesTableProps {
   }>;
 }
 
-const NodePropertiesTable: React.FC<NodePropertiesTableProps> = ({ properties }) => {
+const NodePropertiesTable: React.FC<NodePropertiesTableProps> = ({
+  properties,
+}) => {
   // Transform properties data to match the NodeProperty interface
-  const tableData: NodeProperty[] = properties.map(prop => ({
+  const tableData: NodeProperty[] = properties.map((prop) => ({
     property: prop.predicate.label,
     value: prop.value,
     uri: prop.predicate.uri,
