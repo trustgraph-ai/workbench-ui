@@ -9,7 +9,7 @@ export const SchemaControls: React.FC = () => {
   return (
     <>
       <HStack justify="flex-end">
-        <Button colorPalette="blue" onClick={() => setIsCreateOpen(true)}>
+        <Button colorPalette="primary" onClick={() => setIsCreateOpen(true)}>
           <Plus size={20} />
           Create Schema
         </Button>
