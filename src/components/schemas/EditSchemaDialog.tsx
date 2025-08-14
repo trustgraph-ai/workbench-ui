@@ -191,6 +191,7 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
             setDescription("");
             setFields([
               {
+                id: crypto.randomUUID(),
                 name: "",
                 type: "string",
                 primary_key: false,
