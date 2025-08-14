@@ -380,10 +380,8 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
                               label="Type"
                               value={field.type ? [field.type] : []}
                               onValueChange={(value) => {
-                                console.log("SelectField onChange:", { index, value, typeof: typeof value });
                                 // Handle both array and string values from SelectField
                                 const typeValue = Array.isArray(value) ? value[0] : value;
-                                console.log("Converted type value:", typeValue);
                                 handleFieldChange(index, {
                                   type: typeValue as SchemaField["type"],
                                 });
@@ -437,14 +435,7 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
                           </Checkbox.Root>
                         </HStack>
 
-                        {(() => {
-                          console.log(`Field ${index} type check:`, {
-                            type: field.type,
-                            isEnum: field.type === "enum",
-                            typeOf: typeof field.type
-                          });
-                          return field.type === "enum";
-                        })() && (
+                        {field.type === "enum" && (
                           <Box mt={3}>
                             <Text>Enum Values</Text>
                             <HStack mb={2}>
