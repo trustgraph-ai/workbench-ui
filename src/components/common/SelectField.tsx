@@ -31,11 +31,10 @@ const SelectField: React.FC<SelectFieldProps> = ({
   onValueChange,
   contentRef,
 }) => {
-
   // Only create new collection when items actually change
-  const collection = useMemo(() => 
-    createListCollection({ items: items }), 
-    [items]
+  const collection = useMemo(
+    () => createListCollection({ items: items }),
+    [items],
   );
 
   return (

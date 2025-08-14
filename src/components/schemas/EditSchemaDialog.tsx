@@ -33,7 +33,7 @@ const typeOptions = [
   },
   {
     value: "integer",
-    label: "Integer", 
+    label: "Integer",
     description: "Whole numbers (e.g., 1, 42, -10)",
   },
   {
@@ -81,9 +81,9 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
     initialSchema?.description || "",
   );
   const [fields, setFields] = React.useState<SchemaField[]>(
-    initialSchema?.fields?.map(field => ({ 
-      ...field, 
-      id: field.id || crypto.randomUUID() 
+    initialSchema?.fields?.map((field) => ({
+      ...field,
+      id: field.id || crypto.randomUUID(),
     })) || [
       {
         id: crypto.randomUUID(),
@@ -105,9 +105,9 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
       setName(initialSchema?.name || "");
       setDescription(initialSchema?.description || "");
       setFields(
-        initialSchema?.fields?.map(field => ({ 
-          ...field, 
-          id: field.id || crypto.randomUUID() 
+        initialSchema?.fields?.map((field) => ({
+          ...field,
+          id: field.id || crypto.randomUUID(),
         })) || [
           {
             id: crypto.randomUUID(),
@@ -116,14 +116,13 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
             primary_key: false,
             required: false,
           },
-        ]
+        ],
       );
       setIndexes(initialSchema?.indexes || []);
     }
   }, [isOpen, schemaId, initialSchema]);
   const [newIndex, setNewIndex] = React.useState("");
   const [errors, setErrors] = React.useState<string[]>([]);
-
 
   const handleAddField = () => {
     setFields([
@@ -259,8 +258,6 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
   };
 
   const contentRef = useRef<HTMLDivElement>(null);
-  
-  
 
   return (
     <Dialog.Root
@@ -344,8 +341,11 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
                     <Text fontSize="lg" fontWeight="bold">
                       Fields
                     </Text>
-                    <Button size="sm" colorPalette="primary"
-                      onClick={handleAddField}>
+                    <Button
+                      size="sm"
+                      colorPalette="primary"
+                      onClick={handleAddField}
+                    >
                       <Plus size={16} />
                       Add Field
                     </Button>
@@ -381,7 +381,9 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
                               value={field.type ? [field.type] : []}
                               onValueChange={(value) => {
                                 // Handle both array and string values from SelectField
-                                const typeValue = Array.isArray(value) ? value[0] : value;
+                                const typeValue = Array.isArray(value)
+                                  ? value[0]
+                                  : value;
                                 handleFieldChange(index, {
                                   type: typeValue as SchemaField["type"],
                                 });
@@ -528,7 +530,9 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
                             label=""
                             value={newIndex ? [newIndex] : []}
                             onValueChange={(value) => {
-                              const indexValue = Array.isArray(value) ? value[0] : value;
+                              const indexValue = Array.isArray(value)
+                                ? value[0]
+                                : value;
                               setNewIndex(indexValue || "");
                             }}
                             items={availableFields.map((field) => ({
@@ -539,9 +543,12 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
                             contentRef={contentRef}
                           />
                         </Box>
-                        <Button onClick={handleAddIndex}
+                        <Button
+                          onClick={handleAddIndex}
                           colorPalette="primary"
-                          disabled={!newIndex} mt={8}>
+                          disabled={!newIndex}
+                          mt={8}
+                        >
                           Add Index
                         </Button>
                       </HStack>
