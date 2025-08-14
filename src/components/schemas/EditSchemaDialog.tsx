@@ -24,6 +24,40 @@ import { Schema, SchemaField } from "../../model/schemas-table";
 import { validateSchema } from "../../utils/schema-validation";
 import SelectField from "../common/SelectField";
 
+// Type options moved outside component to prevent recreation on every render
+const typeOptions = [
+  {
+    value: "string",
+    label: "String",
+    description: "Text data of variable length",
+  },
+  {
+    value: "integer",
+    label: "Integer", 
+    description: "Whole numbers (e.g., 1, 42, -10)",
+  },
+  {
+    value: "float",
+    label: "Float",
+    description: "Decimal numbers (e.g., 3.14, -2.5)",
+  },
+  {
+    value: "boolean",
+    label: "Boolean",
+    description: "True or false values",
+  },
+  {
+    value: "timestamp",
+    label: "Timestamp",
+    description: "Date and time values",
+  },
+  {
+    value: "enum",
+    label: "Enum",
+    description: "Predefined set of allowed values",
+  },
+];
+
 interface EditSchemaDialogProps {
   isOpen: boolean;
   onClose: () => void;
@@ -230,39 +264,6 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
   };
 
   const contentRef = useRef<HTMLDivElement>(null);
-
-  const typeOptions = [
-    {
-      value: "string",
-      label: "String",
-      description: "Text data of variable length",
-    },
-    {
-      value: "integer",
-      label: "Integer", 
-      description: "Whole numbers (e.g., 1, 42, -10)",
-    },
-    {
-      value: "float",
-      label: "Float",
-      description: "Decimal numbers (e.g., 3.14, -2.5)",
-    },
-    {
-      value: "boolean",
-      label: "Boolean",
-      description: "True or false values",
-    },
-    {
-      value: "timestamp",
-      label: "Timestamp",
-      description: "Date and time values",
-    },
-    {
-      value: "enum",
-      label: "Enum",
-      description: "Predefined set of allowed values",
-    },
-  ];
 
   return (
     <Dialog.Root
@@ -521,7 +522,7 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
                     return (
                       <HStack mb={2}>
                         <Select.Root
-                          value={newIndex || undefined}
+                          value={newIndex || ""}
                           onValueChange={(details) => {
                             setNewIndex(details.value || "");
                           }}
