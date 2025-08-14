@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import {
   Dialog,
   Portal,
@@ -223,6 +223,8 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
     }
   };
 
+  const contentRef = useRef<HTMLDivElement>(null);
+
   return (
     <Dialog.Root
       open={isOpen}
@@ -235,7 +237,7 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
       <Portal>
         <Dialog.Backdrop />
         <Dialog.Positioner>
-          <Dialog.Content maxH="90vh" maxW="80vw" w="1200px">
+          <Dialog.Content ref={contentRef}>
             <Dialog.Header>
               <Dialog.Title>
                 {mode === "create" ? "Create New Schema" : "Edit Schema"}
@@ -352,6 +354,7 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
                               { label: "Timestamp", value: "timestamp" },
                               { label: "Enum", value: "enum" },
                             ]}
+                            contentRef={contentRef}
                           />
 
                           <IconButton
