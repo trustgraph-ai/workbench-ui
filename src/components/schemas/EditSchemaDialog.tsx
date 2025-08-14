@@ -291,27 +291,6 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
     };
   });
   
-  // Ensure contentRef is stable - don't pass it until it's ready
-  const [isContentReady, setIsContentReady] = React.useState(false);
-  
-  React.useEffect(() => {
-    if (contentRef.current && !isContentReady) {
-      console.log("Content ref is now ready!");
-      setIsContentReady(true);
-    }
-  }, [isOpen, isContentReady]);
-  
-  // Debug: Track when SelectField is about to receive contentRef
-  const selectFieldContentRef = React.useMemo(() => {
-    const ref = isContentReady ? contentRef.current : undefined;
-    console.log("SelectField contentRef prop:", {
-      hasValue: !!ref,
-      isContentReady,
-      isSameAsContentRef: ref === contentRef.current,
-      refType: typeof ref
-    });
-    return ref;
-  }, [isContentReady]);
 
   return (
     <Dialog.Root
@@ -427,15 +406,7 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
 
                           <SelectField
                             label="Type"
-                            value={(() => {
-                              console.log("SelectField props for field", index, ":", {
-                                fieldType: field.type,
-                                typeOf: typeof field.type,
-                                fieldObject: field,
-                                typeOptionsLength: typeOptions.length
-                              });
-                              return field.type;
-                            })()}
+                            value={field.type}
                             onValueChange={(value) => {
                               console.log("SelectField onChange:", { index, value, typeof: typeof value });
                               handleFieldChange(index, {
@@ -443,7 +414,7 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
                               });
                             }}
                             items={typeOptions}
-                            contentRef={selectFieldContentRef}
+                            contentRef={contentRef}
                           />
 
                           <IconButton
@@ -588,7 +559,7 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
                               value: field.name,
                               label: field.name
                             }))}
-                            contentRef={selectFieldContentRef}
+                            contentRef={contentRef}
                           />
                         </Box>
                         <Button onClick={handleAddIndex} disabled={!newIndex} mt={8}>
