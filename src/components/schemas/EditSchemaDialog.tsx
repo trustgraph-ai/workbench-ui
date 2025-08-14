@@ -417,7 +417,7 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
               </Text>
 
               {(() => {
-                const availableFields = fields.filter((f) => f.name && !f.primary_key && !indexes.includes(f.name));
+                const availableFields = fields.filter((f) => f.name && f.name.trim() !== "" && !f.primary_key && !indexes.includes(f.name));
                 
                 if (availableFields.length === 0) {
                   return (

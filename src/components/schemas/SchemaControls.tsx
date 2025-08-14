@@ -10,10 +10,10 @@ export const SchemaControls: React.FC = () => {
     <>
       <HStack justify="flex-end">
         <Button
-          leftIcon={<Plus size={20} />}
-          colorScheme="blue"
+          colorPalette="blue"
           onClick={() => setIsCreateOpen(true)}
         >
+          <Plus size={20} />
           Create Schema
         </Button>
       </HStack>
