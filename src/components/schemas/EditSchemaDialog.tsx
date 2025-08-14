@@ -251,7 +251,8 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
                 <Text fontSize="lg" fontWeight="bold">
                   Fields
                 </Text>
-                <Button size="sm" leftIcon={<Plus size={16} />} onClick={handleAddField}>
+                <Button size="sm" onClick={handleAddField}>
+                  <Plus size={16} />
                   Add Field
                 </Button>
               </HStack>
@@ -288,7 +289,7 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
                         </Select>
                       </Field.Root>
 
-                      <IconButton
+                      {/* <IconButton
                         aria-label="Remove field"
                         size="sm"
                         colorPalette="red"
@@ -297,27 +298,35 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
                         disabled={fields.length === 1}
                       >
                         <Trash2 size={16} />
-                      </IconButton>
+                      </IconButton> */}
                     </HStack>
 
                     <HStack gap={4}>
-                      <Checkbox
-                        isChecked={field.primary_key}
-                        onChange={(e) =>
-                          handleFieldChange(index, { primary_key: e.target.checked })
+                      <Checkbox.Root
+                        checked={field.primary_key}
+                        onCheckedChange={(e) =>
+                          handleFieldChange(index, { primary_key: !!e.checked })
                         }
                       >
-                        Primary Key
-                      </Checkbox>
+                        <Checkbox.HiddenInput />
+                        <Checkbox.Control>
+                          <Checkbox.Indicator />
+                        </Checkbox.Control>
+                        <Checkbox.Label>Primary Key</Checkbox.Label>
+                      </Checkbox.Root>
 
-                      <Checkbox
-                        isChecked={field.required}
-                        onChange={(e) =>
-                          handleFieldChange(index, { required: e.target.checked })
+                      <Checkbox.Root
+                        checked={field.required}
+                        onCheckedChange={(e) =>
+                          handleFieldChange(index, { required: !!e.checked })
                         }
                       >
-                        Required
-                      </Checkbox>
+                        <Checkbox.HiddenInput />
+                        <Checkbox.Control>
+                          <Checkbox.Indicator />
+                        </Checkbox.Control>
+                        <Checkbox.Label>Required</Checkbox.Label>
+                      </Checkbox.Root>
                     </HStack>
 
                     {field.type === "enum" && (
@@ -395,7 +404,7 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
                       </option>
                     ))}
                 </Select>
-                <Button onClick={handleAddIndex} isDisabled={!newIndex}>
+                <Button onClick={handleAddIndex} disabled={!newIndex}>
                   Add Index
                 </Button>
               </HStack>
