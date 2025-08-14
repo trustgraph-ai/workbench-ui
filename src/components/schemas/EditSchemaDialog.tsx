@@ -180,8 +180,8 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
   return (
     <Dialog.Root
       open={isOpen}
-      onOpenChange={(x) => {
-        if (!x.open) onClose();
+      onOpenChange={(details) => {
+        if (!details.open) onClose();
       }}
       size="xl"
       placement="center"
@@ -189,6 +189,7 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
       <Portal>
         <Dialog.Backdrop />
         <Dialog.Positioner>
+
           <Dialog.Content maxH="90vh" maxW="80vw" w="1200px">
             <Dialog.Header>
               <Dialog.Title>{mode === "create" ? "Create New Schema" : "Edit Schema"}</Dialog.Title>
@@ -196,6 +197,7 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
         
             <Dialog.Body overflowY="auto">
           <VStack gap={6} align="stretch">
+
             {errors.length > 0 && (
               <Box
                 p={4}
@@ -226,6 +228,7 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
               </Field.Root>
             )}
 
+
             <Field.Root required>
               <Field.Label>Name <Field.RequiredIndicator /></Field.Label>
               <Input
@@ -247,6 +250,7 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
             <Separator />
 
             <Box>
+
               <HStack justify="space-between" mb={4}>
                 <Text fontSize="lg" fontWeight="bold">
                   Fields
@@ -260,6 +264,7 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
               <VStack gap={4} align="stretch">
                 {fields.map((field, index) => (
                   <Box key={index} p={4} borderWidth="1px" borderRadius="md">
+
                     <HStack gap={4} mb={3}>
                       <Field.Root required flex={1}>
                         <Field.Label>Field Name <Field.RequiredIndicator /></Field.Label>
@@ -272,24 +277,41 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
 
                       <Field.Root required flex={1}>
                         <Field.Label>Type <Field.RequiredIndicator /></Field.Label>
-                        <Select
-                          value={field.type}
-                          onChange={(e) =>
+                        <Select.Root
+                          value={[field.type]}
+                          onValueChange={(details) =>
                             handleFieldChange(index, {
-                              type: e.target.value as SchemaField["type"],
+                              type: details.value[0] as SchemaField["type"],
                             })
                           }
                         >
-                          <option value="string">String</option>
-                          <option value="integer">Integer</option>
-                          <option value="float">Float</option>
-                          <option value="boolean">Boolean</option>
-                          <option value="timestamp">Timestamp</option>
-                          <option value="enum">Enum</option>
-                        </Select>
+                          <Select.Trigger>
+                            <Select.ValueText />
+                          </Select.Trigger>
+                          <Select.Content>
+                            <Select.Item value="string">
+                              <Select.ItemText>String</Select.ItemText>
+                            </Select.Item>
+                            <Select.Item value="integer">
+                              <Select.ItemText>Integer</Select.ItemText>
+                            </Select.Item>
+                            <Select.Item value="float">
+                              <Select.ItemText>Float</Select.ItemText>
+                            </Select.Item>
+                            <Select.Item value="boolean">
+                              <Select.ItemText>Boolean</Select.ItemText>
+                            </Select.Item>
+                            <Select.Item value="timestamp">
+                              <Select.ItemText>Timestamp</Select.ItemText>
+                            </Select.Item>
+                            <Select.Item value="enum">
+                              <Select.ItemText>Enum</Select.ItemText>
+                            </Select.Item>
+                          </Select.Content>
+                        </Select.Root>
                       </Field.Root>
 
-                      {/* <IconButton
+                      <IconButton
                         aria-label="Remove field"
                         size="sm"
                         colorPalette="red"
@@ -298,14 +320,15 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
                         disabled={fields.length === 1}
                       >
                         <Trash2 size={16} />
-                      </IconButton> */}
+                      </IconButton>
                     </HStack>
+
 
                     <HStack gap={4}>
                       <Checkbox.Root
                         checked={field.primary_key}
-                        onCheckedChange={(e) =>
-                          handleFieldChange(index, { primary_key: !!e.checked })
+                        onCheckedChange={(details) =>
+                          handleFieldChange(index, { primary_key: details.checked })
                         }
                       >
                         <Checkbox.HiddenInput />
@@ -317,8 +340,8 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
 
                       <Checkbox.Root
                         checked={field.required}
-                        onCheckedChange={(e) =>
-                          handleFieldChange(index, { required: !!e.checked })
+                        onCheckedChange={(details) =>
+                          handleFieldChange(index, { required: details.checked })
                         }
                       >
                         <Checkbox.HiddenInput />
@@ -328,6 +351,7 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
                         <Checkbox.Label>Required</Checkbox.Label>
                       </Checkbox.Root>
                     </HStack>
+
 
                     {field.type === "enum" && (
                       <Box mt={3}>
@@ -379,6 +403,7 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
                         </Flex>
                       </Box>
                     )}
+
                   </Box>
                 ))}
               </VStack>
@@ -390,24 +415,30 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
               <Text fontSize="lg" fontWeight="bold" mb={4}>
                 Indexes
               </Text>
+
               <HStack mb={2}>
-                <Select
-                  placeholder="Select field to index"
-                  value={newIndex}
-                  onChange={(e) => setNewIndex(e.target.value)}
+                <Select.Root
+                  value={newIndex ? [newIndex] : []}
+                  onValueChange={(details) => setNewIndex(details.value[0] || "")}
                 >
-                  {fields
-                    .filter((f) => f.name && !f.primary_key && !indexes.includes(f.name))
-                    .map((field) => (
-                      <option key={field.name} value={field.name}>
-                        {field.name}
-                      </option>
-                    ))}
-                </Select>
+                  <Select.Trigger>
+                    <Select.ValueText placeholder="Select field to index" />
+                  </Select.Trigger>
+                  <Select.Content>
+                    {fields
+                      .filter((f) => f.name && !f.primary_key && !indexes.includes(f.name))
+                      .map((field) => (
+                        <Select.Item key={field.name} value={field.name}>
+                          <Select.ItemText>{field.name}</Select.ItemText>
+                        </Select.Item>
+                      ))}
+                  </Select.Content>
+                </Select.Root>
                 <Button onClick={handleAddIndex} disabled={!newIndex}>
                   Add Index
                 </Button>
               </HStack>
+
               <Flex wrap="wrap" gap={2}>
                 {indexes.map((index) => (
                   <Badge
@@ -428,7 +459,10 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
                   </Badge>
                 ))}
               </Flex>
+
             </Box>
+
+
           </VStack>
             </Dialog.Body>
             <Dialog.Footer>
