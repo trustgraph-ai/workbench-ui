@@ -272,6 +272,46 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
   };
 
   const contentRef = useRef<HTMLDivElement>(null);
+  
+  // Debug: Track contentRef changes
+  React.useEffect(() => {
+    console.log("contentRef.current changed:", {
+      hasValue: !!contentRef.current,
+      element: contentRef.current,
+      elementId: contentRef.current?.id,
+      elementTagName: contentRef.current?.tagName
+    });
+  }, [contentRef.current]);
+  
+  // Debug: Track component lifecycle
+  React.useEffect(() => {
+    console.log("EditSchemaDialog mounted/updated");
+    return () => {
+      console.log("EditSchemaDialog cleanup");
+    };
+  });
+  
+  // Ensure contentRef is stable - don't pass it until it's ready
+  const [isContentReady, setIsContentReady] = React.useState(false);
+  
+  React.useEffect(() => {
+    if (contentRef.current && !isContentReady) {
+      console.log("Content ref is now ready!");
+      setIsContentReady(true);
+    }
+  }, [isOpen, isContentReady]);
+  
+  // Debug: Track when SelectField is about to receive contentRef
+  const selectFieldContentRef = React.useMemo(() => {
+    const ref = isContentReady ? contentRef.current : undefined;
+    console.log("SelectField contentRef prop:", {
+      hasValue: !!ref,
+      isContentReady,
+      isSameAsContentRef: ref === contentRef.current,
+      refType: typeof ref
+    });
+    return ref;
+  }, [isContentReady]);
 
   return (
     <Dialog.Root
@@ -403,7 +443,7 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
                               });
                             }}
                             items={typeOptions}
-                            contentRef={contentRef}
+                            contentRef={selectFieldContentRef}
                           />
 
                           <IconButton
@@ -537,29 +577,21 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
 
                     return (
                       <HStack mb={2}>
-                        <Select.Root
-                          value={newIndex || ""}
-                          onValueChange={(details) => {
-                            setNewIndex(details.value || "");
-                          }}
-                        >
-                          <Select.Trigger>
-                            <Select.ValueText placeholder="Select field to index" />
-                          </Select.Trigger>
-                          <Select.Content>
-                            {availableFields.map((field) => (
-                              <Select.Item
-                                key={field.name}
-                                value={field.name}
-                              >
-                                <Select.ItemText>
-                                  {field.name}
-                                </Select.ItemText>
-                              </Select.Item>
-                            ))}
-                          </Select.Content>
-                        </Select.Root>
-                        <Button onClick={handleAddIndex} disabled={!newIndex}>
+                        <Box flex={1}>
+                          <SelectField
+                            label=""
+                            value={newIndex || ""}
+                            onValueChange={(value) => {
+                              setNewIndex(value || "");
+                            }}
+                            items={availableFields.map((field) => ({
+                              value: field.name,
+                              label: field.name
+                            }))}
+                            contentRef={selectFieldContentRef}
+                          />
+                        </Box>
+                        <Button onClick={handleAddIndex} disabled={!newIndex} mt={8}>
                           Add Index
                         </Button>
                       </HStack>
