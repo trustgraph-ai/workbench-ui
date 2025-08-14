@@ -141,7 +141,10 @@ export const useGraphSubgraph = (
     entityUri ? `Build subgraph: ${entityUri}` : "Loading graph",
   );
   useActivity(updateMutation.isPending, "Update subgraph");
-  useActivity(relationshipNavigationMutation.isPending, "Following relationship");
+  useActivity(
+    relationshipNavigationMutation.isPending,
+    "Following relationship",
+  );
 
   // Handle query errors
   if (query.isError && query.error) {

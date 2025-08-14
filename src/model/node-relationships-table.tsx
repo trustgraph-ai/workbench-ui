@@ -29,25 +29,27 @@ export const columns = [
       const relationship = info.getValue();
       const uri = info.row.original.uri;
       const onRelationshipClick = info.row.original.onRelationshipClick;
-      
+
       // Determine theme variant based on direction
       const variant = direction === "outgoing" ? "primary" : "warmBrand";
-      
+
       return (
         <Button
           variant="ghost"
           colorPalette={variant}
           size="sm"
           onClick={() => onRelationshipClick?.(uri || "")}
-          style={{ 
+          style={{
             justifyContent: "flex-start",
             padding: "0.25rem 0.5rem",
             height: "auto",
             minHeight: "1.5rem",
-            fontWeight: "normal"
+            fontWeight: "normal",
           }}
         >
-          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+          <div
+            style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}
+          >
             {direction === "incoming" && <ArrowLeft size={16} />}
             <span>{relationship}</span>
             {direction === "outgoing" && <ArrowRight size={16} />}

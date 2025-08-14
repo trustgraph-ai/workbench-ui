@@ -8,10 +8,15 @@ import { ForceGraph3D } from "react-force-graph";
 import SpriteText from "three-spritetext";
 
 import {
-   useBorderColor, useBackgroundColor, useNodeColor, useNodeTextColor,
-   useSelectedNodeTextColor, useLinkColor, useLinkTextColor,
-   useLinkParticleColor
-} from '../ui/graph-colors';
+  useBorderColor,
+  useBackgroundColor,
+  useNodeColor,
+  useNodeTextColor,
+  useSelectedNodeTextColor,
+  useLinkColor,
+  useLinkTextColor,
+  useLinkParticleColor,
+} from "../ui/graph-colors";
 
 import { useSessionStore } from "../../state/session";
 import { useWorkbenchStateStore } from "../../state/workbench";
@@ -25,7 +30,7 @@ const GraphView = () => {
 
   const fgRef = useRef();
   const { width, height, ref } = useResizeDetector({});
-  
+
   // State to track the selected node
   const [selectedNode, setSelectedNode] = useState(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -101,28 +106,36 @@ const GraphView = () => {
   const nodeClick = (node) => {
     // Set the selected node in state
     setSelectedNode(node);
-    
+
     // Log the node ID and label when a node is clicked
     console.log("Node selected:", node.id, "Label:", node.label);
-    
+
     // For now, commenting out the navigation to focus on selection
     // updateSubgraphMutation({ nodeId: node.id, currentGraph: view });
   };
-  
+
   const handleCloseDrawer = () => {
     // Close drawer and unselect the node
     setIsDrawerOpen(false);
     setSelectedNode(null);
   };
 
-  const handleRelationshipClick = (relationshipUri: string, direction: "incoming" | "outgoing") => {
+  const handleRelationshipClick = (
+    relationshipUri: string,
+    direction: "incoming" | "outgoing",
+  ) => {
     if (!selectedNode || !view) {
       console.warn("No selected node or graph view available");
       return;
     }
 
-    console.log(`Following ${direction} relationship:`, relationshipUri, "from node:", selectedNode.id);
-    
+    console.log(
+      `Following ${direction} relationship:`,
+      relationshipUri,
+      "from node:",
+      selectedNode.id,
+    );
+
     navigateByRelationship({
       selectedNodeId: selectedNode.id,
       relationshipUri,
@@ -159,7 +172,10 @@ const GraphView = () => {
           backgroundColor={backgroundColor}
           nodeThreeObject={(node) => {
             const sprite = new SpriteText(wrap(node.label, 30));
-            sprite.color = selectedNode?.id === node.id ? selectedNodeTextColor : nodeTextColor;
+            sprite.color =
+              selectedNode?.id === node.id
+                ? selectedNodeTextColor
+                : nodeTextColor;
             sprite.textHeight = 4;
             return sprite;
           }}
@@ -203,8 +219,8 @@ const GraphView = () => {
           }}
         />
       </Box>
-      
-      <NodeDetailsDrawer 
+
+      <NodeDetailsDrawer
         node={selectedNode}
         isOpen={isDrawerOpen}
         onClose={handleCloseDrawer}

@@ -145,8 +145,11 @@ export class BaseApi {
    */
   openSocket() {
     // Don't create multiple connections
-    if (this.ws && (this.ws.readyState === WebSocket.CONNECTING || 
-                    this.ws.readyState === WebSocket.OPEN)) {
+    if (
+      this.ws &&
+      (this.ws.readyState === WebSocket.CONNECTING ||
+        this.ws.readyState === WebSocket.OPEN)
+    ) {
       return;
     }
 
@@ -210,7 +213,7 @@ export class BaseApi {
   onOpen() {
     console.log("[socket open]");
     this.reconnectAttempts = 0; // Reset reconnection attempts on success
-    
+
     // Clear any pending reconnect timer
     if (this.reconnectTimer) {
       clearTimeout(this.reconnectTimer);
@@ -231,7 +234,7 @@ export class BaseApi {
     if (this.reconnectTimer) return;
 
     this.reconnectAttempts++;
-    
+
     if (this.reconnectAttempts > this.maxReconnectAttempts) {
       console.error("[socket] Max reconnection attempts reached");
       // Notify all pending requests of the failure
@@ -243,12 +246,14 @@ export class BaseApi {
 
     // Calculate exponential backoff with jitter
     const backoffDelay = Math.min(
-      SOCKET_RECONNECTION_TIMEOUT * Math.pow(2, this.reconnectAttempts - 1) + 
-      Math.random() * 1000,
-      30000 // Max 30 seconds
+      SOCKET_RECONNECTION_TIMEOUT * Math.pow(2, this.reconnectAttempts - 1) +
+        Math.random() * 1000,
+      30000, // Max 30 seconds
     );
 
-    console.log(`[socket] Reconnecting in ${backoffDelay}ms (attempt ${this.reconnectAttempts})`);
+    console.log(
+      `[socket] Reconnecting in ${backoffDelay}ms (attempt ${this.reconnectAttempts})`,
+    );
 
     this.reconnectTimer = setTimeout(() => {
       this.reconnectTimer = undefined;
@@ -262,8 +267,11 @@ export class BaseApi {
   reopen() {
     console.log("[socket reopen]");
     // Check if we're already connected or connecting
-    if (this.ws && (this.ws.readyState === WebSocket.OPEN || 
-                    this.ws.readyState === WebSocket.CONNECTING)) {
+    if (
+      this.ws &&
+      (this.ws.readyState === WebSocket.OPEN ||
+        this.ws.readyState === WebSocket.CONNECTING)
+    ) {
       return;
     }
     this.openSocket();
@@ -286,7 +294,7 @@ export class BaseApi {
       this.ws.removeEventListener("close", this.onClose);
       this.ws.removeEventListener("open", this.onOpen);
       this.ws.removeEventListener("error", this.onError);
-      
+
       this.ws.close();
       this.ws = undefined;
     }
