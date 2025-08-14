@@ -57,6 +57,28 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
   const [newIndex, setNewIndex] = React.useState("");
   const [errors, setErrors] = React.useState<string[]>([]);
 
+  // Debug logs
+  console.log('EditSchemaDialog render:', {
+    mode,
+    fields,
+    fieldsLength: fields.length,
+    fieldTypes: fields.map(f => ({ name: f.name, type: f.type, typeOf: typeof f.type })),
+    indexes,
+    newIndex
+  });
+  
+  fields.forEach((field, index) => {
+    console.log(`Field ${index}:`, {
+      name: field.name,
+      type: field.type,
+      typeOfType: typeof field.type,
+      isUndefined: field.type === undefined,
+      isNull: field.type === null,
+      isEmptyString: field.type === '',
+      actualValue: JSON.stringify(field.type)
+    });
+  });
+
   const handleAddField = () => {
     setFields([
       ...fields,
@@ -275,41 +297,26 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
                         />
                       </Field.Root>
 
-                      <Field.Root required flex={1}>
-                        <Field.Label>Type <Field.RequiredIndicator /></Field.Label>
-                        <Select.Root
-                          value={field.type}
-                          onValueChange={(details) => {
-                            handleFieldChange(index, {
-                              type: details.value as SchemaField["type"],
-                            });
-                          }}
-                        >
-                          <Select.Trigger>
-                            <Select.ValueText />
-                          </Select.Trigger>
-                          <Select.Content>
-                            <Select.Item value="string">
-                              <Select.ItemText>String</Select.ItemText>
-                            </Select.Item>
-                            <Select.Item value="integer">
-                              <Select.ItemText>Integer</Select.ItemText>
-                            </Select.Item>
-                            <Select.Item value="float">
-                              <Select.ItemText>Float</Select.ItemText>
-                            </Select.Item>
-                            <Select.Item value="boolean">
-                              <Select.ItemText>Boolean</Select.ItemText>
-                            </Select.Item>
-                            <Select.Item value="timestamp">
-                              <Select.ItemText>Timestamp</Select.ItemText>
-                            </Select.Item>
-                            <Select.Item value="enum">
-                              <Select.ItemText>Enum</Select.ItemText>
-                            </Select.Item>
-                          </Select.Content>
-                        </Select.Root>
-                      </Field.Root>
+                      <SelectField
+                        label="Type"
+                        required
+                        flex={1}
+                        value={field.type}
+                        onValueChange={(details) => {
+                          console.log('SelectField onChange:', details);
+                          handleFieldChange(index, {
+                            type: details.value as SchemaField["type"],
+                          });
+                        }}
+                        items={[
+                          { label: "String", value: "string" },
+                          { label: "Integer", value: "integer" },
+                          { label: "Float", value: "float" },
+                          { label: "Boolean", value: "boolean" },
+                          { label: "Timestamp", value: "timestamp" },
+                          { label: "Enum", value: "enum" },
+                        ]}
+                      />
 
                       <IconButton
                         aria-label="Remove field"
