@@ -374,7 +374,8 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
                     <Text fontSize="lg" fontWeight="bold">
                       Fields
                     </Text>
-                    <Button size="sm" onClick={handleAddField}>
+                    <Button size="sm" colorPalette="primary"
+                      onClick={handleAddField}>
                       <Plus size={16} />
                       Add Field
                     </Button>
@@ -406,11 +407,14 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
 
                           <SelectField
                             label="Type"
-                            value={field.type}
+                            value={field.type ? [field.type] : []}
                             onValueChange={(value) => {
                               console.log("SelectField onChange:", { index, value, typeof: typeof value });
+                              // Handle both array and string values from SelectField
+                              const typeValue = Array.isArray(value) ? value[0] : value;
+                              console.log("Converted type value:", typeValue);
                               handleFieldChange(index, {
-                                type: value as SchemaField["type"],
+                                type: typeValue as SchemaField["type"],
                               });
                             }}
                             items={typeOptions}
@@ -461,7 +465,14 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
                           </Checkbox.Root>
                         </HStack>
 
-                        {field.type === "enum" && (
+                        {(() => {
+                          console.log(`Field ${index} type check:`, {
+                            type: field.type,
+                            isEnum: field.type === "enum",
+                            typeOf: typeof field.type
+                          });
+                          return field.type === "enum";
+                        })() && (
                           <Box mt={3}>
                             <Text>Enum Values</Text>
                             <HStack mb={2}>
@@ -488,6 +499,7 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
                                     input.value = "";
                                   }
                                 }}
+                                colorPalette="primary"
                               >
                                 Add
                               </Button>
@@ -496,7 +508,7 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
                               {(field.enum || []).map((value) => (
                                 <Badge
                                   key={value}
-                                  colorPalette="blue"
+                                  colorPalette="accent"
                                   borderRadius="full"
                                   px={3}
                                   py={1}
@@ -606,7 +618,7 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
                 <Button variant="ghost" onClick={onClose}>
                   Cancel
                 </Button>
-                <Button colorPalette="blue" onClick={handleSave}>
+                <Button colorPalette="primary" onClick={handleSave}>
                   {mode === "create" ? "Create" : "Save"}
                 </Button>
               </HStack>
