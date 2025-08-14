@@ -124,31 +124,6 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
   const [newIndex, setNewIndex] = React.useState("");
   const [errors, setErrors] = React.useState<string[]>([]);
 
-  // Debug logs
-  console.log("EditSchemaDialog render:", {
-    mode,
-    fields,
-    fieldsLength: fields.length,
-    fieldTypes: fields.map((f) => ({
-      name: f.name,
-      type: f.type,
-      typeOf: typeof f.type,
-    })),
-    indexes,
-    newIndex,
-  });
-
-  fields.forEach((field, index) => {
-    console.log(`Field ${index}:`, {
-      name: field.name,
-      type: field.type,
-      typeOfType: typeof field.type,
-      isUndefined: field.type === undefined,
-      isNull: field.type === null,
-      isEmptyString: field.type === "",
-      actualValue: JSON.stringify(field.type),
-    });
-  });
 
   const handleAddField = () => {
     setFields([
@@ -172,8 +147,6 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
   };
 
   const handleFieldChange = (index: number, field: Partial<SchemaField>) => {
-    console.log("CHANGE", index, field);
-
     const newFields = [...fields];
     newFields[index] = { ...newFields[index], ...field };
 
@@ -181,16 +154,6 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
     if (field.type && field.type !== "enum") {
       delete newFields[index].enum;
     }
-
-    // Debug: Check if ID is preserved
-    console.log("NOW>", newFields);
-    console.log("Field ID check:", {
-      index,
-      hasId: !!newFields[index].id,
-      id: newFields[index].id,
-      type: newFields[index].type,
-      typeOf: typeof newFields[index].type
-    });
 
     setFields(newFields);
   };
@@ -297,23 +260,6 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
 
   const contentRef = useRef<HTMLDivElement>(null);
   
-  // Debug: Track contentRef changes
-  React.useEffect(() => {
-    console.log("contentRef.current changed:", {
-      hasValue: !!contentRef.current,
-      element: contentRef.current,
-      elementId: contentRef.current?.id,
-      elementTagName: contentRef.current?.tagName
-    });
-  }, [contentRef.current]);
-  
-  // Debug: Track component lifecycle
-  React.useEffect(() => {
-    console.log("EditSchemaDialog mounted/updated");
-    return () => {
-      console.log("EditSchemaDialog cleanup");
-    };
-  });
   
 
   return (
