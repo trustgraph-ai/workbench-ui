@@ -278,12 +278,12 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
                       <Field.Root required flex={1}>
                         <Field.Label>Type <Field.RequiredIndicator /></Field.Label>
                         <Select.Root
-                          value={[field.type]}
-                          onValueChange={(details) =>
+                          value={field.type}
+                          onValueChange={(details) => {
                             handleFieldChange(index, {
-                              type: details.value[0] as SchemaField["type"],
-                            })
-                          }
+                              type: details.value as SchemaField["type"],
+                            });
+                          }}
                         >
                           <Select.Trigger>
                             <Select.ValueText />
@@ -416,28 +416,42 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
                 Indexes
               </Text>
 
-              <HStack mb={2}>
-                <Select.Root
-                  value={newIndex ? [newIndex] : []}
-                  onValueChange={(details) => setNewIndex(details.value[0] || "")}
-                >
-                  <Select.Trigger>
-                    <Select.ValueText placeholder="Select field to index" />
-                  </Select.Trigger>
-                  <Select.Content>
-                    {fields
-                      .filter((f) => f.name && !f.primary_key && !indexes.includes(f.name))
-                      .map((field) => (
-                        <Select.Item key={field.name} value={field.name}>
-                          <Select.ItemText>{field.name}</Select.ItemText>
-                        </Select.Item>
-                      ))}
-                  </Select.Content>
-                </Select.Root>
-                <Button onClick={handleAddIndex} disabled={!newIndex}>
-                  Add Index
-                </Button>
-              </HStack>
+              {(() => {
+                const availableFields = fields.filter((f) => f.name && !f.primary_key && !indexes.includes(f.name));
+                
+                if (availableFields.length === 0) {
+                  return (
+                    <Text fontSize="sm" color="gray.500">
+                      No fields available for indexing. Add field names first.
+                    </Text>
+                  );
+                }
+                
+                return (
+                  <HStack mb={2}>
+                    <Select.Root
+                      value={newIndex || undefined}
+                      onValueChange={(details) => {
+                        setNewIndex(details.value || "");
+                      }}
+                    >
+                      <Select.Trigger>
+                        <Select.ValueText placeholder="Select field to index" />
+                      </Select.Trigger>
+                      <Select.Content>
+                        {availableFields.map((field) => (
+                          <Select.Item key={field.name} value={field.name}>
+                            <Select.ItemText>{field.name}</Select.ItemText>
+                          </Select.Item>
+                        ))}
+                      </Select.Content>
+                    </Select.Root>
+                    <Button onClick={handleAddIndex} disabled={!newIndex}>
+                      Add Index
+                    </Button>
+                  </HStack>
+                );
+              })()}
 
               <Flex wrap="wrap" gap={2}>
                 {indexes.map((index) => (
