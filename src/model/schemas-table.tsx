@@ -1,5 +1,5 @@
-import { ColumnDef } from "@tanstack/react-table";
-import { Flex, HStack, Badge, Text } from "@chakra-ui/react";
+import { createColumnHelper } from "@tanstack/react-table";
+import { Flex, HStack, Badge, Text, Code } from "@chakra-ui/react";
 
 export interface SchemaField {
   name: string;
@@ -18,45 +18,40 @@ export interface Schema {
 
 export type SchemaTableRow = [string, Schema];
 
-export const schemaColumns: ColumnDef<SchemaTableRow>[] = [
-  {
-    accessorKey: "0",
+const columnHelper = createColumnHelper<SchemaTableRow>();
+
+export const schemaColumns = [
+  columnHelper.accessor("0", {
     header: "ID",
-    cell: ({ row }) => {
-      return (
-        <Text fontFamily="mono" fontSize="sm">
-          {row.original[0]}
-        </Text>
-      );
-    },
-  },
-  {
-    accessorKey: "1.description",
+    cell: (info) => <Code p={2}>{info.getValue()}</Code>,
+  }),
+  columnHelper.accessor((row) => row[1].description, {
+    id: "description",
     header: "Description",
-    cell: ({ row }) => {
-      return <Text>{row.original[1].description}</Text>;
-    },
-  },
-  {
+    cell: (info) => <Text>{info.getValue()}</Text>,
+  }),
+  columnHelper.display({
+    id: "fields",
     header: "Fields",
     cell: ({ row }) => {
       const fieldCount = row.original[1].fields.length;
       const pkCount = row.original[1].fields.filter(f => f.primary_key).length;
       return (
         <HStack spacing={2}>
-          <Badge size="sm" colorScheme="blue">
+          <Badge size="sm" colorPalette="blue">
             {fieldCount} field{fieldCount !== 1 ? "s" : ""}
           </Badge>
           {pkCount > 0 && (
-            <Badge size="sm" colorScheme="purple">
+            <Badge size="sm" colorPalette="purple">
               {pkCount} PK
             </Badge>
           )}
         </HStack>
       );
     },
-  },
-  {
+  }),
+  columnHelper.display({
+    id: "types",
     header: "Types",
     cell: ({ row }) => {
       const types = [...new Set(row.original[1].fields.map(f => f.type))];
@@ -70,8 +65,9 @@ export const schemaColumns: ColumnDef<SchemaTableRow>[] = [
         </Flex>
       );
     },
-  },
-  {
+  }),
+  columnHelper.display({
+    id: "indexes",
     header: "Indexes",
     cell: ({ row }) => {
       const indexes = row.original[1].indexes || [];
@@ -81,5 +77,5 @@ export const schemaColumns: ColumnDef<SchemaTableRow>[] = [
         </Text>
       );
     },
-  },
+  }),
 ];

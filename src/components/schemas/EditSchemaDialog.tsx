@@ -2,9 +2,9 @@ import React from "react";
 import {
   Dialog,
   Portal,
+  CloseButton,
   Button,
-  FormControl,
-  FormLabel,
+  Field,
   Input,
   Textarea,
   VStack,
@@ -14,14 +14,9 @@ import {
   Checkbox,
   Box,
   Text,
-  Divider,
-  Alert,
-  AlertIcon,
-  useToast,
+  Separator,
   Wrap,
-  WrapItem,
   Badge,
-  CloseButton,
 } from "@chakra-ui/react";
 import { Plus, Trash2 } from "lucide-react";
 import { useSchemas } from "../../state/schemas";
@@ -44,7 +39,6 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
   initialSchema,
 }) => {
   const { createSchema, updateSchema, deleteSchema, schemas } = useSchemas();
-  const toast = useToast();
 
   const [id, setId] = React.useState(schemaId || "");
   const [name, setName] = React.useState(initialSchema?.name || "");
@@ -167,13 +161,8 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
         });
       }
     } catch (error) {
-      toast({
-        title: "Error",
-        description: error.toString(),
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-      });
+      // Error handling is done in the mutation hooks
+      console.error("Error saving schema:", error);
     }
   };
 
@@ -191,10 +180,11 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
   return (
     <Dialog.Root
       open={isOpen}
-      onOpenChange={(e) => {
-        if (!e.open) onClose();
+      onOpenChange={(x) => {
+        if (!x.open) onClose();
       }}
       size="xl"
+      placement="center"
     >
       <Portal>
         <Dialog.Backdrop />
@@ -207,46 +197,54 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
             <Dialog.Body overflowY="auto">
           <VStack spacing={6} align="stretch">
             {errors.length > 0 && (
-              <Alert status="error">
-                <AlertIcon />
-                <Box>
-                  {errors.map((error, i) => (
-                    <Text key={i}>{error}</Text>
-                  ))}
-                </Box>
-              </Alert>
+              <Box
+                p={4}
+                borderWidth="1px"
+                borderColor="red.500"
+                borderRadius="md"
+                bg="red.50"
+              >
+                <Text color="red.700" fontWeight="bold" mb={2}>
+                  Please fix the following errors:
+                </Text>
+                {errors.map((error, i) => (
+                  <Text key={i} color="red.600" fontSize="sm">
+                    • {error}
+                  </Text>
+                ))}
+              </Box>
             )}
 
             {mode === "create" && (
-              <FormControl isRequired>
-                <FormLabel>Schema ID</FormLabel>
+              <Field.Root required>
+                <Field.Label>Schema ID <Field.RequiredIndicator /></Field.Label>
                 <Input
                   value={id}
                   onChange={(e) => setId(e.target.value)}
                   placeholder="e.g., customer_records"
                 />
-              </FormControl>
+              </Field.Root>
             )}
 
-            <FormControl isRequired>
-              <FormLabel>Name</FormLabel>
+            <Field.Root required>
+              <Field.Label>Name <Field.RequiredIndicator /></Field.Label>
               <Input
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="e.g., Customer Records"
               />
-            </FormControl>
+            </Field.Root>
 
-            <FormControl isRequired>
-              <FormLabel>Description</FormLabel>
+            <Field.Root required>
+              <Field.Label>Description <Field.RequiredIndicator /></Field.Label>
               <Textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Describe the purpose of this schema"
               />
-            </FormControl>
+            </Field.Root>
 
-            <Divider />
+            <Separator />
 
             <Box>
               <HStack justify="space-between" mb={4}>
@@ -262,17 +260,17 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
                 {fields.map((field, index) => (
                   <Box key={index} p={4} borderWidth="1px" borderRadius="md">
                     <HStack spacing={4} mb={3}>
-                      <FormControl isRequired flex={1}>
-                        <FormLabel>Field Name</FormLabel>
+                      <Field.Root required flex={1}>
+                        <Field.Label>Field Name <Field.RequiredIndicator /></Field.Label>
                         <Input
                           value={field.name}
                           onChange={(e) => handleFieldChange(index, { name: e.target.value })}
                           placeholder="e.g., customer_id"
                         />
-                      </FormControl>
+                      </Field.Root>
 
-                      <FormControl isRequired flex={1}>
-                        <FormLabel>Type</FormLabel>
+                      <Field.Root required flex={1}>
+                        <Field.Label>Type <Field.RequiredIndicator /></Field.Label>
                         <Select
                           value={field.type}
                           onChange={(e) =>
@@ -288,13 +286,13 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
                           <option value="timestamp">Timestamp</option>
                           <option value="enum">Enum</option>
                         </Select>
-                      </FormControl>
+                      </Field.Root>
 
                       <IconButton
                         aria-label="Remove field"
                         icon={<Trash2 size={16} />}
                         size="sm"
-                        colorScheme="red"
+                        colorPalette="red"
                         variant="ghost"
                         onClick={() => handleRemoveField(index)}
                         isDisabled={fields.length === 1}
@@ -323,7 +321,7 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
 
                     {field.type === "enum" && (
                       <Box mt={3}>
-                        <FormLabel>Enum Values</FormLabel>
+                        <Field.Label>Enum Values</Field.Label>
                         <HStack mb={2}>
                           <Input
                             placeholder="Add enum value"
@@ -351,23 +349,22 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
                         </HStack>
                         <Wrap>
                           {(field.enum || []).map((value) => (
-                            <WrapItem key={value}>
-                              <Badge
-                                colorScheme="blue"
-                                borderRadius="full"
-                                px={3}
-                                py={1}
-                                display="flex"
-                                alignItems="center"
-                                gap={2}
-                              >
-                                {value}
-                                <CloseButton
-                                  size="sm"
-                                  onClick={() => handleRemoveEnumValue(index, value)}
-                                />
-                              </Badge>
-                            </WrapItem>
+                            <Badge
+                              key={value}
+                              colorPalette="blue"
+                              borderRadius="full"
+                              px={3}
+                              py={1}
+                              display="flex"
+                              alignItems="center"
+                              gap={2}
+                            >
+                              {value}
+                              <CloseButton
+                                size="sm"
+                                onClick={() => handleRemoveEnumValue(index, value)}
+                              />
+                            </Badge>
                           ))}
                         </Wrap>
                       </Box>
@@ -377,7 +374,7 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
               </VStack>
             </Box>
 
-            <Divider />
+            <Separator />
 
             <Box>
               <Text fontSize="lg" fontWeight="bold" mb={4}>
@@ -403,23 +400,22 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
               </HStack>
               <Wrap>
                 {indexes.map((index) => (
-                  <WrapItem key={index}>
-                    <Badge
-                      colorScheme="green"
-                      borderRadius="full"
-                      px={3}
-                      py={1}
-                      display="flex"
-                      alignItems="center"
-                      gap={2}
-                    >
-                      {index}
-                      <CloseButton
-                        size="sm"
-                        onClick={() => handleRemoveIndex(index)}
-                      />
-                    </Badge>
-                  </WrapItem>
+                  <Badge
+                    key={index}
+                    colorPalette="green"
+                    borderRadius="full"
+                    px={3}
+                    py={1}
+                    display="flex"
+                    alignItems="center"
+                    gap={2}
+                  >
+                    {index}
+                    <CloseButton
+                      size="sm"
+                      onClick={() => handleRemoveIndex(index)}
+                    />
+                  </Badge>
                 ))}
               </Wrap>
             </Box>
@@ -428,14 +424,14 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
             <Dialog.Footer>
           <HStack spacing={3}>
             {mode === "edit" && (
-              <Button colorScheme="red" variant="ghost" onClick={handleDelete}>
+              <Button colorPalette="red" variant="ghost" onClick={handleDelete}>
                 Delete Schema
               </Button>
             )}
             <Button variant="ghost" onClick={onClose}>
               Cancel
             </Button>
-            <Button colorScheme="blue" onClick={handleSave}>
+            <Button colorPalette="blue" onClick={handleSave}>
               {mode === "create" ? "Create" : "Save"}
             </Button>
           </HStack>

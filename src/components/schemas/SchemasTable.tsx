@@ -2,16 +2,9 @@ import React from "react";
 import {
   Box,
   Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
   Text,
   Spinner,
   Center,
-  Alert,
-  AlertIcon,
 } from "@chakra-ui/react";
 import {
   useReactTable,
@@ -50,10 +43,17 @@ export const SchemasTable: React.FC = () => {
 
   if (schemasError) {
     return (
-      <Alert status="error">
-        <AlertIcon />
-        Error loading schemas: {schemasError.toString()}
-      </Alert>
+      <Box
+        p={4}
+        borderWidth="1px"
+        borderColor="red.500"
+        borderRadius="md"
+        bg="red.50"
+      >
+        <Text color="red.700">
+          Error loading schemas: {schemasError.toString()}
+        </Text>
+      </Box>
     );
   }
 
@@ -68,39 +68,39 @@ export const SchemasTable: React.FC = () => {
   return (
     <>
       <Box overflowX="auto" borderWidth="1px" borderRadius="lg">
-        <Table variant="simple">
-          <Thead bg="gray.50">
+        <Table.Root interactive>
+          <Table.Header>
             {table.getHeaderGroups().map((headerGroup) => (
-              <Tr key={headerGroup.id}>
+              <Table.Row key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
-                  <Th key={header.id}>
+                  <Table.ColumnHeader key={header.id}>
                     {header.isPlaceholder
                       ? null
                       : flexRender(
                           header.column.columnDef.header,
                           header.getContext()
                         )}
-                  </Th>
+                  </Table.ColumnHeader>
                 ))}
-              </Tr>
+              </Table.Row>
             ))}
-          </Thead>
-          <Tbody>
+          </Table.Header>
+          <Table.Body>
             {table.getRowModel().rows.map((row) => (
-              <Tr
+              <Table.Row
                 key={row.id}
-                _hover={{ bg: "gray.50", cursor: "pointer" }}
                 onClick={() => handleRowClick(row.original)}
+                style={{ cursor: "pointer" }}
               >
                 {row.getVisibleCells().map((cell) => (
-                  <Td key={cell.id}>
+                  <Table.Cell key={cell.id}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </Td>
+                  </Table.Cell>
                 ))}
-              </Tr>
+              </Table.Row>
             ))}
-          </Tbody>
-        </Table>
+          </Table.Body>
+        </Table.Root>
       </Box>
 
       {selectedSchema && (
