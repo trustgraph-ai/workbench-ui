@@ -101,6 +101,8 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
   };
 
   const handleFieldChange = (index: number, field: Partial<SchemaField>) => {
+  console.log("CHANGE", index, field);
+
     const newFields = [...fields];
     newFields[index] = { ...newFields[index], ...field };
     
@@ -108,6 +110,8 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
     if (field.type && field.type !== "enum") {
       delete newFields[index].enum;
     }
+
+console.log("NOW>", newFields);
     
     setFields(newFields);
   };
