@@ -37,7 +37,7 @@ export const schemaColumns = [
       const fieldCount = row.original[1].fields.length;
       const pkCount = row.original[1].fields.filter(f => f.primary_key).length;
       return (
-        <HStack spacing={2}>
+        <HStack gap={2}>
           <Badge size="sm" colorPalette="blue">
             {fieldCount} field{fieldCount !== 1 ? "s" : ""}
           </Badge>

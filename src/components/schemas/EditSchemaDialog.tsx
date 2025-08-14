@@ -15,8 +15,8 @@ import {
   Box,
   Text,
   Separator,
-  Wrap,
   Badge,
+  Flex,
 } from "@chakra-ui/react";
 import { Plus, Trash2 } from "lucide-react";
 import { useSchemas } from "../../state/schemas";
@@ -195,7 +195,7 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
             </Dialog.Header>
         
             <Dialog.Body overflowY="auto">
-          <VStack spacing={6} align="stretch">
+          <VStack gap={6} align="stretch">
             {errors.length > 0 && (
               <Box
                 p={4}
@@ -256,10 +256,10 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
                 </Button>
               </HStack>
 
-              <VStack spacing={4} align="stretch">
+              <VStack gap={4} align="stretch">
                 {fields.map((field, index) => (
                   <Box key={index} p={4} borderWidth="1px" borderRadius="md">
-                    <HStack spacing={4} mb={3}>
+                    <HStack gap={4} mb={3}>
                       <Field.Root required flex={1}>
                         <Field.Label>Field Name <Field.RequiredIndicator /></Field.Label>
                         <Input
@@ -299,7 +299,7 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
                       />
                     </HStack>
 
-                    <HStack spacing={4}>
+                    <HStack gap={4}>
                       <Checkbox
                         isChecked={field.primary_key}
                         onChange={(e) =>
@@ -347,7 +347,7 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
                             Add
                           </Button>
                         </HStack>
-                        <Wrap>
+                        <Flex wrap="wrap" gap={2}>
                           {(field.enum || []).map((value) => (
                             <Badge
                               key={value}
@@ -366,7 +366,7 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
                               />
                             </Badge>
                           ))}
-                        </Wrap>
+                        </Flex>
                       </Box>
                     )}
                   </Box>
@@ -398,7 +398,7 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
                   Add Index
                 </Button>
               </HStack>
-              <Wrap>
+              <Flex wrap="wrap" gap={2}>
                 {indexes.map((index) => (
                   <Badge
                     key={index}
@@ -417,12 +417,12 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
                     />
                   </Badge>
                 ))}
-              </Wrap>
+              </Flex>
             </Box>
           </VStack>
             </Dialog.Body>
             <Dialog.Footer>
-          <HStack spacing={3}>
+          <HStack gap={3}>
             {mode === "edit" && (
               <Button colorPalette="red" variant="ghost" onClick={handleDelete}>
                 Delete Schema
