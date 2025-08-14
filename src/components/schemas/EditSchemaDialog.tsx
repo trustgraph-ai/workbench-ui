@@ -158,7 +158,15 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
       delete newFields[index].enum;
     }
 
+    // Debug: Check if ID is preserved
     console.log("NOW>", newFields);
+    console.log("Field ID check:", {
+      index,
+      hasId: !!newFields[index].id,
+      id: newFields[index].id,
+      type: newFields[index].type,
+      typeOf: typeof newFields[index].type
+    });
 
     setFields(newFields);
   };
@@ -379,9 +387,17 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
 
                           <SelectField
                             label="Type"
-                            value={field.type}
+                            value={(() => {
+                              console.log("SelectField props for field", index, ":", {
+                                fieldType: field.type,
+                                typeOf: typeof field.type,
+                                fieldObject: field,
+                                typeOptionsLength: typeOptions.length
+                              });
+                              return field.type;
+                            })()}
                             onValueChange={(value) => {
-                              console.log("SelectField onChange:", value);
+                              console.log("SelectField onChange:", { index, value, typeof: typeof value });
                               handleFieldChange(index, {
                                 type: value as SchemaField["type"],
                               });
