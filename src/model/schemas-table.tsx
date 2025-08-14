@@ -2,6 +2,7 @@ import { createColumnHelper } from "@tanstack/react-table";
 import { Flex, HStack, Badge, Text, Code } from "@chakra-ui/react";
 
 export interface SchemaField {
+  id: string; // Unique identifier for React keys
   name: string;
   type: "string" | "integer" | "float" | "boolean" | "timestamp" | "enum";
   primary_key?: boolean;

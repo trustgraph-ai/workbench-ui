@@ -47,8 +47,12 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
     initialSchema?.description || "",
   );
   const [fields, setFields] = React.useState<SchemaField[]>(
-    initialSchema?.fields || [
+    initialSchema?.fields?.map(field => ({ 
+      ...field, 
+      id: field.id || crypto.randomUUID() 
+    })) || [
       {
+        id: crypto.randomUUID(),
         name: "",
         type: "string",
         primary_key: false,
@@ -92,6 +96,7 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
     setFields([
       ...fields,
       {
+        id: crypto.randomUUID(),
         name: "",
         type: "string",
         primary_key: false,
@@ -349,7 +354,7 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
                   <VStack gap={4} align="stretch">
                     {fields.map((field, index) => (
                       <Box
-                        key={index}
+                        key={field.id}
                         p={4}
                         borderWidth="1px"
                         borderRadius="md"
