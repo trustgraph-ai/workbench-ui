@@ -97,6 +97,30 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
   const [indexes, setIndexes] = React.useState<string[]>(
     initialSchema?.indexes || [],
   );
+
+  // Reset state when props change (fix for editing wrong schema)
+  React.useEffect(() => {
+    if (isOpen) {
+      setId(schemaId || "");
+      setName(initialSchema?.name || "");
+      setDescription(initialSchema?.description || "");
+      setFields(
+        initialSchema?.fields?.map(field => ({ 
+          ...field, 
+          id: field.id || crypto.randomUUID() 
+        })) || [
+          {
+            id: crypto.randomUUID(),
+            name: "",
+            type: "string",
+            primary_key: false,
+            required: false,
+          },
+        ]
+      );
+      setIndexes(initialSchema?.indexes || []);
+    }
+  }, [isOpen, schemaId, initialSchema]);
   const [newIndex, setNewIndex] = React.useState("");
   const [errors, setErrors] = React.useState<string[]>([]);
 
