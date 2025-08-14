@@ -22,6 +22,7 @@ import { Plus, Trash2 } from "lucide-react";
 import { useSchemas } from "../../state/schemas";
 import { Schema, SchemaField } from "../../model/schemas-table";
 import { validateSchema } from "../../utils/schema-validation";
+import SelectField from "../common/SelectField";
 
 interface EditSchemaDialogProps {
   isOpen: boolean;
@@ -299,13 +300,11 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
 
                       <SelectField
                         label="Type"
-                        required
-                        flex={1}
                         value={field.type}
-                        onValueChange={(details) => {
-                          console.log('SelectField onChange:', details);
+                        onValueChange={(value) => {
+                          console.log('SelectField onChange:', value);
                           handleFieldChange(index, {
-                            type: details.value as SchemaField["type"],
+                            type: value as SchemaField["type"],
                           });
                         }}
                         items={[

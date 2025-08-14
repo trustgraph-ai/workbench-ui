@@ -39,8 +39,8 @@ const SelectField: React.FC<SelectFieldProps> = ({
 
       <Select.Root
         collection={collection}
-        value={[value]}
-        onValueChange={(e) => onValueChange(e.value[0])}
+        value={value}
+        onValueChange={(e) => onValueChange(e.value)}
       >
         <Select.HiddenSelect />
         <Select.Control>
