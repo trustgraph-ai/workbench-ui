@@ -563,9 +563,10 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
                         <Box flex={1}>
                           <SelectField
                             label=""
-                            value={newIndex || ""}
+                            value={newIndex ? [newIndex] : []}
                             onValueChange={(value) => {
-                              setNewIndex(value || "");
+                              const indexValue = Array.isArray(value) ? value[0] : value;
+                              setNewIndex(indexValue || "");
                             }}
                             items={availableFields.map((field) => ({
                               value: field.name,
@@ -575,7 +576,9 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
                             contentRef={contentRef}
                           />
                         </Box>
-                        <Button onClick={handleAddIndex} disabled={!newIndex} mt={8}>
+                        <Button onClick={handleAddIndex}
+                          colorPalette="primary"
+                          disabled={!newIndex} mt={8}>
                           Add Index
                         </Button>
                       </HStack>
