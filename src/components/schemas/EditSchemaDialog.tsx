@@ -569,7 +569,8 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
                             }}
                             items={availableFields.map((field) => ({
                               value: field.name,
-                              label: field.name
+                              label: field.name,
+                              description: field.name,
                             }))}
                             contentRef={contentRef}
                           />
