@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import {
   Field,
   Select,
@@ -31,7 +31,11 @@ const SelectField: React.FC<SelectFieldProps> = ({
   onValueChange,
   contentRef,
 }) => {
-  const collection = createListCollection({ items: items });
+  // Only create new collection when items actually change
+  const collection = useMemo(
+    () => createListCollection({ items: items }),
+    [items],
+  );
 
   return (
     <Field.Root mb={4}>
@@ -39,8 +43,8 @@ const SelectField: React.FC<SelectFieldProps> = ({
 
       <Select.Root
         collection={collection}
-        value={[value]}
-        onValueChange={(e) => onValueChange(e.value[0])}
+        value={value}
+        onValueChange={(e) => onValueChange(e.value)}
       >
         <Select.HiddenSelect />
         <Select.Control>
