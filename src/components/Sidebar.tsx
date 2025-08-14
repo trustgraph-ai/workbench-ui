@@ -31,6 +31,7 @@ import {
   CircleArrowRight,
   HandCoins,
   MessageCircleCode,
+  Database,
 } from "lucide-react";
 
 interface NavItemProps {
@@ -119,6 +120,7 @@ const Sidebar = () => {
         <NavItem to="/procs" icon={CircleArrowRight} label="Submissions" />
         <NavItem to="/tokencost" icon={HandCoins} label="Token Cost" />
         <NavItem to="/prompts" icon={MessageCircleCode} label="Prompts" />
+        <NavItem to="/schemas" icon={Database} label="Schemas" />
         <NavItem to="/agents" icon={Hammer} label="Agent Tools" />
         <NavItem to="/mcp-tools" icon={Plug} label="MCP Tools" />
       </VStack>

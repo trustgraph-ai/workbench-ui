@@ -1,0 +1,28 @@
+import React from "react";
+import { HStack, Button } from "@chakra-ui/react";
+import { Plus } from "lucide-react";
+import { EditSchemaDialog } from "./EditSchemaDialog";
+
+export const SchemaControls: React.FC = () => {
+  const [isCreateOpen, setIsCreateOpen] = React.useState(false);
+
+  return (
+    <>
+      <HStack justify="flex-end">
+        <Button
+          leftIcon={<Plus size={20} />}
+          colorScheme="blue"
+          onClick={() => setIsCreateOpen(true)}
+        >
+          Create Schema
+        </Button>
+      </HStack>
+
+      <EditSchemaDialog
+        isOpen={isCreateOpen}
+        onClose={() => setIsCreateOpen(false)}
+        mode="create"
+      />
+    </>
+  );
+};
