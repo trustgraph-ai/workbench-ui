@@ -290,13 +290,14 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
 
                       <IconButton
                         aria-label="Remove field"
-                        icon={<Trash2 size={16} />}
                         size="sm"
                         colorPalette="red"
                         variant="ghost"
                         onClick={() => handleRemoveField(index)}
-                        isDisabled={fields.length === 1}
-                      />
+                        disabled={fields.length === 1}
+                      >
+                        <Trash2 size={16} />
+                      </IconButton>
                     </HStack>
 
                     <HStack gap={4}>
