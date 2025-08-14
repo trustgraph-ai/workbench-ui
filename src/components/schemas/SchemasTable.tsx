@@ -1,11 +1,5 @@
 import React from "react";
-import {
-  Box,
-  Table,
-  Text,
-  Spinner,
-  Center,
-} from "@chakra-ui/react";
+import { Box, Table, Text, Spinner, Center } from "@chakra-ui/react";
 import {
   useReactTable,
   getCoreRowModel,
@@ -19,7 +13,8 @@ import { EditSchemaDialog } from "./EditSchemaDialog";
 export const SchemasTable: React.FC = () => {
   const { schemas, schemasLoading, schemasError } = useSchemas();
   const [isOpen, setIsOpen] = React.useState(false);
-  const [selectedSchema, setSelectedSchema] = React.useState<SchemaTableRow | null>(null);
+  const [selectedSchema, setSelectedSchema] =
+    React.useState<SchemaTableRow | null>(null);
 
   const table = useReactTable({
     data: schemas as SchemaTableRow[],
@@ -60,7 +55,9 @@ export const SchemasTable: React.FC = () => {
   if (schemas.length === 0) {
     return (
       <Center h="200px">
-        <Text color="gray.500">No schemas found. Create one to get started.</Text>
+        <Text color="gray.500">
+          No schemas found. Create one to get started.
+        </Text>
       </Center>
     );
   }
@@ -78,7 +75,7 @@ export const SchemasTable: React.FC = () => {
                       ? null
                       : flexRender(
                           header.column.columnDef.header,
-                          header.getContext()
+                          header.getContext(),
                         )}
                   </Table.ColumnHeader>
                 ))}
@@ -94,7 +91,10 @@ export const SchemasTable: React.FC = () => {
               >
                 {row.getVisibleCells().map((cell) => (
                   <Table.Cell key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    {flexRender(
+                      cell.column.columnDef.cell,
+                      cell.getContext(),
+                    )}
                   </Table.Cell>
                 ))}
               </Table.Row>

@@ -3,7 +3,7 @@ import { Schema, SchemaTableRow } from "../model/schemas-table";
 export const validateSchema = (
   schema: Schema,
   existingSchemas: SchemaTableRow[],
-  newSchemaId?: string
+  newSchemaId?: string,
 ): string[] => {
   const errors: string[] = [];
 
@@ -34,7 +34,7 @@ export const validateSchema = (
   // Check for duplicate field names
   const fieldNames = schema.fields.map((f) => f.name);
   const duplicateFields = fieldNames.filter(
-    (name, index) => fieldNames.indexOf(name) !== index
+    (name, index) => fieldNames.indexOf(name) !== index,
   );
   if (duplicateFields.length > 0) {
     errors.push(`Duplicate field names: ${duplicateFields.join(", ")}`);
@@ -57,7 +57,9 @@ export const validateSchema = (
   schema.fields.forEach((field) => {
     if (field.type === "enum") {
       if (!field.enum || field.enum.length === 0) {
-        errors.push(`Enum field "${field.name}" must have at least one value`);
+        errors.push(
+          `Enum field "${field.name}" must have at least one value`,
+        );
       }
     }
   });

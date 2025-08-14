@@ -35,7 +35,9 @@ export const schemaColumns = [
     header: "Fields",
     cell: ({ row }) => {
       const fieldCount = row.original[1].fields.length;
-      const pkCount = row.original[1].fields.filter(f => f.primary_key).length;
+      const pkCount = row.original[1].fields.filter(
+        (f) => f.primary_key,
+      ).length;
       return (
         <HStack gap={2}>
           <Badge size="sm" colorPalette="blue">
@@ -54,7 +56,7 @@ export const schemaColumns = [
     id: "types",
     header: "Types",
     cell: ({ row }) => {
-      const types = [...new Set(row.original[1].fields.map(f => f.type))];
+      const types = [...new Set(row.original[1].fields.map((f) => f.type))];
       return (
         <Flex wrap="wrap" gap={1}>
           {types.map((type) => (
