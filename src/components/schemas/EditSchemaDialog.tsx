@@ -429,7 +429,7 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
 
                         {field.type === "enum" && (
                           <Box mt={3}>
-                            <Field.Label>Enum Values</Field.Label>
+                            <Text>Enum Values</Text>
                             <HStack mb={2}>
                               <Input
                                 placeholder="Add enum value"
