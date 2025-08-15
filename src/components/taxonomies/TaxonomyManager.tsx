@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import {
   Box,
   Grid,
@@ -7,11 +7,14 @@ import {
   HStack,
   VStack,
   Button,
-  Select,
   IconButton,
   Text,
   Separator,
+  Select,
+  createListCollection,
+  Portal,
 } from "@chakra-ui/react";
+import SelectField from "../common/SelectField";
 import { FiPlus, FiDownload, FiUpload, FiSettings } from "react-icons/fi";
 import { useNotification } from "../../state/notify";
 import { useTaxonomies, Taxonomy, TaxonomyConcept } from "../../state/taxonomies";
@@ -211,17 +214,17 @@ export const TaxonomyManager: React.FC<TaxonomyManagerProps> = ({
     return (
       <VStack spacing={4} p={8}>
         <Text color="fg.muted">Select a taxonomy to start editing:</Text>
-        <Select
-          placeholder="Choose a taxonomy..."
-          onChange={(e) => e.target.value && handleTaxonomyChange(e.target.value)}
-          maxW="400px"
-        >
-          {taxonomies.map(([id, taxonomy]) => (
-            <option key={id} value={id}>
-              {taxonomy.metadata.name} ({Object.keys(taxonomy.concepts).length} concepts)
-            </option>
-          ))}
-        </Select>
+        <Box maxW="400px">
+          <SelectField
+            label="Choose a taxonomy"
+            items={taxonomies.map(([id, taxonomy]) => ({
+              value: id,
+              label: `${taxonomy.metadata.name} (${Object.keys(taxonomy.concepts).length} concepts)`
+            }))}
+            value=""
+            onValueChange={handleTaxonomyChange}
+          />
+        </Box>
       </VStack>
     );
   }
@@ -246,17 +249,42 @@ export const TaxonomyManager: React.FC<TaxonomyManagerProps> = ({
         </VStack>
         
         <HStack>
-          <Select
+          <Select.Root
+            collection={useMemo(
+              () => createListCollection({
+                items: taxonomies.map(([id, taxonomy]) => ({
+                  value: id,
+                  label: taxonomy.metadata.name
+                }))
+              }),
+              [taxonomies]
+            )}
             value={currentTaxonomyId || ""}
-            onChange={(e) => e.target.value && handleTaxonomyChange(e.target.value)}
+            onValueChange={(e) => handleTaxonomyChange(e.value)}
             w="250px"
           >
-            {taxonomies.map(([id, taxonomy]) => (
-              <option key={id} value={id}>
-                {taxonomy.metadata.name}
-              </option>
-            ))}
-          </Select>
+            <Select.HiddenSelect />
+            <Select.Control>
+              <Select.Trigger>
+                <Select.ValueText />
+              </Select.Trigger>
+              <Select.IndicatorGroup>
+                <Select.Indicator />
+              </Select.IndicatorGroup>
+            </Select.Control>
+            <Portal>
+              <Select.Positioner>
+                <Select.Content>
+                  {taxonomies.map(([id, taxonomy]) => (
+                    <Select.Item item={id} key={id}>
+                      {taxonomy.metadata.name}
+                      <Select.ItemIndicator />
+                    </Select.Item>
+                  ))}
+                </Select.Content>
+              </Select.Positioner>
+            </Portal>
+          </Select.Root>
           <Button colorPalette="primary" onClick={() => handleConceptAdd()}>
             <FiPlus /> Add Concept
           </Button>
