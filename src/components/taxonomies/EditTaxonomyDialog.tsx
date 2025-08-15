@@ -6,7 +6,6 @@ import {
   CloseButton,
   Field,
   Input,
-  Textarea,
   VStack,
   HStack,
   Text,
@@ -297,26 +296,16 @@ export const EditTaxonomyDialog: React.FC<EditTaxonomyDialogProps> = ({
                             </IconButton>
                           </HStack>
                           <VStack spacing={2} align="stretch">
-                            <Field.Root>
-                              <Field.Label fontSize="sm">Preferred Label</Field.Label>
-                              <Input
-                                size="sm"
-                                value={concept.prefLabel}
-                                onChange={(e) =>
-                                  updateConcept(id, "prefLabel", e.target.value)
-                                }
-                              />
-                            </Field.Root>
-                            <Field.Root>
-                              <Field.Label fontSize="sm">Definition</Field.Label>
-                              <Textarea
-                                size="sm"
-                                value={concept.definition || ""}
-                                onChange={(e) =>
-                                  updateConcept(id, "definition", e.target.value)
-                                }
-                              />
-                            </Field.Root>
+                            <TextField
+                              label="Preferred Label"
+                              value={concept.prefLabel}
+                              onValueChange={(value) => updateConcept(id, "prefLabel", value)}
+                            />
+                            <TextAreaField
+                              label="Definition"
+                              value={concept.definition || ""}
+                              onValueChange={(value) => updateConcept(id, "definition", value)}
+                            />
                           </VStack>
                         </Box>
                       ))}
