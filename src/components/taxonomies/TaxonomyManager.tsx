@@ -11,9 +11,6 @@ import {
   IconButton,
   Text,
   Separator,
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
 } from "@chakra-ui/react";
 import { FiPlus, FiDownload, FiUpload, FiSettings } from "react-icons/fi";
 import { toaster } from "../ui/toaster";
@@ -255,18 +252,9 @@ export const TaxonomyManager: React.FC<TaxonomyManagerProps> = ({
             </Text>
           </HStack>
           {selectedConcept && (
-            <Breadcrumb fontSize="sm" color="gray.600">
-              <BreadcrumbItem>
-                <BreadcrumbLink onClick={() => setSelectedConceptId(null)}>
-                  {currentTaxonomy.metadata.name}
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-              {getConceptBreadcrumb(selectedConcept.id).map((label, index, arr) => (
-                <BreadcrumbItem key={index} isCurrentPage={index === arr.length - 1}>
-                  <BreadcrumbLink>{label}</BreadcrumbLink>
-                </BreadcrumbItem>
-              ))}
-            </Breadcrumb>
+            <Text fontSize="sm" color="gray.600">
+              {currentTaxonomy.metadata.name} → {getConceptBreadcrumb(selectedConcept.id).join(" → ")}
+            </Text>
           )}
         </VStack>
         
