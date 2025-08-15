@@ -5,7 +5,6 @@ import {
   HStack,
   Field,
   Input,
-  Textarea,
   Button,
   IconButton,
   Text,
@@ -19,6 +18,8 @@ import {
 import { FiPlus, FiX, FiSave } from "react-icons/fi";
 import { useNotification } from "../../state/notify";
 import { TaxonomyConcept, Taxonomy } from "../../state/taxonomies";
+import TextField from "../common/TextField";
+import TextAreaField from "../common/TextAreaField";
 
 interface ConceptEditorProps {
   concept?: TaxonomyConcept;
@@ -212,14 +213,13 @@ export const ConceptEditor: React.FC<ConceptEditorProps> = ({
 
             <Tabs.Content value="basic">
               <VStack spacing={4} align="stretch">
-                <Field.Root required>
-                  <Field.Label>Preferred Label</Field.Label>
-                  <Input
-                    value={editedConcept.prefLabel}
-                    onChange={(e) => updateField("prefLabel", e.target.value)}
-                    placeholder="Main name for this concept"
-                  />
-                </Field.Root>
+                <TextField
+                  label="Preferred Label"
+                  value={editedConcept.prefLabel}
+                  onValueChange={(value) => updateField("prefLabel", value)}
+                  placeholder="Main name for this concept"
+                  required
+                />
 
                 <ArrayFieldEditor
                   label="Alternative Labels"
@@ -227,14 +227,12 @@ export const ConceptEditor: React.FC<ConceptEditorProps> = ({
                   placeholder="Add alternative name..."
                 />
 
-                <Field.Root>
-                  <Field.Label>Notation</Field.Label>
-                  <Input
-                    value={editedConcept.notation || ""}
-                    onChange={(e) => updateField("notation", e.target.value)}
-                    placeholder="e.g., 1.1 or A-01"
-                  />
-                </Field.Root>
+                <TextField
+                  label="Notation"
+                  value={editedConcept.notation || ""}
+                  onValueChange={(value) => updateField("notation", value)}
+                  placeholder="e.g., 1.1 or A-01"
+                />
 
                 <Field.Root>
                   <HStack>
@@ -253,25 +251,19 @@ export const ConceptEditor: React.FC<ConceptEditorProps> = ({
 
             <Tabs.Content value="definition">
               <VStack spacing={4} align="stretch">
-                <Field.Root>
-                  <Field.Label>Definition</Field.Label>
-                  <Textarea
-                    value={editedConcept.definition || ""}
-                    onChange={(e) => updateField("definition", e.target.value)}
-                    placeholder="Formal definition of this concept..."
-                    rows={3}
-                  />
-                </Field.Root>
+                <TextAreaField
+                  label="Definition"
+                  value={editedConcept.definition || ""}
+                  onValueChange={(value) => updateField("definition", value)}
+                  placeholder="Formal definition of this concept..."
+                />
 
-                <Field.Root>
-                  <Field.Label>Scope Note</Field.Label>
-                  <Textarea
-                    value={editedConcept.scopeNote || ""}
-                    onChange={(e) => updateField("scopeNote", e.target.value)}
-                    placeholder="Additional context about the scope and usage..."
-                    rows={4}
-                  />
-                </Field.Root>
+                <TextAreaField
+                  label="Scope Note"
+                  value={editedConcept.scopeNote || ""}
+                  onValueChange={(value) => updateField("scopeNote", value)}
+                  placeholder="Additional context about the scope and usage..."
+                />
               </VStack>
             </Tabs.Content>
 

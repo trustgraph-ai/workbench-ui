@@ -6,7 +6,6 @@ import {
   CloseButton,
   Field,
   Input,
-  Textarea,
   VStack,
   HStack,
   Text,
@@ -18,6 +17,8 @@ import {
 import { FiPlus, FiTrash2 } from "react-icons/fi";
 import { useNotification } from "../../state/notify";
 import { useTaxonomies, Taxonomy, TaxonomyConcept } from "../../state/taxonomies";
+import TextField from "../common/TextField";
+import TextAreaField from "../common/TextAreaField";
 
 interface EditTaxonomyDialogProps {
   open: boolean;
@@ -223,48 +224,33 @@ export const EditTaxonomyDialog: React.FC<EditTaxonomyDialogProps> = ({
                     />
                   </Field.Root>
 
-                  <Field.Root required>
-                    <Field.Label>Name</Field.Label>
-                    <Input
-                      value={taxonomy.metadata.name}
-                      onChange={(e) =>
-                        handleMetadataChange("name", e.target.value)
-                      }
-                      placeholder="e.g., Risk Categories"
-                    />
-                  </Field.Root>
+                  <TextField
+                    label="Name"
+                    value={taxonomy.metadata.name}
+                    onValueChange={(value) => handleMetadataChange("name", value)}
+                    placeholder="e.g., Risk Categories"
+                    required
+                  />
 
-                  <Field.Root>
-                    <Field.Label>Description</Field.Label>
-                    <Textarea
-                      value={taxonomy.metadata.description}
-                      onChange={(e) =>
-                        handleMetadataChange("description", e.target.value)
-                      }
-                      placeholder="Describe the purpose of this taxonomy"
-                    />
-                  </Field.Root>
+                  <TextAreaField
+                    label="Description"
+                    value={taxonomy.metadata.description}
+                    onValueChange={(value) => handleMetadataChange("description", value)}
+                    placeholder="Describe the purpose of this taxonomy"
+                  />
 
-                  <Field.Root>
-                    <Field.Label>Version</Field.Label>
-                    <Input
-                      value={taxonomy.metadata.version}
-                      onChange={(e) =>
-                        handleMetadataChange("version", e.target.value)
-                      }
-                    />
-                  </Field.Root>
+                  <TextField
+                    label="Version"
+                    value={taxonomy.metadata.version}
+                    onValueChange={(value) => handleMetadataChange("version", value)}
+                  />
 
-                  <Field.Root>
-                    <Field.Label>Namespace</Field.Label>
-                    <Input
-                      value={taxonomy.metadata.namespace}
-                      onChange={(e) =>
-                        handleMetadataChange("namespace", e.target.value)
-                      }
-                      placeholder="http://example.org/taxonomies/"
-                    />
-                  </Field.Root>
+                  <TextField
+                    label="Namespace"
+                    value={taxonomy.metadata.namespace}
+                    onValueChange={(value) => handleMetadataChange("namespace", value)}
+                    placeholder="http://example.org/taxonomies/"
+                  />
                 </VStack>
               </Tabs.Content>
 
@@ -341,25 +327,19 @@ export const EditTaxonomyDialog: React.FC<EditTaxonomyDialogProps> = ({
 
               <Tabs.Content value="scheme">
                 <VStack spacing={4} align="stretch">
-                  <Field.Root>
-                    <Field.Label>Scheme URI</Field.Label>
-                    <Input
-                      value={taxonomy.scheme.uri}
-                      onChange={(e) => handleSchemeChange("uri", e.target.value)}
-                      placeholder="Will be auto-generated if empty"
-                    />
-                  </Field.Root>
+                  <TextField
+                    label="Scheme URI"
+                    value={taxonomy.scheme.uri}
+                    onValueChange={(value) => handleSchemeChange("uri", value)}
+                    placeholder="Will be auto-generated if empty"
+                  />
 
-                  <Field.Root>
-                    <Field.Label>Scheme Label</Field.Label>
-                    <Input
-                      value={taxonomy.scheme.prefLabel}
-                      onChange={(e) =>
-                        handleSchemeChange("prefLabel", e.target.value)
-                      }
-                      placeholder="Will use taxonomy name if empty"
-                    />
-                  </Field.Root>
+                  <TextField
+                    label="Scheme Label"
+                    value={taxonomy.scheme.prefLabel}
+                    onValueChange={(value) => handleSchemeChange("prefLabel", value)}
+                    placeholder="Will use taxonomy name if empty"
+                  />
                 </VStack>
               </Tabs.Content>
 
