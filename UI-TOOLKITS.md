@@ -272,6 +272,55 @@ Each palette has these variants:
 - `bg.muted` - Subtle background areas
 - `fg.muted` - Muted text
 
+### Page Structure
+**ALWAYS** use consistent page structure with PageHeader:
+
+```tsx
+// ❌ Don't embed headings in components
+export const MyComponent = () => {
+  return (
+    <VStack>
+      <Heading>My Page Title</Heading>
+      <Content />
+    </VStack>
+  );
+};
+
+// ✅ Use PageHeader at the page level
+// In pages/MyPage.tsx:
+import PageHeader from "../components/common/PageHeader";
+import MyComponent from "../components/MyComponent";
+
+const MyPage = () => {
+  return (
+    <>
+      <PageHeader
+        icon={<IconName />}
+        title="Page Title"
+        description="Brief description of what this page does"
+      />
+      <MyComponent />
+    </>
+  );
+};
+
+// In components/MyComponent.tsx (no heading):
+export const MyComponent = () => {
+  return (
+    <VStack>
+      <Content />
+    </VStack>
+  );
+};
+```
+
+**Page Structure Rules:**
+1. Page components go in `src/pages/` directory
+2. Always use `PageHeader` component for consistent headers
+3. Page title and description should be at page level, not component level
+4. Components should not contain their own page-level headings
+5. Use appropriate lucide-react icons for the page icon
+
 ### Other Patterns
 - Use Tanstack Query for state management with existing socket-based config API
 - Follow kebab-case naming conventions for IDs and URLs
