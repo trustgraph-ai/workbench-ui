@@ -131,12 +131,13 @@ export const ConceptEditor: React.FC<ConceptEditorProps> = ({
               )}
               <IconButton
                 aria-label="Remove"
-                icon={<FiX />}
                 size="sm"
                 variant="ghost"
                 colorPalette="red"
                 onClick={() => removeFromArrayField(field, index)}
-              />
+              >
+                <FiX />
+              </IconButton>
             </HStack>
           ))}
           <HStack>
@@ -164,13 +165,14 @@ export const ConceptEditor: React.FC<ConceptEditorProps> = ({
             )}
             <IconButton
               aria-label="Add"
-              icon={<FiPlus />}
               size="sm"
               variant="outline"
               colorPalette="primary"
               onClick={handleAdd}
               disabled={!newItem.trim() || (isConceptSelect ? items.includes(newItem) : false)}
-            />
+            >
+              <FiPlus />
+            </IconButton>
           </HStack>
         </VStack>
       </Field.Root>
@@ -195,8 +197,8 @@ export const ConceptEditor: React.FC<ConceptEditorProps> = ({
           <Button variant="ghost" onClick={onCancel}>
             Cancel
           </Button>
-          <Button leftIcon={<FiSave />} colorPalette="primary" onClick={handleSave}>
-            Save
+          <Button colorPalette="primary" onClick={handleSave}>
+            <FiSave /> Save
           </Button>
         </HStack>
       </HStack>

@@ -257,27 +257,30 @@ export const TaxonomyManager: React.FC<TaxonomyManagerProps> = ({
               </option>
             ))}
           </Select>
-          <Button leftIcon={<FiPlus />} colorPalette="primary" onClick={() => handleConceptAdd()}>
-            Add Concept
+          <Button colorPalette="primary" onClick={() => handleConceptAdd()}>
+            <FiPlus /> Add Concept
           </Button>
           <IconButton
             aria-label="Import"
-            icon={<FiUpload />}
             variant="outline"
             onClick={() => notify.info("Import feature coming soon")}
-          />
+          >
+            <FiUpload />
+          </IconButton>
           <IconButton
             aria-label="Export"
-            icon={<FiDownload />}
             variant="outline"
             onClick={() => notify.info("Export feature coming soon")}
-          />
+          >
+            <FiDownload />
+          </IconButton>
           <IconButton
             aria-label="Settings"
-            icon={<FiSettings />}
             variant="outline"
             onClick={() => notify.info("Settings feature coming soon")}
-          />
+          >
+            <FiSettings />
+          </IconButton>
         </HStack>
       </HStack>
 

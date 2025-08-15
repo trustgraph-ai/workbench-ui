@@ -134,11 +134,11 @@ disabled={true}
 ```tsx
 // ❌ Old pattern
 <Button leftIcon={<FiPlus />}>Add</Button>
-<IconButton icon={<FiUpload />} />
+<IconButton icon={<FiUpload />} aria-label="Upload" />
 
 // ✅ Chakra v3
-<Button><FiPlus />Add</Button>
-<IconButton><FiUpload /></IconButton>
+<Button><FiPlus /> Add</Button>
+<IconButton aria-label="Upload"><FiUpload /></IconButton>
 ```
 
 ### Input Groups (Simplified)

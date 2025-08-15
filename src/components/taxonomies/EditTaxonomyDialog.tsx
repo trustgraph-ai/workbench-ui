@@ -288,12 +288,13 @@ export const EditTaxonomyDialog: React.FC<EditTaxonomyDialogProps> = ({
                             <Text fontWeight="bold">{concept.prefLabel}</Text>
                             <IconButton
                               aria-label="Delete concept"
-                              icon={<FiTrash2 />}
                               size="sm"
                               colorPalette="red"
                               variant="ghost"
                               onClick={() => deleteConcept(id)}
-                            />
+                            >
+                              <FiTrash2 />
+                            </IconButton>
                           </HStack>
                           <VStack spacing={2} align="stretch">
                             <Field.Root>

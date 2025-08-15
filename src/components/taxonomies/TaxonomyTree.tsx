@@ -97,20 +97,19 @@ const TreeNode: React.FC<TreeNodeProps> = ({
         {/* Expand/collapse button */}
         <IconButton
           aria-label="Toggle"
-          icon={
-            hasChildren ? (
-              isOpen ? (
-                <FiChevronDown />
-              ) : (
-                <FiChevronRight />
-              )
-            ) : null
-          }
           size="xs"
           variant="ghost"
           onClick={hasChildren ? onToggle : undefined}
           visibility={hasChildren ? "visible" : "hidden"}
-        />
+        >
+          {hasChildren ? (
+            isOpen ? (
+              <FiChevronDown />
+            ) : (
+              <FiChevronRight />
+            )
+          ) : null}
+        </IconButton>
 
         {/* Concept content */}
         <Box flex="1" onClick={() => onSelect(concept.id)}>
@@ -243,10 +242,11 @@ export const TaxonomyTree: React.FC<TaxonomyTreeProps> = ({
         <Text mb={4}>No concepts in this taxonomy yet.</Text>
         <IconButton
           aria-label="Add first concept"
-          icon={<FiPlus />}
           colorPalette="primary"
           onClick={() => onConceptAdd()}
-        />
+        >
+          <FiPlus />
+        </IconButton>
         <Text fontSize="sm" mt={2}>
           Add your first concept
         </Text>
@@ -272,11 +272,12 @@ export const TaxonomyTree: React.FC<TaxonomyTreeProps> = ({
         </Text>
         <IconButton
           aria-label="Add root concept"
-          icon={<FiPlus />}
           size="sm"
           variant="outline"
           onClick={() => onConceptAdd()}
-        />
+        >
+          <FiPlus />
+        </IconButton>
       </HStack>
 
       {/* Tree */}
