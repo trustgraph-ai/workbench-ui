@@ -6,6 +6,7 @@ import {
   CloseButton,
   Field,
   Input,
+  Textarea,
   VStack,
   HStack,
   Text,
