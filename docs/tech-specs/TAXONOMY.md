@@ -742,11 +742,10 @@ const validator = {
 
 ### Open Questions
 
-- Should we support collaborative editing features in the future?
-- Do we need integration with external taxonomy services (e.g., Library of Congress)?
-- Should the system support taxonomy versioning and branching?
-- How should we handle very large taxonomies (1000+ concepts)?
-- Do we need offline editing capabilities?
+- Do we need integration with external taxonomy services (e.g., Library of Congress, schema.org)? Not needed currently.
+- Should the system support taxonomy versioning and branching? No.
+- How should we handle very large taxonomies (1000+ concepts)? No explicit support needed at the moment.
+- Do we need offline editing capabilities? No.
 
 ### References
 
