@@ -330,12 +330,12 @@ export const ConceptEditor: React.FC<ConceptEditorProps> = ({
                   </Text>
                   <Wrap>
                     <WrapItem>
-                      <Badge colorPalette={editedConcept.prefLabel ? "green" : "red"}>
+                      <Badge colorPalette={editedConcept.prefLabel ? "insightful" : "red"}>
                         {editedConcept.prefLabel ? "Has Label" : "No Label"}
                       </Badge>
                     </WrapItem>
                     <WrapItem>
-                      <Badge colorPalette={editedConcept.definition ? "green" : "yellow"}>
+                      <Badge colorPalette={editedConcept.definition ? "insightful" : "yellow"}>
                         {editedConcept.definition ? "Defined" : "No Definition"}
                       </Badge>
                     </WrapItem>

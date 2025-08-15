@@ -270,8 +270,8 @@ export const EditTaxonomyDialog: React.FC<EditTaxonomyDialogProps> = ({
                   </HStack>
 
                   {Object.entries(taxonomy.concepts).length === 0 ? (
-                    <Box p={4} borderWidth="1px" borderRadius="md" bg="gray.50">
-                      <Text color="gray.600">
+                    <Box p={4} borderWidth="1px" borderRadius="md" bg="bg.muted">
+                      <Text color="fg.muted">
                         No concepts yet. Click "Add Concept" to create one.
                       </Text>
                     </Box>
@@ -290,7 +290,7 @@ export const EditTaxonomyDialog: React.FC<EditTaxonomyDialogProps> = ({
                               aria-label="Delete concept"
                               icon={<FiTrash2 />}
                               size="sm"
-                              colorScheme="red"
+                              colorPalette="red"
                               variant="ghost"
                               onClick={() => deleteConcept(id)}
                             />
@@ -346,7 +346,7 @@ export const EditTaxonomyDialog: React.FC<EditTaxonomyDialogProps> = ({
                 <Box
                   as="pre"
                   p={4}
-                  bg="gray.50"
+                  bg="bg.muted"
                   borderRadius="md"
                   overflow="auto"
                   maxH="400px"
