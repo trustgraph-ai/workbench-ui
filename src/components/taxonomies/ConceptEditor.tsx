@@ -172,7 +172,7 @@ export const ConceptEditor: React.FC<ConceptEditorProps> = ({
               variant="outline"
               colorPalette="blue"
               onClick={handleAdd}
-              isDisabled={!newItem.trim() || (isConceptSelect ? items.includes(newItem) : false)}
+              disabled={!newItem.trim() || (isConceptSelect ? items.includes(newItem) : false)}
             />
           </HStack>
         </VStack>
@@ -327,7 +327,7 @@ export const ConceptEditor: React.FC<ConceptEditorProps> = ({
                   <Input
                     value={editedConcept.id}
                     onChange={(e) => updateField("id", e.target.value)}
-                    isDisabled={!!concept} // Don't allow editing existing IDs
+                    disabled={!!concept} // Don't allow editing existing IDs
                   />
                   {concept && (
                     <Text fontSize="sm" color="gray.600">

@@ -228,7 +228,7 @@ export const EditTaxonomyDialog: React.FC<EditTaxonomyDialogProps> = ({
                       value={taxonomyId}
                       onChange={(e) => setTaxonomyId(e.target.value)}
                       placeholder="e.g., risk-categories"
-                      isDisabled={mode === "edit"}
+                      disabled={mode === "edit"}
                     />
                   </Field.Root>
 
