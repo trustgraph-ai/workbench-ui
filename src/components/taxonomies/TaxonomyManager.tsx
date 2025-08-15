@@ -219,8 +219,12 @@ export const TaxonomyManager: React.FC<TaxonomyManagerProps> = ({
               label: taxonomy.metadata.name,
               description: `${Object.keys(taxonomy.concepts).length} concepts • ${taxonomy.metadata.description || 'No description'}`
             }))}
-            value=""
-            onValueChange={handleTaxonomyChange}
+            value={[]}
+            onValueChange={(values) => {
+              if (values.length > 0) {
+                handleTaxonomyChange(values[0]);
+              }
+            }}
           />
         </Box>
       </VStack>
@@ -255,8 +259,12 @@ export const TaxonomyManager: React.FC<TaxonomyManagerProps> = ({
                 label: taxonomy.metadata.name,
                 description: `${Object.keys(taxonomy.concepts).length} concepts`
               }))}
-              value={currentTaxonomyId || ""}
-              onValueChange={handleTaxonomyChange}
+              value={currentTaxonomyId ? [currentTaxonomyId] : []}
+              onValueChange={(values) => {
+                if (values.length > 0) {
+                  handleTaxonomyChange(values[0]);
+                }
+              }}
             />
           </Box>
           <Button colorPalette="primary" onClick={() => handleConceptAdd()}>
