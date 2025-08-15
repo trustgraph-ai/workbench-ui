@@ -12,10 +12,6 @@ import {
   HStack,
   Text,
   Tabs,
-  TabList,
-  TabPanels,
-  Tab,
-  TabPanel,
   Box,
   IconButton,
   Divider,
@@ -217,16 +213,15 @@ export const EditTaxonomyDialog: React.FC<EditTaxonomyDialogProps> = ({
               </Dialog.Title>
             </Dialog.Header>
             <Dialog.Body>
-          <Tabs>
-            <TabList>
-              <Tab>Metadata</Tab>
-              <Tab>Concepts ({Object.keys(taxonomy.concepts).length})</Tab>
-              <Tab>Scheme</Tab>
-              <Tab>JSON Preview</Tab>
-            </TabList>
+          <Tabs.Root defaultValue="metadata">
+            <Tabs.List>
+              <Tabs.Trigger value="metadata">Metadata</Tabs.Trigger>
+              <Tabs.Trigger value="concepts">Concepts ({Object.keys(taxonomy.concepts).length})</Tabs.Trigger>
+              <Tabs.Trigger value="scheme">Scheme</Tabs.Trigger>
+              <Tabs.Trigger value="json">JSON Preview</Tabs.Trigger>
+            </Tabs.List>
 
-            <TabPanels>
-              <TabPanel>
+              <Tabs.Content value="metadata">
                 <VStack spacing={4} align="stretch">
                   <FormControl isRequired>
                     <FormLabel>Taxonomy ID</FormLabel>
