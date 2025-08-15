@@ -239,7 +239,7 @@ export const ConceptEditor: React.FC<ConceptEditorProps> = ({
                 <Field.Root>
                   <HStack>
                     <Switch
-                      isChecked={editedConcept.topConcept || false}
+                      checked={editedConcept.topConcept || false}
                       onChange={(e) => updateField("topConcept", e.target.checked)}
                     />
                     <Field.Label mb={0}>Top Concept</Field.Label>
