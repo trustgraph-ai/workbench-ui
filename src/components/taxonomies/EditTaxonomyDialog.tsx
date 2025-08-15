@@ -260,12 +260,11 @@ export const EditTaxonomyDialog: React.FC<EditTaxonomyDialogProps> = ({
                       Concepts
                     </Text>
                     <Button
-                      leftIcon={<FiPlus />}
                       colorPalette="primary"
                       size="sm"
                       onClick={addConcept}
                     >
-                      Add Concept
+                      <FiPlus /> Add Concept
                     </Button>
                   </HStack>
 
