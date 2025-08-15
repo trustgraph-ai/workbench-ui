@@ -10,13 +10,13 @@ import {
   Select,
   IconButton,
   Text,
-  useToast,
   Divider,
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbLink,
 } from "@chakra-ui/react";
 import { FiPlus, FiDownload, FiUpload, FiSettings } from "react-icons/fi";
+import { toaster } from "../ui/toaster";
 import { useTaxonomies, Taxonomy, TaxonomyConcept } from "../../state/taxonomies";
 import { TaxonomyTree } from "./TaxonomyTree";
 import { ConceptEditor } from "./ConceptEditor";
@@ -31,7 +31,6 @@ export const TaxonomyManager: React.FC<TaxonomyManagerProps> = ({
   onTaxonomySelect,
 }) => {
   const { taxonomies, updateTaxonomy, isUpdatingTaxonomy } = useTaxonomies();
-  const toast = useToast();
   
   const [currentTaxonomyId, setCurrentTaxonomyId] = useState<string | null>(
     selectedTaxonomyId || null
@@ -131,12 +130,11 @@ export const TaxonomyManager: React.FC<TaxonomyManagerProps> = ({
         setEditingConcept(null);
         setIsCreatingConcept(false);
         setSelectedConceptId(concept.id);
-        toast({
+        toaster.create({
           title: "Success",
           description: isCreatingConcept ? "Concept created" : "Concept updated",
           status: "success",
           duration: 3000,
-          isClosable: true,
         });
       },
     });
@@ -180,12 +178,11 @@ export const TaxonomyManager: React.FC<TaxonomyManagerProps> = ({
         onSuccess: () => {
           setSelectedConceptId(null);
           setEditingConcept(null);
-          toast({
+          toaster.create({
             title: "Success",
             description: "Concept deleted",
             status: "success",
             duration: 3000,
-            isClosable: true,
           });
         },
       });
@@ -194,12 +191,11 @@ export const TaxonomyManager: React.FC<TaxonomyManagerProps> = ({
 
   const handleConceptMove = (conceptId: string, newParentId?: string) => {
     // TODO: Implement drag-and-drop concept moving
-    toast({
+    toaster.create({
       title: "Feature not implemented",
       description: "Drag-and-drop concept moving will be implemented in a future update",
       status: "info",
       duration: 3000,
-      isClosable: true,
     });
   };
 
@@ -293,19 +289,19 @@ export const TaxonomyManager: React.FC<TaxonomyManagerProps> = ({
             aria-label="Import"
             icon={<FiUpload />}
             variant="outline"
-            onClick={() => toast({ title: "Import feature coming soon", status: "info" })}
+            onClick={() => toaster.create({ title: "Import feature coming soon", status: "info" })}
           />
           <IconButton
             aria-label="Export"
             icon={<FiDownload />}
             variant="outline"
-            onClick={() => toast({ title: "Export feature coming soon", status: "info" })}
+            onClick={() => toaster.create({ title: "Export feature coming soon", status: "info" })}
           />
           <IconButton
             aria-label="Settings"
             icon={<FiSettings />}
             variant="outline"
-            onClick={() => toast({ title: "Settings feature coming soon", status: "info" })}
+            onClick={() => toaster.create({ title: "Settings feature coming soon", status: "info" })}
           />
         </HStack>
       </HStack>

@@ -20,9 +20,9 @@ import {
   Switch,
   Wrap,
   WrapItem,
-  useToast,
 } from "@chakra-ui/react";
 import { FiPlus, FiX, FiSave } from "react-icons/fi";
+import { toaster } from "../ui/toaster";
 import { TaxonomyConcept, Taxonomy } from "../../state/taxonomies";
 
 interface ConceptEditorProps {
@@ -38,7 +38,6 @@ export const ConceptEditor: React.FC<ConceptEditorProps> = ({
   onSave,
   onCancel,
 }) => {
-  const toast = useToast();
   const [editedConcept, setEditedConcept] = useState<TaxonomyConcept>(
     concept || {
       id: `concept-${Date.now()}`,
@@ -56,12 +55,11 @@ export const ConceptEditor: React.FC<ConceptEditorProps> = ({
 
   const handleSave = () => {
     if (!editedConcept.prefLabel.trim()) {
-      toast({
+      toaster.create({
         title: "Error",
         description: "Preferred label is required",
         status: "error",
         duration: 3000,
-        isClosable: true,
       });
       return;
     }

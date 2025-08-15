@@ -11,7 +11,6 @@ import {
   VStack,
   HStack,
   Text,
-  useToast,
   Tabs,
   TabList,
   TabPanels,
@@ -22,6 +21,7 @@ import {
   Divider,
 } from "@chakra-ui/react";
 import { FiPlus, FiTrash2 } from "react-icons/fi";
+import { toaster } from "../ui/toaster";
 import { useTaxonomies, Taxonomy, TaxonomyConcept } from "../../state/taxonomies";
 
 interface EditTaxonomyDialogProps {
@@ -47,7 +47,6 @@ export const EditTaxonomyDialog: React.FC<EditTaxonomyDialogProps> = ({
     isUpdatingTaxonomy,
     isDeletingTaxonomy,
   } = useTaxonomies();
-  const toast = useToast();
 
   const [taxonomyId, setTaxonomyId] = useState(initialTaxonomyId || "");
   const [taxonomy, setTaxonomy] = useState<Taxonomy>(
@@ -81,23 +80,21 @@ export const EditTaxonomyDialog: React.FC<EditTaxonomyDialogProps> = ({
 
   const handleSave = () => {
     if (!taxonomyId.trim()) {
-      toast({
+      toaster.create({
         title: "Error",
         description: "Taxonomy ID is required",
         status: "error",
         duration: 3000,
-        isClosable: true,
       });
       return;
     }
 
     if (!taxonomy.metadata.name.trim()) {
-      toast({
+      toaster.create({
         title: "Error",
         description: "Taxonomy name is required",
         status: "error",
         duration: 3000,
-        isClosable: true,
       });
       return;
     }
