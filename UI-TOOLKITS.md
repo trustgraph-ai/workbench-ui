@@ -156,14 +156,15 @@ disabled={true}
 ## Project-Specific Patterns
 
 ### Notifications
-**DO NOT** use the toaster directly. Instead, use the `useNotification` hook:
+**CRITICAL: NEVER use the toaster directly.** The `toaster` from `@chakra-ui/react` or `../ui/toaster` must NOT be imported or used directly. Always use the `useNotification` hook:
 
 ```tsx
-// ❌ Don't do this
+// ❌ NEVER do this - toaster is forbidden
 import { toaster } from "../ui/toaster";
+import { toaster } from "@chakra-ui/react";
 toaster.create({ title: "Success", status: "success" });
 
-// ✅ Do this instead
+// ✅ ALWAYS do this instead
 import { useNotification } from "../../state/notify";
 
 const notify = useNotification();
@@ -171,6 +172,12 @@ notify.success("Operation completed successfully");
 notify.error("Something went wrong");
 notify.info("FYI: This is informational");
 ```
+
+**Why toaster is forbidden:**
+- Direct toaster usage bypasses the project's notification standards
+- The `useNotification` hook provides consistent error prefixing and styling
+- It maintains a unified notification interface across the application
+- Direct toaster usage can cause inconsistent user experience
 
 ### Common Components
 **ALWAYS** prefer using pre-built components from `src/components/common/` instead of raw Chakra components. These components handle Chakra v3 APIs correctly and reduce boilerplate:
