@@ -11,10 +11,6 @@ import {
   IconButton,
   Text,
   Tabs,
-  TabList,
-  TabPanels,
-  Tab,
-  TabPanel,
   Badge,
   Select,
   Switch,
@@ -210,17 +206,16 @@ export const ConceptEditor: React.FC<ConceptEditorProps> = ({
       </HStack>
 
       <Box flex="1" overflowY="auto">
-        <Tabs>
-          <TabList>
-            <Tab>Basic Info</Tab>
-            <Tab>Definition</Tab>
-            <Tab>Examples</Tab>
-            <Tab>Relationships</Tab>
-            <Tab>Metadata</Tab>
-          </TabList>
+        <Tabs.Root defaultValue="basic">
+          <Tabs.List>
+            <Tabs.Trigger value="basic">Basic Info</Tabs.Trigger>
+            <Tabs.Trigger value="definition">Definition</Tabs.Trigger>
+            <Tabs.Trigger value="examples">Examples</Tabs.Trigger>
+            <Tabs.Trigger value="relationships">Relationships</Tabs.Trigger>
+            <Tabs.Trigger value="metadata">Metadata</Tabs.Trigger>
+          </Tabs.List>
 
-          <TabPanels>
-            <TabPanel>
+            <Tabs.Content value="basic">
               <VStack spacing={4} align="stretch">
                 <FormControl isRequired>
                   <FormLabel>Preferred Label</FormLabel>
@@ -259,9 +254,9 @@ export const ConceptEditor: React.FC<ConceptEditorProps> = ({
                   </Text>
                 </FormControl>
               </VStack>
-            </TabPanel>
+            </Tabs.Content>
 
-            <TabPanel>
+            <Tabs.Content value="definition">
               <VStack spacing={4} align="stretch">
                 <FormControl>
                   <FormLabel>Definition</FormLabel>
@@ -283,17 +278,17 @@ export const ConceptEditor: React.FC<ConceptEditorProps> = ({
                   />
                 </FormControl>
               </VStack>
-            </TabPanel>
+            </Tabs.Content>
 
-            <TabPanel>
+            <Tabs.Content value="examples">
               <ArrayFieldEditor
                 label="Examples"
                 field="example"
                 placeholder="Add example..."
               />
-            </TabPanel>
+            </Tabs.Content>
 
-            <TabPanel>
+            <Tabs.Content value="relationships">
               <VStack spacing={4} align="stretch">
                 <FormControl>
                   <FormLabel>Broader Concept</FormLabel>
@@ -324,9 +319,9 @@ export const ConceptEditor: React.FC<ConceptEditorProps> = ({
                   isConceptSelect={true}
                 />
               </VStack>
-            </TabPanel>
+            </Tabs.Content>
 
-            <TabPanel>
+            <Tabs.Content value="metadata">
               <VStack spacing={4} align="stretch">
                 <FormControl>
                   <FormLabel>Concept ID</FormLabel>
@@ -375,9 +370,8 @@ export const ConceptEditor: React.FC<ConceptEditorProps> = ({
                   </Wrap>
                 </Box>
               </VStack>
-            </TabPanel>
-          </TabPanels>
-        </Tabs>
+            </Tabs.Content>
+        </Tabs.Root>
       </Box>
     </VStack>
   );

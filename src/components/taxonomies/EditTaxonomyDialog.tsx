@@ -276,9 +276,9 @@ export const EditTaxonomyDialog: React.FC<EditTaxonomyDialogProps> = ({
                     />
                   </FormControl>
                 </VStack>
-              </TabPanel>
+              </Tabs.Content>
 
-              <TabPanel>
+              <Tabs.Content value="concepts">
                 <VStack spacing={4} align="stretch">
                   <HStack justify="space-between">
                     <Text fontSize="lg" fontWeight="bold">
@@ -347,9 +347,9 @@ export const EditTaxonomyDialog: React.FC<EditTaxonomyDialogProps> = ({
                     </VStack>
                   )}
                 </VStack>
-              </TabPanel>
+              </Tabs.Content>
 
-              <TabPanel>
+              <Tabs.Content value="scheme">
                 <VStack spacing={4} align="stretch">
                   <FormControl>
                     <FormLabel>Scheme URI</FormLabel>
@@ -371,9 +371,9 @@ export const EditTaxonomyDialog: React.FC<EditTaxonomyDialogProps> = ({
                     />
                   </FormControl>
                 </VStack>
-              </TabPanel>
+              </Tabs.Content>
 
-              <TabPanel>
+              <Tabs.Content value="json">
                 <Box
                   as="pre"
                   p={4}
@@ -385,9 +385,8 @@ export const EditTaxonomyDialog: React.FC<EditTaxonomyDialogProps> = ({
                 >
                   {JSON.stringify(taxonomy, null, 2)}
                 </Box>
-              </TabPanel>
-            </TabPanels>
-          </Tabs>
+              </Tabs.Content>
+          </Tabs.Root>
             </Dialog.Body>
 
             <Dialog.Footer>

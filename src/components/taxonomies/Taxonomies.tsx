@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Button, Heading, HStack, VStack, Tabs, TabList, TabPanels, Tab, TabPanel } from "@chakra-ui/react";
+import { Box, Button, Heading, HStack, VStack, Tabs } from "@chakra-ui/react";
 import { FiPlus, FiList, FiEdit3 } from "react-icons/fi";
 import { TaxonomiesTable } from "./TaxonomiesTable";
 import { EditTaxonomyDialog } from "./EditTaxonomyDialog";
@@ -23,30 +23,28 @@ export const Taxonomies: React.FC = () => {
       </HStack>
 
       <Box flex="1" minH="0">
-        <Tabs height="100%">
-          <TabList>
-            <Tab>
+        <Tabs.Root height="100%" defaultValue="list">
+          <Tabs.List>
+            <Tabs.Trigger value="list">
               <FiList style={{ marginRight: "8px" }} />
               All Taxonomies
-            </Tab>
-            <Tab>
+            </Tabs.Trigger>
+            <Tabs.Trigger value="editor">
               <FiEdit3 style={{ marginRight: "8px" }} />
               Editor
-            </Tab>
-          </TabList>
+            </Tabs.Trigger>
+          </Tabs.List>
 
-          <TabPanels height="calc(100% - 40px)">
-            <TabPanel height="100%">
+            <Tabs.Content value="list" height="calc(100% - 40px)">
               <TaxonomiesTable />
-            </TabPanel>
-            <TabPanel height="100%" p={0}>
+            </Tabs.Content>
+            <Tabs.Content value="editor" height="100%" p={0}>
               <TaxonomyManager
                 selectedTaxonomyId={selectedTaxonomyId || undefined}
                 onTaxonomySelect={setSelectedTaxonomyId}
               />
-            </TabPanel>
-          </TabPanels>
-        </Tabs>
+            </Tabs.Content>
+        </Tabs.Root>
       </Box>
 
       <EditTaxonomyDialog
