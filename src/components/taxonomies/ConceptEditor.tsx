@@ -246,7 +246,7 @@ export const ConceptEditor: React.FC<ConceptEditorProps> = ({
                       isChecked={editedConcept.topConcept || false}
                       onChange={(e) => updateField("topConcept", e.target.checked)}
                     />
-                    <FormLabel mb={0}>Top Concept</Field.Label>
+                    <Field.Label mb={0}>Top Concept</Field.Label>
                   </HStack>
                   <Text fontSize="sm" color="gray.600">
                     Mark as a root-level concept in the taxonomy

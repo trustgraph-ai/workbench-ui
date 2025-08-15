@@ -321,7 +321,7 @@ export const EditTaxonomyDialog: React.FC<EditTaxonomyDialogProps> = ({
                           </HStack>
                           <VStack spacing={2} align="stretch">
                             <Field.Root>
-                              <FormLabel fontSize="sm">Preferred Label</Field.Label>
+                              <Field.Label fontSize="sm">Preferred Label</Field.Label>
                               <Input
                                 size="sm"
                                 value={concept.prefLabel}
@@ -331,7 +331,7 @@ export const EditTaxonomyDialog: React.FC<EditTaxonomyDialogProps> = ({
                               />
                             </Field.Root>
                             <Field.Root>
-                              <FormLabel fontSize="sm">Definition</Field.Label>
+                              <Field.Label fontSize="sm">Definition</Field.Label>
                               <Textarea
                                 size="sm"
                                 value={concept.definition || ""}
