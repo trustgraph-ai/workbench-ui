@@ -10,9 +10,6 @@ import {
   InputLeftElement,
   Collapse,
   Menu,
-  MenuButton,
-  MenuList,
-  MenuItem,
   useDisclosure,
   Badge,
 } from "@chakra-ui/react";
@@ -145,34 +142,35 @@ const TreeNode: React.FC<TreeNodeProps> = ({
             </VStack>
 
             {/* Context menu */}
-            <Menu>
-              <MenuButton
-                as={IconButton}
-                aria-label="Options"
-                icon={<FiMoreVertical />}
-                variant="ghost"
-                size="xs"
-                onClick={(e) => e.stopPropagation()}
-              />
-              <MenuList>
-                <MenuItem icon={<FiPlus />} onClick={() => onAdd(concept.id)}>
-                  Add Child Concept
-                </MenuItem>
-                <MenuItem icon={<FiEdit3 />} onClick={() => onEdit(concept.id)}>
-                  Edit Concept
-                </MenuItem>
-                <MenuItem icon={<FiMove />} onClick={() => onMove(concept.id)}>
-                  Move Concept
-                </MenuItem>
-                <MenuItem
-                  icon={<FiTrash2 />}
+            <Menu.Root>
+              <Menu.Trigger asChild>
+                <IconButton
+                  aria-label="Options"
+                  variant="ghost"
+                  size="xs"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <FiMoreVertical />
+                </IconButton>
+              </Menu.Trigger>
+              <Menu.Content>
+                <Menu.Item onClick={() => onAdd(concept.id)}>
+                  <FiPlus /> Add Child Concept
+                </Menu.Item>
+                <Menu.Item onClick={() => onEdit(concept.id)}>
+                  <FiEdit3 /> Edit Concept
+                </Menu.Item>
+                <Menu.Item onClick={() => onMove(concept.id)}>
+                  <FiMove /> Move Concept
+                </Menu.Item>
+                <Menu.Item
                   onClick={() => onDelete(concept.id)}
                   color="red.500"
                 >
-                  Delete Concept
-                </MenuItem>
-              </MenuList>
-            </Menu>
+                  <FiTrash2 /> Delete Concept
+                </Menu.Item>
+              </Menu.Content>
+            </Menu.Root>
           </HStack>
         </Box>
       </HStack>
