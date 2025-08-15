@@ -13,7 +13,7 @@ import {
   Tabs,
   Box,
   IconButton,
-  Divider,
+  Separator,
 } from "@chakra-ui/react";
 import { FiPlus, FiTrash2 } from "react-icons/fi";
 import { toaster } from "../ui/toaster";

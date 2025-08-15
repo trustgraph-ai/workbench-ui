@@ -10,7 +10,7 @@ import {
   Select,
   IconButton,
   Text,
-  Divider,
+  Separator,
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbLink,
@@ -306,7 +306,7 @@ export const TaxonomyManager: React.FC<TaxonomyManagerProps> = ({
         </HStack>
       </HStack>
 
-      <Divider />
+      <Separator />
 
       {/* Main Content */}
       <Grid templateColumns="1fr 1px 2fr" gap={0} flex="1" minH="0">

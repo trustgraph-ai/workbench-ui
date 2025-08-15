@@ -6,9 +6,6 @@ import {
   Text,
   IconButton,
   Input,
-  InputGroup,
-  InputLeftElement,
-  Collapse,
   Menu,
   useDisclosure,
   Badge,
@@ -176,31 +173,29 @@ const TreeNode: React.FC<TreeNodeProps> = ({
       </HStack>
 
       {/* Children */}
-      {hasChildren && (
-        <Collapse in={isOpen}>
-          <VStack spacing={1} align="stretch">
-            {filteredChildren.map((childId) => {
-              const childConcept = taxonomy.concepts[childId];
-              if (!childConcept) return null;
-              
-              return (
-                <TreeNode
-                  key={childId}
-                  concept={childConcept}
-                  taxonomy={taxonomy}
-                  level={level + 1}
-                  isSelected={isSelected}
-                  searchTerm={searchTerm}
-                  onSelect={onSelect}
-                  onAdd={onAdd}
-                  onEdit={onEdit}
-                  onDelete={onDelete}
-                  onMove={onMove}
-                />
-              );
-            })}
-          </VStack>
-        </Collapse>
+      {hasChildren && isOpen && (
+        <VStack spacing={1} align="stretch">
+          {filteredChildren.map((childId) => {
+            const childConcept = taxonomy.concepts[childId];
+            if (!childConcept) return null;
+            
+            return (
+              <TreeNode
+                key={childId}
+                concept={childConcept}
+                taxonomy={taxonomy}
+                level={level + 1}
+                isSelected={isSelected}
+                searchTerm={searchTerm}
+                onSelect={onSelect}
+                onAdd={onAdd}
+                onEdit={onEdit}
+                onDelete={onDelete}
+                onMove={onMove}
+              />
+            );
+          })}
+        </VStack>
       )}
     </VStack>
   );
@@ -262,16 +257,13 @@ export const TaxonomyTree: React.FC<TaxonomyTreeProps> = ({
   return (
     <VStack spacing={4} align="stretch" h="100%">
       {/* Search */}
-      <InputGroup>
-        <InputLeftElement>
-          <FiSearch color="gray.500" />
-        </InputLeftElement>
+      <HStack>
         <Input
-          placeholder="Search concepts..."
+          placeholder="🔍 Search concepts..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
-      </InputGroup>
+      </HStack>
 
       {/* Add root concept button */}
       <HStack justify="space-between">
