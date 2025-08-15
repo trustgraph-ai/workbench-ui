@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState } from "react";
 import {
   Box,
   Grid,
@@ -10,9 +10,6 @@ import {
   IconButton,
   Text,
   Separator,
-  Select,
-  createListCollection,
-  Portal,
 } from "@chakra-ui/react";
 import SelectField from "../common/SelectField";
 import { FiPlus, FiDownload, FiUpload, FiSettings } from "react-icons/fi";
@@ -216,10 +213,11 @@ export const TaxonomyManager: React.FC<TaxonomyManagerProps> = ({
         <Text color="fg.muted">Select a taxonomy to start editing:</Text>
         <Box maxW="400px">
           <SelectField
-            label="Choose a taxonomy"
+            label="Select Taxonomy"
             items={taxonomies.map(([id, taxonomy]) => ({
               value: id,
-              label: `${taxonomy.metadata.name} (${Object.keys(taxonomy.concepts).length} concepts)`
+              label: taxonomy.metadata.name,
+              description: `${Object.keys(taxonomy.concepts).length} concepts • ${taxonomy.metadata.description || 'No description'}`
             }))}
             value=""
             onValueChange={handleTaxonomyChange}
@@ -249,42 +247,18 @@ export const TaxonomyManager: React.FC<TaxonomyManagerProps> = ({
         </VStack>
         
         <HStack>
-          <Select.Root
-            collection={useMemo(
-              () => createListCollection({
-                items: taxonomies.map(([id, taxonomy]) => ({
-                  value: id,
-                  label: taxonomy.metadata.name
-                }))
-              }),
-              [taxonomies]
-            )}
-            value={currentTaxonomyId || ""}
-            onValueChange={(e) => handleTaxonomyChange(e.value)}
-            w="250px"
-          >
-            <Select.HiddenSelect />
-            <Select.Control>
-              <Select.Trigger>
-                <Select.ValueText />
-              </Select.Trigger>
-              <Select.IndicatorGroup>
-                <Select.Indicator />
-              </Select.IndicatorGroup>
-            </Select.Control>
-            <Portal>
-              <Select.Positioner>
-                <Select.Content>
-                  {taxonomies.map(([id, taxonomy]) => (
-                    <Select.Item item={id} key={id}>
-                      {taxonomy.metadata.name}
-                      <Select.ItemIndicator />
-                    </Select.Item>
-                  ))}
-                </Select.Content>
-              </Select.Positioner>
-            </Portal>
-          </Select.Root>
+          <Box w="250px">
+            <SelectField
+              label="Current Taxonomy"
+              items={taxonomies.map(([id, taxonomy]) => ({
+                value: id,
+                label: taxonomy.metadata.name,
+                description: `${Object.keys(taxonomy.concepts).length} concepts`
+              }))}
+              value={currentTaxonomyId || ""}
+              onValueChange={handleTaxonomyChange}
+            />
+          </Box>
           <Button colorPalette="primary" onClick={() => handleConceptAdd()}>
             <FiPlus /> Add Concept
           </Button>
