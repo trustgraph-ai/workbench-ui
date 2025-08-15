@@ -4,8 +4,7 @@ import {
   Button,
   Dialog,
   CloseButton,
-  FormControl,
-  FormLabel,
+  Field,
   Input,
   Textarea,
   VStack,
@@ -223,18 +222,18 @@ export const EditTaxonomyDialog: React.FC<EditTaxonomyDialogProps> = ({
 
               <Tabs.Content value="metadata">
                 <VStack spacing={4} align="stretch">
-                  <FormControl isRequired>
-                    <FormLabel>Taxonomy ID</FormLabel>
+                  <Field.Root required>
+                    <Field.Label>Taxonomy ID</Field.Label>
                     <Input
                       value={taxonomyId}
                       onChange={(e) => setTaxonomyId(e.target.value)}
                       placeholder="e.g., risk-categories"
                       isDisabled={mode === "edit"}
                     />
-                  </FormControl>
+                  </Field.Root>
 
-                  <FormControl isRequired>
-                    <FormLabel>Name</FormLabel>
+                  <Field.Root required>
+                    <Field.Label>Name</Field.Label>
                     <Input
                       value={taxonomy.metadata.name}
                       onChange={(e) =>
@@ -242,10 +241,10 @@ export const EditTaxonomyDialog: React.FC<EditTaxonomyDialogProps> = ({
                       }
                       placeholder="e.g., Risk Categories"
                     />
-                  </FormControl>
+                  </Field.Root>
 
-                  <FormControl>
-                    <FormLabel>Description</FormLabel>
+                  <Field.Root>
+                    <Field.Label>Description</Field.Label>
                     <Textarea
                       value={taxonomy.metadata.description}
                       onChange={(e) =>
@@ -253,20 +252,20 @@ export const EditTaxonomyDialog: React.FC<EditTaxonomyDialogProps> = ({
                       }
                       placeholder="Describe the purpose of this taxonomy"
                     />
-                  </FormControl>
+                  </Field.Root>
 
-                  <FormControl>
-                    <FormLabel>Version</FormLabel>
+                  <Field.Root>
+                    <Field.Label>Version</Field.Label>
                     <Input
                       value={taxonomy.metadata.version}
                       onChange={(e) =>
                         handleMetadataChange("version", e.target.value)
                       }
                     />
-                  </FormControl>
+                  </Field.Root>
 
-                  <FormControl>
-                    <FormLabel>Namespace</FormLabel>
+                  <Field.Root>
+                    <Field.Label>Namespace</Field.Label>
                     <Input
                       value={taxonomy.metadata.namespace}
                       onChange={(e) =>
@@ -274,7 +273,7 @@ export const EditTaxonomyDialog: React.FC<EditTaxonomyDialogProps> = ({
                       }
                       placeholder="http://example.org/taxonomies/"
                     />
-                  </FormControl>
+                  </Field.Root>
                 </VStack>
               </Tabs.Content>
 
@@ -321,8 +320,8 @@ export const EditTaxonomyDialog: React.FC<EditTaxonomyDialogProps> = ({
                             />
                           </HStack>
                           <VStack spacing={2} align="stretch">
-                            <FormControl>
-                              <FormLabel fontSize="sm">Preferred Label</FormLabel>
+                            <Field.Root>
+                              <FormLabel fontSize="sm">Preferred Label</Field.Label>
                               <Input
                                 size="sm"
                                 value={concept.prefLabel}
@@ -330,9 +329,9 @@ export const EditTaxonomyDialog: React.FC<EditTaxonomyDialogProps> = ({
                                   updateConcept(id, "prefLabel", e.target.value)
                                 }
                               />
-                            </FormControl>
-                            <FormControl>
-                              <FormLabel fontSize="sm">Definition</FormLabel>
+                            </Field.Root>
+                            <Field.Root>
+                              <FormLabel fontSize="sm">Definition</Field.Label>
                               <Textarea
                                 size="sm"
                                 value={concept.definition || ""}
@@ -340,7 +339,7 @@ export const EditTaxonomyDialog: React.FC<EditTaxonomyDialogProps> = ({
                                   updateConcept(id, "definition", e.target.value)
                                 }
                               />
-                            </FormControl>
+                            </Field.Root>
                           </VStack>
                         </Box>
                       ))}
@@ -351,17 +350,17 @@ export const EditTaxonomyDialog: React.FC<EditTaxonomyDialogProps> = ({
 
               <Tabs.Content value="scheme">
                 <VStack spacing={4} align="stretch">
-                  <FormControl>
-                    <FormLabel>Scheme URI</FormLabel>
+                  <Field.Root>
+                    <Field.Label>Scheme URI</Field.Label>
                     <Input
                       value={taxonomy.scheme.uri}
                       onChange={(e) => handleSchemeChange("uri", e.target.value)}
                       placeholder="Will be auto-generated if empty"
                     />
-                  </FormControl>
+                  </Field.Root>
 
-                  <FormControl>
-                    <FormLabel>Scheme Label</FormLabel>
+                  <Field.Root>
+                    <Field.Label>Scheme Label</Field.Label>
                     <Input
                       value={taxonomy.scheme.prefLabel}
                       onChange={(e) =>
@@ -369,7 +368,7 @@ export const EditTaxonomyDialog: React.FC<EditTaxonomyDialogProps> = ({
                       }
                       placeholder="Will use taxonomy name if empty"
                     />
-                  </FormControl>
+                  </Field.Root>
                 </VStack>
               </Tabs.Content>
 

@@ -3,8 +3,7 @@ import {
   Box,
   VStack,
   HStack,
-  FormControl,
-  FormLabel,
+  Field,
   Input,
   Textarea,
   Button,
@@ -108,8 +107,8 @@ export const ConceptEditor: React.FC<ConceptEditorProps> = ({
     };
 
     return (
-      <FormControl>
-        <FormLabel>{label}</FormLabel>
+      <Field.Root>
+        <Field.Label>{label}</Field.Label>
         <VStack align="stretch" spacing={2}>
           {items.map((item, index) => (
             <HStack key={index}>
@@ -177,7 +176,7 @@ export const ConceptEditor: React.FC<ConceptEditorProps> = ({
             />
           </HStack>
         </VStack>
-      </FormControl>
+      </Field.Root>
     );
   };
 
@@ -217,14 +216,14 @@ export const ConceptEditor: React.FC<ConceptEditorProps> = ({
 
             <Tabs.Content value="basic">
               <VStack spacing={4} align="stretch">
-                <FormControl isRequired>
-                  <FormLabel>Preferred Label</FormLabel>
+                <Field.Root required>
+                  <Field.Label>Preferred Label</Field.Label>
                   <Input
                     value={editedConcept.prefLabel}
                     onChange={(e) => updateField("prefLabel", e.target.value)}
                     placeholder="Main name for this concept"
                   />
-                </FormControl>
+                </Field.Root>
 
                 <ArrayFieldEditor
                   label="Alternative Labels"
@@ -232,51 +231,51 @@ export const ConceptEditor: React.FC<ConceptEditorProps> = ({
                   placeholder="Add alternative name..."
                 />
 
-                <FormControl>
-                  <FormLabel>Notation</FormLabel>
+                <Field.Root>
+                  <Field.Label>Notation</Field.Label>
                   <Input
                     value={editedConcept.notation || ""}
                     onChange={(e) => updateField("notation", e.target.value)}
                     placeholder="e.g., 1.1 or A-01"
                   />
-                </FormControl>
+                </Field.Root>
 
-                <FormControl>
+                <Field.Root>
                   <HStack>
                     <Switch
                       isChecked={editedConcept.topConcept || false}
                       onChange={(e) => updateField("topConcept", e.target.checked)}
                     />
-                    <FormLabel mb={0}>Top Concept</FormLabel>
+                    <FormLabel mb={0}>Top Concept</Field.Label>
                   </HStack>
                   <Text fontSize="sm" color="gray.600">
                     Mark as a root-level concept in the taxonomy
                   </Text>
-                </FormControl>
+                </Field.Root>
               </VStack>
             </Tabs.Content>
 
             <Tabs.Content value="definition">
               <VStack spacing={4} align="stretch">
-                <FormControl>
-                  <FormLabel>Definition</FormLabel>
+                <Field.Root>
+                  <Field.Label>Definition</Field.Label>
                   <Textarea
                     value={editedConcept.definition || ""}
                     onChange={(e) => updateField("definition", e.target.value)}
                     placeholder="Formal definition of this concept..."
                     rows={3}
                   />
-                </FormControl>
+                </Field.Root>
 
-                <FormControl>
-                  <FormLabel>Scope Note</FormLabel>
+                <Field.Root>
+                  <Field.Label>Scope Note</Field.Label>
                   <Textarea
                     value={editedConcept.scopeNote || ""}
                     onChange={(e) => updateField("scopeNote", e.target.value)}
                     placeholder="Additional context about the scope and usage..."
                     rows={4}
                   />
-                </FormControl>
+                </Field.Root>
               </VStack>
             </Tabs.Content>
 
@@ -290,8 +289,8 @@ export const ConceptEditor: React.FC<ConceptEditorProps> = ({
 
             <Tabs.Content value="relationships">
               <VStack spacing={4} align="stretch">
-                <FormControl>
-                  <FormLabel>Broader Concept</FormLabel>
+                <Field.Root>
+                  <Field.Label>Broader Concept</Field.Label>
                   <Select
                     value={editedConcept.broader || ""}
                     onChange={(e) => updateField("broader", e.target.value || null)}
@@ -303,7 +302,7 @@ export const ConceptEditor: React.FC<ConceptEditorProps> = ({
                       </option>
                     ))}
                   </Select>
-                </FormControl>
+                </Field.Root>
 
                 <ArrayFieldEditor
                   label="Narrower Concepts"
@@ -323,8 +322,8 @@ export const ConceptEditor: React.FC<ConceptEditorProps> = ({
 
             <Tabs.Content value="metadata">
               <VStack spacing={4} align="stretch">
-                <FormControl>
-                  <FormLabel>Concept ID</FormLabel>
+                <Field.Root>
+                  <Field.Label>Concept ID</Field.Label>
                   <Input
                     value={editedConcept.id}
                     onChange={(e) => updateField("id", e.target.value)}
@@ -335,7 +334,7 @@ export const ConceptEditor: React.FC<ConceptEditorProps> = ({
                       ID cannot be changed for existing concepts
                     </Text>
                   )}
-                </FormControl>
+                </Field.Root>
 
                 <Box p={4} bg="gray.50" borderRadius="md">
                   <Text fontSize="sm" fontWeight="bold" mb={2}>
