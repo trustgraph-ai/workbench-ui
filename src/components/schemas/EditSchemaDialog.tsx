@@ -6,7 +6,6 @@ import {
   Button,
   Field,
   Input,
-  Textarea,
   VStack,
   HStack,
   IconButton,
@@ -23,6 +22,8 @@ import { useSchemas } from "../../state/schemas";
 import { Schema, SchemaField } from "../../model/schemas-table";
 import { validateSchema } from "../../utils/schema-validation";
 import SelectField from "../common/SelectField";
+import TextField from "../common/TextField";
+import TextAreaField from "../common/TextAreaField";
 
 // Type options moved outside component to prevent recreation on every render
 const typeOptions = [
@@ -312,27 +313,21 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
                   </Field.Root>
                 )}
 
-                <Field.Root required>
-                  <Field.Label>
-                    Name <Field.RequiredIndicator />
-                  </Field.Label>
-                  <Input
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    placeholder="e.g., Customer Records"
-                  />
-                </Field.Root>
+                <TextField
+                  label="Name"
+                  value={name}
+                  onValueChange={setName}
+                  placeholder="e.g., Customer Records"
+                  required
+                />
 
-                <Field.Root required>
-                  <Field.Label>
-                    Description <Field.RequiredIndicator />
-                  </Field.Label>
-                  <Textarea
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    placeholder="Describe the purpose of this schema"
-                  />
-                </Field.Root>
+                <TextAreaField
+                  label="Description"
+                  value={description}
+                  onValueChange={setDescription}
+                  placeholder="Describe the purpose of this schema"
+                  required
+                />
 
                 <Separator />
 
@@ -516,7 +511,7 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
 
                     if (availableFields.length === 0) {
                       return (
-                        <Text fontSize="sm" color="gray.500">
+                        <Text fontSize="sm" color="fg.muted">
                           No fields available for indexing. Add field names
                           first.
                         </Text>

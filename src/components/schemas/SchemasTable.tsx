@@ -55,7 +55,7 @@ export const SchemasTable: React.FC = () => {
   if (schemas.length === 0) {
     return (
       <Center h="200px">
-        <Text color="gray.500">
+        <Text color="fg.muted">
           No schemas found. Create one to get started.
         </Text>
       </Center>
