@@ -201,7 +201,7 @@ export const TaxonomyManager: React.FC<TaxonomyManagerProps> = ({
 
   if (!taxonomies.length) {
     return (
-      <Box p={8} textAlign="center" color="gray.500">
+      <Box p={8} textAlign="center" color="fg.muted">
         <Text mb={4}>No taxonomies available. Create one to get started.</Text>
       </Box>
     );
@@ -210,7 +210,7 @@ export const TaxonomyManager: React.FC<TaxonomyManagerProps> = ({
   if (!currentTaxonomy) {
     return (
       <VStack spacing={4} p={8}>
-        <Text color="gray.600">Select a taxonomy to start editing:</Text>
+        <Text color="fg.muted">Select a taxonomy to start editing:</Text>
         <Select
           placeholder="Choose a taxonomy..."
           onChange={(e) => e.target.value && handleTaxonomyChange(e.target.value)}
@@ -233,12 +233,12 @@ export const TaxonomyManager: React.FC<TaxonomyManagerProps> = ({
         <VStack align="start" spacing={1}>
           <HStack>
             <Heading size="lg">{currentTaxonomy.metadata.name}</Heading>
-            <Text color="gray.500">
+            <Text color="fg.muted">
               ({Object.keys(currentTaxonomy.concepts).length} concepts)
             </Text>
           </HStack>
           {selectedConcept && (
-            <Text fontSize="sm" color="gray.600">
+            <Text fontSize="sm" color="fg.muted">
               {currentTaxonomy.metadata.name} → {getConceptBreadcrumb(selectedConcept.id).join(" → ")}
             </Text>
           )}
@@ -301,7 +301,7 @@ export const TaxonomyManager: React.FC<TaxonomyManagerProps> = ({
 
         {/* Divider */}
         <GridItem>
-          <Box w="1px" h="100%" bg="gray.200" />
+          <Box w="1px" h="100%" bg="bg.subtle" />
         </GridItem>
 
         {/* Right Panel - Concept Editor */}
@@ -333,11 +333,11 @@ export const TaxonomyManager: React.FC<TaxonomyManagerProps> = ({
                   </Button>
                 </HStack>
                 
-                <Box p={4} borderWidth="1px" borderRadius="md" bg="gray.50">
+                <Box p={4} borderWidth="1px" borderRadius="md" bg="bg.muted">
                   <VStack align="start" spacing={3}>
                     {selectedConcept.definition && (
                       <Box>
-                        <Text fontSize="sm" fontWeight="bold" color="gray.600">
+                        <Text fontSize="sm" fontWeight="bold" color="fg.muted">
                           Definition
                         </Text>
                         <Text>{selectedConcept.definition}</Text>
@@ -346,7 +346,7 @@ export const TaxonomyManager: React.FC<TaxonomyManagerProps> = ({
                     
                     {selectedConcept.scopeNote && (
                       <Box>
-                        <Text fontSize="sm" fontWeight="bold" color="gray.600">
+                        <Text fontSize="sm" fontWeight="bold" color="fg.muted">
                           Scope Note
                         </Text>
                         <Text fontSize="sm">{selectedConcept.scopeNote}</Text>
@@ -355,7 +355,7 @@ export const TaxonomyManager: React.FC<TaxonomyManagerProps> = ({
                     
                     {selectedConcept.example && selectedConcept.example.length > 0 && (
                       <Box>
-                        <Text fontSize="sm" fontWeight="bold" color="gray.600">
+                        <Text fontSize="sm" fontWeight="bold" color="fg.muted">
                           Examples
                         </Text>
                         <VStack align="start" spacing={1}>
@@ -369,7 +369,7 @@ export const TaxonomyManager: React.FC<TaxonomyManagerProps> = ({
                 </Box>
               </VStack>
             ) : (
-              <Box p={8} textAlign="center" color="gray.500">
+              <Box p={8} textAlign="center" color="fg.muted">
                 <Text>Select a concept from the tree to view details, or create a new concept.</Text>
               </Box>
             )}

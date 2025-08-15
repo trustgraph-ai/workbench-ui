@@ -87,10 +87,10 @@ const TreeNode: React.FC<TreeNodeProps> = ({
         spacing={2}
         p={2}
         borderRadius="md"
-        bg={isSelected ? "blue.50" : "transparent"}
+        bg={isSelected ? "primary.muted" : "transparent"}
         borderLeft={isSelected ? "3px solid" : "3px solid transparent"}
-        borderLeftColor={isSelected ? "blue.500" : "transparent"}
-        _hover={{ bg: "gray.50" }}
+        borderLeftColor={isSelected ? "primary.solid" : "transparent"}
+        _hover={{ bg: "bg.muted" }}
         cursor="pointer"
         paddingLeft={paddingLeft}
       >
@@ -132,7 +132,7 @@ const TreeNode: React.FC<TreeNodeProps> = ({
                 )}
               </HStack>
               {concept.definition && (
-                <Text fontSize="xs" color="gray.600" noOfLines={1}>
+                <Text fontSize="xs" color="fg.muted" noOfLines={1}>
                   {concept.definition}
                 </Text>
               )}
@@ -162,7 +162,7 @@ const TreeNode: React.FC<TreeNodeProps> = ({
                 </Menu.Item>
                 <Menu.Item
                   onClick={() => onDelete(concept.id)}
-                  color="red.500"
+                  color="red.fg"
                 >
                   <FiTrash2 /> Delete Concept
                 </Menu.Item>
@@ -239,7 +239,7 @@ export const TaxonomyTree: React.FC<TaxonomyTreeProps> = ({
 
   if (Object.keys(taxonomy.concepts).length === 0) {
     return (
-      <Box p={4} textAlign="center" color="gray.500">
+      <Box p={4} textAlign="center" color="fg.muted">
         <Text mb={4}>No concepts in this taxonomy yet.</Text>
         <IconButton
           aria-label="Add first concept"
@@ -267,7 +267,7 @@ export const TaxonomyTree: React.FC<TaxonomyTreeProps> = ({
 
       {/* Add root concept button */}
       <HStack justify="space-between">
-        <Text fontSize="sm" color="gray.600">
+        <Text fontSize="sm" color="fg.muted">
           {Object.keys(taxonomy.concepts).length} concept(s)
         </Text>
         <IconButton

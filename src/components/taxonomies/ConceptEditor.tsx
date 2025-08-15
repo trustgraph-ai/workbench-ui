@@ -179,7 +179,7 @@ export const ConceptEditor: React.FC<ConceptEditorProps> = ({
 
   if (!concept && Object.keys(taxonomy.concepts).length === 0) {
     return (
-      <Box p={6} textAlign="center" color="gray.500">
+      <Box p={6} textAlign="center" color="fg.muted">
         <Text>Select a concept from the tree to edit, or create a new one.</Text>
       </Box>
     );
@@ -242,7 +242,7 @@ export const ConceptEditor: React.FC<ConceptEditorProps> = ({
                     />
                     <Field.Label mb={0}>Top Concept</Field.Label>
                   </HStack>
-                  <Text fontSize="sm" color="gray.600">
+                  <Text fontSize="sm" color="fg.muted">
                     Mark as a root-level concept in the taxonomy
                   </Text>
                 </Field.Root>
@@ -318,13 +318,13 @@ export const ConceptEditor: React.FC<ConceptEditorProps> = ({
                     disabled={!!concept} // Don't allow editing existing IDs
                   />
                   {concept && (
-                    <Text fontSize="sm" color="gray.600">
+                    <Text fontSize="sm" color="fg.muted">
                       ID cannot be changed for existing concepts
                     </Text>
                   )}
                 </Field.Root>
 
-                <Box p={4} bg="gray.50" borderRadius="md">
+                <Box p={4} bg="bg.muted" borderRadius="md">
                   <Text fontSize="sm" fontWeight="bold" mb={2}>
                     Concept Summary
                   </Text>

@@ -214,15 +214,14 @@ export const EditTaxonomyDialog: React.FC<EditTaxonomyDialogProps> = ({
 
               <Tabs.Content value="metadata">
                 <VStack spacing={4} align="stretch">
-                  <Field.Root required>
-                    <Field.Label>Taxonomy ID</Field.Label>
-                    <Input
-                      value={taxonomyId}
-                      onChange={(e) => setTaxonomyId(e.target.value)}
-                      placeholder="e.g., risk-categories"
-                      disabled={mode === "edit"}
-                    />
-                  </Field.Root>
+                  <TextField
+                    label="Taxonomy ID"
+                    value={taxonomyId}
+                    onValueChange={setTaxonomyId}
+                    placeholder="e.g., risk-categories"
+                    required
+                    disabled={mode === "edit"}
+                  />
 
                   <TextField
                     label="Name"
