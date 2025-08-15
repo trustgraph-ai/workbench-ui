@@ -213,7 +213,7 @@ export const EditTaxonomyDialog: React.FC<EditTaxonomyDialogProps> = ({
             </Tabs.List>
 
               <Tabs.Content value="metadata">
-                <VStack spacing={4} align="stretch">
+                <VStack gap={4} align="stretch">
                   <TextField
                     label="Taxonomy ID"
                     value={taxonomyId}
@@ -254,7 +254,7 @@ export const EditTaxonomyDialog: React.FC<EditTaxonomyDialogProps> = ({
               </Tabs.Content>
 
               <Tabs.Content value="concepts">
-                <VStack spacing={4} align="stretch">
+                <VStack gap={4} align="stretch">
                   <HStack justify="space-between">
                     <Text fontSize="lg" fontWeight="bold">
                       Concepts
@@ -275,7 +275,7 @@ export const EditTaxonomyDialog: React.FC<EditTaxonomyDialogProps> = ({
                       </Text>
                     </Box>
                   ) : (
-                    <VStack spacing={4} align="stretch">
+                    <VStack gap={4} align="stretch">
                       {Object.entries(taxonomy.concepts).map(([id, concept]) => (
                         <Box
                           key={id}
@@ -295,7 +295,7 @@ export const EditTaxonomyDialog: React.FC<EditTaxonomyDialogProps> = ({
                               <FiTrash2 />
                             </IconButton>
                           </HStack>
-                          <VStack spacing={2} align="stretch">
+                          <VStack gap={2} align="stretch">
                             <TextField
                               label="Preferred Label"
                               value={concept.prefLabel}
@@ -315,7 +315,7 @@ export const EditTaxonomyDialog: React.FC<EditTaxonomyDialogProps> = ({
               </Tabs.Content>
 
               <Tabs.Content value="scheme">
-                <VStack spacing={4} align="stretch">
+                <VStack gap={4} align="stretch">
                   <TextField
                     label="Scheme URI"
                     value={taxonomy.scheme.uri}

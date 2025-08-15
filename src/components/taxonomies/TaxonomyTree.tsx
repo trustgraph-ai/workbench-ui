@@ -82,9 +82,9 @@ const TreeNode: React.FC<TreeNodeProps> = ({
   const paddingLeft = level * 20;
 
   return (
-    <VStack spacing={1} align="stretch">
+    <VStack gap={1} align="stretch">
       <HStack
-        spacing={2}
+        gap={2}
         p={2}
         borderRadius="md"
         bg={isSelected ? "primary.muted" : "transparent"}
@@ -114,7 +114,7 @@ const TreeNode: React.FC<TreeNodeProps> = ({
         {/* Concept content */}
         <Box flex="1" onClick={() => onSelect(concept.id)}>
           <HStack justify="space-between" align="center">
-            <VStack align="start" spacing={0} flex="1">
+            <VStack align="start" gap={0} flex="1">
               <HStack>
                 <Text fontWeight={concept.topConcept ? "bold" : "medium"} fontSize="sm">
                   {concept.prefLabel}
@@ -173,7 +173,7 @@ const TreeNode: React.FC<TreeNodeProps> = ({
 
       {/* Children */}
       {hasChildren && isOpen && (
-        <VStack spacing={1} align="stretch">
+        <VStack gap={1} align="stretch">
           {filteredChildren.map((childId) => {
             const childConcept = taxonomy.concepts[childId];
             if (!childConcept) return null;
@@ -255,7 +255,7 @@ export const TaxonomyTree: React.FC<TaxonomyTreeProps> = ({
   }
 
   return (
-    <VStack spacing={4} align="stretch" h="100%">
+    <VStack gap={4} align="stretch" h="100%">
       {/* Search */}
       <HStack>
         <Input
@@ -282,7 +282,7 @@ export const TaxonomyTree: React.FC<TaxonomyTreeProps> = ({
 
       {/* Tree */}
       <Box flex="1" overflowY="auto">
-        <VStack spacing={1} align="stretch">
+        <VStack gap={1} align="stretch">
           {allRootConcepts.map((concept) => (
             <TreeNode
               key={concept.id}

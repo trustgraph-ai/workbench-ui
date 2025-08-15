@@ -212,7 +212,7 @@ export const TaxonomyManager: React.FC<TaxonomyManagerProps> = ({
 
   if (!currentTaxonomy) {
     return (
-      <VStack spacing={4} p={8}>
+      <VStack gap={4} p={8}>
         <Text color="fg.muted">Select a taxonomy to start editing:</Text>
         <Box maxW="400px">
           <SelectField
@@ -230,11 +230,11 @@ export const TaxonomyManager: React.FC<TaxonomyManagerProps> = ({
   }
 
   return (
-    <VStack spacing={4} align="stretch" h="100%">
+    <VStack gap={4} align="stretch" h="100%">
       {/* Header */}
 
       <HStack justify="space-between" align="center">
-        <VStack align="start" spacing={1}>
+        <VStack align="start" gap={1}>
           <HStack>
             <Heading size="lg">{currentTaxonomy.metadata.name}</Heading>
             <Text color="fg.muted">
@@ -353,7 +353,7 @@ export const TaxonomyManager: React.FC<TaxonomyManagerProps> = ({
                 }}
               />
             ) : selectedConcept ? (
-              <VStack spacing={4} align="stretch">
+              <VStack gap={4} align="stretch">
                 <HStack justify="space-between">
                   <Heading size="md">{selectedConcept.prefLabel}</Heading>
                   <Button
@@ -366,7 +366,7 @@ export const TaxonomyManager: React.FC<TaxonomyManagerProps> = ({
                 </HStack>
                 
                 <Box p={4} borderWidth="1px" borderRadius="md" bg="bg.muted">
-                  <VStack align="start" spacing={3}>
+                  <VStack align="start" gap={3}>
                     {selectedConcept.definition && (
                       <Box>
                         <Text fontSize="sm" fontWeight="bold" color="fg.muted">
@@ -390,7 +390,7 @@ export const TaxonomyManager: React.FC<TaxonomyManagerProps> = ({
                         <Text fontSize="sm" fontWeight="bold" color="fg.muted">
                           Examples
                         </Text>
-                        <VStack align="start" spacing={1}>
+                        <VStack align="start" gap={1}>
                           {selectedConcept.example.map((ex, index) => (
                             <Text key={index} fontSize="sm">• {ex}</Text>
                           ))}

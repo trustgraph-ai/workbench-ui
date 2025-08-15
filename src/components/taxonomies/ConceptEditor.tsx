@@ -106,7 +106,7 @@ export const ConceptEditor: React.FC<ConceptEditorProps> = ({
     return (
       <Field.Root>
         <Field.Label>{label}</Field.Label>
-        <VStack align="stretch" spacing={2}>
+        <VStack align="stretch" gap={2}>
           {items.map((item, index) => (
             <HStack key={index}>
               {isConceptSelect ? (
@@ -188,7 +188,7 @@ export const ConceptEditor: React.FC<ConceptEditorProps> = ({
   }
 
   return (
-    <VStack spacing={4} align="stretch" h="100%">
+    <VStack gap={4} align="stretch" h="100%">
       <HStack justify="space-between" align="center">
         <Text fontSize="lg" fontWeight="bold">
           {concept ? "Edit Concept" : "New Concept"}
@@ -214,7 +214,7 @@ export const ConceptEditor: React.FC<ConceptEditorProps> = ({
           </Tabs.List>
 
             <Tabs.Content value="basic">
-              <VStack spacing={4} align="stretch">
+              <VStack gap={4} align="stretch">
                 <TextField
                   label="Preferred Label"
                   value={editedConcept.prefLabel}
@@ -252,7 +252,7 @@ export const ConceptEditor: React.FC<ConceptEditorProps> = ({
             </Tabs.Content>
 
             <Tabs.Content value="definition">
-              <VStack spacing={4} align="stretch">
+              <VStack gap={4} align="stretch">
                 <TextAreaField
                   label="Definition"
                   value={editedConcept.definition || ""}
@@ -278,7 +278,7 @@ export const ConceptEditor: React.FC<ConceptEditorProps> = ({
             </Tabs.Content>
 
             <Tabs.Content value="relationships">
-              <VStack spacing={4} align="stretch">
+              <VStack gap={4} align="stretch">
                 <Field.Root>
                   <Field.Label>Broader Concept</Field.Label>
                   <Select
@@ -311,7 +311,7 @@ export const ConceptEditor: React.FC<ConceptEditorProps> = ({
             </Tabs.Content>
 
             <Tabs.Content value="metadata">
-              <VStack spacing={4} align="stretch">
+              <VStack gap={4} align="stretch">
                 <Field.Root>
                   <Field.Label>Concept ID</Field.Label>
                   <Input

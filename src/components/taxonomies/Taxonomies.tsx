@@ -10,7 +10,7 @@ export const Taxonomies: React.FC = () => {
   const [selectedTaxonomyId, setSelectedTaxonomyId] = useState<string | null>(null);
 
   return (
-    <VStack spacing={6} align="stretch" h="calc(100vh - 200px)">
+    <VStack gap={6} align="stretch" h="calc(100vh - 200px)">
       <HStack justify="flex-end">
         <Button
           colorPalette="primary"
