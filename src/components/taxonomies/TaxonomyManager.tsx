@@ -13,7 +13,7 @@ import {
   Separator,
 } from "@chakra-ui/react";
 import { FiPlus, FiDownload, FiUpload, FiSettings } from "react-icons/fi";
-import { toaster } from "../ui/toaster";
+import { useNotification } from "../../state/notify";
 import { useTaxonomies, Taxonomy, TaxonomyConcept } from "../../state/taxonomies";
 import { TaxonomyTree } from "./TaxonomyTree";
 import { ConceptEditor } from "./ConceptEditor";
@@ -28,6 +28,7 @@ export const TaxonomyManager: React.FC<TaxonomyManagerProps> = ({
   onTaxonomySelect,
 }) => {
   const { taxonomies, updateTaxonomy, isUpdatingTaxonomy } = useTaxonomies();
+  const notify = useNotification();
   
   const [currentTaxonomyId, setCurrentTaxonomyId] = useState<string | null>(
     selectedTaxonomyId || null
@@ -127,12 +128,7 @@ export const TaxonomyManager: React.FC<TaxonomyManagerProps> = ({
         setEditingConcept(null);
         setIsCreatingConcept(false);
         setSelectedConceptId(concept.id);
-        toaster.create({
-          title: "Success",
-          description: isCreatingConcept ? "Concept created" : "Concept updated",
-          status: "success",
-          duration: 3000,
-        });
+        notify.success(isCreatingConcept ? "Concept created" : "Concept updated");
       },
     });
   };
@@ -175,12 +171,7 @@ export const TaxonomyManager: React.FC<TaxonomyManagerProps> = ({
         onSuccess: () => {
           setSelectedConceptId(null);
           setEditingConcept(null);
-          toaster.create({
-            title: "Success",
-            description: "Concept deleted",
-            status: "success",
-            duration: 3000,
-          });
+          notify.success("Concept deleted");
         },
       });
     }
@@ -188,12 +179,7 @@ export const TaxonomyManager: React.FC<TaxonomyManagerProps> = ({
 
   const handleConceptMove = (conceptId: string, newParentId?: string) => {
     // TODO: Implement drag-and-drop concept moving
-    toaster.create({
-      title: "Feature not implemented",
-      description: "Drag-and-drop concept moving will be implemented in a future update",
-      status: "info",
-      duration: 3000,
-    });
+    notify.info("Drag-and-drop concept moving will be implemented in a future update");
   };
 
   const getConceptBreadcrumb = (conceptId: string): string[] => {
@@ -270,26 +256,26 @@ export const TaxonomyManager: React.FC<TaxonomyManagerProps> = ({
               </option>
             ))}
           </Select>
-          <Button leftIcon={<FiPlus />} colorPalette="blue" onClick={() => handleConceptAdd()}>
+          <Button leftIcon={<FiPlus />} colorPalette="primary" onClick={() => handleConceptAdd()}>
             Add Concept
           </Button>
           <IconButton
             aria-label="Import"
             icon={<FiUpload />}
             variant="outline"
-            onClick={() => toaster.create({ title: "Import feature coming soon", status: "info" })}
+            onClick={() => notify.info("Import feature coming soon")}
           />
           <IconButton
             aria-label="Export"
             icon={<FiDownload />}
             variant="outline"
-            onClick={() => toaster.create({ title: "Export feature coming soon", status: "info" })}
+            onClick={() => notify.info("Export feature coming soon")}
           />
           <IconButton
             aria-label="Settings"
             icon={<FiSettings />}
             variant="outline"
-            onClick={() => toaster.create({ title: "Settings feature coming soon", status: "info" })}
+            onClick={() => notify.info("Settings feature coming soon")}
           />
         </HStack>
       </HStack>
@@ -340,7 +326,7 @@ export const TaxonomyManager: React.FC<TaxonomyManagerProps> = ({
                   <Heading size="md">{selectedConcept.prefLabel}</Heading>
                   <Button
                     size="sm"
-                    colorPalette="blue"
+                    colorPalette="primary"
                     onClick={() => handleConceptEdit(selectedConcept.id)}
                   >
                     Edit

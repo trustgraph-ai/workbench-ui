@@ -121,7 +121,7 @@ const TreeNode: React.FC<TreeNodeProps> = ({
                   {concept.prefLabel}
                 </Text>
                 {concept.topConcept && (
-                  <Badge size="xs" colorPalette="blue">
+                  <Badge size="xs" colorPalette="primary">
                     Top
                   </Badge>
                 )}
@@ -244,7 +244,7 @@ export const TaxonomyTree: React.FC<TaxonomyTreeProps> = ({
         <IconButton
           aria-label="Add first concept"
           icon={<FiPlus />}
-          colorPalette="blue"
+          colorPalette="primary"
           onClick={() => onConceptAdd()}
         />
         <Text fontSize="sm" mt={2}>

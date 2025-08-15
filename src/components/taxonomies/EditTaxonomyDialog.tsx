@@ -16,7 +16,7 @@ import {
   Separator,
 } from "@chakra-ui/react";
 import { FiPlus, FiTrash2 } from "react-icons/fi";
-import { toaster } from "../ui/toaster";
+import { useNotification } from "../../state/notify";
 import { useTaxonomies, Taxonomy, TaxonomyConcept } from "../../state/taxonomies";
 
 interface EditTaxonomyDialogProps {
@@ -42,6 +42,7 @@ export const EditTaxonomyDialog: React.FC<EditTaxonomyDialogProps> = ({
     isUpdatingTaxonomy,
     isDeletingTaxonomy,
   } = useTaxonomies();
+  const notify = useNotification();
 
   const [taxonomyId, setTaxonomyId] = useState(initialTaxonomyId || "");
   const [taxonomy, setTaxonomy] = useState<Taxonomy>(
@@ -75,22 +76,12 @@ export const EditTaxonomyDialog: React.FC<EditTaxonomyDialogProps> = ({
 
   const handleSave = () => {
     if (!taxonomyId.trim()) {
-      toaster.create({
-        title: "Error",
-        description: "Taxonomy ID is required",
-        status: "error",
-        duration: 3000,
-      });
+      notify.error("Taxonomy ID is required");
       return;
     }
 
     if (!taxonomy.metadata.name.trim()) {
-      toaster.create({
-        title: "Error",
-        description: "Taxonomy name is required",
-        status: "error",
-        duration: 3000,
-      });
+      notify.error("Taxonomy name is required");
       return;
     }
 
@@ -285,7 +276,7 @@ export const EditTaxonomyDialog: React.FC<EditTaxonomyDialogProps> = ({
                     </Text>
                     <Button
                       leftIcon={<FiPlus />}
-                      colorScheme="blue"
+                      colorPalette="primary"
                       size="sm"
                       onClick={addConcept}
                     >
@@ -403,7 +394,7 @@ export const EditTaxonomyDialog: React.FC<EditTaxonomyDialogProps> = ({
                 </Button>
               )}
               <Button
-                colorPalette="blue"
+                colorPalette="primary"
                 onClick={handleSave}
                 loading={isLoading}
               >

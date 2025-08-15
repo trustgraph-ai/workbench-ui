@@ -17,7 +17,7 @@ import {
   WrapItem,
 } from "@chakra-ui/react";
 import { FiPlus, FiX, FiSave } from "react-icons/fi";
-import { toaster } from "../ui/toaster";
+import { useNotification } from "../../state/notify";
 import { TaxonomyConcept, Taxonomy } from "../../state/taxonomies";
 
 interface ConceptEditorProps {
@@ -33,6 +33,7 @@ export const ConceptEditor: React.FC<ConceptEditorProps> = ({
   onSave,
   onCancel,
 }) => {
+  const notify = useNotification();
   const [editedConcept, setEditedConcept] = useState<TaxonomyConcept>(
     concept || {
       id: `concept-${Date.now()}`,
@@ -50,12 +51,7 @@ export const ConceptEditor: React.FC<ConceptEditorProps> = ({
 
   const handleSave = () => {
     if (!editedConcept.prefLabel.trim()) {
-      toaster.create({
-        title: "Error",
-        description: "Preferred label is required",
-        status: "error",
-        duration: 3000,
-      });
+      notify.error("Preferred label is required");
       return;
     }
 
@@ -170,7 +166,7 @@ export const ConceptEditor: React.FC<ConceptEditorProps> = ({
               icon={<FiPlus />}
               size="sm"
               variant="outline"
-              colorPalette="blue"
+              colorPalette="primary"
               onClick={handleAdd}
               disabled={!newItem.trim() || (isConceptSelect ? items.includes(newItem) : false)}
             />
@@ -198,7 +194,7 @@ export const ConceptEditor: React.FC<ConceptEditorProps> = ({
           <Button variant="ghost" onClick={onCancel}>
             Cancel
           </Button>
-          <Button leftIcon={<FiSave />} colorPalette="blue" onClick={handleSave}>
+          <Button leftIcon={<FiSave />} colorPalette="primary" onClick={handleSave}>
             Save
           </Button>
         </HStack>
