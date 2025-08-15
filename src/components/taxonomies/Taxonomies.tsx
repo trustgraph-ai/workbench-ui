@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Button, Heading, HStack, VStack, Tabs } from "@chakra-ui/react";
+import { Box, Button, HStack, VStack, Tabs } from "@chakra-ui/react";
 import { FiPlus, FiList, FiEdit3 } from "react-icons/fi";
 import { TaxonomiesTable } from "./TaxonomiesTable";
 import { EditTaxonomyDialog } from "./EditTaxonomyDialog";
@@ -10,15 +10,13 @@ export const Taxonomies: React.FC = () => {
   const [selectedTaxonomyId, setSelectedTaxonomyId] = useState<string | null>(null);
 
   return (
-    <VStack spacing={6} align="stretch" h="calc(100vh - 100px)">
-      <HStack justify="space-between">
-        <Heading size="lg">Taxonomies</Heading>
+    <VStack spacing={6} align="stretch" h="calc(100vh - 200px)">
+      <HStack justify="flex-end">
         <Button
-          leftIcon={<FiPlus />}
-          colorPalette="blue"
+          colorPalette="primary"
           onClick={() => setIsCreateOpen(true)}
         >
-          Create Taxonomy
+          <FiPlus /> Create Taxonomy
         </Button>
       </HStack>
 
