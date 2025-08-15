@@ -4,19 +4,21 @@
 
 This specification describes a user interface component for managing SKOS taxonomies within the existing TrustGraph system. The UI enables data architects to create, edit, and maintain hierarchical taxonomies with rich metadata, supporting multiple concurrent taxonomies stored as configuration items in the backend.
 
+**Naming Convention**: This project uses kebab-case for all identifiers (configuration keys, API endpoints, module names, etc.) rather than snake_case.
+
 The system supports four primary use cases:
 
 1. **Taxonomy Creation and Management**: Create new taxonomies and manage existing ones through a structured interface
 2. **Concept Hierarchy Management**: Build and modify parent-child relationships between taxonomy concepts
 3. **Rich Metadata Editing**: Add labels, definitions, examples, and detailed descriptions to concepts
-4. **AI-Assisted Content Generation**: Use LLM helpers to generate or enhance taxonomy content
+4. **AI-Assisted Content Generation**: Optional wizard/getting started flow using LLM helpers to generate or enhance taxonomy content
 
 ## Goals
 
 - **Intuitive Hierarchy Management**: Provide clear visual representation and manipulation of concept hierarchies
 - **Rich Metadata Support**: Enable comprehensive editing of all SKOS properties including labels, definitions, examples, and notes
 - **Multi-Taxonomy Support**: Allow data architects to work with multiple taxonomies simultaneously
-- **AI-Enhanced Productivity**: Integrate LLM assistance for content generation and taxonomy enhancement
+- **AI-Enhanced Productivity**: Provide optional LLM assistance for content generation and taxonomy enhancement
 - **Configuration Integration**: Seamlessly store and retrieve taxonomies from the existing configuration backend
 - **Data Architect Focus**: Design interfaces that expose technical details and provide precise control over taxonomy structure
 - **Validation and Consistency**: Ensure taxonomies conform to SKOS standards and maintain internal consistency
@@ -36,7 +38,7 @@ Current limitations include:
 - No dedicated UI for taxonomy management
 - Manual editing of complex hierarchical structures
 - Difficulty maintaining SKOS compliance
-- No assistance for content generation
+- No automated assistance for content generation
 - Limited validation of taxonomy consistency
 
 This specification addresses these gaps by providing a specialized interface that understands SKOS semantics while integrating with the existing configuration infrastructure.
@@ -58,7 +60,7 @@ The taxonomy management UI requires the following components:
 2. **Configuration API Integration** ✅ **[EXISTING]**
    - Extends existing configuration API to handle taxonomy-specific operations
    - Type: `taxonomy` for all SKOS taxonomy configurations
-   - Key: Unique taxonomy identifier (e.g., `risk_categories`, `document_types`)
+   - Key: Unique taxonomy identifier (e.g., `risk-categories`, `document-types`)
    - Value: Complete taxonomy in JSON-LD or Turtle format
 
 3. **SKOS Parser/Serializer Module**
@@ -69,10 +71,12 @@ The taxonomy management UI requires the following components:
    
    Module: workbench-ui/src/utils/skos
 
-4. **LLM Assistant Integration**
+4. **LLM Assistant Integration (Optional)**
+   - Provides an optional wizard/getting started flow for new taxonomies
    - Connects to existing LLM services for content generation
-   - Provides context-aware suggestions for labels, definitions, and examples
+   - Offers context-aware suggestions for labels, definitions, and examples
    - Supports bulk content enhancement and taxonomy expansion
+   - Can be bypassed entirely for manual taxonomy creation
    - Maintains consistency with existing concept definitions
    
    Module: workbench-ui/src/services/taxonomyAssistant
@@ -118,12 +122,12 @@ Value: {
     "version": "1.2",
     "created": "2025-01-15T10:30:00Z",
     "modified": "2025-08-15T14:22:00Z",
-    "creator": "data_architect_001",
+    "creator": "data-architect-001",
     "namespace": "http://example.org/risk/"
   },
   "concepts": {
-    "risk_001": {
-      "id": "risk_001",
+    "risk-001": {
+      "id": "risk-001",
       "prefLabel": "Operational Risk",
       "altLabel": ["Operations Risk", "Op Risk"],
       "definition": "Risk arising from inadequate or failed internal processes",
@@ -131,7 +135,7 @@ Value: {
       "example": ["IT system outages", "Employee fraud", "Supply chain disruptions"],
       "notation": "1",
       "broader": null,
-      "narrower": ["risk_002", "risk_003"],
+      "narrower": ["risk-002", "risk-003"],
       "related": [],
       "topConcept": true
     }
@@ -139,7 +143,7 @@ Value: {
   "scheme": {
     "uri": "http://example.org/risk/scheme",
     "prefLabel": "Risk Categories",
-    "hasTopConcept": ["risk_001", "risk_010", "risk_020"]
+    "hasTopConcept": ["risk-001", "risk-010", "risk-020"]
   }
 }
 ```
@@ -217,13 +221,22 @@ The UI supports all essential SKOS properties:
   - **Relationships**: Broader, narrower, and related concepts
   - **Metadata**: Editorial notes, change history, custom properties
 
-**4. AI Assistant Panel**
-- Context-aware content suggestions
-- Bulk operations: "Generate examples for all concepts"
-- Smart templates: "Create child concepts for [parent]"
-- Consistency checking: "Find similar concepts"
+**4. AI Assistant Panel (Optional)**
+- Toggle on/off for manual-only workflow
+- When enabled, provides:
+  - Context-aware content suggestions
+  - Bulk operations: "Generate examples for all concepts"
+  - Smart templates: "Create child concepts for [parent]"
+  - Consistency checking: "Find similar concepts"
+- Can be hidden completely for users preferring manual creation
 
-### AI Assistant Features
+### AI Assistant Features (Optional Wizard)
+
+The AI Assistant is designed as an optional "getting started" wizard that helps users bootstrap their taxonomies. Users can:
+- Choose to start with the AI wizard or create taxonomies manually from scratch
+- Toggle AI assistance on/off at any point during editing
+- Use AI for specific tasks (e.g., generating examples) while doing everything else manually
+- Skip the wizard entirely and build taxonomies using traditional manual methods
 
 #### Content Generation Capabilities
 
@@ -275,49 +288,297 @@ const assistantService = {
 
 ### APIs
 
-#### New Frontend APIs
+#### Using the Existing Config API
 
-**Taxonomy Management:**
-```javascript
-// Get all taxonomies
-GET /api/config/taxonomy
+The taxonomy management system uses the existing configuration API with type `taxonomy`. No new API endpoints are needed - all operations go through the existing socket-based config API.
 
-// Get specific taxonomy
-GET /api/config/taxonomy/{taxonomyId}
+**React Hook Implementation (following the established pattern):**
 
-// Create/update taxonomy
-PUT /api/config/taxonomy/{taxonomyId}
+```typescript
+// src/state/taxonomies.ts
+import { useQueryClient, useQuery, useMutation } from "@tanstack/react-query";
+import { useSocket } from "../api/trustgraph/socket";
+import { useNotification } from "./notify";
+import { useActivity } from "./activity";
 
-// Delete taxonomy
-DELETE /api/config/taxonomy/{taxonomyId}
+export const useTaxonomies = () => {
+  const socket = useSocket();
+  const queryClient = useQueryClient();
+  const notify = useNotification();
 
-// Validate taxonomy
-POST /api/taxonomy/{taxonomyId}/validate
+  // Fetch all taxonomies using getValues
+  const taxonomiesQuery = useQuery({
+    queryKey: ["taxonomies"],
+    queryFn: () => {
+      return socket
+        .config()
+        .getValues("taxonomy")
+        .then((values) => {
+          // Returns array of [id, taxonomyData] tuples
+          return values.map((item) => [item.key, JSON.parse(item.value)]);
+        })
+        .catch((err) => {
+          console.log("Error:", err);
+          throw err;
+        });
+    },
+  });
 
-// Export taxonomy
-GET /api/taxonomy/{taxonomyId}/export?format={turtle|jsonld|csv}
+  // Create/Update taxonomy mutation
+  const updateTaxonomyMutation = useMutation({
+    mutationFn: ({ id, taxonomy, onSuccess }) => {
+      return socket
+        .config()
+        .putConfig([
+          {
+            type: "taxonomy",
+            key: id,
+            value: JSON.stringify(taxonomy),
+          },
+        ])
+        .then((x) => {
+          if (x["error"]) {
+            console.log("Error:", x);
+            throw x.error.message;
+          }
+          if (onSuccess) onSuccess();
+        });
+    },
+    onError: (err) => {
+      console.log("Error:", err);
+      notify.error(err.toString());
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["taxonomies"] });
+      notify.success("Taxonomy updated");
+    },
+  });
 
-// Import taxonomy
-POST /api/taxonomy/import
+  // Delete taxonomy mutation
+  const deleteTaxonomyMutation = useMutation({
+    mutationFn: ({ id, onSuccess }) => {
+      return socket
+        .config()
+        .deleteConfig([
+          {
+            type: "taxonomy",
+            key: id,
+          },
+        ])
+        .then((x) => {
+          if (x["error"]) {
+            console.log("Error:", x);
+            throw x.error.message;
+          }
+          if (onSuccess) onSuccess();
+        });
+    },
+    onError: (err) => {
+      console.log("Error:", err);
+      notify.error(err.toString());
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["taxonomies"] });
+      notify.success("Taxonomy deleted");
+    },
+  });
+
+  // Track loading states
+  useActivity(taxonomiesQuery.isLoading, "Loading taxonomies");
+  useActivity(updateTaxonomyMutation.isPending, "Updating taxonomy");
+  useActivity(deleteTaxonomyMutation.isPending, "Deleting taxonomy");
+
+  return {
+    taxonomies: taxonomiesQuery.data || [],
+    taxonomiesLoading: taxonomiesQuery.isLoading,
+    taxonomiesError: taxonomiesQuery.error,
+    
+    updateTaxonomy: updateTaxonomyMutation.mutate,
+    isUpdatingTaxonomy: updateTaxonomyMutation.isPending,
+    
+    createTaxonomy: updateTaxonomyMutation.mutate, // Same as update
+    isCreatingTaxonomy: updateTaxonomyMutation.isPending,
+    
+    deleteTaxonomy: deleteTaxonomyMutation.mutate,
+    isDeletingTaxonomy: deleteTaxonomyMutation.isPending,
+    
+    refetch: () => taxonomiesQuery.refetch(),
+  };
+};
 ```
 
 **AI Assistant APIs:**
-```javascript
-// Generate content
-POST /api/taxonomy/assist/generate
-{
-  "type": "definition|examples|children",
-  "concept": { /* concept data */ },
-  "context": { /* taxonomy context */ }
-}
 
-// Bulk enhancement
-POST /api/taxonomy/assist/enhance
-{
-  "taxonomyId": "risk_categories",
-  "operations": ["fill_definitions", "generate_examples"],
-  "conceptIds": ["risk_001", "risk_002"]
-}
+The AI assistant functionality will use the existing LLM integration through the socket API. No new endpoints needed - the assistant will use the existing prompt/completion mechanisms.
+
+### Table Component Implementation
+
+Following the established pattern using Tanstack Table:
+
+**Table Column Definition:**
+
+```typescript
+// src/model/taxonomies-table.tsx
+import { createColumnHelper } from "@tanstack/react-table";
+
+export type TaxonomyTableRow = [string, {
+  metadata: {
+    name: string;
+    description: string;
+    version: string;
+    modified: string;
+    creator: string;
+  };
+  concepts: Record<string, any>;
+  scheme: any;
+}];
+
+const columnHelper = createColumnHelper<TaxonomyTableRow>();
+
+export const taxonomyColumns = [
+  columnHelper.accessor((row) => row[0], {
+    id: "id",
+    header: "ID",
+    cell: (info) => info.getValue(),
+  }),
+  columnHelper.accessor((row) => row[1].metadata.name, {
+    id: "name", 
+    header: "Name",
+    cell: (info) => info.getValue(),
+  }),
+  columnHelper.accessor((row) => row[1].metadata.description, {
+    id: "description",
+    header: "Description",
+    cell: (info) => info.getValue() || "-",
+  }),
+  columnHelper.accessor((row) => Object.keys(row[1].concepts).length, {
+    id: "conceptCount",
+    header: "Concepts",
+    cell: (info) => info.getValue(),
+  }),
+  columnHelper.accessor((row) => row[1].metadata.modified, {
+    id: "modified",
+    header: "Last Modified",
+    cell: (info) => new Date(info.getValue()).toLocaleDateString(),
+  }),
+];
+```
+
+**Table Component:**
+
+```typescript
+// src/components/taxonomies/TaxonomiesTable.tsx
+import React from "react";
+import { Box, Table, Text, Spinner, Center } from "@chakra-ui/react";
+import {
+  useReactTable,
+  getCoreRowModel,
+  getSortedRowModel,
+  flexRender,
+} from "@tanstack/react-table";
+import { useTaxonomies } from "../../state/taxonomies";
+import { TaxonomyTableRow, taxonomyColumns } from "../../model/taxonomies-table";
+import { EditTaxonomyDialog } from "./EditTaxonomyDialog";
+
+export const TaxonomiesTable: React.FC = () => {
+  const { taxonomies, taxonomiesLoading, taxonomiesError } = useTaxonomies();
+  const [isOpen, setIsOpen] = React.useState(false);
+  const [selectedTaxonomy, setSelectedTaxonomy] = 
+    React.useState<TaxonomyTableRow | null>(null);
+
+  const table = useReactTable({
+    data: taxonomies as TaxonomyTableRow[],
+    columns: taxonomyColumns,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+  });
+
+  const handleRowClick = (row: TaxonomyTableRow) => {
+    setSelectedTaxonomy(row);
+    setIsOpen(true);
+  };
+
+  if (taxonomiesLoading) {
+    return (
+      <Center h="200px">
+        <Spinner size="xl" />
+      </Center>
+    );
+  }
+
+  if (taxonomiesError) {
+    return (
+      <Box p={4} borderWidth="1px" borderColor="red.500" borderRadius="md" bg="red.50">
+        <Text color="red.700">
+          Error loading taxonomies: {taxonomiesError.toString()}
+        </Text>
+      </Box>
+    );
+  }
+
+  if (taxonomies.length === 0) {
+    return (
+      <Center h="200px">
+        <Text color="gray.500">
+          No taxonomies found. Create one to get started.
+        </Text>
+      </Center>
+    );
+  }
+
+  return (
+    <>
+      <Box overflowX="auto" borderWidth="1px" borderRadius="lg">
+        <Table.Root interactive>
+          <Table.Header>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <Table.Row key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <Table.ColumnHeader key={header.id}>
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext(),
+                        )}
+                  </Table.ColumnHeader>
+                ))}
+              </Table.Row>
+            ))}
+          </Table.Header>
+          <Table.Body>
+            {table.getRowModel().rows.map((row) => (
+              <Table.Row
+                key={row.id}
+                onClick={() => handleRowClick(row.original)}
+                style={{ cursor: "pointer" }}
+              >
+                {row.getVisibleCells().map((cell) => (
+                  <Table.Cell key={cell.id}>
+                    {flexRender(
+                      cell.column.columnDef.cell,
+                      cell.getContext(),
+                    )}
+                  </Table.Cell>
+                ))}
+              </Table.Row>
+            ))}
+          </Table.Body>
+        </Table.Root>
+      </Box>
+
+      {selectedTaxonomy && (
+        <EditTaxonomyDialog
+          isOpen={isOpen}
+          onClose={() => setIsOpen(false)}
+          mode="edit"
+          taxonomyId={selectedTaxonomy[0]}
+          initialTaxonomy={selectedTaxonomy[1]}
+        />
+      )}
+    </>
+  );
+};
 ```
 
 ### Validation and Quality Assurance
@@ -457,10 +718,12 @@ const validator = {
 - Drag-and-drop functionality
 - Relationship management
 
-**Phase 3: AI Assistant (Weeks 9-12)**
-- LLM integration
+**Phase 3: AI Assistant Wizard (Weeks 9-12)**
+- Optional LLM integration
+- "Getting started" wizard flow
 - Content generation features
 - Bulk enhancement tools
+- Manual-only mode support
 
 **Phase 4: Import/Export (Weeks 13-16)**
 - File format support
@@ -472,9 +735,9 @@ const validator = {
 **Total Duration**: 16 weeks
 
 **Milestones:**
-- Week 4: Basic taxonomy management functional
+- Week 4: Basic taxonomy management functional (manual creation)
 - Week 8: Complete hierarchy editing capabilities
-- Week 12: AI assistant fully integrated
+- Week 12: Optional AI assistant wizard fully integrated
 - Week 16: Full feature set with import/export
 
 ### Open Questions
