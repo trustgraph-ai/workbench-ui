@@ -119,6 +119,28 @@ disabled={true}
 <Separator />
 ```
 
+### Spacing Props
+```tsx
+// ❌ Old pattern
+<VStack spacing={4}>
+<HStack spacing={2}>
+
+// ✅ Chakra v3
+<VStack gap={4}>
+<HStack gap={2}>
+```
+
+### Button Icons
+```tsx
+// ❌ Old pattern
+<Button leftIcon={<FiPlus />}>Add</Button>
+<IconButton icon={<FiUpload />} />
+
+// ✅ Chakra v3
+<Button><FiPlus />Add</Button>
+<IconButton><FiUpload /></IconButton>
+```
+
 ### Input Groups (Simplified)
 ```tsx
 // ❌ Chakra v2
