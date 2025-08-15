@@ -105,8 +105,8 @@ export const TaxonomiesTable: React.FC = () => {
 
       {selectedTaxonomy && (
         <EditTaxonomyDialog
-          isOpen={isOpen}
-          onClose={() => setIsOpen(false)}
+          open={isOpen}
+          onOpenChange={(open) => setIsOpen(open)}
           mode="edit"
           taxonomyId={selectedTaxonomy[0]}
           initialTaxonomy={selectedTaxonomy[1]}

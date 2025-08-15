@@ -1,13 +1,9 @@
 import React, { useState, useEffect } from "react";
 import {
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  ModalCloseButton,
+  Portal,
   Button,
+  Dialog,
+  CloseButton,
   FormControl,
   FormLabel,
   Input,
@@ -29,16 +25,16 @@ import { FiPlus, FiTrash2 } from "react-icons/fi";
 import { useTaxonomies, Taxonomy, TaxonomyConcept } from "../../state/taxonomies";
 
 interface EditTaxonomyDialogProps {
-  isOpen: boolean;
-  onClose: () => void;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
   mode: "create" | "edit";
   taxonomyId?: string;
   initialTaxonomy?: Taxonomy;
 }
 
 export const EditTaxonomyDialog: React.FC<EditTaxonomyDialogProps> = ({
-  isOpen,
-  onClose,
+  open,
+  onOpenChange,
   mode,
   taxonomyId: initialTaxonomyId,
   initialTaxonomy,
@@ -124,7 +120,7 @@ export const EditTaxonomyDialog: React.FC<EditTaxonomyDialogProps> = ({
       id: taxonomyId,
       taxonomy: updatedTaxonomy,
       onSuccess: () => {
-        onClose();
+        onOpenChange(false);
       },
     });
   };
@@ -138,7 +134,7 @@ export const EditTaxonomyDialog: React.FC<EditTaxonomyDialogProps> = ({
       deleteTaxonomy({
         id: taxonomyId,
         onSuccess: () => {
-          onClose();
+          onOpenChange(false);
         },
       });
     }
@@ -206,14 +202,24 @@ export const EditTaxonomyDialog: React.FC<EditTaxonomyDialogProps> = ({
   const isLoading = isCreatingTaxonomy || isUpdatingTaxonomy || isDeletingTaxonomy;
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="xl">
-      <ModalOverlay />
-      <ModalContent maxW="4xl">
-        <ModalHeader>
-          {mode === "create" ? "Create New Taxonomy" : "Edit Taxonomy"}
-        </ModalHeader>
-        <ModalCloseButton />
-        <ModalBody>
+    <Dialog.Root
+      placement="center"
+      size="xl"
+      open={open}
+      onOpenChange={(x) => {
+        onOpenChange(x.open);
+      }}
+    >
+      <Portal>
+        <Dialog.Backdrop />
+        <Dialog.Positioner>
+          <Dialog.Content maxW="4xl">
+            <Dialog.Header>
+              <Dialog.Title>
+                {mode === "create" ? "Create New Taxonomy" : "Edit Taxonomy"}
+              </Dialog.Title>
+            </Dialog.Header>
+            <Dialog.Body>
           <Tabs>
             <TabList>
               <Tab>Metadata</Tab>
@@ -390,34 +396,37 @@ export const EditTaxonomyDialog: React.FC<EditTaxonomyDialogProps> = ({
               </TabPanel>
             </TabPanels>
           </Tabs>
-        </ModalBody>
+            </Dialog.Body>
 
-        <ModalFooter>
-          <HStack spacing={3}>
-            {mode === "edit" && (
-              <Button
-                colorScheme="red"
-                variant="outline"
-                onClick={handleDelete}
-                isLoading={isDeletingTaxonomy}
-                mr="auto"
-              >
-                Delete
+            <Dialog.Footer>
+              <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isLoading}>
+                Cancel
               </Button>
-            )}
-            <Button variant="ghost" onClick={onClose} isDisabled={isLoading}>
-              Cancel
-            </Button>
-            <Button
-              colorScheme="blue"
-              onClick={handleSave}
-              isLoading={isLoading}
-            >
-              {mode === "create" ? "Create" : "Save"}
-            </Button>
-          </HStack>
-        </ModalFooter>
-      </ModalContent>
-    </Modal>
+              {mode === "edit" && (
+                <Button
+                  colorPalette="red"
+                  variant="solid"
+                  onClick={handleDelete}
+                  loading={isDeletingTaxonomy}
+                >
+                  Delete
+                </Button>
+              )}
+              <Button
+                colorPalette="blue"
+                onClick={handleSave}
+                loading={isLoading}
+              >
+                {mode === "create" ? "Create" : "Save"}
+              </Button>
+            </Dialog.Footer>
+
+            <Dialog.CloseTrigger asChild>
+              <CloseButton size="sm" />
+            </Dialog.CloseTrigger>
+          </Dialog.Content>
+        </Dialog.Positioner>
+      </Portal>
+    </Dialog.Root>
   );
 };
