@@ -229,6 +229,7 @@ export const TaxonomyManager: React.FC<TaxonomyManagerProps> = ({
   return (
     <VStack spacing={4} align="stretch" h="100%">
       {/* Header */}
+
       <HStack justify="space-between" align="center">
         <VStack align="start" spacing={1}>
           <HStack>
