@@ -2,7 +2,7 @@
  * Tests for SKOS parser and serializer functionality
  */
 
-import { describe, test, expect } from '@jest/globals';
+import { describe, test, expect } from 'vitest';
 import { SKOSSerializer, SKOSParser, serializeToSKOS, parseFromSKOS } from '../skos';
 import { validateTaxonomy } from '../skos-validation';
 import { Taxonomy } from '../../state/taxonomies';

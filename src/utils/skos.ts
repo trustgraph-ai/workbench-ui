@@ -304,7 +304,7 @@ export class SKOSParser {
       if (creator) metadata.creator = creator;
 
       // Get top concepts
-      const topConceptElements = schemeElement.querySelectorAll('*[localName="hasTopConcept"]');
+      const topConceptElements = schemeElement.getElementsByTagNameNS(SKOS_NAMESPACES.skos, 'hasTopConcept');
       const hasTopConcept = Array.from(topConceptElements).map(el => {
         const resource = el.getAttribute('rdf:resource') || el.getAttributeNS(SKOS_NAMESPACES.rdf, 'resource') || '';
         return this.extractConceptId(resource);
@@ -335,29 +335,29 @@ export class SKOSParser {
       const examples = this.getAllTextContent(conceptElement, 'skos:example');
       
       // Get broader concept
-      const broaderElement = conceptElement.querySelector('*[localName="broader"]');
-      const broader = broaderElement ? this.extractConceptId(
-        broaderElement.getAttribute('rdf:resource') || 
-        broaderElement.getAttributeNS(SKOS_NAMESPACES.rdf, 'resource') || ''
+      const broaderElements = conceptElement.getElementsByTagNameNS(SKOS_NAMESPACES.skos, 'broader');
+      const broader = broaderElements.length > 0 ? this.extractConceptId(
+        broaderElements[0].getAttribute('rdf:resource') || 
+        broaderElements[0].getAttributeNS(SKOS_NAMESPACES.rdf, 'resource') || ''
       ) : null;
       
       // Get narrower concepts
-      const narrowerElements = conceptElement.querySelectorAll('*[localName="narrower"]');
+      const narrowerElements = conceptElement.getElementsByTagNameNS(SKOS_NAMESPACES.skos, 'narrower');
       const narrower = Array.from(narrowerElements).map(el => {
         const resource = el.getAttribute('rdf:resource') || el.getAttributeNS(SKOS_NAMESPACES.rdf, 'resource') || '';
         return this.extractConceptId(resource);
       });
       
       // Get related concepts
-      const relatedElements = conceptElement.querySelectorAll('*[localName="related"]');
+      const relatedElements = conceptElement.getElementsByTagNameNS(SKOS_NAMESPACES.skos, 'related');
       const related = Array.from(relatedElements).map(el => {
         const resource = el.getAttribute('rdf:resource') || el.getAttributeNS(SKOS_NAMESPACES.rdf, 'resource') || '';
         return this.extractConceptId(resource);
       });
       
       // Check if it's a top concept
-      const topConceptOf = conceptElement.querySelector('*[localName="topConceptOf"]');
-      const topConcept = !!topConceptOf;
+      const topConceptOfElements = conceptElement.getElementsByTagNameNS(SKOS_NAMESPACES.skos, 'topConceptOf');
+      const topConcept = topConceptOfElements.length > 0;
 
       const concept: TaxonomyConcept = {
         id: conceptId,
@@ -403,12 +403,66 @@ export class SKOSParser {
   }
 
   private getTextContent(element: Element, selector: string): string | null {
-    const el = element.querySelector(`*[localName="${selector.split(':')[1]}"]`);
+    const [prefix, localName] = selector.split(':');
+    
+    // Get namespace URI based on prefix
+    let namespaceURI = '';
+    switch (prefix) {
+      case 'skos':
+        namespaceURI = SKOS_NAMESPACES.skos;
+        break;
+      case 'dc':
+        namespaceURI = SKOS_NAMESPACES.dc;
+        break;
+      case 'dcterms':
+        namespaceURI = SKOS_NAMESPACES.dcterms;
+        break;
+      default:
+        namespaceURI = '';
+    }
+    
+    // Try to find element using namespace
+    let el: Element | null = null;
+    if (namespaceURI) {
+      const elements = element.getElementsByTagNameNS(namespaceURI, localName);
+      el = elements.length > 0 ? elements[0] : null;
+    }
+    
+    // Fallback to querySelector with localName
+    if (!el) {
+      el = element.querySelector(`*[localName="${localName}"]`);
+    }
+    
     return el?.textContent?.trim() || null;
   }
 
   private getAllTextContent(element: Element, selector: string): string[] {
-    const elements = element.querySelectorAll(`*[localName="${selector.split(':')[1]}"]`);
+    const [prefix, localName] = selector.split(':');
+    
+    // Get namespace URI based on prefix
+    let namespaceURI = '';
+    switch (prefix) {
+      case 'skos':
+        namespaceURI = SKOS_NAMESPACES.skos;
+        break;
+      case 'dc':
+        namespaceURI = SKOS_NAMESPACES.dc;
+        break;
+      case 'dcterms':
+        namespaceURI = SKOS_NAMESPACES.dcterms;
+        break;
+      default:
+        namespaceURI = '';
+    }
+    
+    // Try to find elements using namespace
+    let elements: HTMLCollectionOf<Element> | NodeListOf<Element>;
+    if (namespaceURI) {
+      elements = element.getElementsByTagNameNS(namespaceURI, localName);
+    } else {
+      elements = element.querySelectorAll(`*[localName="${localName}"]`);
+    }
+    
     return Array.from(elements).map(el => el.textContent?.trim() || '').filter(text => text.length > 0);
   }
 
