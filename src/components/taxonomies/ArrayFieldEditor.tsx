@@ -67,10 +67,11 @@ export const ArrayFieldEditor: React.FC<ArrayFieldEditorProps> = ({
                 <SelectField
                   label="Concept"
                   items={[
-                    {value: '', label: 'Select concept...'},
+                    {value: '', label: 'Select concept...', description: 'Select concept...'},
                     ...availableConcepts.map(c => ({
                       value: c.id,
-                      label: c.prefLabel
+                      label: c.prefLabel,
+                      description: c.prefLabel
                     }))
                   ]}
                   value={item || ''}
@@ -107,7 +108,8 @@ export const ArrayFieldEditor: React.FC<ArrayFieldEditorProps> = ({
                     .filter(c => !items.includes(c.id))
                     .map(c => ({
                       value: c.id,
-                      label: c.prefLabel
+                      label: c.prefLabel,
+                      description: c.prefLabel
                     }))}
                   value={newItem}
                   onValueChange={(value) => setNewItem(value)}
