@@ -61,41 +61,28 @@ export const TaxonomyTree: React.FC<TaxonomyTreeProps> = ({
 
   return (
     <VStack gap={4} align="stretch" h="100%">
-      {/* Search */}
-      <HStack>
-        <Input
-          placeholder="🔍 Search concepts..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-      </HStack>
+      <TaxonomyTreeSearch
+        searchTerm={searchTerm}
+        onSearchChange={setSearchTerm}
+      />
 
-      {/* Add root concept button */}
-      <HStack justify="space-between">
-        <Text fontSize="sm" color="fg.muted">
-          {Object.keys(taxonomy.concepts).length} concept(s)
-        </Text>
-        <IconButton
-          aria-label="Add root concept"
-          size="sm"
-          variant="outline"
-          onClick={() => onConceptAdd()}
-        >
-          <Plus />
-        </IconButton>
-      </HStack>
+      <TaxonomyTreeHeader
+        conceptCount={Object.keys(taxonomy.concepts).length}
+        onAddRootConcept={() => onConceptAdd()}
+      />
 
       {/* Tree */}
       <Box flex="1" overflowY="auto">
         <VStack gap={1} align="stretch">
           {allRootConcepts.map((concept) => (
-            <TreeNode
+            <TaxonomyTreeNode
               key={concept.id}
               concept={concept}
               taxonomy={taxonomy}
               level={0}
               isSelected={selectedConceptId === concept.id}
               searchTerm={searchTerm}
+              selectedConceptId={selectedConceptId}
               onSelect={onConceptSelect}
               onAdd={onConceptAdd}
               onEdit={onConceptEdit}
