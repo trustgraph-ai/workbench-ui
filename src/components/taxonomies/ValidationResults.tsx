@@ -3,7 +3,6 @@ import {
   Box,
   Text,
   Alert,
-  AlertIcon,
   HStack,
   Badge,
 } from "@chakra-ui/react";
@@ -28,24 +27,30 @@ export const ValidationResults: React.FC<ValidationResultsProps> = ({
       <Text fontSize="sm" fontWeight="bold" mb={2}>Validation Results</Text>
       
       {validation.errors.length > 0 && (
-        <Alert status="error" mb={2}>
-          <AlertIcon />
-          <Text>{validation.errors.length} error(s) found</Text>
-        </Alert>
+        <Alert.Root status="error" mb={2}>
+          <Alert.Indicator />
+          <Alert.Content>
+            <Alert.Description>{validation.errors.length} error(s) found</Alert.Description>
+          </Alert.Content>
+        </Alert.Root>
       )}
       
       {validation.warnings.length > 0 && (
-        <Alert status="warning" mb={2}>
-          <AlertIcon />
-          <Text>{validation.warnings.length} warning(s) found</Text>
-        </Alert>
+        <Alert.Root status="warning" mb={2}>
+          <Alert.Indicator />
+          <Alert.Content>
+            <Alert.Description>{validation.warnings.length} warning(s) found</Alert.Description>
+          </Alert.Content>
+        </Alert.Root>
       )}
       
       {validation.isValid && (
-        <Alert status="success" mb={2}>
-          <AlertIcon />
-          <Text>SKOS validation passed</Text>
-        </Alert>
+        <Alert.Root status="success" mb={2}>
+          <Alert.Indicator />
+          <Alert.Content>
+            <Alert.Description>SKOS validation passed</Alert.Description>
+          </Alert.Content>
+        </Alert.Root>
       )}
 
       {/* Show first few errors/warnings */}

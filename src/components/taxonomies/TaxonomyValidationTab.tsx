@@ -340,24 +340,26 @@ export const TaxonomyValidationTab: React.FC<TaxonomyValidationTabProps> = ({
           <Card.Body>
             <VStack gap={3} align="stretch">
               {qualitySuggestions.filter(s => s.autoFixable).map((issue, index) => (
-                <Alert key={index} status="info">
-                  <HStack justify="space-between" width="full">
-                    <VStack align="start" gap={1} flex={1}>
-                      <Text fontSize="sm" fontWeight="medium">{issue.message}</Text>
-                      {issue.suggestion && (
-                        <Text fontSize="xs" color="fg.muted">{issue.suggestion}</Text>
-                      )}
-                    </VStack>
-                    <Button 
-                      size="sm" 
-                      colorPalette="blue" 
-                      variant="solid"
-                      onClick={() => handleAutoFix(issue)}
-                    >
-                      Fix Now
-                    </Button>
-                  </HStack>
-                </Alert>
+                <Alert.Root key={index} status="info">
+                  <Alert.Content>
+                    <HStack justify="space-between" width="full">
+                      <VStack align="start" gap={1} flex={1}>
+                        <Text fontSize="sm" fontWeight="medium">{issue.message}</Text>
+                        {issue.suggestion && (
+                          <Text fontSize="xs" color="fg.muted">{issue.suggestion}</Text>
+                        )}
+                      </VStack>
+                      <Button 
+                        size="sm" 
+                        colorPalette="blue" 
+                        variant="solid"
+                        onClick={() => handleAutoFix(issue)}
+                      >
+                        Fix Now
+                      </Button>
+                    </HStack>
+                  </Alert.Content>
+                </Alert.Root>
               ))}
             </VStack>
           </Card.Body>
@@ -383,10 +385,12 @@ export const TaxonomyValidationTab: React.FC<TaxonomyValidationTabProps> = ({
               maxInfo={10}
             />
           ) : (
-            <Alert status="success">
-              <CheckCircle size={16} />
-              <Text>No issues found. Your taxonomy looks great!</Text>
-            </Alert>
+            <Alert.Root status="success">
+              <Alert.Indicator />
+              <Alert.Content>
+                <Alert.Description>No issues found. Your taxonomy looks great!</Alert.Description>
+              </Alert.Content>
+            </Alert.Root>
           )}
         </Card.Body>
       </Card.Root>
