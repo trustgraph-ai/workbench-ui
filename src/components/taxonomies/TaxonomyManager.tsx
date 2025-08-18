@@ -323,7 +323,7 @@ export const TaxonomyManager: React.FC<TaxonomyManagerProps> = ({
           <Box h="100%" p={4}>
             {editingConcept ? (
               <ConceptEditor
-                concept={isCreatingConcept ? undefined : editingConcept}
+                concept={editingConcept}
                 taxonomy={currentTaxonomy}
                 onSave={handleConceptSave}
                 onCancel={() => {
