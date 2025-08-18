@@ -3,23 +3,23 @@ import {
   Box,
   VStack,
   HStack,
-  Field,
   Input,
   Button,
-  IconButton,
   Text,
   Tabs,
   Badge,
-  Switch,
   Wrap,
   WrapItem,
 } from "@chakra-ui/react";
-import { Plus, X, Save } from "lucide-react";
+import { Save } from "lucide-react";
 import { useNotification } from "../../state/notify";
 import { TaxonomyConcept, Taxonomy } from "../../state/taxonomies";
 import TextField from "../common/TextField";
 import TextAreaField from "../common/TextAreaField";
 import SelectField from "../common/SelectField";
+import { ArrayFieldEditor } from "./ArrayFieldEditor";
+import { ConceptEditorHeader } from "./ConceptEditorHeader";
+import { ConceptMetadataTab } from "./ConceptMetadataTab";
 
 
 interface ConceptEditorProps {
@@ -89,131 +89,14 @@ export const ConceptEditor: React.FC<ConceptEditorProps> = ({
     .filter(c => c.id !== editedConcept.id)
     .sort((a, b) => a.prefLabel.localeCompare(b.prefLabel));
 
-  const ArrayFieldEditor: React.FC<{
-    label: string;
-    field: keyof TaxonomyConcept;
-    placeholder: string;
-    isConceptSelect?: boolean;
-  }> = ({ label, field, placeholder, isConceptSelect = false }) => {
-    const [newItem, setNewItem] = useState("");
-    const items = (editedConcept[field] as string[]) || [];
-
-    const handleAdd = () => {
-      if (newItem.trim() && !items.includes(newItem.trim())) {
-        addToArrayField(field, newItem.trim());
-        setNewItem("");
-      }
-    };
-
-    // If this is a concept select but there are no available concepts, show a message
-    if (isConceptSelect && availableConcepts.length === 0) {
-      return (
-        <Field.Root>
-          <Field.Label>{label}</Field.Label>
-          <Text fontSize="sm" color="fg.muted">
-            No other concepts available. Create more concepts in this taxonomy to establish relationships.
-          </Text>
-        </Field.Root>
-      );
-    }
-
-    return (
-      <Field.Root>
-        <Field.Label>{label}</Field.Label>
-        <VStack align="stretch" gap={2}>
-          {items.map((item, index) => (
-            <HStack key={index}>
-              {isConceptSelect ? (
-                <Box flex="1">
-                  <SelectField
-                    label="Concept"
-                    items={[
-                      {value: '', label: 'Select concept...'},
-                      ...availableConcepts.map(c => ({
-                        value: c.id,
-                        label: c.prefLabel
-                      }))
-                    ]}
-                    value={item || ''}
-                    onValueChange={(value) => updateArrayItem(field, index, value)}
-                  />
-                </Box>
-              ) : (
-                <Input
-                  value={item}
-                  onChange={(e) => updateArrayItem(field, index, e.target.value)}
-                  flex="1"
-                />
-              )}
-              <IconButton
-                aria-label="Remove"
-                size="sm"
-                variant="ghost"
-                colorPalette="red"
-                onClick={() => removeFromArrayField(field, index)}
-              >
-                <X />
-              </IconButton>
-            </HStack>
-          ))}
-          
-          {/* Only show Add section if there are concepts available */}
-          {(!isConceptSelect || availableConcepts.filter(c => !items.includes(c.id)).length > 0) && (
-            <HStack>
-              {isConceptSelect ? (
-                <Box flex="1">
-                  <SelectField
-                    label="Add Concept"
-                    items={availableConcepts
-                      .filter(c => !items.includes(c.id))
-                      .map(c => ({
-                        value: c.id,
-                        label: c.prefLabel
-                      }))}
-                    value={newItem}
-                    onValueChange={(value) => setNewItem(value)}
-                  />
-                </Box>
-              ) : (
-                <Input
-                  value={newItem}
-                  onChange={(e) => setNewItem(e.target.value)}
-                  placeholder={placeholder}
-                  onKeyPress={(e) => e.key === "Enter" && handleAdd()}
-                />
-              )}
-              <IconButton
-                aria-label="Add"
-                size="sm"
-                variant="outline"
-                colorPalette="primary"
-                onClick={handleAdd}
-                disabled={!newItem.trim() || (isConceptSelect ? items.includes(newItem) : false)}
-              >
-                <Plus />
-              </IconButton>
-            </HStack>
-          )}
-        </VStack>
-      </Field.Root>
-    );
-  };
 
   return (
     <VStack gap={4} align="stretch" h="100%">
-      <HStack justify="space-between" align="center">
-        <Text fontSize="lg" fontWeight="bold">
-          {concept ? "Edit Concept" : "New Concept"}
-        </Text>
-        <HStack>
-          <Button variant="ghost" onClick={onCancel}>
-            Cancel
-          </Button>
-          <Button colorPalette="primary" onClick={handleSave}>
-            <Save /> Save
-          </Button>
-        </HStack>
-      </HStack>
+      <ConceptEditorHeader
+        concept={concept}
+        onSave={handleSave}
+        onCancel={onCancel}
+      />
 
       <Box flex="1" overflowY="auto">
         <Tabs.Root defaultValue="basic">
@@ -238,6 +121,11 @@ export const ConceptEditor: React.FC<ConceptEditorProps> = ({
                 label="Alternative Labels"
                 field="altLabel"
                 placeholder="Add alternative label..."
+                items={(editedConcept.altLabel as string[]) || []}
+                availableConcepts={availableConcepts}
+                onAddItem={addToArrayField}
+                onRemoveItem={removeFromArrayField}
+                onUpdateItem={updateArrayItem}
               />
             </VStack>
           </Tabs.Content>
@@ -265,6 +153,11 @@ export const ConceptEditor: React.FC<ConceptEditorProps> = ({
               label="Examples"
               field="example"
               placeholder="Add example..."
+              items={(editedConcept.example as string[]) || []}
+              availableConcepts={availableConcepts}
+              onAddItem={addToArrayField}
+              onRemoveItem={removeFromArrayField}
+              onUpdateItem={updateArrayItem}
             />
           </Tabs.Content>
 
@@ -288,6 +181,11 @@ export const ConceptEditor: React.FC<ConceptEditorProps> = ({
                 field="narrower"
                 placeholder=""
                 isConceptSelect={true}
+                items={(editedConcept.narrower as string[]) || []}
+                availableConcepts={availableConcepts}
+                onAddItem={addToArrayField}
+                onRemoveItem={removeFromArrayField}
+                onUpdateItem={updateArrayItem}
               />
 
               <ArrayFieldEditor
@@ -295,6 +193,11 @@ export const ConceptEditor: React.FC<ConceptEditorProps> = ({
                 field="related"
                 placeholder=""
                 isConceptSelect={true}
+                items={(editedConcept.related as string[]) || []}
+                availableConcepts={availableConcepts}
+                onAddItem={addToArrayField}
+                onRemoveItem={removeFromArrayField}
+                onUpdateItem={updateArrayItem}
               />
             </VStack>
           </Tabs.Content>
