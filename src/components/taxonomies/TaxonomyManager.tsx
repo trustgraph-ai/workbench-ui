@@ -9,6 +9,7 @@ import {
 import { TaxonomyManagerHeader } from "./TaxonomyManagerHeader";
 import { ConceptDetailView } from "./ConceptDetailView";
 import { TaxonomyEmptyStates } from "./TaxonomyEmptyStates";
+import { SKOSDialog } from "./SKOSDialog";
 import { useNotification } from "../../state/notify";
 import { useTaxonomies, Taxonomy, TaxonomyConcept } from "../../state/taxonomies";
 import { TaxonomyTree } from "./TaxonomyTree";
@@ -23,7 +24,7 @@ export const TaxonomyManager: React.FC<TaxonomyManagerProps> = ({
   selectedTaxonomyId,
   onTaxonomySelect,
 }) => {
-  const { taxonomies, updateTaxonomy, isUpdatingTaxonomy } = useTaxonomies();
+  const { taxonomies, updateTaxonomy, createTaxonomy, isUpdatingTaxonomy } = useTaxonomies();
   const notify = useNotification();
   
   const [currentTaxonomyId, setCurrentTaxonomyId] = useState<string | null>(
@@ -32,6 +33,8 @@ export const TaxonomyManager: React.FC<TaxonomyManagerProps> = ({
   const [selectedConceptId, setSelectedConceptId] = useState<string | null>(null);
   const [editingConcept, setEditingConcept] = useState<TaxonomyConcept | null>(null);
   const [isCreatingConcept, setIsCreatingConcept] = useState(false);
+  const [exportDialogOpen, setExportDialogOpen] = useState(false);
+  const [importDialogOpen, setImportDialogOpen] = useState(false);
 
   const currentTaxonomy = currentTaxonomyId
     ? taxonomies.find(([id]) => id === currentTaxonomyId)?.[1]
@@ -195,6 +198,32 @@ export const TaxonomyManager: React.FC<TaxonomyManagerProps> = ({
     return path;
   };
 
+  const handleImportTaxonomy = (importedTaxonomy: Taxonomy, taxonomyId: string) => {
+    createTaxonomy({
+      id: taxonomyId,
+      taxonomy: importedTaxonomy,
+      onSuccess: () => {
+        setCurrentTaxonomyId(taxonomyId);
+        setSelectedConceptId(null);
+        setEditingConcept(null);
+        setIsCreatingConcept(false);
+        notify.success(`Taxonomy "${importedTaxonomy.metadata.name}" imported successfully`);
+      },
+    });
+  };
+
+  const handleExportTaxonomy = () => {
+    if (!currentTaxonomy) {
+      notify.error("No taxonomy selected for export");
+      return;
+    }
+    setExportDialogOpen(true);
+  };
+
+  const handleImportDialogOpen = () => {
+    setImportDialogOpen(true);
+  };
+
   if (!taxonomies.length) {
     return <TaxonomyEmptyStates type="no-taxonomies" />;
   }
@@ -220,8 +249,8 @@ export const TaxonomyManager: React.FC<TaxonomyManagerProps> = ({
         conceptBreadcrumb={selectedConcept ? getConceptBreadcrumb(selectedConcept.id) : []}
         onTaxonomyChange={handleTaxonomyChange}
         onConceptAdd={() => handleConceptAdd()}
-        onImport={() => notify.info("Import feature coming soon")}
-        onExport={() => notify.info("Export feature coming soon")}
+        onImport={handleImportDialogOpen}
+        onExport={handleExportTaxonomy}
         onSettings={() => notify.info("Settings feature coming soon")}
       />
 
@@ -274,6 +303,22 @@ export const TaxonomyManager: React.FC<TaxonomyManagerProps> = ({
           </Box>
         </GridItem>
       </Grid>
+
+      {/* SKOS Export Dialog */}
+      <SKOSDialog
+        open={exportDialogOpen}
+        onOpenChange={setExportDialogOpen}
+        mode="export"
+        taxonomy={currentTaxonomy || undefined}
+      />
+
+      {/* SKOS Import Dialog */}
+      <SKOSDialog
+        open={importDialogOpen}
+        onOpenChange={setImportDialogOpen}
+        mode="import"
+        onImport={handleImportTaxonomy}
+      />
     </VStack>
   );
 };
