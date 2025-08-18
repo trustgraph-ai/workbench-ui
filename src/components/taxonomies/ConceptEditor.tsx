@@ -105,6 +105,18 @@ export const ConceptEditor: React.FC<ConceptEditorProps> = ({
       }
     };
 
+    // If this is a concept select but there are no available concepts, show a message
+    if (isConceptSelect && availableConcepts.length === 0) {
+      return (
+        <Field.Root>
+          <Field.Label>{label}</Field.Label>
+          <Text fontSize="sm" color="fg.muted">
+            No other concepts available. Create more concepts in this taxonomy to establish relationships.
+          </Text>
+        </Field.Root>
+      );
+    }
+
     return (
       <Field.Root>
         <Field.Label>{label}</Field.Label>
@@ -112,18 +124,20 @@ export const ConceptEditor: React.FC<ConceptEditorProps> = ({
           {items.map((item, index) => (
             <HStack key={index}>
               {isConceptSelect ? (
-                <SelectField
-                  label=""
-                  items={[
-                    {value: '', label: 'Select concept...'},
-                    ...availableConcepts.map(c => ({
-                      value: c.id,
-                      label: c.prefLabel
-                    }))
-                  ]}
-                  value={item}
-                  onValueChange={(value) => updateArrayItem(field, index, value)}
-                />
+                <Box flex="1">
+                  <SelectField
+                    label="Concept"
+                    items={[
+                      {value: '', label: 'Select concept...'},
+                      ...availableConcepts.map(c => ({
+                        value: c.id,
+                        label: c.prefLabel
+                      }))
+                    ]}
+                    value={item || ''}
+                    onValueChange={(value) => updateArrayItem(field, index, value)}
+                  />
+                </Box>
               ) : (
                 <Input
                   value={item}
@@ -142,38 +156,44 @@ export const ConceptEditor: React.FC<ConceptEditorProps> = ({
               </IconButton>
             </HStack>
           ))}
-          <HStack>
-            {isConceptSelect ? (
-              <SelectField
-                label=""
-                items={availableConcepts
-                  .filter(c => !items.includes(c.id))
-                  .map(c => ({
-                    value: c.id,
-                    label: c.prefLabel
-                  }))}
-                value={newItem}
-                onValueChange={(value) => setNewItem(value)}
-              />
-            ) : (
-              <Input
-                value={newItem}
-                onChange={(e) => setNewItem(e.target.value)}
-                placeholder={placeholder}
-                onKeyPress={(e) => e.key === "Enter" && handleAdd()}
-              />
-            )}
-            <IconButton
-              aria-label="Add"
-              size="sm"
-              variant="outline"
-              colorPalette="primary"
-              onClick={handleAdd}
-              disabled={!newItem.trim() || (isConceptSelect ? items.includes(newItem) : false)}
-            >
-              <Plus />
-            </IconButton>
-          </HStack>
+          
+          {/* Only show Add section if there are concepts available */}
+          {(!isConceptSelect || availableConcepts.filter(c => !items.includes(c.id)).length > 0) && (
+            <HStack>
+              {isConceptSelect ? (
+                <Box flex="1">
+                  <SelectField
+                    label="Add Concept"
+                    items={availableConcepts
+                      .filter(c => !items.includes(c.id))
+                      .map(c => ({
+                        value: c.id,
+                        label: c.prefLabel
+                      }))}
+                    value={newItem}
+                    onValueChange={(value) => setNewItem(value)}
+                  />
+                </Box>
+              ) : (
+                <Input
+                  value={newItem}
+                  onChange={(e) => setNewItem(e.target.value)}
+                  placeholder={placeholder}
+                  onKeyPress={(e) => e.key === "Enter" && handleAdd()}
+                />
+              )}
+              <IconButton
+                aria-label="Add"
+                size="sm"
+                variant="outline"
+                colorPalette="primary"
+                onClick={handleAdd}
+                disabled={!newItem.trim() || (isConceptSelect ? items.includes(newItem) : false)}
+              >
+                <Plus />
+              </IconButton>
+            </HStack>
+          )}
         </VStack>
       </Field.Root>
     );
