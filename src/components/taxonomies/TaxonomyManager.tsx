@@ -3,16 +3,12 @@ import {
   Box,
   Grid,
   GridItem,
-  Heading,
-  HStack,
   VStack,
-  Button,
-  IconButton,
   Text,
-  Separator,
 } from "@chakra-ui/react";
 import SelectField from "../common/SelectField";
-import { Plus, Download, Upload, Settings } from "lucide-react";
+import { TaxonomyManagerHeader } from "./TaxonomyManagerHeader";
+import { ConceptDetailView } from "./ConceptDetailView";
 import { useNotification } from "../../state/notify";
 import { useTaxonomies, Taxonomy, TaxonomyConcept } from "../../state/taxonomies";
 import { TaxonomyTree } from "./TaxonomyTree";
@@ -234,67 +230,18 @@ export const TaxonomyManager: React.FC<TaxonomyManagerProps> = ({
   return (
     <VStack gap={4} align="stretch" h="100%">
       {/* Header */}
-
-      <HStack justify="space-between" align="center">
-        <VStack align="start" gap={1}>
-          <HStack>
-            <Heading size="lg">{currentTaxonomy.metadata.name}</Heading>
-            <Text color="fg.muted">
-              ({Object.keys(currentTaxonomy.concepts).length} concepts)
-            </Text>
-          </HStack>
-          {selectedConcept && (
-            <Text fontSize="sm" color="fg.muted">
-              {currentTaxonomy.metadata.name} → {getConceptBreadcrumb(selectedConcept.id).join(" → ")}
-            </Text>
-          )}
-        </VStack>
-        
-        <HStack>
-          <Box w="250px">
-            <SelectField
-              label="Current Taxonomy"
-              items={taxonomies.map(([id, taxonomy]) => ({
-                value: id,
-                label: taxonomy.metadata.name,
-                description: `${Object.keys(taxonomy.concepts).length} concepts`
-              }))}
-              value={currentTaxonomyId ? [currentTaxonomyId] : []}
-              onValueChange={(values) => {
-                if (values.length > 0) {
-                  handleTaxonomyChange(values[0]);
-                }
-              }}
-            />
-          </Box>
-          <Button colorPalette="primary" onClick={() => handleConceptAdd()}>
-            <Plus /> Add Concept
-          </Button>
-          <IconButton
-            aria-label="Import"
-            variant="outline"
-            onClick={() => notify.info("Import feature coming soon")}
-          >
-            <Upload />
-          </IconButton>
-          <IconButton
-            aria-label="Export"
-            variant="outline"
-            onClick={() => notify.info("Export feature coming soon")}
-          >
-            <Download />
-          </IconButton>
-          <IconButton
-            aria-label="Settings"
-            variant="outline"
-            onClick={() => notify.info("Settings feature coming soon")}
-          >
-            <Settings />
-          </IconButton>
-        </HStack>
-      </HStack>
-
-      <Separator />
+      <TaxonomyManagerHeader
+        currentTaxonomy={currentTaxonomy}
+        currentTaxonomyId={currentTaxonomyId}
+        selectedConcept={selectedConcept}
+        taxonomies={taxonomies}
+        conceptBreadcrumb={selectedConcept ? getConceptBreadcrumb(selectedConcept.id) : []}
+        onTaxonomyChange={handleTaxonomyChange}
+        onConceptAdd={() => handleConceptAdd()}
+        onImport={() => notify.info("Import feature coming soon")}
+        onExport={() => notify.info("Export feature coming soon")}
+        onSettings={() => notify.info("Settings feature coming soon")}
+      />
 
       {/* Main Content */}
       <Grid templateColumns="1fr 1px 2fr" gap={0} flex="1" minH="0">
@@ -335,53 +282,10 @@ export const TaxonomyManager: React.FC<TaxonomyManagerProps> = ({
                 }}
               />
             ) : selectedConcept ? (
-              <VStack gap={4} align="stretch">
-                <HStack justify="space-between">
-                  <Heading size="md">{selectedConcept.prefLabel}</Heading>
-                  <Button
-                    size="sm"
-                    colorPalette="primary"
-                    onClick={() => handleConceptEdit(selectedConcept.id)}
-                  >
-                    Edit
-                  </Button>
-                </HStack>
-                
-                <Box p={4} borderWidth="1px" borderRadius="md" bg="bg.muted">
-                  <VStack align="start" gap={3}>
-                    {selectedConcept.definition && (
-                      <Box>
-                        <Text fontSize="sm" fontWeight="bold" color="fg.muted">
-                          Definition
-                        </Text>
-                        <Text>{selectedConcept.definition}</Text>
-                      </Box>
-                    )}
-                    
-                    {selectedConcept.scopeNote && (
-                      <Box>
-                        <Text fontSize="sm" fontWeight="bold" color="fg.muted">
-                          Scope Note
-                        </Text>
-                        <Text fontSize="sm">{selectedConcept.scopeNote}</Text>
-                      </Box>
-                    )}
-                    
-                    {selectedConcept.example && selectedConcept.example.length > 0 && (
-                      <Box>
-                        <Text fontSize="sm" fontWeight="bold" color="fg.muted">
-                          Examples
-                        </Text>
-                        <VStack align="start" gap={1}>
-                          {selectedConcept.example.map((ex, index) => (
-                            <Text key={index} fontSize="sm">• {ex}</Text>
-                          ))}
-                        </VStack>
-                      </Box>
-                    )}
-                  </VStack>
-                </Box>
-              </VStack>
+              <ConceptDetailView
+                concept={selectedConcept}
+                onEdit={() => handleConceptEdit(selectedConcept.id)}
+              />
             ) : (
               <Box p={8} textAlign="center" color="fg.muted">
                 <Text>Select a concept from the tree to view details, or create a new concept.</Text>
