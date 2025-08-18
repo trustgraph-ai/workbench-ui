@@ -4,21 +4,15 @@ import {
   Button,
   Dialog,
   CloseButton,
-  Field,
-  Input,
-  VStack,
-  HStack,
-  Text,
   Tabs,
-  Box,
-  IconButton,
   Separator,
 } from "@chakra-ui/react";
-import { Plus, Trash2 } from "lucide-react";
 import { useNotification } from "../../state/notify";
 import { useTaxonomies, Taxonomy, TaxonomyConcept } from "../../state/taxonomies";
-import TextField from "../common/TextField";
-import TextAreaField from "../common/TextAreaField";
+import { TaxonomyMetadataTab } from "./TaxonomyMetadataTab";
+import { TaxonomyConceptsTab } from "./TaxonomyConceptsTab";
+import { TaxonomySchemeTab } from "./TaxonomySchemeTab";
+import { TaxonomyJsonPreviewTab } from "./TaxonomyJsonPreviewTab";
 
 interface EditTaxonomyDialogProps {
   open: boolean;
@@ -213,137 +207,33 @@ export const EditTaxonomyDialog: React.FC<EditTaxonomyDialogProps> = ({
             </Tabs.List>
 
               <Tabs.Content value="metadata">
-                <VStack gap={4} align="stretch">
-                  <TextField
-                    label="Taxonomy ID"
-                    value={taxonomyId}
-                    onValueChange={setTaxonomyId}
-                    placeholder="e.g., risk-categories"
-                    required
-                    disabled={mode === "edit"}
-                  />
-
-                  <TextField
-                    label="Name"
-                    value={taxonomy.metadata.name}
-                    onValueChange={(value) => handleMetadataChange("name", value)}
-                    placeholder="e.g., Risk Categories"
-                    required
-                  />
-
-                  <TextAreaField
-                    label="Description"
-                    value={taxonomy.metadata.description}
-                    onValueChange={(value) => handleMetadataChange("description", value)}
-                    placeholder="Describe the purpose of this taxonomy"
-                  />
-
-                  <TextField
-                    label="Version"
-                    value={taxonomy.metadata.version}
-                    onValueChange={(value) => handleMetadataChange("version", value)}
-                  />
-
-                  <TextField
-                    label="Namespace"
-                    value={taxonomy.metadata.namespace}
-                    onValueChange={(value) => handleMetadataChange("namespace", value)}
-                    placeholder="http://example.org/taxonomies/"
-                  />
-                </VStack>
+                <TaxonomyMetadataTab
+                  taxonomyId={taxonomyId}
+                  taxonomy={taxonomy}
+                  mode={mode}
+                  onTaxonomyIdChange={setTaxonomyId}
+                  onMetadataChange={handleMetadataChange}
+                />
               </Tabs.Content>
 
               <Tabs.Content value="concepts">
-                <VStack gap={4} align="stretch">
-                  <HStack justify="space-between">
-                    <Text fontSize="lg" fontWeight="bold">
-                      Concepts
-                    </Text>
-                    <Button
-                      colorPalette="primary"
-                      size="sm"
-                      onClick={addConcept}
-                    >
-                      <Plus /> Add Concept
-                    </Button>
-                  </HStack>
-
-                  {Object.entries(taxonomy.concepts).length === 0 ? (
-                    <Box p={4} borderWidth="1px" borderRadius="md" bg="bg.muted">
-                      <Text color="fg.muted">
-                        No concepts yet. Click "Add Concept" to create one.
-                      </Text>
-                    </Box>
-                  ) : (
-                    <VStack gap={4} align="stretch">
-                      {Object.entries(taxonomy.concepts).map(([id, concept]) => (
-                        <Box
-                          key={id}
-                          p={4}
-                          borderWidth="1px"
-                          borderRadius="md"
-                        >
-                          <HStack justify="space-between" mb={3}>
-                            <Text fontWeight="bold">{concept.prefLabel}</Text>
-                            <IconButton
-                              aria-label="Delete concept"
-                              size="sm"
-                              colorPalette="red"
-                              variant="ghost"
-                              onClick={() => deleteConcept(id)}
-                            >
-                              <Trash2 />
-                            </IconButton>
-                          </HStack>
-                          <VStack gap={2} align="stretch">
-                            <TextField
-                              label="Preferred Label"
-                              value={concept.prefLabel}
-                              onValueChange={(value) => updateConcept(id, "prefLabel", value)}
-                            />
-                            <TextAreaField
-                              label="Definition"
-                              value={concept.definition || ""}
-                              onValueChange={(value) => updateConcept(id, "definition", value)}
-                            />
-                          </VStack>
-                        </Box>
-                      ))}
-                    </VStack>
-                  )}
-                </VStack>
+                <TaxonomyConceptsTab
+                  taxonomy={taxonomy}
+                  onAddConcept={addConcept}
+                  onDeleteConcept={deleteConcept}
+                  onUpdateConcept={updateConcept}
+                />
               </Tabs.Content>
 
               <Tabs.Content value="scheme">
-                <VStack gap={4} align="stretch">
-                  <TextField
-                    label="Scheme URI"
-                    value={taxonomy.scheme.uri}
-                    onValueChange={(value) => handleSchemeChange("uri", value)}
-                    placeholder="Will be auto-generated if empty"
-                  />
-
-                  <TextField
-                    label="Scheme Label"
-                    value={taxonomy.scheme.prefLabel}
-                    onValueChange={(value) => handleSchemeChange("prefLabel", value)}
-                    placeholder="Will use taxonomy name if empty"
-                  />
-                </VStack>
+                <TaxonomySchemeTab
+                  taxonomy={taxonomy}
+                  onSchemeChange={handleSchemeChange}
+                />
               </Tabs.Content>
 
               <Tabs.Content value="json">
-                <Box
-                  as="pre"
-                  p={4}
-                  bg="bg.muted"
-                  borderRadius="md"
-                  overflow="auto"
-                  maxH="400px"
-                  fontSize="sm"
-                >
-                  {JSON.stringify(taxonomy, null, 2)}
-                </Box>
+                <TaxonomyJsonPreviewTab taxonomy={taxonomy} />
               </Tabs.Content>
           </Tabs.Root>
             </Dialog.Body>
