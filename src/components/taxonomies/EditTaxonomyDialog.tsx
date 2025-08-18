@@ -9,10 +9,12 @@ import {
 } from "@chakra-ui/react";
 import { useNotification } from "../../state/notify";
 import { useTaxonomies, Taxonomy, TaxonomyConcept } from "../../state/taxonomies";
+import { validateTaxonomy } from "../../utils/skos-validation";
 import { TaxonomyMetadataTab } from "./TaxonomyMetadataTab";
 import { TaxonomyConceptsTab } from "./TaxonomyConceptsTab";
 import { TaxonomySchemeTab } from "./TaxonomySchemeTab";
 import { TaxonomyJsonPreviewTab } from "./TaxonomyJsonPreviewTab";
+import { TaxonomyValidationTab } from "./TaxonomyValidationTab";
 
 interface EditTaxonomyDialogProps {
   open: boolean;
@@ -92,6 +94,19 @@ export const EditTaxonomyDialog: React.FC<EditTaxonomyDialogProps> = ({
         prefLabel: taxonomy.scheme.prefLabel || taxonomy.metadata.name,
       },
     };
+
+    // Run validation and warn about issues
+    const validation = validateTaxonomy(updatedTaxonomy);
+    
+    if (validation.errors.length > 0) {
+      const shouldContinue = window.confirm(
+        `This taxonomy has ${validation.errors.length} validation error${validation.errors.length !== 1 ? 's' : ''}. ` +
+        'Saving may result in an invalid SKOS taxonomy. Do you want to continue?'
+      );
+      if (!shouldContinue) return;
+    } else if (validation.warnings.length > 0) {
+      notify.warning(`Taxonomy saved with ${validation.warnings.length} validation warning${validation.warnings.length !== 1 ? 's' : ''}`);
+    }
 
     const mutation = mode === "create" ? createTaxonomy : updateTaxonomy;
     mutation({
@@ -203,6 +218,7 @@ export const EditTaxonomyDialog: React.FC<EditTaxonomyDialogProps> = ({
               <Tabs.Trigger value="metadata">Metadata</Tabs.Trigger>
               <Tabs.Trigger value="concepts">Concepts ({Object.keys(taxonomy.concepts).length})</Tabs.Trigger>
               <Tabs.Trigger value="scheme">Scheme</Tabs.Trigger>
+              <Tabs.Trigger value="validation">Validation</Tabs.Trigger>
               <Tabs.Trigger value="json">JSON Preview</Tabs.Trigger>
             </Tabs.List>
 
@@ -229,6 +245,13 @@ export const EditTaxonomyDialog: React.FC<EditTaxonomyDialogProps> = ({
                 <TaxonomySchemeTab
                   taxonomy={taxonomy}
                   onSchemeChange={handleSchemeChange}
+                />
+              </Tabs.Content>
+
+              <Tabs.Content value="validation">
+                <TaxonomyValidationTab 
+                  taxonomy={taxonomy} 
+                  onTaxonomyChange={setTaxonomy}
                 />
               </Tabs.Content>
 
