@@ -6,9 +6,9 @@ import {
   VStack,
   Text,
 } from "@chakra-ui/react";
-import SelectField from "../common/SelectField";
 import { TaxonomyManagerHeader } from "./TaxonomyManagerHeader";
 import { ConceptDetailView } from "./ConceptDetailView";
+import { TaxonomyEmptyStates } from "./TaxonomyEmptyStates";
 import { useNotification } from "../../state/notify";
 import { useTaxonomies, Taxonomy, TaxonomyConcept } from "../../state/taxonomies";
 import { TaxonomyTree } from "./TaxonomyTree";
@@ -196,34 +196,16 @@ export const TaxonomyManager: React.FC<TaxonomyManagerProps> = ({
   };
 
   if (!taxonomies.length) {
-    return (
-      <Box p={8} textAlign="center" color="fg.muted">
-        <Text mb={4}>No taxonomies available. Create one to get started.</Text>
-      </Box>
-    );
+    return <TaxonomyEmptyStates type="no-taxonomies" />;
   }
 
   if (!currentTaxonomy) {
     return (
-      <VStack gap={4} p={8}>
-        <Text color="fg.muted">Select a taxonomy to start editing:</Text>
-        <Box maxW="400px">
-          <SelectField
-            label="Select Taxonomy"
-            items={taxonomies.map(([id, taxonomy]) => ({
-              value: id,
-              label: taxonomy.metadata.name,
-              description: `${Object.keys(taxonomy.concepts).length} concepts • ${taxonomy.metadata.description || 'No description'}`
-            }))}
-            value={[]}
-            onValueChange={(values) => {
-              if (values.length > 0) {
-                handleTaxonomyChange(values[0]);
-              }
-            }}
-          />
-        </Box>
-      </VStack>
+      <TaxonomyEmptyStates
+        type="no-taxonomy-selected"
+        taxonomies={taxonomies}
+        onTaxonomyChange={handleTaxonomyChange}
+      />
     );
   }
 
@@ -287,9 +269,7 @@ export const TaxonomyManager: React.FC<TaxonomyManagerProps> = ({
                 onEdit={() => handleConceptEdit(selectedConcept.id)}
               />
             ) : (
-              <Box p={8} textAlign="center" color="fg.muted">
-                <Text>Select a concept from the tree to view details, or create a new concept.</Text>
-              </Box>
+              <TaxonomyEmptyStates type="no-concept-selected" />
             )}
           </Box>
         </GridItem>
