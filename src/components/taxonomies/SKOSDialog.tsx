@@ -205,21 +205,22 @@ export const SKOSDialog: React.FC<SKOSDialogProps> = ({
         )}
 
         {/* Show first few errors/warnings */}
-        {[...validation.errors.slice(0, 3), ...validation.warnings.slice(0, 2)].map((issue, index) => (
-          <Box key={index} p={2} bg="bg.muted" borderRadius="md" mb={1} fontSize="sm">
-            <HStack>
-              {issue.type === 'error' ? (
-                <X size={12} color="red" />
-              ) : (
-                <AlertTriangle size={12} color="orange" />
-              )}
-              <Text flex="1">{issue.message}</Text>
-              {issue.conceptId && (
-                <Badge size="xs" variant="outline">{issue.conceptId}</Badge>
-              )}
-            </HStack>
-          </Box>
-        ))}
+        {[...validation.errors.slice(0, 3), ...validation.warnings.slice(0, 2)].map((issue, index) => {
+          const IconComponent = issue.type === 'error' ? X : AlertTriangle;
+          const iconColor = issue.type === 'error' ? "red" : "orange";
+          
+          return (
+            <Box key={index} p={2} bg="bg.muted" borderRadius="md" mb={1} fontSize="sm">
+              <HStack>
+                <IconComponent size={12} color={iconColor} />
+                <Text flex="1">{issue.message}</Text>
+                {issue.conceptId && (
+                  <Badge size="xs" variant="outline">{issue.conceptId}</Badge>
+                )}
+              </HStack>
+            </Box>
+          );
+        })}
       </Box>
     );
   };
@@ -228,7 +229,7 @@ export const SKOSDialog: React.FC<SKOSDialogProps> = ({
     if (open && mode === 'export' && taxonomy) {
       handleExport();
     }
-  }, [open, mode, taxonomy, format]);
+  }, [open, mode, taxonomy]);
 
   React.useEffect(() => {
     // Reset state when dialog opens
@@ -266,7 +267,13 @@ export const SKOSDialog: React.FC<SKOSDialogProps> = ({
                       description: info.description,
                     }))}
                   value={format}
-                  onValueChange={(value) => setFormat(value as ExportFormat)}
+                  onValueChange={(value) => {
+                    setFormat(value as ExportFormat);
+                    // Re-export with new format if dialog is in export mode
+                    if (mode === 'export' && taxonomy) {
+                      setTimeout(() => handleExport(), 0);
+                    }
+                  }}
                 />
 
                 {mode === 'import' && (
