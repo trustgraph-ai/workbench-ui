@@ -2,16 +2,8 @@ import React, { useState, useEffect } from "react";
 import {
   Box,
   VStack,
-  HStack,
-  Input,
-  Button,
-  Text,
   Tabs,
-  Badge,
-  Wrap,
-  WrapItem,
 } from "@chakra-ui/react";
-import { Save } from "lucide-react";
 import { useNotification } from "../../state/notify";
 import { TaxonomyConcept, Taxonomy } from "../../state/taxonomies";
 import TextField from "../common/TextField";
@@ -203,54 +195,11 @@ export const ConceptEditor: React.FC<ConceptEditorProps> = ({
           </Tabs.Content>
 
           <Tabs.Content value="metadata">
-            <VStack gap={4} align="stretch">
-              <Field.Root>
-                <Field.Label>Concept ID</Field.Label>
-                <Input
-                  value={editedConcept.id}
-                  onChange={(e) => updateField("id", e.target.value)}
-                  disabled={!!concept} // Don't allow editing existing IDs
-                />
-                {concept && (
-                  <Text fontSize="sm" color="fg.muted">
-                    ID cannot be changed for existing concepts
-                  </Text>
-                )}
-              </Field.Root>
-
-              <Box p={4} bg="bg.muted" borderRadius="md">
-                <Text fontSize="sm" fontWeight="bold" mb={2}>
-                  Concept Summary
-                </Text>
-                <Wrap>
-                  <WrapItem>
-                    <Badge colorPalette={editedConcept.prefLabel ? "primary" : "red"}>
-                      {editedConcept.prefLabel ? "Has Label" : "No Label"}
-                    </Badge>
-                  </WrapItem>
-                  <WrapItem>
-                    <Badge colorPalette={editedConcept.definition ? "primary" : "yellow"}>
-                      {editedConcept.definition ? "Defined" : "No Definition"}
-                    </Badge>
-                  </WrapItem>
-                  <WrapItem>
-                    <Badge colorPalette={editedConcept.broader ? "blue" : "gray"}>
-                      {editedConcept.broader ? "Has Parent" : "Root Level"}
-                    </Badge>
-                  </WrapItem>
-                  <WrapItem>
-                    <Badge>
-                      {(editedConcept.narrower || []).length} Children
-                    </Badge>
-                  </WrapItem>
-                  <WrapItem>
-                    <Badge>
-                      {(editedConcept.related || []).length} Related
-                    </Badge>
-                  </WrapItem>
-                </Wrap>
-              </Box>
-            </VStack>
+            <ConceptMetadataTab
+              concept={concept}
+              editedConcept={editedConcept}
+              onUpdateField={updateField}
+            />
           </Tabs.Content>
         </Tabs.Root>
       </Box>
