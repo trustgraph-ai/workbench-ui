@@ -64,7 +64,7 @@ export const ArrayFieldEditor: React.FC<ArrayFieldEditorProps> = ({
         {items.map((item, index) => (
           <HStack key={index}>
             {isConceptSelect ? (
-              <Box flex="1">
+              <Box flex="1" minW="300px">
                 <SelectField
                   label="Concept"
                   items={[
@@ -102,7 +102,7 @@ export const ArrayFieldEditor: React.FC<ArrayFieldEditorProps> = ({
         {(!isConceptSelect || availableConcepts.filter(c => !items.includes(c.id)).length > 0) && (
           <HStack>
             {isConceptSelect ? (
-              <Box flex="1">
+              <Box flex="1" minW="300px">
                 <SelectField
                   label="Add Concept"
                   items={availableConcepts
@@ -112,8 +112,8 @@ export const ArrayFieldEditor: React.FC<ArrayFieldEditorProps> = ({
                       label: c.prefLabel,
                       description: c.prefLabel
                     }))}
-                  value={newItem}
-                  onValueChange={(value) => setNewItem(value)}
+                  value={newItem ? [newItem] : []}
+                  onValueChange={(values) => setNewItem(values.length > 0 ? values[0] : "")}
                 />
               </Box>
             ) : (
