@@ -38,8 +38,9 @@ export const ArrayFieldEditor: React.FC<ArrayFieldEditorProps> = ({
   const [newItem, setNewItem] = useState("");
 
   const handleAdd = () => {
-    if (newItem.trim() && !items.includes(newItem.trim())) {
-      onAddItem(field, newItem.trim());
+    const itemValue = String(newItem || "").trim();
+    if (itemValue && !items.includes(itemValue)) {
+      onAddItem(field, itemValue);
       setNewItem("");
     }
   };
@@ -129,7 +130,7 @@ export const ArrayFieldEditor: React.FC<ArrayFieldEditorProps> = ({
               variant="outline"
               colorPalette="primary"
               onClick={handleAdd}
-              disabled={!newItem.trim() || (isConceptSelect ? items.includes(newItem) : false)}
+              disabled={!String(newItem || "").trim() || (isConceptSelect ? items.includes(String(newItem || "")) : false)}
             >
               <Plus />
             </IconButton>
