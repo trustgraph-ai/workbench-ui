@@ -47,7 +47,7 @@ export const SKOSDialog: React.FC<SKOSDialogProps> = ({
   const notify = useNotification();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleExport = () => {
+  const handleExport = React.useCallback(() => {
     if (!taxonomy) return;
     
     try {
@@ -75,7 +75,7 @@ export const SKOSDialog: React.FC<SKOSDialogProps> = ({
     } catch (error) {
       notify.error(`Export failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
-  };
+  }, [taxonomy, format, notify]);
 
   const handleImport = async () => {
     if (!content.trim() || !importId.trim()) {
@@ -205,22 +205,23 @@ export const SKOSDialog: React.FC<SKOSDialogProps> = ({
         )}
 
         {/* Show first few errors/warnings */}
-        {[...validation.errors.slice(0, 3), ...validation.warnings.slice(0, 2)].map((issue, index) => {
-          const IconComponent = issue.type === 'error' ? X : AlertTriangle;
-          const iconColor = issue.type === 'error' ? "red" : "orange";
-          
-          return (
-            <Box key={index} p={2} bg="bg.muted" borderRadius="md" mb={1} fontSize="sm">
+        {React.useMemo(() => 
+          [...validation.errors.slice(0, 3), ...validation.warnings.slice(0, 2)].map((issue, index) => (
+            <Box key={`${issue.type}-${index}`} p={2} bg="bg.muted" borderRadius="md" mb={1} fontSize="sm">
               <HStack>
-                <IconComponent size={12} color={iconColor} />
+                {issue.type === 'error' ? (
+                  <X size={12} color="red" />
+                ) : (
+                  <AlertTriangle size={12} color="orange" />
+                )}
                 <Text flex="1">{issue.message}</Text>
                 {issue.conceptId && (
                   <Badge size="xs" variant="outline">{issue.conceptId}</Badge>
                 )}
               </HStack>
             </Box>
-          );
-        })}
+          )), [validation.errors, validation.warnings]
+        )}
       </Box>
     );
   };
