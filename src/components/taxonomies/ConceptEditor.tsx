@@ -143,44 +143,14 @@ export const ConceptEditor: React.FC<ConceptEditorProps> = ({
           </Tabs.Content>
 
           <Tabs.Content value="relationships">
-            <VStack gap={4} align="stretch">
-              <SelectField
-                label="Broader Concept"
-                items={[
-                  {value: '', label: 'No parent concept'},
-                  ...availableConcepts.map(c => ({
-                    value: c.id,
-                    label: c.prefLabel
-                  }))
-                ]}
-                value={editedConcept.broader || ''}
-                onValueChange={(value) => updateField("broader", value || null)}
-              />
-
-              <ArrayFieldEditor
-                label="Narrower Concepts"
-                field="narrower"
-                placeholder=""
-                isConceptSelect={true}
-                items={(editedConcept.narrower as string[]) || []}
-                availableConcepts={availableConcepts}
-                onAddItem={addToArrayField}
-                onRemoveItem={removeFromArrayField}
-                onUpdateItem={updateArrayItem}
-              />
-
-              <ArrayFieldEditor
-                label="Related Concepts"
-                field="related"
-                placeholder=""
-                isConceptSelect={true}
-                items={(editedConcept.related as string[]) || []}
-                availableConcepts={availableConcepts}
-                onAddItem={addToArrayField}
-                onRemoveItem={removeFromArrayField}
-                onUpdateItem={updateArrayItem}
-              />
-            </VStack>
+            <ConceptRelationshipsTab
+              editedConcept={editedConcept}
+              availableConcepts={availableConcepts}
+              onUpdateField={updateField}
+              onAddItem={addToArrayField}
+              onRemoveItem={removeFromArrayField}
+              onUpdateItem={updateArrayItem}
+            />
           </Tabs.Content>
 
           <Tabs.Content value="metadata">
