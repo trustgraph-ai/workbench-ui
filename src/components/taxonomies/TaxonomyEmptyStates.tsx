@@ -36,7 +36,7 @@ export const TaxonomyEmptyStates: React.FC<EmptyStatesProps> = ({
             items={(taxonomies || []).map(([id, taxonomy]) => ({
               value: id,
               label: taxonomy.metadata.name,
-              description: `${Object.keys(taxonomy.concepts).length} concepts • ${taxonomy.metadata.description || 'No description'}`
+              description: taxonomy.metadata.name
             }))}
             value={[]}
             onValueChange={(values) => {

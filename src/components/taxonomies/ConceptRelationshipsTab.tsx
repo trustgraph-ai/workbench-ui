@@ -26,14 +26,15 @@ export const ConceptRelationshipsTab: React.FC<ConceptRelationshipsTabProps> = (
       <SelectField
         label="Broader Concept"
         items={[
-          {value: '', label: 'No parent concept'},
+          {value: '', label: 'No parent concept', description: 'No parent concept'},
           ...availableConcepts.map(c => ({
             value: c.id,
-            label: c.prefLabel
+            label: c.prefLabel,
+            description: c.prefLabel
           }))
         ]}
         value={editedConcept.broader || ''}
-        onValueChange={(value) => onUpdateField("broader", value || null)}
+        onValueChange={(value) => onUpdateField("broader", value === '' ? null : value)}
       />
 
       <ArrayFieldEditor
