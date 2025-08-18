@@ -205,23 +205,21 @@ export const SKOSDialog: React.FC<SKOSDialogProps> = ({
         )}
 
         {/* Show first few errors/warnings */}
-        {React.useMemo(() => 
-          [...validation.errors.slice(0, 3), ...validation.warnings.slice(0, 2)].map((issue, index) => (
-            <Box key={`${issue.type}-${index}`} p={2} bg="bg.muted" borderRadius="md" mb={1} fontSize="sm">
-              <HStack>
-                {issue.type === 'error' ? (
-                  <X size={12} color="red" />
-                ) : (
-                  <AlertTriangle size={12} color="orange" />
-                )}
-                <Text flex="1">{issue.message}</Text>
-                {issue.conceptId && (
-                  <Badge size="xs" variant="outline">{issue.conceptId}</Badge>
-                )}
-              </HStack>
-            </Box>
-          )), [validation.errors, validation.warnings]
-        )}
+        {[...validation.errors.slice(0, 3), ...validation.warnings.slice(0, 2)].map((issue, index) => (
+          <Box key={`${issue.type}-${index}`} p={2} bg="bg.muted" borderRadius="md" mb={1} fontSize="sm">
+            <HStack>
+              {issue.type === 'error' ? (
+                <X size={12} color="red" />
+              ) : (
+                <AlertTriangle size={12} color="orange" />
+              )}
+              <Text flex="1">{issue.message}</Text>
+              {issue.conceptId && (
+                <Badge size="xs" variant="outline">{issue.conceptId}</Badge>
+              )}
+            </HStack>
+          </Box>
+        ))}
       </Box>
     );
   };
