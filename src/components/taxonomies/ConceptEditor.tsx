@@ -10,7 +10,6 @@ import {
   Text,
   Tabs,
   Badge,
-  Select,
   Switch,
   Wrap,
   WrapItem,
@@ -20,12 +19,8 @@ import { useNotification } from "../../state/notify";
 import { TaxonomyConcept, Taxonomy } from "../../state/taxonomies";
 import TextField from "../common/TextField";
 import TextAreaField from "../common/TextAreaField";
+import SelectField from "../common/SelectField";
 
-// console.log("DEBUG - Plus:", Plus, typeof Plus);
-// console.log("DEBUG - X:", X, typeof X);
-// console.log("DEBUG - Save:", Save, typeof Save);
-// console.log("DEBUG - TextField:", TextField, typeof TextField);
-// console.log("DEBUG - TextAreaField:", TextAreaField, typeof TextAreaField);
 
 interface ConceptEditorProps {
   concept?: TaxonomyConcept;
@@ -40,7 +35,6 @@ export const ConceptEditor: React.FC<ConceptEditorProps> = ({
   onSave,
   onCancel,
 }) => {
-  // console.log("ConceptEditor render - concept:", concept, "taxonomy:", taxonomy);
   
   const notify = useNotification();
   const [editedConcept, setEditedConcept] = useState<TaxonomyConcept>(
@@ -101,12 +95,8 @@ export const ConceptEditor: React.FC<ConceptEditorProps> = ({
     placeholder: string;
     isConceptSelect?: boolean;
   }> = ({ label, field, placeholder, isConceptSelect = false }) => {
-    // console.log("ArrayFieldEditor render - isConceptSelect:", isConceptSelect, "field:", field);
-    
     const [newItem, setNewItem] = useState("");
     const items = (editedConcept[field] as string[]) || [];
-    
-    // console.log("ArrayFieldEditor - items:", items, "availableConcepts:", availableConcepts);
 
     const handleAdd = () => {
       if (newItem.trim() && !items.includes(newItem.trim())) {
@@ -122,7 +112,18 @@ export const ConceptEditor: React.FC<ConceptEditorProps> = ({
           {items.map((item, index) => (
             <HStack key={index}>
               {isConceptSelect ? (
-                <Text>SELECT DISABLED FOR DEBUG: {item}</Text>
+                <SelectField
+                  label=""
+                  items={[
+                    {value: '', label: 'Select concept...'},
+                    ...availableConcepts.map(c => ({
+                      value: c.id,
+                      label: c.prefLabel
+                    }))
+                  ]}
+                  value={item}
+                  onValueChange={(value) => updateArrayItem(field, index, value)}
+                />
               ) : (
                 <Input
                   value={item}
@@ -137,13 +138,23 @@ export const ConceptEditor: React.FC<ConceptEditorProps> = ({
                 colorPalette="red"
                 onClick={() => removeFromArrayField(field, index)}
               >
-                ❌
+                <X />
               </IconButton>
             </HStack>
           ))}
           <HStack>
             {isConceptSelect ? (
-              <Text>ADD SELECT DISABLED FOR DEBUG</Text>
+              <SelectField
+                label=""
+                items={availableConcepts
+                  .filter(c => !items.includes(c.id))
+                  .map(c => ({
+                    value: c.id,
+                    label: c.prefLabel
+                  }))}
+                value={newItem}
+                onValueChange={(value) => setNewItem(value)}
+              />
             ) : (
               <Input
                 value={newItem}
@@ -160,7 +171,7 @@ export const ConceptEditor: React.FC<ConceptEditorProps> = ({
               onClick={handleAdd}
               disabled={!newItem.trim() || (isConceptSelect ? items.includes(newItem) : false)}
             >
-              ➕
+              <Plus />
             </IconButton>
           </HStack>
         </VStack>
@@ -179,7 +190,7 @@ export const ConceptEditor: React.FC<ConceptEditorProps> = ({
             Cancel
           </Button>
           <Button colorPalette="primary" onClick={handleSave}>
-            💾 Save
+            <Save /> Save
           </Button>
         </HStack>
       </HStack>
@@ -204,11 +215,10 @@ export const ConceptEditor: React.FC<ConceptEditorProps> = ({
                 required
               />
               <ArrayFieldEditor
-                label="Test Field"
+                label="Alternative Labels"
                 field="altLabel"
-                placeholder="test"
+                placeholder="Add alternative label..."
               />
-              <Text>Basic tab content...</Text>
             </VStack>
           </Tabs.Content>
 
@@ -240,36 +250,83 @@ export const ConceptEditor: React.FC<ConceptEditorProps> = ({
 
           <Tabs.Content value="relationships">
             <VStack gap={4} align="stretch">
-              <Field.Root>
-                <Field.Label>Broader Concept</Field.Label>
-                <Select
-                  value={editedConcept.broader || ""}
-                  onChange={(e) => updateField("broader", e.target.value || null)}
-                >
-                  <option value="">No parent concept</option>
-                  {availableConcepts.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.prefLabel}
-                    </option>
-                  ))}
-                </Select>
-              </Field.Root>
+              <SelectField
+                label="Broader Concept"
+                items={[
+                  {value: '', label: 'No parent concept'},
+                  ...availableConcepts.map(c => ({
+                    value: c.id,
+                    label: c.prefLabel
+                  }))
+                ]}
+                value={editedConcept.broader || ''}
+                onValueChange={(value) => updateField("broader", value || null)}
+              />
 
-              <Text>DEBUG: availableConcepts length: {availableConcepts.length}</Text>
               <ArrayFieldEditor
                 label="Narrower Concepts"
                 field="narrower"
                 placeholder=""
                 isConceptSelect={true}
               />
-              
-              <Text>Narrower concepts rendered successfully</Text>
+
+              <ArrayFieldEditor
+                label="Related Concepts"
+                field="related"
+                placeholder=""
+                isConceptSelect={true}
+              />
             </VStack>
           </Tabs.Content>
 
           <Tabs.Content value="metadata">
             <VStack gap={4} align="stretch">
-              <Text>Metadata tab content...</Text>
+              <Field.Root>
+                <Field.Label>Concept ID</Field.Label>
+                <Input
+                  value={editedConcept.id}
+                  onChange={(e) => updateField("id", e.target.value)}
+                  disabled={!!concept} // Don't allow editing existing IDs
+                />
+                {concept && (
+                  <Text fontSize="sm" color="fg.muted">
+                    ID cannot be changed for existing concepts
+                  </Text>
+                )}
+              </Field.Root>
+
+              <Box p={4} bg="bg.muted" borderRadius="md">
+                <Text fontSize="sm" fontWeight="bold" mb={2}>
+                  Concept Summary
+                </Text>
+                <Wrap>
+                  <WrapItem>
+                    <Badge colorPalette={editedConcept.prefLabel ? "primary" : "red"}>
+                      {editedConcept.prefLabel ? "Has Label" : "No Label"}
+                    </Badge>
+                  </WrapItem>
+                  <WrapItem>
+                    <Badge colorPalette={editedConcept.definition ? "primary" : "yellow"}>
+                      {editedConcept.definition ? "Defined" : "No Definition"}
+                    </Badge>
+                  </WrapItem>
+                  <WrapItem>
+                    <Badge colorPalette={editedConcept.broader ? "blue" : "gray"}>
+                      {editedConcept.broader ? "Has Parent" : "Root Level"}
+                    </Badge>
+                  </WrapItem>
+                  <WrapItem>
+                    <Badge>
+                      {(editedConcept.narrower || []).length} Children
+                    </Badge>
+                  </WrapItem>
+                  <WrapItem>
+                    <Badge>
+                      {(editedConcept.related || []).length} Related
+                    </Badge>
+                  </WrapItem>
+                </Wrap>
+              </Box>
             </VStack>
           </Tabs.Content>
         </Tabs.Root>
