@@ -189,6 +189,40 @@ disabled={true}
 </Avatar.Root>
 ```
 
+### Alert Component
+```tsx
+// ❌ Chakra v2
+<Alert status="error">
+  <AlertIcon />
+  <Text>Error message</Text>
+</Alert>
+
+// ✅ Chakra v3
+<Alert.Root status="error">
+  <Alert.Indicator />
+  <Alert.Content>
+    <Alert.Description>Error message</Alert.Description>
+  </Alert.Content>
+</Alert.Root>
+```
+
+**Alert Status Options:**
+- `status="error"` - Red error alerts
+- `status="warning"` - Orange warning alerts  
+- `status="success"` - Green success alerts
+- `status="info"` - Blue info alerts
+
+**Alert with Title:**
+```tsx
+<Alert.Root status="warning">
+  <Alert.Indicator />
+  <Alert.Content>
+    <Alert.Title>Warning Title</Alert.Title>
+    <Alert.Description>Warning description text</Alert.Description>
+  </Alert.Content>
+</Alert.Root>
+```
+
 ## Layout Components Still Work
 
 **Important**: VStack, HStack, Box, Grid, GridItem, Text, Button, Input, etc. still work the same way in v3. The confusion around VStack/HStack causing "invalid component type" errors is usually due to **circular import dependencies**, not Chakra version issues.
@@ -199,6 +233,20 @@ disabled={true}
 2. **Verify component structure**: Use the v3 nested component patterns (Component.Root, Component.Trigger, etc.)
 3. **Check props**: Use `colorPalette` instead of `colorScheme`, `disabled` instead of `isDisabled`
 4. **Circular imports**: If getting "invalid component type" errors with basic components like VStack, check for circular import dependencies
+
+## Migration Verification Checklist
+
+When migrating components to Chakra v3:
+- [ ] Replace `<Alert>` with `<Alert.Root>`
+- [ ] Replace `<AlertIcon />` with `<Alert.Indicator />`
+- [ ] Wrap text in `<Alert.Content><Alert.Description>...</Alert.Description></Alert.Content>`
+- [ ] Replace `<Modal>` with `<Dialog.Root>` 
+- [ ] Replace `spacing` props with `gap` props
+- [ ] Replace `colorScheme` with `colorPalette`
+- [ ] Replace `isDisabled` with `disabled`
+- [ ] Test build after changes
+- [ ] Verify visual styling is preserved
+- [ ] Be systematic: search for old patterns, document the fix, then apply consistently
 
 ## Project-Specific Patterns
 
