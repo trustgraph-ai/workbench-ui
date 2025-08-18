@@ -6,12 +6,12 @@ import {
 } from "@chakra-ui/react";
 import { useNotification } from "../../state/notify";
 import { TaxonomyConcept, Taxonomy } from "../../state/taxonomies";
-import TextField from "../common/TextField";
 import TextAreaField from "../common/TextAreaField";
-import SelectField from "../common/SelectField";
-import { ArrayFieldEditor } from "./ArrayFieldEditor";
 import { ConceptEditorHeader } from "./ConceptEditorHeader";
 import { ConceptMetadataTab } from "./ConceptMetadataTab";
+import { ConceptBasicTab } from "./ConceptBasicTab";
+import { ConceptRelationshipsTab } from "./ConceptRelationshipsTab";
+import { ArrayFieldEditor } from "./ArrayFieldEditor";
 
 
 interface ConceptEditorProps {
@@ -101,25 +101,14 @@ export const ConceptEditor: React.FC<ConceptEditorProps> = ({
           </Tabs.List>
 
           <Tabs.Content value="basic">
-            <VStack gap={4} align="stretch">
-              <TextField
-                label="Preferred Label"
-                value={editedConcept.prefLabel}
-                onValueChange={(value) => updateField("prefLabel", value)}
-                placeholder="Main name for this concept"
-                required
-              />
-              <ArrayFieldEditor
-                label="Alternative Labels"
-                field="altLabel"
-                placeholder="Add alternative label..."
-                items={(editedConcept.altLabel as string[]) || []}
-                availableConcepts={availableConcepts}
-                onAddItem={addToArrayField}
-                onRemoveItem={removeFromArrayField}
-                onUpdateItem={updateArrayItem}
-              />
-            </VStack>
+            <ConceptBasicTab
+              editedConcept={editedConcept}
+              availableConcepts={availableConcepts}
+              onUpdateField={updateField}
+              onAddItem={addToArrayField}
+              onRemoveItem={removeFromArrayField}
+              onUpdateItem={updateArrayItem}
+            />
           </Tabs.Content>
 
           <Tabs.Content value="definition">
