@@ -22,6 +22,7 @@ import { serializeToSKOS, parseFromSKOS } from "../../utils/skos";
 import { validateTaxonomy, ValidationResult } from "../../utils/skos-validation";
 import { exportTaxonomy, EXPORT_FORMATS, ExportFormat } from "../../utils/export-formats";
 import SelectField from "../common/SelectField";
+import { ValidationResults } from "./ValidationResults";
 
 interface SKOSDialogProps {
   open: boolean;
@@ -176,53 +177,6 @@ export const SKOSDialog: React.FC<SKOSDialogProps> = ({
     reader.readAsText(file);
   };
 
-  const renderValidation = () => {
-    if (!validation) return null;
-
-    return (
-      <Box>
-        <Text fontSize="sm" fontWeight="bold" mb={2}>Validation Results</Text>
-        
-        {validation.errors.length > 0 && (
-          <Alert status="error" mb={2}>
-            <AlertTriangle size={16} />
-            <Text ml={2}>{validation.errors.length} error(s) found</Text>
-          </Alert>
-        )}
-        
-        {validation.warnings.length > 0 && (
-          <Alert status="warning" mb={2}>
-            <AlertTriangle size={16} />
-            <Text ml={2}>{validation.warnings.length} warning(s) found</Text>
-          </Alert>
-        )}
-        
-        {validation.isValid && (
-          <Alert status="success" mb={2}>
-            <Check size={16} />
-            <Text ml={2}>SKOS validation passed</Text>
-          </Alert>
-        )}
-
-        {/* Show first few errors/warnings */}
-        {[...validation.errors.slice(0, 3), ...validation.warnings.slice(0, 2)].map((issue, index) => (
-          <Box key={`${issue.type}-${index}`} p={2} bg="bg.muted" borderRadius="md" mb={1} fontSize="sm">
-            <HStack>
-              {issue.type === 'error' ? (
-                <X size={12} color="red" />
-              ) : (
-                <AlertTriangle size={12} color="orange" />
-              )}
-              <Text flex="1">{issue.message}</Text>
-              {issue.conceptId && (
-                <Badge size="xs" variant="outline">{issue.conceptId}</Badge>
-              )}
-            </HStack>
-          </Box>
-        ))}
-      </Box>
-    );
-  };
 
   React.useEffect(() => {
     if (open && mode === 'export' && taxonomy) {
@@ -382,7 +336,7 @@ export const SKOSDialog: React.FC<SKOSDialogProps> = ({
                   </Tabs.Content>
 
                   <Tabs.Content value="validation">
-                    {renderValidation()}
+                    <ValidationResults validation={validation} />
                   </Tabs.Content>
                 </Tabs.Root>
               </VStack>
