@@ -9,7 +9,7 @@ const TaxonomiesPage: React.FC = () => {
       <PageHeader
         icon={<Tags />}
         title="Taxonomy Management"
-        description="Create and manage taxonomies for organizing knowledge"
+        description="Create and manage taxonomies for knowledge management"
       />
       <Taxonomies />
     </>
