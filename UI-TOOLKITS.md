@@ -223,6 +223,30 @@ disabled={true}
 </Alert.Root>
 ```
 
+### Progress Component
+```tsx
+// ❌ Chakra v2
+<Progress value={60} colorScheme="blue" />
+
+// ✅ Chakra v3
+<Progress.Root value={60}>
+  <Progress.Track>
+    <Progress.Range />
+  </Progress.Track>
+  <Progress.Label />
+  <Progress.ValueText />
+</Progress.Root>
+```
+
+**Progress with custom styling:**
+```tsx
+<Progress.Root value={75} colorPalette="green" size="sm">
+  <Progress.Track>
+    <Progress.Range />
+  </Progress.Track>
+</Progress.Root>
+```
+
 ## Layout Components Still Work
 
 **Important**: VStack, HStack, Box, Grid, GridItem, Text, Button, Input, etc. still work the same way in v3. The confusion around VStack/HStack causing "invalid component type" errors is usually due to **circular import dependencies**, not Chakra version issues.
@@ -240,6 +264,8 @@ When migrating components to Chakra v3:
 - [ ] Replace `<Alert>` with `<Alert.Root>`
 - [ ] Replace `<AlertIcon />` with `<Alert.Indicator />`
 - [ ] Wrap text in `<Alert.Content><Alert.Description>...</Alert.Description></Alert.Content>`
+- [ ] Replace `<Progress>` with `<Progress.Root><Progress.Track><Progress.Range /></Progress.Track></Progress.Root>`
+- [ ] Use `<Card.Root><Card.Header /><Card.Body /></Card.Root>` structure for cards
 - [ ] Replace `<Modal>` with `<Dialog.Root>` 
 - [ ] Replace `spacing` props with `gap` props
 - [ ] Replace `colorScheme` with `colorPalette`

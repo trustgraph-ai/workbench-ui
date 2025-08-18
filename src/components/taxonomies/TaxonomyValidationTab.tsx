@@ -228,10 +228,14 @@ export const TaxonomyValidationTab: React.FC<TaxonomyValidationTabProps> = ({
                 <Text fontSize="sm" fontWeight="medium">Overall Quality</Text>
                 <Text fontSize="sm" color="fg.muted">{Math.round(qualityMetrics.overall)}%</Text>
               </HStack>
-              <Progress 
+              <Progress.Root 
                 value={qualityMetrics.overall} 
                 colorPalette={qualityMetrics.overall >= 80 ? "green" : qualityMetrics.overall >= 60 ? "orange" : "red"}
-              />
+              >
+                <Progress.Track>
+                  <Progress.Range />
+                </Progress.Track>
+              </Progress.Root>
             </Box>
 
             {/* Individual Metrics */}
@@ -248,12 +252,16 @@ export const TaxonomyValidationTab: React.FC<TaxonomyValidationTabProps> = ({
                     <Text fontSize="xs" color="fg.muted">{description}</Text>
                   </VStack>
                   <HStack>
-                    <Progress 
+                    <Progress.Root 
                       value={value} 
                       size="sm" 
                       width="60px"
                       colorPalette={value >= 80 ? "green" : value >= 60 ? "orange" : "red"}
-                    />
+                    >
+                      <Progress.Track>
+                        <Progress.Range />
+                      </Progress.Track>
+                    </Progress.Root>
                     <Text fontSize="xs" color="fg.muted" minW="35px" textAlign="right">
                       {Math.round(value)}%
                     </Text>
