@@ -18,7 +18,6 @@ export interface TaxonomyConcept {
   id: string;
   prefLabel: string;
   altLabel?: string[];
-  hiddenLabel?: string[];
   definition?: string;
   scopeNote?: string;
   example?: string[];
@@ -27,9 +26,6 @@ export interface TaxonomyConcept {
   narrower?: string[];
   related?: string[];
   topConcept?: boolean;
-  editorialNote?: string[];
-  changeNote?: string[];
-  historyNote?: string[];
 }
 
 export interface TaxonomyScheme {

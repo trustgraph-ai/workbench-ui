@@ -189,48 +189,6 @@ disabled={true}
 </Avatar.Root>
 ```
 
-### Select Components
-```tsx
-// ❌ Chakra v2 (and wrong v3 usage)
-<Select value={value} onChange={(e) => setValue(e.target.value)}>
-  <option value="1">Option 1</option>
-  <option value="2">Option 2</option>
-</Select>
-
-// ✅ Chakra v3
-import { createListCollection } from "@chakra-ui/react";
-
-const collection = createListCollection({
-  items: [
-    { value: "1", label: "Option 1" },
-    { value: "2", label: "Option 2" }
-  ]
-});
-
-<Select.Root
-  collection={collection}
-  value={[value]}
-  onValueChange={(details) => setValue(details.value[0])}
->
-  <Select.Control>
-    <Select.Trigger>
-      <Select.ValueText placeholder="Select option..." />
-    </Select.Trigger>
-  </Select.Control>
-  <Portal>
-    <Select.Positioner>
-      <Select.Content>
-        {items.map((item) => (
-          <Select.Item key={item.value} item={item}>
-            <Select.ItemText>{item.label}</Select.ItemText>
-          </Select.Item>
-        ))}
-      </Select.Content>
-    </Select.Positioner>
-  </Portal>
-</Select.Root>
-```
-
 ## Layout Components Still Work
 
 **Important**: VStack, HStack, Box, Grid, GridItem, Text, Button, Input, etc. still work the same way in v3. The confusion around VStack/HStack causing "invalid component type" errors is usually due to **circular import dependencies**, not Chakra version issues.
