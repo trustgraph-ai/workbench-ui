@@ -56,21 +56,7 @@ export const TaxonomyTree: React.FC<TaxonomyTreeProps> = ({
   const allRootConcepts = [...topConcepts, ...orphanedConcepts];
 
   if (Object.keys(taxonomy.concepts).length === 0) {
-    return (
-      <Box p={4} textAlign="center" color="fg.muted">
-        <Text mb={4}>No concepts in this taxonomy yet.</Text>
-        <IconButton
-          aria-label="Add first concept"
-          colorPalette="primary"
-          onClick={() => onConceptAdd()}
-        >
-          <Plus />
-        </IconButton>
-        <Text fontSize="sm" mt={2}>
-          Add your first concept
-        </Text>
-      </Box>
-    );
+    return <TaxonomyTreeEmpty onAddConcept={() => onConceptAdd()} />;
   }
 
   return (
