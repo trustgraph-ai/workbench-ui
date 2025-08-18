@@ -1,5 +1,30 @@
 # UI Toolkits and Framework Notes
 
+## Icon Library
+
+**CRITICAL**: Always use `lucide-react` for icons throughout the application. Do NOT use `react-icons` or any other icon library.
+
+```tsx
+// ✅ Correct - Use lucide-react
+import { Plus, Save, Trash2, Edit, Settings } from "lucide-react";
+
+// ❌ Wrong - Don't use react-icons
+import { FiPlus, FiSave } from "react-icons/fi";
+```
+
+**Common icon mappings from react-icons to lucide-react:**
+- `FiPlus` → `Plus`
+- `FiX` → `X`
+- `FiSave` → `Save`
+- `FiTrash2` → `Trash2`
+- `FiEdit/FiEdit3` → `Edit`
+- `FiSettings` → `Settings`
+- `FiDownload` → `Download`
+- `FiUpload` → `Upload`
+- `FiMove` → `Move`
+- `FiMoreVertical` → `MoreVertical`
+- `FiList` → `List`
+
 ## Chakra UI Version
 
 **CRITICAL**: This project uses **Chakra UI v3**, NOT v2. Always check component APIs against v3 documentation.
@@ -133,12 +158,12 @@ disabled={true}
 ### Button Icons
 ```tsx
 // ❌ Old pattern
-<Button leftIcon={<FiPlus />}>Add</Button>
-<IconButton icon={<FiUpload />} aria-label="Upload" />
+<Button leftIcon={<Plus />}>Add</Button>
+<IconButton icon={<Upload />} aria-label="Upload" />
 
 // ✅ Chakra v3
-<Button><FiPlus /> Add</Button>
-<IconButton aria-label="Upload"><FiUpload /></IconButton>
+<Button><Plus /> Add</Button>
+<IconButton aria-label="Upload"><Upload /></IconButton>
 ```
 
 ### Input Groups (Simplified)

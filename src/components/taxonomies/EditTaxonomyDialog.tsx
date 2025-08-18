@@ -14,7 +14,7 @@ import {
   IconButton,
   Separator,
 } from "@chakra-ui/react";
-import { FiPlus, FiTrash2 } from "react-icons/fi";
+import { Plus, Trash2 } from "lucide-react";
 import { useNotification } from "../../state/notify";
 import { useTaxonomies, Taxonomy, TaxonomyConcept } from "../../state/taxonomies";
 import TextField from "../common/TextField";
@@ -264,7 +264,7 @@ export const EditTaxonomyDialog: React.FC<EditTaxonomyDialogProps> = ({
                       size="sm"
                       onClick={addConcept}
                     >
-                      <FiPlus /> Add Concept
+                      <Plus /> Add Concept
                     </Button>
                   </HStack>
 
@@ -292,7 +292,7 @@ export const EditTaxonomyDialog: React.FC<EditTaxonomyDialogProps> = ({
                               variant="ghost"
                               onClick={() => deleteConcept(id)}
                             >
-                              <FiTrash2 />
+                              <Trash2 />
                             </IconButton>
                           </HStack>
                           <VStack gap={2} align="stretch">

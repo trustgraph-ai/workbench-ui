@@ -15,7 +15,7 @@ import {
   Wrap,
   WrapItem,
 } from "@chakra-ui/react";
-import { FiPlus, FiX, FiSave } from "react-icons/fi";
+import { Plus, X, Save } from "lucide-react";
 import { useNotification } from "../../state/notify";
 import { TaxonomyConcept, Taxonomy } from "../../state/taxonomies";
 import TextField from "../common/TextField";
@@ -136,7 +136,7 @@ export const ConceptEditor: React.FC<ConceptEditorProps> = ({
                 colorPalette="red"
                 onClick={() => removeFromArrayField(field, index)}
               >
-                <FiX />
+                <X />
               </IconButton>
             </HStack>
           ))}
@@ -171,7 +171,7 @@ export const ConceptEditor: React.FC<ConceptEditorProps> = ({
               onClick={handleAdd}
               disabled={!newItem.trim() || (isConceptSelect ? items.includes(newItem) : false)}
             >
-              <FiPlus />
+              <Plus />
             </IconButton>
           </HStack>
         </VStack>
@@ -198,7 +198,7 @@ export const ConceptEditor: React.FC<ConceptEditorProps> = ({
             Cancel
           </Button>
           <Button colorPalette="primary" onClick={handleSave}>
-            <FiSave /> Save
+            <Save /> Save
           </Button>
         </HStack>
       </HStack>

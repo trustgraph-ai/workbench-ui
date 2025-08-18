@@ -12,7 +12,7 @@ import {
   Separator,
 } from "@chakra-ui/react";
 import SelectField from "../common/SelectField";
-import { FiPlus, FiDownload, FiUpload, FiSettings } from "react-icons/fi";
+import { Plus, Download, Upload, Settings } from "lucide-react";
 import { useNotification } from "../../state/notify";
 import { useTaxonomies, Taxonomy, TaxonomyConcept } from "../../state/taxonomies";
 import { TaxonomyTree } from "./TaxonomyTree";
@@ -268,28 +268,28 @@ export const TaxonomyManager: React.FC<TaxonomyManagerProps> = ({
             />
           </Box>
           <Button colorPalette="primary" onClick={() => handleConceptAdd()}>
-            <FiPlus /> Add Concept
+            <Plus /> Add Concept
           </Button>
           <IconButton
             aria-label="Import"
             variant="outline"
             onClick={() => notify.info("Import feature coming soon")}
           >
-            <FiUpload />
+            <Upload />
           </IconButton>
           <IconButton
             aria-label="Export"
             variant="outline"
             onClick={() => notify.info("Export feature coming soon")}
           >
-            <FiDownload />
+            <Download />
           </IconButton>
           <IconButton
             aria-label="Settings"
             variant="outline"
             onClick={() => notify.info("Settings feature coming soon")}
           >
-            <FiSettings />
+            <Settings />
           </IconButton>
         </HStack>
       </HStack>

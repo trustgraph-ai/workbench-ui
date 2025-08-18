@@ -11,15 +11,15 @@ import {
   Badge,
 } from "@chakra-ui/react";
 import {
-  FiChevronRight,
-  FiChevronDown,
-  FiSearch,
-  FiMoreVertical,
-  FiPlus,
-  FiEdit3,
-  FiTrash2,
-  FiMove,
-} from "react-icons/fi";
+  ChevronRight,
+  ChevronDown,
+  Search,
+  MoreVertical,
+  Plus,
+  Edit,
+  Trash2,
+  Move,
+} from "lucide-react";
 import { TaxonomyConcept, Taxonomy } from "../../state/taxonomies";
 
 interface TaxonomyTreeProps {
@@ -104,9 +104,9 @@ const TreeNode: React.FC<TreeNodeProps> = ({
         >
           {hasChildren ? (
             isOpen ? (
-              <FiChevronDown />
+              <ChevronDown />
             ) : (
-              <FiChevronRight />
+              <ChevronRight />
             )
           ) : null}
         </IconButton>
@@ -146,24 +146,24 @@ const TreeNode: React.FC<TreeNodeProps> = ({
                   size="xs"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  <FiMoreVertical />
+                  <MoreVertical />
                 </IconButton>
               </Menu.Trigger>
               <Menu.Content>
                 <Menu.Item onClick={() => onAdd(concept.id)}>
-                  <FiPlus /> Add Child Concept
+                  <Plus /> Add Child Concept
                 </Menu.Item>
                 <Menu.Item onClick={() => onEdit(concept.id)}>
-                  <FiEdit3 /> Edit Concept
+                  <Edit /> Edit Concept
                 </Menu.Item>
                 <Menu.Item onClick={() => onMove(concept.id)}>
-                  <FiMove /> Move Concept
+                  <Move /> Move Concept
                 </Menu.Item>
                 <Menu.Item
                   onClick={() => onDelete(concept.id)}
                   color="red.fg"
                 >
-                  <FiTrash2 /> Delete Concept
+                  <Trash2 /> Delete Concept
                 </Menu.Item>
               </Menu.Content>
             </Menu.Root>
@@ -245,7 +245,7 @@ export const TaxonomyTree: React.FC<TaxonomyTreeProps> = ({
           colorPalette="primary"
           onClick={() => onConceptAdd()}
         >
-          <FiPlus />
+          <Plus />
         </IconButton>
         <Text fontSize="sm" mt={2}>
           Add your first concept
@@ -276,7 +276,7 @@ export const TaxonomyTree: React.FC<TaxonomyTreeProps> = ({
           variant="outline"
           onClick={() => onConceptAdd()}
         >
-          <FiPlus />
+          <Plus />
         </IconButton>
       </HStack>
 

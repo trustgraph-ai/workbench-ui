@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Box, Button, HStack, VStack, Tabs } from "@chakra-ui/react";
-import { FiPlus, FiList, FiEdit3 } from "react-icons/fi";
+import { Plus, List, Edit } from "lucide-react";
 import { TaxonomiesTable } from "./TaxonomiesTable";
 import { EditTaxonomyDialog } from "./EditTaxonomyDialog";
 import { TaxonomyManager } from "./TaxonomyManager";
@@ -16,7 +16,7 @@ export const Taxonomies: React.FC = () => {
           colorPalette="primary"
           onClick={() => setIsCreateOpen(true)}
         >
-          <FiPlus /> Create Taxonomy
+          <Plus /> Create Taxonomy
         </Button>
       </HStack>
 
@@ -24,11 +24,11 @@ export const Taxonomies: React.FC = () => {
         <Tabs.Root height="100%" defaultValue="list">
           <Tabs.List>
             <Tabs.Trigger value="list">
-              <FiList style={{ marginRight: "8px" }} />
+              <List style={{ marginRight: "8px" }} />
               All Taxonomies
             </Tabs.Trigger>
             <Tabs.Trigger value="editor">
-              <FiEdit3 style={{ marginRight: "8px" }} />
+              <Edit style={{ marginRight: "8px" }} />
               Editor
             </Tabs.Trigger>
           </Tabs.List>
