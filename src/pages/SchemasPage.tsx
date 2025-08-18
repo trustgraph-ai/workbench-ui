@@ -1,10 +1,16 @@
-import { Box } from "@chakra-ui/react";
+import { Database } from "lucide-react";
+import PageHeader from "../components/common/PageHeader";
 import { Schemas } from "../components/schemas/Schemas";
 
 export const SchemasPage = () => {
   return (
-    <Box>
+    <>
+      <PageHeader
+        icon={<Database />}
+        title="Schema Management"
+        description="Define and manage data schemas for your knowledge graph"
+      />
       <Schemas />
-    </Box>
+    </>
   );
 };

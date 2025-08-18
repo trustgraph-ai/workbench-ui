@@ -6,29 +6,29 @@ import {
   getSortedRowModel,
   flexRender,
 } from "@tanstack/react-table";
-import { useSchemas } from "../../state/schemas";
-import { SchemaTableRow, schemaColumns } from "../../model/schemas-table";
-import { EditSchemaDialog } from "./EditSchemaDialog";
+import { useTaxonomies } from "../../state/taxonomies";
+import { TaxonomyTableRow, taxonomyColumns } from "../../model/taxonomies-table";
+import { EditTaxonomyDialog } from "./EditTaxonomyDialog";
 
-export const SchemasTable: React.FC = () => {
-  const { schemas, schemasLoading, schemasError } = useSchemas();
+export const TaxonomiesTable: React.FC = () => {
+  const { taxonomies, taxonomiesLoading, taxonomiesError } = useTaxonomies();
   const [isOpen, setIsOpen] = React.useState(false);
-  const [selectedSchema, setSelectedSchema] =
-    React.useState<SchemaTableRow | null>(null);
+  const [selectedTaxonomy, setSelectedTaxonomy] =
+    React.useState<TaxonomyTableRow | null>(null);
 
   const table = useReactTable({
-    data: schemas as SchemaTableRow[],
-    columns: schemaColumns,
+    data: taxonomies as TaxonomyTableRow[],
+    columns: taxonomyColumns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
   });
 
-  const handleRowClick = (row: SchemaTableRow) => {
-    setSelectedSchema(row);
+  const handleRowClick = (row: TaxonomyTableRow) => {
+    setSelectedTaxonomy(row);
     setIsOpen(true);
   };
 
-  if (schemasLoading) {
+  if (taxonomiesLoading) {
     return (
       <Center h="200px">
         <Spinner size="xl" />
@@ -36,7 +36,7 @@ export const SchemasTable: React.FC = () => {
     );
   }
 
-  if (schemasError) {
+  if (taxonomiesError) {
     return (
       <Box
         p={4}
@@ -46,17 +46,17 @@ export const SchemasTable: React.FC = () => {
         bg="red.50"
       >
         <Text color="red.700">
-          Error loading schemas: {schemasError.toString()}
+          Error loading taxonomies: {taxonomiesError.toString()}
         </Text>
       </Box>
     );
   }
 
-  if (schemas.length === 0) {
+  if (taxonomies.length === 0) {
     return (
       <Center h="200px">
-        <Text color="fg.muted">
-          No schemas found. Create one to get started.
+        <Text color="gray.500">
+          No taxonomies found. Create one to get started.
         </Text>
       </Center>
     );
@@ -103,13 +103,13 @@ export const SchemasTable: React.FC = () => {
         </Table.Root>
       </Box>
 
-      {selectedSchema && (
-        <EditSchemaDialog
-          isOpen={isOpen}
-          onClose={() => setIsOpen(false)}
+      {selectedTaxonomy && (
+        <EditTaxonomyDialog
+          open={isOpen}
+          onOpenChange={(open) => setIsOpen(open)}
           mode="edit"
-          schemaId={selectedSchema[0]}
-          initialSchema={selectedSchema[1]}
+          taxonomyId={selectedTaxonomy[0]}
+          initialTaxonomy={selectedTaxonomy[1]}
         />
       )}
     </>

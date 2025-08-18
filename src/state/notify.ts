@@ -32,6 +32,18 @@ export const useNotification = () => {
     },
 
     /**
+     * Display an error notification
+     * Automatically prefixes the message with "Error: "
+     * @param {string} error - The error message to display
+     */
+    warning: (warning) => {
+      toaster.create({
+        title: "Warning: " + warning,
+        type: "warning",
+      });
+    },
+
+    /**
      * Display an informational notification
      * @param {string} info - The informational message to display
      */

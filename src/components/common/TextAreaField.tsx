@@ -8,6 +8,7 @@ interface TextFieldProps {
   value: string;
   onValueChange: (x: string) => void;
   required?: boolean;
+  disabled?: boolean;
 }
 
 const TextAreaField: React.FC<TextFieldProps> = ({
@@ -16,6 +17,7 @@ const TextAreaField: React.FC<TextFieldProps> = ({
   value,
   onValueChange,
   required,
+  disabled,
 }) => {
   return (
     <Field.Root mb={4} required={required}>
@@ -29,6 +31,7 @@ const TextAreaField: React.FC<TextFieldProps> = ({
         onChange={(e) => onValueChange(e.target.value)}
         maxH="30lh"
         h="10lh"
+        disabled={disabled}
       />
     </Field.Root>
   );
