@@ -15,7 +15,7 @@ import { Taxonomy, TaxonomyConcept } from "../../state/taxonomies";
 
 interface TaxonomyManagerHeaderProps {
   currentTaxonomy: Taxonomy;
-  currentTaxonomyId: string;
+  currentTaxonomyId: string | null;
   selectedConcept?: TaxonomyConcept;
   taxonomies: Array<[string, Taxonomy]>;
   conceptBreadcrumb: string[];
@@ -62,10 +62,14 @@ export const TaxonomyManagerHeader: React.FC<TaxonomyManagerHeaderProps> = ({
               items={taxonomies.map(([id, taxonomy]) => ({
                 value: id,
                 label: taxonomy.metadata.name,
-                description: `${Object.keys(taxonomy.concepts).length} concepts`
+                description: taxonomy.metadata.name
               }))}
-              value={currentTaxonomyId}
-              onValueChange={(value) => onTaxonomyChange(value)}
+              value={currentTaxonomyId ? [currentTaxonomyId] : []}
+              onValueChange={(values) => {
+                if (values.length > 0) {
+                  onTaxonomyChange(values[0]);
+                }
+              }}
             />
           </Box>
           <Button colorPalette="primary" onClick={onConceptAdd}>
