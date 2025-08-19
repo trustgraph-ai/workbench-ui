@@ -10,18 +10,33 @@ The Settings page should provide:
 
 1. **Settings Management Interface**
    - Centralized location for all user and system settings
-   - Organized into logical sections/categories  
+   - Organized into logical sections/categories using visual grouping
    - Real-time save functionality with visual feedback
    - Reset to defaults capability
    - Import/export settings configuration
 
-2. **Settings Categories** (TBD based on requirements)
-   - User Interface preferences
-   - Chat and Assistant behavior
-   - Graph visualization settings
-   - Data processing configurations
-   - Notification preferences
-   - Advanced/Developer settings
+2. **Settings Categories**
+   - **Authentication**: API key configuration for TrustGraph socket authentication
+   - **GraphRAG Configuration**: Entity limits, triple limits, and graph traversal settings
+   - **Feature Switches**: Toggle switches for advanced/experimental functionality
+
+3. **Specific Settings**
+
+   **Authentication Section**:
+   - **API Key**: Text input field (password type for security)
+     - Default: empty string (no authentication)
+     - When set: used for TrustGraph socket authentication
+     - Should mask the key value when displayed
+
+   **GraphRAG Settings Section**:
+   - **Entity Limit**: Number input (default: 50)
+   - **Triple Limit**: Number input (default: 30) 
+   - **Max Subgraph Size**: Number input (default: 1000)
+   - **Path Length**: Number input (default: 2)
+
+   **Feature Switches Section**:
+   - **Taxonomy Editor**: Boolean toggle (default: false)
+   - **Submissions**: Boolean toggle (default: false)
 
 3. **Navigation Integration**
    - Add settings route at the end of the sidebar navigation
@@ -52,11 +67,13 @@ src/
 ├── components/
 │   └── settings/
 │       ├── Settings.tsx           # Main container component
-│       ├── SettingsForm.tsx       # Settings form management
-│       ├── SettingsSection.tsx    # Individual settings section
-│       └── SettingsControls.tsx   # Action buttons (save, reset, import/export)
+│       ├── SettingsForm.tsx       # Settings form management  
+│       ├── AuthenticationSection.tsx    # API key configuration
+│       ├── GraphRagSection.tsx          # GraphRAG settings
+│       ├── FeatureSwitchesSection.tsx   # Feature toggles
+│       └── SettingsControls.tsx         # Action buttons (save, reset, import/export)
 ├── state/
-│   └── settings.ts               # Settings state management with React Query
+│   └── settings.ts               # Settings state management with localStorage
 └── model/
     └── settings-types.ts         # TypeScript definitions for settings
 ```
@@ -84,15 +101,18 @@ Based on UI-TOOLKITS.md guidelines:
 Following the established React Query pattern:
 
 **Settings State Hook** (`useSettings`):
-- `getSettings()` to retrieve current settings
-- `updateSetting()` to modify individual settings
-- `resetSettings()` to restore defaults
+- `getSettings()` to retrieve current settings from localStorage
+- `updateSetting()` to modify individual settings and persist to localStorage
+- `resetSettings()` to restore defaults and clear localStorage
 - `exportSettings()` and `importSettings()` for configuration management
+- Handle localStorage serialization/deserialization
+- Provide default values when localStorage is empty
 
 **Data Storage**:
-- TBD: Determine if settings use TrustGraph config system or local storage
-- Consider user vs. system-wide settings separation
-- Handle settings persistence and synchronization
+- **Browser localStorage**: All settings stored in browser's localStorage
+- Settings persist across browser sessions
+- Settings are client-side only (no server synchronization)
+- Use structured key naming for organized storage
 
 ### Testing Strategy
 
@@ -112,20 +132,18 @@ Based on TEST_STRATEGY.md:
 **Test Data**:
 ```tsx
 const mockSettings = {
-  ui: {
-    theme: 'light',
-    sidebarCollapsed: false,
-    language: 'en'
+  authentication: {
+    apiKey: ''  // Empty by default
   },
-  chat: {
-    defaultMode: 'graph-rag',
-    autoSave: true,
-    historyLimit: 100
+  graphrag: {
+    entityLimit: 50,
+    tripleLimit: 30,
+    maxSubgraphSize: 1000,
+    pathLength: 2
   },
-  graph: {
-    nodeLimit: 1000,
-    enablePhysics: true,
-    defaultLayout: '3d'
+  featureSwitches: {
+    taxonomyEditor: false,
+    submissions: false
   }
 };
 ```
@@ -138,12 +156,16 @@ const mockSettings = {
    - Set up basic component structure
 
 2. **State Management**
-   - Implement settings state hook with React Query
-   - Define settings data model and types
-   - Determine storage mechanism (config vs. localStorage)
+   - Implement settings state hook with localStorage integration
+   - Define settings data model with typed interfaces
+   - Create default settings configuration
+   - Handle localStorage persistence and retrieval
 
 3. **UI Implementation**
-   - Build settings form with sections
+   - Build AuthenticationSection with masked API key input
+   - Create GraphRagSection with NumberField components for limits
+   - Implement FeatureSwitchesSection with toggle switches
+   - Add visual grouping with Card components for each section
    - Implement form validation and submission  
    - Add import/export functionality
    - Create reset to defaults mechanism
@@ -154,13 +176,50 @@ const mockSettings = {
    - Add integration tests for settings persistence
    - Verify UI consistency with design system
 
+## Data Model
+
+### Settings Structure
+```tsx
+interface Settings {
+  authentication: {
+    apiKey: string;  // Default: ''
+  };
+  graphrag: {
+    entityLimit: number;        // Default: 50
+    tripleLimit: number;        // Default: 30
+    maxSubgraphSize: number;    // Default: 1000
+    pathLength: number;         // Default: 2
+  };
+  featureSwitches: {
+    taxonomyEditor: boolean;    // Default: false
+    submissions: boolean;       // Default: false
+  };
+}
+```
+
+### LocalStorage Keys
+- Main settings: `trustgraph-settings`
+- Backup/versioning: Consider `trustgraph-settings-backup` for import/export
+
+## Integration Points
+
+### API Key Integration
+- Settings API key should be used by TrustGraph socket authentication
+- When API key is empty, no authentication is used
+- When API key has value, it's passed to socket connection for authentication
+
+### Feature Switches Integration
+- **Taxonomy Editor**: Controls visibility of taxonomy-related routes/components
+- **Submissions**: Controls visibility of submissions/processing routes/components
+- Features should be conditionally rendered based on these settings
+
 ## Notes
 
-- **Placeholder Implementation**: Initial version should be a basic page structure with placeholder content
-- **Extensible Design**: Settings system should be easily extensible for new categories
-- **Performance**: Consider lazy loading for complex settings sections
+- **Security**: API key should be masked in UI but stored as plaintext in localStorage
+- **Visual Grouping**: Use Card components to separate the three main sections
+- **Real-time Updates**: Settings changes should be immediately persisted to localStorage
+- **Validation**: Number inputs should have min/max constraints and validation
 - **Accessibility**: Ensure full keyboard navigation and screen reader support
-- **Validation**: Implement client-side validation with clear error messages
 - **Responsive**: Settings should work well on mobile and desktop layouts
 
 ## Future Considerations
