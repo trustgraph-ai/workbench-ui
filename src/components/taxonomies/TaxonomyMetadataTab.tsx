@@ -9,7 +9,10 @@ interface TaxonomyMetadataTabProps {
   taxonomy: Taxonomy;
   mode: "create" | "edit";
   onTaxonomyIdChange: (value: string) => void;
-  onMetadataChange: (field: keyof Taxonomy["metadata"], value: string) => void;
+  onMetadataChange: (
+    field: keyof Taxonomy["metadata"],
+    value: string,
+  ) => void;
 }
 
 export const TaxonomyMetadataTab: React.FC<TaxonomyMetadataTabProps> = ({

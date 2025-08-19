@@ -10,10 +10,16 @@ interface ConceptRelationshipsTabProps {
   onUpdateField: (field: keyof TaxonomyConcept, value: any) => void;
   onAddItem: (field: keyof TaxonomyConcept, value: string) => void;
   onRemoveItem: (field: keyof TaxonomyConcept, index: number) => void;
-  onUpdateItem: (field: keyof TaxonomyConcept, index: number, value: string) => void;
+  onUpdateItem: (
+    field: keyof TaxonomyConcept,
+    index: number,
+    value: string,
+  ) => void;
 }
 
-export const ConceptRelationshipsTab: React.FC<ConceptRelationshipsTabProps> = ({
+export const ConceptRelationshipsTab: React.FC<
+  ConceptRelationshipsTabProps
+> = ({
   editedConcept,
   availableConcepts,
   onUpdateField,
@@ -26,15 +32,21 @@ export const ConceptRelationshipsTab: React.FC<ConceptRelationshipsTabProps> = (
       <SelectField
         label="Broader Concept"
         items={[
-          {value: '', label: 'No parent concept', description: 'No parent concept'},
-          ...availableConcepts.map(c => ({
+          {
+            value: "",
+            label: "No parent concept",
+            description: "No parent concept",
+          },
+          ...availableConcepts.map((c) => ({
             value: c.id,
             label: c.prefLabel,
-            description: c.prefLabel
-          }))
+            description: c.prefLabel,
+          })),
         ]}
-        value={editedConcept.broader || ''}
-        onValueChange={(value) => onUpdateField("broader", value === '' ? null : value)}
+        value={editedConcept.broader || ""}
+        onValueChange={(value) =>
+          onUpdateField("broader", value === "" ? null : value)
+        }
       />
 
       <ArrayFieldEditor

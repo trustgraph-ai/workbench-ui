@@ -1,9 +1,5 @@
 import React from "react";
-import {
-  Box,
-  VStack,
-  Text,
-} from "@chakra-ui/react";
+import { Box, VStack, Text } from "@chakra-ui/react";
 import SelectField from "../common/SelectField";
 import { Taxonomy } from "../../state/taxonomies";
 
@@ -21,7 +17,9 @@ export const TaxonomyEmptyStates: React.FC<EmptyStatesProps> = ({
   if (type === "no-taxonomies") {
     return (
       <Box p={8} textAlign="center" color="fg.muted">
-        <Text mb={4}>No taxonomies available. Create one to get started.</Text>
+        <Text mb={4}>
+          No taxonomies available. Create one to get started.
+        </Text>
       </Box>
     );
   }
@@ -36,7 +34,7 @@ export const TaxonomyEmptyStates: React.FC<EmptyStatesProps> = ({
             items={(taxonomies || []).map(([id, taxonomy]) => ({
               value: id,
               label: taxonomy.metadata.name,
-              description: taxonomy.metadata.name
+              description: taxonomy.metadata.name,
             }))}
             value={[]}
             onValueChange={(values) => {
@@ -53,7 +51,10 @@ export const TaxonomyEmptyStates: React.FC<EmptyStatesProps> = ({
   if (type === "no-concept-selected") {
     return (
       <Box p={8} textAlign="center" color="fg.muted">
-        <Text>Select a concept from the tree to view details, or create a new concept.</Text>
+        <Text>
+          Select a concept from the tree to view details, or create a new
+          concept.
+        </Text>
       </Box>
     );
   }

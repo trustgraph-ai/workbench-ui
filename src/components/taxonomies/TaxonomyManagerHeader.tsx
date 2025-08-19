@@ -50,11 +50,12 @@ export const TaxonomyManagerHeader: React.FC<TaxonomyManagerHeaderProps> = ({
           </HStack>
           {selectedConcept && (
             <Text fontSize="sm" color="fg.muted">
-              {currentTaxonomy.metadata.name} → {conceptBreadcrumb.join(" → ")}
+              {currentTaxonomy.metadata.name} →{" "}
+              {conceptBreadcrumb.join(" → ")}
             </Text>
           )}
         </VStack>
-        
+
         <HStack>
           <Box w="250px">
             <SelectField
@@ -62,7 +63,7 @@ export const TaxonomyManagerHeader: React.FC<TaxonomyManagerHeaderProps> = ({
               items={taxonomies.map(([id, taxonomy]) => ({
                 value: id,
                 label: taxonomy.metadata.name,
-                description: taxonomy.metadata.name
+                description: taxonomy.metadata.name,
               }))}
               value={currentTaxonomyId ? [currentTaxonomyId] : []}
               onValueChange={(values) => {

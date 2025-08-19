@@ -139,9 +139,9 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
                 <SelectField
                   label="Format"
                   items={formatOptions}
-                  value={format}
+                  value={format ? [format] : []}
                   onValueChange={(x) => {
-                    setFormat(x);
+                    setFormat(Array.isArray(x) ? x[0] : x);
                   }}
                   contentRef={contentRef}
                 />

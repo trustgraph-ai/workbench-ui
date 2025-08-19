@@ -1,17 +1,15 @@
 import React, { useState } from "react";
-import {
-  Box,
-  Grid,
-  GridItem,
-  VStack,
-  Text,
-} from "@chakra-ui/react";
+import { Box, Grid, GridItem, VStack, Text } from "@chakra-ui/react";
 import { TaxonomyManagerHeader } from "./TaxonomyManagerHeader";
 import { ConceptDetailView } from "./ConceptDetailView";
 import { TaxonomyEmptyStates } from "./TaxonomyEmptyStates";
 import { SKOSDialog } from "./SKOSDialog";
 import { useNotification } from "../../state/notify";
-import { useTaxonomies, Taxonomy, TaxonomyConcept } from "../../state/taxonomies";
+import {
+  useTaxonomies,
+  Taxonomy,
+  TaxonomyConcept,
+} from "../../state/taxonomies";
 import { TaxonomyTree } from "./TaxonomyTree";
 import { ConceptEditor } from "./ConceptEditor";
 
@@ -24,14 +22,18 @@ export const TaxonomyManager: React.FC<TaxonomyManagerProps> = ({
   selectedTaxonomyId,
   onTaxonomySelect,
 }) => {
-  const { taxonomies, updateTaxonomy, createTaxonomy, isUpdatingTaxonomy } = useTaxonomies();
+  const { taxonomies, updateTaxonomy, createTaxonomy, isUpdatingTaxonomy } =
+    useTaxonomies();
   const notify = useNotification();
-  
+
   const [currentTaxonomyId, setCurrentTaxonomyId] = useState<string | null>(
-    selectedTaxonomyId || null
+    selectedTaxonomyId || null,
   );
-  const [selectedConceptId, setSelectedConceptId] = useState<string | null>(null);
-  const [editingConcept, setEditingConcept] = useState<TaxonomyConcept | null>(null);
+  const [selectedConceptId, setSelectedConceptId] = useState<string | null>(
+    null,
+  );
+  const [editingConcept, setEditingConcept] =
+    useState<TaxonomyConcept | null>(null);
   const [isCreatingConcept, setIsCreatingConcept] = useState(false);
   const [exportDialogOpen, setExportDialogOpen] = useState(false);
   const [importDialogOpen, setImportDialogOpen] = useState(false);
@@ -40,9 +42,10 @@ export const TaxonomyManager: React.FC<TaxonomyManagerProps> = ({
     ? taxonomies.find(([id]) => id === currentTaxonomyId)?.[1]
     : null;
 
-  const selectedConcept = selectedConceptId && currentTaxonomy
-    ? currentTaxonomy.concepts[selectedConceptId]
-    : null;
+  const selectedConcept =
+    selectedConceptId && currentTaxonomy
+      ? currentTaxonomy.concepts[selectedConceptId]
+      : null;
 
   const handleTaxonomyChange = (taxonomyId: string) => {
     setCurrentTaxonomyId(taxonomyId);
@@ -104,10 +107,21 @@ export const TaxonomyManager: React.FC<TaxonomyManagerProps> = ({
 
     // Update scheme's hasTopConcept if this is a top concept
     const updatedScheme = { ...currentTaxonomy.scheme };
-    if (concept.topConcept && !updatedScheme.hasTopConcept.includes(concept.id)) {
-      updatedScheme.hasTopConcept = [...updatedScheme.hasTopConcept, concept.id];
-    } else if (!concept.topConcept && updatedScheme.hasTopConcept.includes(concept.id)) {
-      updatedScheme.hasTopConcept = updatedScheme.hasTopConcept.filter(id => id !== concept.id);
+    if (
+      concept.topConcept &&
+      !updatedScheme.hasTopConcept.includes(concept.id)
+    ) {
+      updatedScheme.hasTopConcept = [
+        ...updatedScheme.hasTopConcept,
+        concept.id,
+      ];
+    } else if (
+      !concept.topConcept &&
+      updatedScheme.hasTopConcept.includes(concept.id)
+    ) {
+      updatedScheme.hasTopConcept = updatedScheme.hasTopConcept.filter(
+        (id) => id !== concept.id,
+      );
     }
 
     const updatedTaxonomy: Taxonomy = {
@@ -127,7 +141,9 @@ export const TaxonomyManager: React.FC<TaxonomyManagerProps> = ({
         setEditingConcept(null);
         setIsCreatingConcept(false);
         setSelectedConceptId(concept.id);
-        notify.success(isCreatingConcept ? "Concept created" : "Concept updated");
+        notify.success(
+          isCreatingConcept ? "Concept created" : "Concept updated",
+        );
       },
     });
   };
@@ -135,23 +151,32 @@ export const TaxonomyManager: React.FC<TaxonomyManagerProps> = ({
   const handleConceptDelete = (conceptId: string) => {
     if (!currentTaxonomy || !currentTaxonomyId) return;
 
-    if (window.confirm("Are you sure you want to delete this concept? This action cannot be undone.")) {
-      const { [conceptId]: deleted, ...remainingConcepts } = currentTaxonomy.concepts;
+    if (
+      window.confirm(
+        "Are you sure you want to delete this concept? This action cannot be undone.",
+      )
+    ) {
+      const { [conceptId]: deleted, ...remainingConcepts } =
+        currentTaxonomy.concepts;
 
       // Remove from parent's narrower list
-      Object.values(remainingConcepts).forEach(concept => {
+      Object.values(remainingConcepts).forEach((concept) => {
         if (concept.narrower?.includes(conceptId)) {
-          concept.narrower = concept.narrower.filter(id => id !== conceptId);
+          concept.narrower = concept.narrower.filter(
+            (id) => id !== conceptId,
+          );
         }
         if (concept.related?.includes(conceptId)) {
-          concept.related = concept.related.filter(id => id !== conceptId);
+          concept.related = concept.related.filter((id) => id !== conceptId);
         }
       });
 
       // Remove from scheme's hasTopConcept
       const updatedScheme = {
         ...currentTaxonomy.scheme,
-        hasTopConcept: currentTaxonomy.scheme.hasTopConcept.filter(id => id !== conceptId),
+        hasTopConcept: currentTaxonomy.scheme.hasTopConcept.filter(
+          (id) => id !== conceptId,
+        ),
       };
 
       const updatedTaxonomy: Taxonomy = {
@@ -178,27 +203,32 @@ export const TaxonomyManager: React.FC<TaxonomyManagerProps> = ({
 
   const handleConceptMove = (conceptId: string, newParentId?: string) => {
     // TODO: Implement drag-and-drop concept moving
-    notify.info("Drag-and-drop concept moving will be implemented in a future update");
+    notify.info(
+      "Drag-and-drop concept moving will be implemented in a future update",
+    );
   };
 
   const getConceptBreadcrumb = (conceptId: string): string[] => {
     if (!currentTaxonomy || !conceptId) return [];
-    
+
     const path: string[] = [];
     let currentId: string | null = conceptId;
-    
+
     while (currentId) {
       const concept = currentTaxonomy.concepts[currentId];
       if (!concept) break;
-      
+
       path.unshift(concept.prefLabel);
       currentId = concept.broader;
     }
-    
+
     return path;
   };
 
-  const handleImportTaxonomy = (importedTaxonomy: Taxonomy, taxonomyId: string) => {
+  const handleImportTaxonomy = (
+    importedTaxonomy: Taxonomy,
+    taxonomyId: string,
+  ) => {
     createTaxonomy({
       id: taxonomyId,
       taxonomy: importedTaxonomy,
@@ -207,7 +237,9 @@ export const TaxonomyManager: React.FC<TaxonomyManagerProps> = ({
         setSelectedConceptId(null);
         setEditingConcept(null);
         setIsCreatingConcept(false);
-        notify.success(`Taxonomy "${importedTaxonomy.metadata.name}" imported successfully`);
+        notify.success(
+          `Taxonomy "${importedTaxonomy.metadata.name}" imported successfully`,
+        );
       },
     });
   };
@@ -246,7 +278,9 @@ export const TaxonomyManager: React.FC<TaxonomyManagerProps> = ({
         currentTaxonomyId={currentTaxonomyId}
         selectedConcept={selectedConcept}
         taxonomies={taxonomies}
-        conceptBreadcrumb={selectedConcept ? getConceptBreadcrumb(selectedConcept.id) : []}
+        conceptBreadcrumb={
+          selectedConcept ? getConceptBreadcrumb(selectedConcept.id) : []
+        }
         onTaxonomyChange={handleTaxonomyChange}
         onConceptAdd={() => handleConceptAdd()}
         onImport={handleImportDialogOpen}

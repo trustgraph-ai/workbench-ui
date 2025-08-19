@@ -6,9 +6,9 @@ interface TaxonomyJsonPreviewTabProps {
   taxonomy: Taxonomy;
 }
 
-export const TaxonomyJsonPreviewTab: React.FC<TaxonomyJsonPreviewTabProps> = ({
-  taxonomy,
-}) => {
+export const TaxonomyJsonPreviewTab: React.FC<
+  TaxonomyJsonPreviewTabProps
+> = ({ taxonomy }) => {
   return (
     <Box
       as="pre"

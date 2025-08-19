@@ -48,21 +48,28 @@ export const TaxonomyTreeNode: React.FC<TaxonomyTreeNodeProps> = ({
   onMove,
 }) => {
   const { isOpen, onToggle } = useDisclosure({ defaultIsOpen: level < 2 });
-  
+
   const children = concept.narrower || [];
   const hasChildren = children.length > 0;
-  
+
   // Filter children based on search term
   const filteredChildren = useMemo(() => {
     if (!searchTerm) return children;
-    return children.filter(childId => {
+    return children.filter((childId) => {
       const childConcept = taxonomy.concepts[childId];
-      return childConcept?.prefLabel.toLowerCase().includes(searchTerm.toLowerCase()) ||
-             childConcept?.definition?.toLowerCase().includes(searchTerm.toLowerCase());
+      return (
+        childConcept?.prefLabel
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase()) ||
+        childConcept?.definition
+          ?.toLowerCase()
+          .includes(searchTerm.toLowerCase())
+      );
     });
   }, [children, searchTerm, taxonomy.concepts]);
 
-  const shouldShowNode = !searchTerm || 
+  const shouldShowNode =
+    !searchTerm ||
     concept.prefLabel.toLowerCase().includes(searchTerm.toLowerCase()) ||
     concept.definition?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     filteredChildren.length > 0;
@@ -92,13 +99,7 @@ export const TaxonomyTreeNode: React.FC<TaxonomyTreeNodeProps> = ({
           onClick={hasChildren ? onToggle : undefined}
           visibility={hasChildren ? "visible" : "hidden"}
         >
-          {hasChildren ? (
-            isOpen ? (
-              <ChevronDown />
-            ) : (
-              <ChevronRight />
-            )
-          ) : null}
+          {hasChildren ? isOpen ? <ChevronDown /> : <ChevronRight /> : null}
         </IconButton>
 
         {/* Concept content */}
@@ -106,7 +107,10 @@ export const TaxonomyTreeNode: React.FC<TaxonomyTreeNodeProps> = ({
           <HStack justify="space-between" align="center">
             <VStack align="start" gap={0} flex="1">
               <HStack>
-                <Text fontWeight={concept.topConcept ? "bold" : "medium"} fontSize="sm">
+                <Text
+                  fontWeight={concept.topConcept ? "bold" : "medium"}
+                  fontSize="sm"
+                >
                   {concept.prefLabel}
                 </Text>
                 {concept.topConcept && (
@@ -167,7 +171,7 @@ export const TaxonomyTreeNode: React.FC<TaxonomyTreeNodeProps> = ({
           {filteredChildren.map((childId) => {
             const childConcept = taxonomy.concepts[childId];
             if (!childConcept) return null;
-            
+
             return (
               <TaxonomyTreeNode
                 key={childId}

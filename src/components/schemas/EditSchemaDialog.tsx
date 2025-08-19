@@ -4,60 +4,18 @@ import {
   Portal,
   CloseButton,
   Button,
-  Field,
-  Input,
   VStack,
   HStack,
-  IconButton,
-  Select,
-  Checkbox,
-  Box,
-  Text,
   Separator,
-  Badge,
-  Flex,
 } from "@chakra-ui/react";
-import { Plus, Trash2 } from "lucide-react";
 import { useSchemas } from "../../state/schemas";
-import { Schema, SchemaField } from "../../model/schemas-table";
+import { Schema } from "../../model/schemas-table";
 import { validateSchema } from "../../utils/schema-validation";
-import SelectField from "../common/SelectField";
-import TextField from "../common/TextField";
-import TextAreaField from "../common/TextAreaField";
-
-// Type options moved outside component to prevent recreation on every render
-const typeOptions = [
-  {
-    value: "string",
-    label: "String",
-    description: "Text data of variable length",
-  },
-  {
-    value: "integer",
-    label: "Integer",
-    description: "Whole numbers (e.g., 1, 42, -10)",
-  },
-  {
-    value: "float",
-    label: "Float",
-    description: "Decimal numbers (e.g., 3.14, -2.5)",
-  },
-  {
-    value: "boolean",
-    label: "Boolean",
-    description: "True or false values",
-  },
-  {
-    value: "timestamp",
-    label: "Timestamp",
-    description: "Date and time values",
-  },
-  {
-    value: "enum",
-    label: "Enum",
-    description: "Predefined set of allowed values",
-  },
-];
+import { useSchemaForm } from "./useSchemaForm";
+import { SchemaValidationErrors } from "./SchemaValidationErrors";
+import { SchemaBasicInfo } from "./SchemaBasicInfo";
+import { SchemaFieldsList } from "./SchemaFieldsList";
+import { SchemaIndexesSection } from "./SchemaIndexesSection";
 
 interface EditSchemaDialogProps {
   isOpen: boolean;
@@ -75,127 +33,39 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
   initialSchema,
 }) => {
   const { createSchema, updateSchema, deleteSchema, schemas } = useSchemas();
+  const contentRef = useRef<HTMLDivElement>(null);
 
-  const [id, setId] = React.useState(schemaId || "");
-  const [name, setName] = React.useState(initialSchema?.name || "");
-  const [description, setDescription] = React.useState(
-    initialSchema?.description || "",
-  );
-  const [fields, setFields] = React.useState<SchemaField[]>(
-    initialSchema?.fields?.map((field) => ({
-      ...field,
-      id: field.id || crypto.randomUUID(),
-    })) || [
-      {
-        id: crypto.randomUUID(),
-        name: "",
-        type: "string",
-        primary_key: false,
-        required: false,
-      },
-    ],
-  );
-  const [indexes, setIndexes] = React.useState<string[]>(
-    initialSchema?.indexes || [],
-  );
-
-  // Reset state when props change (fix for editing wrong schema)
-  React.useEffect(() => {
-    if (isOpen) {
-      setId(schemaId || "");
-      setName(initialSchema?.name || "");
-      setDescription(initialSchema?.description || "");
-      setFields(
-        initialSchema?.fields?.map((field) => ({
-          ...field,
-          id: field.id || crypto.randomUUID(),
-        })) || [
-          {
-            id: crypto.randomUUID(),
-            name: "",
-            type: "string",
-            primary_key: false,
-            required: false,
-          },
-        ],
-      );
-      setIndexes(initialSchema?.indexes || []);
-    }
-  }, [isOpen, schemaId, initialSchema]);
-  const [newIndex, setNewIndex] = React.useState("");
-  const [errors, setErrors] = React.useState<string[]>([]);
-
-  const handleAddField = () => {
-    setFields([
-      ...fields,
-      {
-        id: crypto.randomUUID(),
-        name: "",
-        type: "string",
-        primary_key: false,
-        required: false,
-      },
-    ]);
-  };
-
-  const handleRemoveField = (index: number) => {
-    const newFields = fields.filter((_, i) => i !== index);
-    setFields(newFields);
-    // Remove field from indexes if it exists
-    const removedFieldName = fields[index].name;
-    setIndexes(indexes.filter((idx) => idx !== removedFieldName));
-  };
-
-  const handleFieldChange = (index: number, field: Partial<SchemaField>) => {
-    const newFields = [...fields];
-    newFields[index] = { ...newFields[index], ...field };
-
-    // Clear enum values if type is not enum
-    if (field.type && field.type !== "enum") {
-      delete newFields[index].enum;
-    }
-
-    setFields(newFields);
-  };
-
-  const handleAddIndex = () => {
-    if (newIndex && !indexes.includes(newIndex)) {
-      setIndexes([...indexes, newIndex]);
-      setNewIndex("");
-    }
-  };
-
-  const handleRemoveIndex = (index: string) => {
-    setIndexes(indexes.filter((idx) => idx !== index));
-  };
-
-  const handleAddEnumValue = (fieldIndex: number, value: string) => {
-    if (value.trim()) {
-      const field = fields[fieldIndex];
-      const enumValues = field.enum || [];
-      if (!enumValues.includes(value.trim())) {
-        handleFieldChange(fieldIndex, {
-          enum: [...enumValues, value.trim()],
-        });
-      }
-    }
-  };
-
-  const handleRemoveEnumValue = (fieldIndex: number, value: string) => {
-    const field = fields[fieldIndex];
-    const enumValues = field.enum || [];
-    handleFieldChange(fieldIndex, {
-      enum: enumValues.filter((v) => v !== value),
-    });
-  };
+  const {
+    id,
+    setId,
+    name,
+    setName,
+    description,
+    setDescription,
+    fields,
+    indexes,
+    newIndex,
+    setNewIndex,
+    errors,
+    setErrors,
+    handleAddField,
+    handleRemoveField,
+    handleFieldChange,
+    handleAddEnumValue,
+    handleRemoveEnumValue,
+    handleAddIndex,
+    handleRemoveIndex,
+    resetForm,
+    getSchema,
+  } = useSchemaForm({
+    isOpen,
+    mode,
+    schemaId,
+    initialSchema,
+  });
 
   const handleSave = async () => {
-    const schema: Schema = {
-      name,
-      description,
-      fields,
-      indexes: indexes.length > 0 ? indexes : undefined,
-    };
+    const schema = getSchema();
 
     // Validate schema
     const validationErrors = validateSchema(
@@ -215,20 +85,7 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
           schema,
           onSuccess: () => {
             onClose();
-            setId("");
-            setName("");
-            setDescription("");
-            setFields([
-              {
-                id: crypto.randomUUID(),
-                name: "",
-                type: "string",
-                primary_key: false,
-                required: false,
-              },
-            ]);
-            setIndexes([]);
-            setErrors([]);
+            resetForm();
           },
         });
       } else {
@@ -242,7 +99,6 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
         });
       }
     } catch (error) {
-      // Error handling is done in the mutation hooks
       console.error("Error saving schema:", error);
     }
   };
@@ -257,8 +113,6 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
       });
     }
   };
-
-  const contentRef = useRef<HTMLDivElement>(null);
 
   return (
     <Dialog.Root
@@ -281,298 +135,44 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
 
             <Dialog.Body overflowY="auto">
               <VStack gap={6} align="stretch">
-                {errors.length > 0 && (
-                  <Box
-                    p={4}
-                    borderWidth="1px"
-                    borderColor="red.500"
-                    borderRadius="md"
-                    bg="red.50"
-                  >
-                    <Text color="red.700" fontWeight="bold" mb={2}>
-                      Please fix the following errors:
-                    </Text>
-                    {errors.map((error, i) => (
-                      <Text key={i} color="red.600" fontSize="sm">
-                        • {error}
-                      </Text>
-                    ))}
-                  </Box>
-                )}
+                <SchemaValidationErrors errors={errors} />
 
-                {mode === "create" && (
-                  <Field.Root required>
-                    <Field.Label>
-                      Schema ID <Field.RequiredIndicator />
-                    </Field.Label>
-                    <Input
-                      value={id}
-                      onChange={(e) => setId(e.target.value)}
-                      placeholder="e.g., customer_records"
-                    />
-                  </Field.Root>
-                )}
-
-                <TextField
-                  label="Name"
-                  value={name}
-                  onValueChange={setName}
-                  placeholder="e.g., Customer Records"
-                  required
-                />
-
-                <TextAreaField
-                  label="Description"
-                  value={description}
-                  onValueChange={setDescription}
-                  placeholder="Describe the purpose of this schema"
-                  required
+                <SchemaBasicInfo
+                  mode={mode}
+                  id={id}
+                  name={name}
+                  description={description}
+                  onIdChange={setId}
+                  onNameChange={setName}
+                  onDescriptionChange={setDescription}
                 />
 
                 <Separator />
 
-                <Box>
-                  <HStack justify="space-between" mb={4}>
-                    <Text fontSize="lg" fontWeight="bold">
-                      Fields
-                    </Text>
-                    <Button
-                      size="sm"
-                      colorPalette="primary"
-                      onClick={handleAddField}
-                    >
-                      <Plus size={16} />
-                      Add Field
-                    </Button>
-                  </HStack>
-
-                  <VStack gap={4} align="stretch">
-                    {fields.map((field, index) => (
-                      <Box
-                        key={field.id}
-                        p={4}
-                        borderWidth="1px"
-                        borderRadius="md"
-                      >
-                        <HStack gap={4} mb={3}>
-                          <Field.Root required flex={1}>
-                            <Field.Label>
-                              Field Name <Field.RequiredIndicator />
-                            </Field.Label>
-                            <Input
-                              value={field.name}
-                              onChange={(e) =>
-                                handleFieldChange(index, {
-                                  name: e.target.value,
-                                })
-                              }
-                              placeholder="e.g., customer_id"
-                            />
-                          </Field.Root>
-
-                          <Box flex={1}>
-                            <SelectField
-                              label="Type"
-                              value={field.type ? [field.type] : []}
-                              onValueChange={(value) => {
-                                // Handle both array and string values from SelectField
-                                const typeValue = Array.isArray(value)
-                                  ? value[0]
-                                  : value;
-                                handleFieldChange(index, {
-                                  type: typeValue as SchemaField["type"],
-                                });
-                              }}
-                              items={typeOptions}
-                              contentRef={contentRef}
-                            />
-                          </Box>
-
-                          <IconButton
-                            aria-label="Remove field"
-                            size="sm"
-                            colorPalette="red"
-                            variant="ghost"
-                            onClick={() => handleRemoveField(index)}
-                            disabled={fields.length === 1}
-                          >
-                            <Trash2 size={16} />
-                          </IconButton>
-                        </HStack>
-
-                        <HStack gap={4}>
-                          <Checkbox.Root
-                            checked={field.primary_key}
-                            onCheckedChange={(details) =>
-                              handleFieldChange(index, {
-                                primary_key: details.checked,
-                              })
-                            }
-                          >
-                            <Checkbox.HiddenInput />
-                            <Checkbox.Control>
-                              <Checkbox.Indicator />
-                            </Checkbox.Control>
-                            <Checkbox.Label>Primary Key</Checkbox.Label>
-                          </Checkbox.Root>
-
-                          <Checkbox.Root
-                            checked={field.required}
-                            onCheckedChange={(details) =>
-                              handleFieldChange(index, {
-                                required: details.checked,
-                              })
-                            }
-                          >
-                            <Checkbox.HiddenInput />
-                            <Checkbox.Control>
-                              <Checkbox.Indicator />
-                            </Checkbox.Control>
-                            <Checkbox.Label>Required</Checkbox.Label>
-                          </Checkbox.Root>
-                        </HStack>
-
-                        {field.type === "enum" && (
-                          <Box mt={3}>
-                            <Text>Enum Values</Text>
-                            <HStack mb={2}>
-                              <Input
-                                placeholder="Add enum value"
-                                onKeyPress={(e) => {
-                                  if (e.key === "Enter") {
-                                    handleAddEnumValue(
-                                      index,
-                                      (e.target as HTMLInputElement).value,
-                                    );
-                                    (e.target as HTMLInputElement).value = "";
-                                  }
-                                }}
-                              />
-                              <Button
-                                size="sm"
-                                onClick={() => {
-                                  const input = document.querySelector(
-                                    `input[placeholder="Add enum value"]`,
-                                  ) as HTMLInputElement;
-                                  if (input) {
-                                    handleAddEnumValue(index, input.value);
-                                    input.value = "";
-                                  }
-                                }}
-                                colorPalette="primary"
-                              >
-                                Add
-                              </Button>
-                            </HStack>
-                            <Flex wrap="wrap" gap={2}>
-                              {(field.enum || []).map((value) => (
-                                <Badge
-                                  key={value}
-                                  colorPalette="accent"
-                                  borderRadius="full"
-                                  px={3}
-                                  py={1}
-                                  display="flex"
-                                  alignItems="center"
-                                  gap={2}
-                                >
-                                  {value}
-                                  <CloseButton
-                                    size="sm"
-                                    onClick={() =>
-                                      handleRemoveEnumValue(index, value)
-                                    }
-                                  />
-                                </Badge>
-                              ))}
-                            </Flex>
-                          </Box>
-                        )}
-                      </Box>
-                    ))}
-                  </VStack>
-                </Box>
+                <SchemaFieldsList
+                  fields={fields}
+                  onFieldChange={handleFieldChange}
+                  onAddField={handleAddField}
+                  onRemoveField={handleRemoveField}
+                  onAddEnumValue={handleAddEnumValue}
+                  onRemoveEnumValue={handleRemoveEnumValue}
+                  contentRef={contentRef}
+                />
 
                 <Separator />
 
-                <Box>
-                  <Text fontSize="lg" fontWeight="bold" mb={4}>
-                    Indexes
-                  </Text>
-
-                  {(() => {
-                    const availableFields = fields.filter(
-                      (f) =>
-                        f.name &&
-                        f.name.trim() !== "" &&
-                        !f.primary_key &&
-                        !indexes.includes(f.name),
-                    );
-
-                    if (availableFields.length === 0) {
-                      return (
-                        <Text fontSize="sm" color="fg.muted">
-                          No fields available for indexing. Add field names
-                          first.
-                        </Text>
-                      );
-                    }
-
-                    return (
-                      <HStack mb={2}>
-                        <Box flex={1}>
-                          <SelectField
-                            label=""
-                            value={newIndex ? [newIndex] : []}
-                            onValueChange={(value) => {
-                              const indexValue = Array.isArray(value)
-                                ? value[0]
-                                : value;
-                              setNewIndex(indexValue || "");
-                            }}
-                            items={availableFields.map((field) => ({
-                              value: field.name,
-                              label: field.name,
-                              description: field.name,
-                            }))}
-                            contentRef={contentRef}
-                          />
-                        </Box>
-                        <Button
-                          onClick={handleAddIndex}
-                          colorPalette="primary"
-                          disabled={!newIndex}
-                          mt={8}
-                        >
-                          Add Index
-                        </Button>
-                      </HStack>
-                    );
-                  })()}
-
-                  <Flex wrap="wrap" gap={2}>
-                    {indexes.map((index) => (
-                      <Badge
-                        key={index}
-                        colorPalette="green"
-                        borderRadius="full"
-                        px={3}
-                        py={1}
-                        display="flex"
-                        alignItems="center"
-                        gap={2}
-                      >
-                        {index}
-                        <CloseButton
-                          size="sm"
-                          onClick={() => handleRemoveIndex(index)}
-                        />
-                      </Badge>
-                    ))}
-                  </Flex>
-                </Box>
+                <SchemaIndexesSection
+                  indexes={indexes}
+                  fields={fields}
+                  newIndex={newIndex}
+                  onNewIndexChange={setNewIndex}
+                  onAddIndex={handleAddIndex}
+                  onRemoveIndex={handleRemoveIndex}
+                  contentRef={contentRef}
+                />
               </VStack>
             </Dialog.Body>
+
             <Dialog.Footer>
               <HStack gap={3}>
                 {mode === "edit" && (
@@ -592,6 +192,7 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
                 </Button>
               </HStack>
             </Dialog.Footer>
+
             <Dialog.CloseTrigger asChild>
               <CloseButton size="sm" />
             </Dialog.CloseTrigger>

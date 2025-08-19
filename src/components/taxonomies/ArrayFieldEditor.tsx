@@ -21,7 +21,11 @@ interface ArrayFieldEditorProps {
   availableConcepts: Array<{ id: string; prefLabel: string }>;
   onAddItem: (field: keyof TaxonomyConcept, value: string) => void;
   onRemoveItem: (field: keyof TaxonomyConcept, index: number) => void;
-  onUpdateItem: (field: keyof TaxonomyConcept, index: number, value: string) => void;
+  onUpdateItem: (
+    field: keyof TaxonomyConcept,
+    index: number,
+    value: string,
+  ) => void;
 }
 
 export const ArrayFieldEditor: React.FC<ArrayFieldEditorProps> = ({
@@ -51,7 +55,8 @@ export const ArrayFieldEditor: React.FC<ArrayFieldEditorProps> = ({
       <Field.Root>
         <Field.Label>{label}</Field.Label>
         <Text fontSize="sm" color="fg.muted">
-          No other concepts available. Create more concepts in this taxonomy to establish relationships.
+          No other concepts available. Create more concepts in this taxonomy
+          to establish relationships.
         </Text>
       </Field.Root>
     );
@@ -68,14 +73,18 @@ export const ArrayFieldEditor: React.FC<ArrayFieldEditorProps> = ({
                 <SelectField
                   label="Concept"
                   items={[
-                    {value: '', label: 'Select concept...', description: 'Select concept...'},
-                    ...availableConcepts.map(c => ({
+                    {
+                      value: "",
+                      label: "Select concept...",
+                      description: "Select concept...",
+                    },
+                    ...availableConcepts.map((c) => ({
                       value: c.id,
                       label: c.prefLabel,
-                      description: c.prefLabel
-                    }))
+                      description: c.prefLabel,
+                    })),
                   ]}
-                  value={item || ''}
+                  value={item || ""}
                   onValueChange={(value) => onUpdateItem(field, index, value)}
                 />
               </Box>
@@ -97,23 +106,27 @@ export const ArrayFieldEditor: React.FC<ArrayFieldEditorProps> = ({
             </IconButton>
           </HStack>
         ))}
-        
+
         {/* Only show Add section if there are concepts available */}
-        {(!isConceptSelect || availableConcepts.filter(c => !items.includes(c.id)).length > 0) && (
+        {(!isConceptSelect ||
+          availableConcepts.filter((c) => !items.includes(c.id)).length >
+            0) && (
           <HStack>
             {isConceptSelect ? (
               <Box flex="1" minW="300px">
                 <SelectField
                   label="Add Concept"
                   items={availableConcepts
-                    .filter(c => !items.includes(c.id))
-                    .map(c => ({
+                    .filter((c) => !items.includes(c.id))
+                    .map((c) => ({
                       value: c.id,
                       label: c.prefLabel,
-                      description: c.prefLabel
+                      description: c.prefLabel,
                     }))}
                   value={newItem ? [newItem] : []}
-                  onValueChange={(values) => setNewItem(values.length > 0 ? values[0] : "")}
+                  onValueChange={(values) =>
+                    setNewItem(values.length > 0 ? values[0] : "")
+                  }
                 />
               </Box>
             ) : (
@@ -130,7 +143,12 @@ export const ArrayFieldEditor: React.FC<ArrayFieldEditorProps> = ({
               variant="outline"
               colorPalette="primary"
               onClick={handleAdd}
-              disabled={!String(newItem || "").trim() || (isConceptSelect ? items.includes(String(newItem || "")) : false)}
+              disabled={
+                !String(newItem || "").trim() ||
+                (isConceptSelect
+                  ? items.includes(String(newItem || ""))
+                  : false)
+              }
             >
               <Plus />
             </IconButton>
