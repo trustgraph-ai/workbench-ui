@@ -27,8 +27,8 @@ vi.mock("./NodePropertiesTable", () => ({
   default: ({ properties }: any) => (
     <div data-testid="node-properties-table">
       {properties?.map((prop: any, index: number) => (
-        <div key={index} data-testid={`property-${prop.key}`}>
-          {prop.key}: {prop.value}
+        <div key={index} data-testid={`property-${prop.predicate.uri}`}>
+          {prop.predicate.label}: {prop.value}
         </div>
       ))}
     </div>
@@ -79,9 +79,9 @@ const mockNodeDetails = {
     { uri: "part-of", label: "Part Of", count: 2 },
   ],
   propertiesWithLabels: [
-    { key: "type", value: "Database", label: "Type" },
-    { key: "status", value: "active", label: "Status" },
-    { key: "created", value: "2024-01-01", label: "Created" },
+    { predicate: { uri: "type", label: "Type" }, value: "Database" },
+    { predicate: { uri: "status", label: "Status" }, value: "active" },
+    { predicate: { uri: "created", label: "Created" }, value: "2024-01-01" },
   ],
   isLoading: false,
 };
