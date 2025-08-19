@@ -5,26 +5,30 @@ import BasicTable from "../BasicTable";
 // Mock Chakra UI components
 vi.mock("@chakra-ui/react", () => ({
   Table: {
-    Root: ({ children }: any) => (
+    Root: ({ children }: React.PropsWithChildren) => (
       <table data-testid="table-root">{children}</table>
     ),
-    Header: ({ children }: any) => (
+    Header: ({ children }: React.PropsWithChildren) => (
       <thead data-testid="table-header">{children}</thead>
     ),
-    Body: ({ children }: any) => (
+    Body: ({ children }: React.PropsWithChildren) => (
       <tbody data-testid="table-body">{children}</tbody>
     ),
-    Row: ({ children }: any) => <tr data-testid="table-row">{children}</tr>,
-    ColumnHeader: ({ children }: any) => (
+    Row: ({ children }: React.PropsWithChildren) => (
+      <tr data-testid="table-row">{children}</tr>
+    ),
+    ColumnHeader: ({ children }: React.PropsWithChildren) => (
       <th data-testid="table-column-header">{children}</th>
     ),
-    Cell: ({ children }: any) => <td data-testid="table-cell">{children}</td>,
+    Cell: ({ children }: React.PropsWithChildren) => (
+      <td data-testid="table-cell">{children}</td>
+    ),
   },
 }));
 
 // Mock TanStack React Table
 vi.mock("@tanstack/react-table", () => ({
-  flexRender: vi.fn((content, context) => content),
+  flexRender: vi.fn((content) => content),
 }));
 
 describe("BasicTable", () => {

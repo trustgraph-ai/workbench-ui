@@ -1,8 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import {
-  ServiceCallMulti,
-  SOCKET_RECONNECTION_TIMEOUT,
-} from "../service-call-multi";
+import { ServiceCallMulti } from "../service-call-multi";
 
 // Mock WebSocket constants
 vi.stubGlobal("WebSocket", {
@@ -54,7 +51,7 @@ describe("ServiceCallMulti", () => {
       mockError,
       5000, // 5 second timeout
       3, // 3 retries
-      mockSocket as any,
+      mockSocket as WebSocket,
       mockReceiver,
     );
   });

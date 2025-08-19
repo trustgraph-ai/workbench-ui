@@ -4,7 +4,7 @@
  */
 
 import React from "react";
-import { render, screen, fireEvent, waitFor } from "../../../test/test-utils";
+import { render, screen } from "../../../test/test-utils";
 import userEvent from "@testing-library/user-event";
 import { describe, test, expect, vi, beforeEach } from "vitest";
 import { SchemaFieldEditor } from "../SchemaFieldEditor";
@@ -13,7 +13,17 @@ import { SchemaField } from "../../../model/schemas-table";
 // Mock dependencies
 vi.mock("../../common/SelectField", () => ({
   __esModule: true,
-  default: ({ label, value, onValueChange, items, contentRef }: any) => (
+  default: ({
+    label,
+    value,
+    onValueChange,
+    items,
+  }: {
+    label: string;
+    value: string | string[];
+    onValueChange: (value: string) => void;
+    items: { value: string; label: string }[];
+  }) => (
     <div data-testid="type-select-field">
       <label>{label}</label>
       <select
@@ -22,7 +32,7 @@ vi.mock("../../common/SelectField", () => ({
         onChange={(e) => onValueChange(e.target.value)}
       >
         <option value="">Select type</option>
-        {items.map((item: any) => (
+        {items.map((item: { value: string; label: string }) => (
           <option key={item.value} value={item.value}>
             {item.label}
           </option>
@@ -33,10 +43,18 @@ vi.mock("../../common/SelectField", () => ({
 }));
 
 vi.mock("../EnumValueManager", () => ({
-  EnumValueManager: ({ values, onAddValue, onRemoveValue }: any) => (
+  EnumValueManager: ({
+    values,
+    onAddValue,
+    onRemoveValue,
+  }: {
+    values: string[];
+    onAddValue: (value: string) => void;
+    onRemoveValue: (value: string) => void;
+  }) => (
     <div data-testid="enum-value-manager">
       <span data-testid="enum-values-count">{values.length}</span>
-      {values.map((value: string, index: number) => (
+      {values.map((value: string) => (
         <div key={value} data-testid={`enum-value-${value}`}>
           <span>{value}</span>
           <button
@@ -67,7 +85,11 @@ vi.mock("../../model/schemaTypes", () => ({
     { value: "integer", label: "Integer", description: "Whole numbers" },
     { value: "float", label: "Float", description: "Decimal numbers" },
     { value: "boolean", label: "Boolean", description: "True/false values" },
-    { value: "timestamp", label: "Timestamp", description: "Date/time values" },
+    {
+      value: "timestamp",
+      label: "Timestamp",
+      description: "Date/time values",
+    },
     { value: "enum", label: "Enum", description: "Predefined values" },
   ],
 }));
@@ -112,7 +134,7 @@ describe("SchemaFieldEditor", () => {
         onRemoveEnumValue={mockOnRemoveEnumValue}
         canRemove={true}
         contentRef={mockContentRef}
-      />
+      />,
     );
 
     expect(screen.getByDisplayValue("customer_id")).toBeInTheDocument();
@@ -133,7 +155,7 @@ describe("SchemaFieldEditor", () => {
         onRemoveEnumValue={mockOnRemoveEnumValue}
         canRemove={true}
         contentRef={mockContentRef}
-      />
+      />,
     );
 
     const nameInput = screen.getByDisplayValue("customer_id");
@@ -142,9 +164,12 @@ describe("SchemaFieldEditor", () => {
 
     // Check that onChange was called with name updates (user typing triggers multiple calls)
     expect(mockOnFieldChange).toHaveBeenCalled();
-    expect(mockOnFieldChange).toHaveBeenCalledWith(0, expect.objectContaining({
-      name: expect.any(String)
-    }));
+    expect(mockOnFieldChange).toHaveBeenCalledWith(
+      0,
+      expect.objectContaining({
+        name: expect.any(String),
+      }),
+    );
   });
 
   test("updates field type", async () => {
@@ -160,7 +185,7 @@ describe("SchemaFieldEditor", () => {
         onRemoveEnumValue={mockOnRemoveEnumValue}
         canRemove={true}
         contentRef={mockContentRef}
-      />
+      />,
     );
 
     const typeSelect = screen.getByTestId("type-select");
@@ -182,7 +207,7 @@ describe("SchemaFieldEditor", () => {
         onRemoveEnumValue={mockOnRemoveEnumValue}
         canRemove={true}
         contentRef={mockContentRef}
-      />
+      />,
     );
 
     const primaryKeyCheckbox = screen.getByLabelText("Primary Key");
@@ -204,7 +229,7 @@ describe("SchemaFieldEditor", () => {
         onRemoveEnumValue={mockOnRemoveEnumValue}
         canRemove={true}
         contentRef={mockContentRef}
-      />
+      />,
     );
 
     const requiredCheckbox = screen.getByLabelText("Required");
@@ -226,7 +251,7 @@ describe("SchemaFieldEditor", () => {
         onRemoveEnumValue={mockOnRemoveEnumValue}
         canRemove={true}
         contentRef={mockContentRef}
-      />
+      />,
     );
 
     const removeButton = screen.getByLabelText("Remove field");
@@ -246,7 +271,7 @@ describe("SchemaFieldEditor", () => {
         onRemoveEnumValue={mockOnRemoveEnumValue}
         canRemove={false}
         contentRef={mockContentRef}
-      />
+      />,
     );
 
     const removeButton = screen.getByLabelText("Remove field");
@@ -264,7 +289,7 @@ describe("SchemaFieldEditor", () => {
         onRemoveEnumValue={mockOnRemoveEnumValue}
         canRemove={true}
         contentRef={mockContentRef}
-      />
+      />,
     );
 
     expect(screen.getByTestId("enum-value-manager")).toBeInTheDocument();
@@ -283,10 +308,12 @@ describe("SchemaFieldEditor", () => {
         onRemoveEnumValue={mockOnRemoveEnumValue}
         canRemove={true}
         contentRef={mockContentRef}
-      />
+      />,
     );
 
-    expect(screen.queryByTestId("enum-value-manager")).not.toBeInTheDocument();
+    expect(
+      screen.queryByTestId("enum-value-manager"),
+    ).not.toBeInTheDocument();
   });
 
   test("adds enum values", async () => {
@@ -302,7 +329,7 @@ describe("SchemaFieldEditor", () => {
         onRemoveEnumValue={mockOnRemoveEnumValue}
         canRemove={true}
         contentRef={mockContentRef}
-      />
+      />,
     );
 
     const enumInput = screen.getByTestId("enum-input");
@@ -325,7 +352,7 @@ describe("SchemaFieldEditor", () => {
         onRemoveEnumValue={mockOnRemoveEnumValue}
         canRemove={true}
         contentRef={mockContentRef}
-      />
+      />,
     );
 
     const removeButton = screen.getByTestId("remove-enum-active");
@@ -335,7 +362,7 @@ describe("SchemaFieldEditor", () => {
   });
 
   test("handles empty type selection correctly", () => {
-    const fieldWithoutType = { ...mockField, type: undefined as any };
+    const fieldWithoutType = { ...mockField, type: undefined as undefined };
 
     render(
       <SchemaFieldEditor
@@ -347,7 +374,7 @@ describe("SchemaFieldEditor", () => {
         onRemoveEnumValue={mockOnRemoveEnumValue}
         canRemove={true}
         contentRef={mockContentRef}
-      />
+      />,
     );
 
     const typeSelect = screen.getByTestId("type-select");
@@ -367,7 +394,7 @@ describe("SchemaFieldEditor", () => {
         onRemoveEnumValue={mockOnRemoveEnumValue}
         canRemove={true}
         contentRef={mockContentRef}
-      />
+      />,
     );
 
     const typeSelect = screen.getByTestId("type-select");
@@ -387,7 +414,7 @@ describe("SchemaFieldEditor", () => {
         onRemoveEnumValue={mockOnRemoveEnumValue}
         canRemove={true}
         contentRef={mockContentRef}
-      />
+      />,
     );
 
     expect(screen.getByText("Field Name")).toBeInTheDocument();
@@ -405,7 +432,7 @@ describe("SchemaFieldEditor", () => {
         onRemoveEnumValue={mockOnRemoveEnumValue}
         canRemove={true}
         contentRef={mockContentRef}
-      />
+      />,
     );
 
     // Verify the component renders the expected elements
@@ -426,7 +453,7 @@ describe("SchemaFieldEditor", () => {
         onRemoveEnumValue={mockOnRemoveEnumValue}
         canRemove={true}
         contentRef={mockContentRef}
-      />
+      />,
     );
 
     // Verify SelectField is rendered with correct structure
@@ -448,14 +475,21 @@ describe("SchemaFieldEditor", () => {
         onRemoveEnumValue={mockOnRemoveEnumValue}
         canRemove={true}
         contentRef={mockContentRef}
-      />
+      />,
     );
 
     const typeSelect = screen.getByTestId("type-select");
-    
+
     // Test each type option
-    const types = ["string", "integer", "float", "boolean", "timestamp", "enum"];
-    
+    const types = [
+      "string",
+      "integer",
+      "float",
+      "boolean",
+      "timestamp",
+      "enum",
+    ];
+
     for (const type of types) {
       await user.selectOptions(typeSelect, type);
       expect(mockOnFieldChange).toHaveBeenCalledWith(0, { type });

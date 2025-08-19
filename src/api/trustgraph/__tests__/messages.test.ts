@@ -13,7 +13,6 @@ import type {
   GraphEmbeddingsQueryRequest,
   GraphEmbeddingsQueryResponse,
   TriplesQueryRequest,
-  TriplesQueryResponse,
   LoadDocumentRequest,
   LoadTextRequest,
   LibraryRequest,
@@ -74,12 +73,28 @@ describe("Message Types", () => {
   });
 
   describe("GraphRagRequest", () => {
-    it("should have correct structure", () => {
+    it("should have correct structure with required query", () => {
       const request: GraphRagRequest = {
         query: "What is the capital of France?",
       };
 
       expect(request.query).toBe("What is the capital of France?");
+    });
+
+    it("should have correct structure with optional parameters", () => {
+      const request: GraphRagRequest = {
+        query: "What is the capital of France?",
+        entityLimit: 100,
+        tripleLimit: 50,
+        maxSubgraphSize: 2000,
+        pathLength: 3,
+      };
+
+      expect(request.query).toBe("What is the capital of France?");
+      expect(request.entityLimit).toBe(100);
+      expect(request.tripleLimit).toBe(50);
+      expect(request.maxSubgraphSize).toBe(2000);
+      expect(request.pathLength).toBe(3);
     });
   });
 

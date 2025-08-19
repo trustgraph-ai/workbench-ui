@@ -12,10 +12,9 @@ interface UseSchemaFormProps {
 
 export const useSchemaForm = ({
   isOpen,
-  mode,
   schemaId,
   initialSchema,
-}: UseSchemaFormProps) => {
+}: Omit<UseSchemaFormProps, "mode">) => {
   const [id, setId] = useState(schemaId || "");
   const [name, setName] = useState(initialSchema?.name || "");
   const [description, setDescription] = useState(

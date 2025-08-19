@@ -12,6 +12,7 @@ import {
 } from "@chakra-ui/react";
 
 import { NavLink as ReactRouterNavLink } from "react-router";
+import { useSettings } from "../state/settings";
 
 const ChakraNavLink = chakra(ReactRouterNavLink);
 
@@ -33,6 +34,7 @@ import {
   MessageCircleCode,
   Database,
   Network,
+  Settings,
 } from "lucide-react";
 
 interface NavItemProps {
@@ -66,6 +68,8 @@ const NavItem: React.FC<NavItemProps> = ({ to, icon, label }) => {
 };
 
 const Sidebar = () => {
+  const { settings } = useSettings();
+
   return (
     <Box
       bg="colors.background"
@@ -118,13 +122,26 @@ const Sidebar = () => {
 */}
         <NavItem to="/flows" icon={Workflow} label="Flows" />
         <NavItem to="/kc" icon={BrainCircuit} label="Knowledge Cores" />
-        <NavItem to="/procs" icon={CircleArrowRight} label="Submissions" />
-        <NavItem to="/tokencost" icon={HandCoins} label="Token Cost" />
+        {settings.featureSwitches.submissions && (
+          <NavItem to="/procs" icon={CircleArrowRight} label="Submissions" />
+        )}
+        {settings.featureSwitches.tokenCost && (
+          <NavItem to="/tokencost" icon={HandCoins} label="Token Cost" />
+        )}
         <NavItem to="/prompts" icon={MessageCircleCode} label="Prompts" />
-        <NavItem to="/schemas" icon={Database} label="Schemas" />
-        <NavItem to="/taxonomies" icon={Network} label="Taxonomies" />
-        <NavItem to="/agents" icon={Hammer} label="Agent Tools" />
-        <NavItem to="/mcp-tools" icon={Plug} label="MCP Tools" />
+        {settings.featureSwitches.schemas && (
+          <NavItem to="/schemas" icon={Database} label="Schemas" />
+        )}
+        {settings.featureSwitches.taxonomyEditor && (
+          <NavItem to="/taxonomies" icon={Network} label="Taxonomies" />
+        )}
+        {settings.featureSwitches.agentTools && (
+          <NavItem to="/agents" icon={Hammer} label="Agent Tools" />
+        )}
+        {settings.featureSwitches.mcpTools && (
+          <NavItem to="/mcp-tools" icon={Plug} label="MCP Tools" />
+        )}
+        <NavItem to="/settings" icon={Settings} label="Settings" />
       </VStack>
     </Box>
   );

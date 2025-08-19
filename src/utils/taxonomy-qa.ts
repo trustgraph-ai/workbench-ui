@@ -5,7 +5,7 @@
  * and enhancing taxonomy quality.
  */
 
-import { Taxonomy, TaxonomyConcept } from "../state/taxonomies";
+import { Taxonomy } from "../state/taxonomies";
 import { validateTaxonomy, ValidationError } from "./skos-validation";
 
 export interface QAFix {
@@ -13,8 +13,8 @@ export interface QAFix {
   description: string;
   conceptId?: string;
   field?: string;
-  oldValue?: any;
-  newValue?: any;
+  oldValue?: unknown;
+  newValue?: unknown;
 }
 
 export interface QAResult {
@@ -27,7 +27,7 @@ export class TaxonomyQA {
   /**
    * Auto-fix common taxonomy issues
    */
-  static autoFix(taxonomy: Taxonomy, issueTypes?: string[]): QAResult {
+  static autoFix(taxonomy: Taxonomy): QAResult {
     let updatedTaxonomy = { ...taxonomy };
     const fixes: QAFix[] = [];
 

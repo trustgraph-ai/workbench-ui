@@ -10,20 +10,10 @@ import {
   Tabs,
   Box,
   Badge,
-  Alert,
   Separator,
   IconButton,
-  Code,
 } from "@chakra-ui/react";
-import {
-  Download,
-  Upload,
-  Copy,
-  Check,
-  AlertTriangle,
-  Info,
-  X,
-} from "lucide-react";
+import { Download, Upload, Copy, Check } from "lucide-react";
 import { useNotification } from "../../state/notify";
 import { Taxonomy } from "../../state/taxonomies";
 import { serializeToSKOS, parseFromSKOS } from "../../utils/skos";
@@ -205,7 +195,7 @@ export const SKOSDialog: React.FC<SKOSDialogProps> = ({
     if (open && mode === "export" && taxonomy) {
       handleExport();
     }
-  }, [open, mode, taxonomy]);
+  }, [open, mode, taxonomy, handleExport]);
 
   React.useEffect(() => {
     // Reset state when dialog opens

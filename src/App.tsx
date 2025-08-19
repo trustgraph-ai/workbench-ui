@@ -22,6 +22,7 @@ import ToolsPage from "./pages/ToolsPage";
 import McpToolsPage from "./pages/McpToolsPage";
 import { SchemasPage } from "./pages/SchemasPage";
 import TaxonomiesPage from "./pages/TaxonomiesPage";
+import SettingsPage from "./pages/SettingsPage";
 
 import CenterSpinner from "./components/common/CenterSpinner";
 import Progress from "./components/common/Progress";
@@ -104,6 +105,7 @@ const App = () => {
               <Route path="/taxonomies" element={<TaxonomiesPage />} />
               <Route path="/agents" element={<ToolsPage />} />
               <Route path="/mcp-tools" element={<McpToolsPage />} />
+              <Route path="/settings" element={<SettingsPage />} />
             </Routes>
           </Layout>
         </Router>

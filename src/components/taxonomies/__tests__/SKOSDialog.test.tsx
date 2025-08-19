@@ -4,8 +4,7 @@
  */
 
 import React from "react";
-import { render, screen, fireEvent, waitFor } from "../../../test/test-utils";
-import userEvent from "@testing-library/user-event";
+import { render, screen, waitFor } from "../../../test/test-utils";
 import { describe, test, expect, vi, beforeEach } from "vitest";
 import { SKOSDialog } from "../SKOSDialog";
 import { Taxonomy } from "../../../state/taxonomies";
@@ -43,17 +42,17 @@ vi.mock("../../../utils/export-formats", () => ({
     },
     "skos-turtle": {
       name: "SKOS Turtle",
-      extension: "ttl", 
+      extension: "ttl",
       mimeType: "text/turtle",
       description: "SKOS in Turtle format",
     },
-    "json": {
+    json: {
       name: "JSON",
       extension: "json",
-      mimeType: "application/json", 
+      mimeType: "application/json",
       description: "Native taxonomy JSON format",
     },
-    "csv": {
+    csv: {
       name: "CSV",
       extension: "csv",
       mimeType: "text/csv",
@@ -62,8 +61,16 @@ vi.mock("../../../utils/export-formats", () => ({
   },
 }));
 
+interface ValidationResultsProps {
+  validation: {
+    errors: Array<{ type: string; code: string; message: string }>;
+    warnings: Array<{ type: string; code: string; message: string }>;
+    isValid: boolean;
+  } | null;
+}
+
 vi.mock("../ValidationResults", () => ({
-  ValidationResults: ({ validation }: any) => (
+  ValidationResults: ({ validation }: ValidationResultsProps) => (
     <div data-testid="validation-results">
       {validation ? (
         <div>
@@ -78,9 +85,16 @@ vi.mock("../ValidationResults", () => ({
   ),
 }));
 
+interface SelectFieldProps {
+  label: string;
+  items: Array<{ value: string; label: string }>;
+  value: string;
+  onValueChange: (value: string) => void;
+}
+
 vi.mock("../common/SelectField", () => ({
   __esModule: true,
-  default: ({ label, items, value, onValueChange }: any) => (
+  default: ({ label, items, value, onValueChange }: SelectFieldProps) => (
     <div data-testid="format-select">
       <label htmlFor="format-select-input">{label}</label>
       <select
@@ -90,7 +104,7 @@ vi.mock("../common/SelectField", () => ({
         data-testid="format-select-input"
         aria-label={label}
       >
-        {items.map((item: any) => (
+        {items.map((item) => (
           <option key={item.value} value={item.value}>
             {item.label}
           </option>
@@ -109,7 +123,7 @@ const mockWriteText = vi.fn().mockResolvedValue(undefined);
 
 // Check if clipboard already exists to avoid redefining
 if (!navigator.clipboard) {
-  Object.defineProperty(navigator, 'clipboard', {
+  Object.defineProperty(navigator, "clipboard", {
     value: {
       writeText: mockWriteText,
     },
@@ -119,13 +133,21 @@ if (!navigator.clipboard) {
   navigator.clipboard.writeText = mockWriteText;
 }
 
-const mockFileReader = {
+interface MockFileReader {
+  readAsText: ReturnType<typeof vi.fn>;
+  result: string | null;
+  onload: ((this: FileReader, ev: ProgressEvent<FileReader>) => void) | null;
+}
+
+const mockFileReader: MockFileReader = {
   readAsText: vi.fn(),
   result: null,
-  onload: null as any,
+  onload: null,
 };
 
-global.FileReader = vi.fn(() => mockFileReader) as any;
+global.FileReader = vi.fn(
+  () => mockFileReader,
+) as unknown as typeof FileReader;
 
 // Mock data
 const mockTaxonomy: Taxonomy = {
@@ -170,19 +192,14 @@ const mockValidationResult = {
   info: [],
 };
 
-const mockInvalidValidationResult = {
-  isValid: false,
-  errors: [
-    { type: "error", code: "CONCEPT_NO_PREFLABEL", message: "Missing preferred label" },
-  ],
-  warnings: [],
-  info: [],
-};
-
 describe("SKOSDialog", () => {
   const mockOnOpenChange = vi.fn();
   const mockOnImport = vi.fn();
-  let mockNotify: any;
+  let mockNotify: {
+    error: ReturnType<typeof vi.fn>;
+    success: ReturnType<typeof vi.fn>;
+    info: ReturnType<typeof vi.fn>;
+  };
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -191,14 +208,16 @@ describe("SKOSDialog", () => {
       success: vi.fn(),
       info: vi.fn(),
     };
-    
+
     vi.mocked(useNotification).mockReturnValue(mockNotify);
-    
+
     vi.mocked(serializeToSKOS).mockReturnValue(mockSKOSContent);
     vi.mocked(parseFromSKOS).mockResolvedValue(mockTaxonomy);
     vi.mocked(validateTaxonomy).mockReturnValue(mockValidationResult);
-    vi.mocked(exportTaxonomy).mockReturnValue(JSON.stringify(mockTaxonomy, null, 2));
-    
+    vi.mocked(exportTaxonomy).mockReturnValue(
+      JSON.stringify(mockTaxonomy, null, 2),
+    );
+
     // Reset clipboard mock
     mockWriteText.mockClear();
   });
@@ -215,11 +234,11 @@ describe("SKOSDialog", () => {
           onOpenChange={mockOnOpenChange}
           taxonomy={mockTaxonomy}
           mode="export"
-        />
+        />,
       );
 
       expect(screen.getByText("Export Taxonomy")).toBeInTheDocument();
-      
+
       // Check for the presence of format selection - use more flexible approach
       const formatElements = screen.getAllByText(/Export Format/);
       expect(formatElements.length).toBeGreaterThan(0);
@@ -232,12 +251,15 @@ describe("SKOSDialog", () => {
           onOpenChange={mockOnOpenChange}
           taxonomy={mockTaxonomy}
           mode="export"
-        />
+        />,
       );
 
       // Simply verify the export function was called
       await waitFor(() => {
-        expect(vi.mocked(serializeToSKOS)).toHaveBeenCalledWith(mockTaxonomy, "rdf");
+        expect(vi.mocked(serializeToSKOS)).toHaveBeenCalledWith(
+          mockTaxonomy,
+          "rdf",
+        );
       });
 
       // Verify dialog title is rendered
@@ -255,7 +277,7 @@ describe("SKOSDialog", () => {
           onOpenChange={mockOnOpenChange}
           taxonomy={mockTaxonomy}
           mode="export"
-        />
+        />,
       );
 
       // Simply verify validation was called
@@ -274,7 +296,7 @@ describe("SKOSDialog", () => {
   describe("Import Mode", () => {
     // Note: Most import mode tests removed due to upcoming UX changes
     // Simplified test to avoid Portal rendering issues
-    
+
     test("initializes in import mode correctly", () => {
       // Just verify the component can be rendered in import mode without errors
       const { container } = render(
@@ -283,7 +305,7 @@ describe("SKOSDialog", () => {
           onOpenChange={mockOnOpenChange}
           mode="import"
           onImport={mockOnImport}
-        />
+        />,
       );
 
       // Basic check that something was rendered

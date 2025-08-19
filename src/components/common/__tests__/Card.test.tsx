@@ -3,7 +3,7 @@ import { render, screen } from "@testing-library/react";
 import Card from "../Card";
 
 // Helper function to filter out Chakra UI props
-const filterChakraProps = (props: any) => {
+const filterChakraProps = (props: Record<string, unknown>) => {
   const chakraProps = [
     "alignItems",
     "justifyContent",
@@ -105,22 +105,34 @@ const filterChakraProps = (props: any) => {
 
 // Mock Chakra UI components
 vi.mock("@chakra-ui/react", () => ({
-  Box: ({ children, ...props }: any) => (
+  Box: ({
+    children,
+    ...props
+  }: React.PropsWithChildren<Record<string, unknown>>) => (
     <div data-testid="box" {...filterChakraProps(props)}>
       {children}
     </div>
   ),
-  Flex: ({ children, ...props }: any) => (
+  Flex: ({
+    children,
+    ...props
+  }: React.PropsWithChildren<Record<string, unknown>>) => (
     <div data-testid="flex" {...filterChakraProps(props)}>
       {children}
     </div>
   ),
-  Heading: ({ children, ...props }: any) => (
+  Heading: ({
+    children,
+    ...props
+  }: React.PropsWithChildren<Record<string, unknown>>) => (
     <h3 data-testid="heading" {...filterChakraProps(props)}>
       {children}
     </h3>
   ),
-  Text: ({ children, ...props }: any) => (
+  Text: ({
+    children,
+    ...props
+  }: React.PropsWithChildren<Record<string, unknown>>) => (
     <p data-testid="text" {...filterChakraProps(props)}>
       {children}
     </p>

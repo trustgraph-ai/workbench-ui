@@ -7,7 +7,7 @@ import { TaxonomyConcept } from "../../state/taxonomies";
 interface ConceptBasicTabProps {
   editedConcept: TaxonomyConcept;
   availableConcepts: Array<{ id: string; prefLabel: string }>;
-  onUpdateField: (field: keyof TaxonomyConcept, value: any) => void;
+  onUpdateField: (field: keyof TaxonomyConcept, value: unknown) => void;
   onAddItem: (field: keyof TaxonomyConcept, value: string) => void;
   onRemoveItem: (field: keyof TaxonomyConcept, index: number) => void;
   onUpdateItem: (

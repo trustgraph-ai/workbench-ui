@@ -35,7 +35,7 @@ const mockSchema: Schema = {
       required: true,
     },
     {
-      id: "field-2", 
+      id: "field-2",
       name: "status",
       type: "enum",
       enum: ["active", "inactive"],
@@ -56,7 +56,7 @@ describe("useSchemaForm", () => {
       useSchemaForm({
         isOpen: true,
         mode: "create",
-      })
+      }),
     );
 
     expect(result.current.id).toBe("");
@@ -70,7 +70,7 @@ describe("useSchemaForm", () => {
         type: "string",
         primary_key: false,
         required: false,
-      })
+      }),
     );
     expect(result.current.indexes).toEqual([]);
     expect(result.current.errors).toEqual([]);
@@ -83,7 +83,7 @@ describe("useSchemaForm", () => {
         mode: "edit",
         schemaId: "schema-1",
         initialSchema: mockSchema,
-      })
+      }),
     );
 
     expect(result.current.id).toBe("schema-1");
@@ -111,7 +111,7 @@ describe("useSchemaForm", () => {
         isOpen: true,
         mode: "edit",
         initialSchema: schemaWithoutIds,
-      })
+      }),
     );
 
     expect(result.current.fields[0].id).toBe("mock-uuid-123");
@@ -127,7 +127,7 @@ describe("useSchemaForm", () => {
         }),
       {
         initialProps: { isOpen: false, schema: undefined },
-      }
+      },
     );
 
     // Initially closed
@@ -135,7 +135,7 @@ describe("useSchemaForm", () => {
 
     // Open with schema
     rerender({ isOpen: true, schema: mockSchema });
-    
+
     expect(result.current.name).toBe("User Schema");
   });
 
@@ -144,7 +144,7 @@ describe("useSchemaForm", () => {
       useSchemaForm({
         isOpen: true,
         mode: "create",
-      })
+      }),
     );
 
     act(() => {
@@ -159,7 +159,7 @@ describe("useSchemaForm", () => {
         type: "string",
         primary_key: false,
         required: false,
-      })
+      }),
     );
   });
 
@@ -169,7 +169,7 @@ describe("useSchemaForm", () => {
         isOpen: true,
         mode: "edit",
         initialSchema: mockSchema,
-      })
+      }),
     );
 
     act(() => {
@@ -186,7 +186,7 @@ describe("useSchemaForm", () => {
         isOpen: true,
         mode: "edit",
         initialSchema: mockSchema,
-      })
+      }),
     );
 
     expect(result.current.indexes).toContain("status");
@@ -205,7 +205,7 @@ describe("useSchemaForm", () => {
         isOpen: true,
         mode: "edit",
         initialSchema: mockSchema,
-      })
+      }),
     );
 
     act(() => {
@@ -221,7 +221,7 @@ describe("useSchemaForm", () => {
         type: "string",
         primary_key: true,
         required: false,
-      })
+      }),
     );
   });
 
@@ -231,7 +231,7 @@ describe("useSchemaForm", () => {
         isOpen: true,
         mode: "edit",
         initialSchema: mockSchema,
-      })
+      }),
     );
 
     // Status field is enum with values
@@ -253,7 +253,7 @@ describe("useSchemaForm", () => {
         isOpen: true,
         mode: "edit",
         initialSchema: mockSchema,
-      })
+      }),
     );
 
     act(() => {
@@ -271,14 +271,18 @@ describe("useSchemaForm", () => {
         isOpen: true,
         mode: "edit",
         initialSchema: mockSchema,
-      })
+      }),
     );
 
     act(() => {
       result.current.handleAddEnumValue(1, "pending");
     });
 
-    expect(result.current.fields[1].enum).toEqual(["active", "inactive", "pending"]);
+    expect(result.current.fields[1].enum).toEqual([
+      "active",
+      "inactive",
+      "pending",
+    ]);
   });
 
   test("prevents adding duplicate enum values", () => {
@@ -287,7 +291,7 @@ describe("useSchemaForm", () => {
         isOpen: true,
         mode: "edit",
         initialSchema: mockSchema,
-      })
+      }),
     );
 
     act(() => {
@@ -303,7 +307,7 @@ describe("useSchemaForm", () => {
         isOpen: true,
         mode: "edit",
         initialSchema: mockSchema,
-      })
+      }),
     );
 
     act(() => {
@@ -318,7 +322,7 @@ describe("useSchemaForm", () => {
       useSchemaForm({
         isOpen: true,
         mode: "create",
-      })
+      }),
     );
 
     // Add enum value to string field (which has no enum property)
@@ -334,7 +338,7 @@ describe("useSchemaForm", () => {
       useSchemaForm({
         isOpen: true,
         mode: "create",
-      })
+      }),
     );
 
     act(() => {
@@ -355,7 +359,7 @@ describe("useSchemaForm", () => {
         isOpen: true,
         mode: "edit",
         initialSchema: mockSchema,
-      })
+      }),
     );
 
     act(() => {
@@ -375,7 +379,7 @@ describe("useSchemaForm", () => {
         isOpen: true,
         mode: "edit",
         initialSchema: mockSchema,
-      })
+      }),
     );
 
     act(() => {
@@ -391,7 +395,7 @@ describe("useSchemaForm", () => {
         isOpen: true,
         mode: "edit",
         initialSchema: mockSchema,
-      })
+      }),
     );
 
     act(() => {
@@ -412,7 +416,7 @@ describe("useSchemaForm", () => {
         isOpen: true,
         mode: "edit",
         initialSchema: mockSchema,
-      })
+      }),
     );
 
     const schema = result.current.getSchema();
@@ -435,7 +439,7 @@ describe("useSchemaForm", () => {
       useSchemaForm({
         isOpen: true,
         mode: "create",
-      })
+      }),
     );
 
     const schema = result.current.getSchema();
@@ -448,7 +452,7 @@ describe("useSchemaForm", () => {
       useSchemaForm({
         isOpen: true,
         mode: "create",
-      })
+      }),
     );
 
     act(() => {
@@ -469,7 +473,7 @@ describe("useSchemaForm", () => {
       useSchemaForm({
         isOpen: true,
         mode: "create",
-      })
+      }),
     );
 
     const newFields: SchemaField[] = [
@@ -494,7 +498,7 @@ describe("useSchemaForm", () => {
       useSchemaForm({
         isOpen: true,
         mode: "create",
-      })
+      }),
     );
 
     act(() => {
@@ -509,7 +513,7 @@ describe("useSchemaForm", () => {
       useSchemaForm({
         isOpen: true,
         mode: "create",
-      })
+      }),
     );
 
     act(() => {
@@ -524,7 +528,7 @@ describe("useSchemaForm", () => {
       useSchemaForm({
         isOpen: true,
         mode: "create",
-      })
+      }),
     );
 
     act(() => {
@@ -540,7 +544,7 @@ describe("useSchemaForm", () => {
       useSchemaForm({
         isOpen: true,
         mode: "create",
-      })
+      }),
     );
 
     act(() => {
@@ -566,7 +570,7 @@ describe("useSchemaForm", () => {
           schemaId: undefined,
           initialSchema: undefined,
         },
-      }
+      },
     );
 
     expect(result.current.name).toBe("");

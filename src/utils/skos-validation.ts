@@ -5,14 +5,14 @@
  * comply with SKOS standards and best practices.
  */
 
-import { Taxonomy, TaxonomyConcept } from "../state/taxonomies";
+import { Taxonomy } from "../state/taxonomies";
 
 export interface ValidationError {
   type: "error" | "warning" | "info";
   code: string;
   message: string;
   conceptId?: string;
-  details?: any;
+  details?: Record<string, unknown>;
 }
 
 export interface ValidationResult {
@@ -55,7 +55,6 @@ export class SKOSValidator {
     taxonomy: Taxonomy,
     errors: ValidationError[],
     warnings: ValidationError[],
-    info: ValidationError[],
   ) {
     const { scheme, metadata } = taxonomy;
 
@@ -186,7 +185,6 @@ export class SKOSValidator {
     taxonomy: Taxonomy,
     errors: ValidationError[],
     warnings: ValidationError[],
-    info: ValidationError[],
   ) {
     const concepts = taxonomy.concepts;
 

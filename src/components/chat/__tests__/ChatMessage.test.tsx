@@ -3,7 +3,7 @@ import { render, screen } from "@testing-library/react";
 import ChatMessage from "../ChatMessage";
 
 // Helper function to filter out Chakra UI props
-const filterChakraProps = (props: any) => {
+const filterChakraProps = (props: Record<string, unknown>) => {
   const chakraProps = [
     "alignItems",
     "justifyContent",
@@ -105,34 +105,52 @@ const filterChakraProps = (props: any) => {
 
 // Mock Chakra UI components
 vi.mock("@chakra-ui/react", () => ({
-  Box: ({ children, ...props }: any) => (
+  Box: ({
+    children,
+    ...props
+  }: React.PropsWithChildren<Record<string, unknown>>) => (
     <div data-testid="box" {...filterChakraProps(props)}>
       {children}
     </div>
   ),
-  Flex: ({ children, ...props }: any) => (
+  Flex: ({
+    children,
+    ...props
+  }: React.PropsWithChildren<Record<string, unknown>>) => (
     <div data-testid="flex" {...filterChakraProps(props)}>
       {children}
     </div>
   ),
-  Text: ({ children, ...props }: any) => (
+  Text: ({
+    children,
+    ...props
+  }: React.PropsWithChildren<Record<string, unknown>>) => (
     <p data-testid="text" {...filterChakraProps(props)}>
       {children}
     </p>
   ),
   Avatar: {
-    Root: ({ children, ...props }: any) => (
+    Root: ({
+      children,
+      ...props
+    }: React.PropsWithChildren<Record<string, unknown>>) => (
       <div data-testid="avatar-root" {...filterChakraProps(props)}>
         {children}
       </div>
     ),
-    Fallback: ({ name, ...props }: any) => (
+    Fallback: ({
+      name,
+      ...props
+    }: { name?: string } & Record<string, unknown>) => (
       <div data-testid="avatar-fallback" {...filterChakraProps(props)}>
         {name}
       </div>
     ),
   },
-  Badge: ({ children, ...props }: any) => (
+  Badge: ({
+    children,
+    ...props
+  }: React.PropsWithChildren<Record<string, unknown>>) => (
     <span data-testid="badge" {...filterChakraProps(props)}>
       {children}
     </span>
@@ -141,7 +159,7 @@ vi.mock("@chakra-ui/react", () => ({
 
 // Mock react-markdown-it
 vi.mock("react-markdown-it", () => ({
-  default: ({ children }: any) => (
+  default: ({ children }: React.PropsWithChildren) => (
     <div data-testid="markdown">{children}</div>
   ),
 }));

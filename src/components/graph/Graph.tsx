@@ -45,13 +45,8 @@ const GraphView = () => {
   const linkParticleColor = useLinkParticleColor();
 
   // Use the new Tanstack Query hook for graph data
-  const {
-    view,
-    isLoading,
-    isError,
-    updateSubgraph: updateSubgraphMutation,
-    navigateByRelationship,
-  } = useGraphSubgraph(selected?.uri, flowId);
+  const { view, isLoading, isError, navigateByRelationship } =
+    useGraphSubgraph(selected?.uri, flowId);
 
   // Ensure drawer opens when node is selected
   useEffect(() => {

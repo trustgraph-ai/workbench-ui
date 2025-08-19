@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from "react";
 import { Box, VStack } from "@chakra-ui/react";
-import { TaxonomyConcept, Taxonomy } from "../../state/taxonomies";
+import { Taxonomy } from "../../state/taxonomies";
 import { TaxonomyTreeNode } from "./TaxonomyTreeNode";
 import { TaxonomyTreeSearch } from "./TaxonomyTreeSearch";
 import { TaxonomyTreeHeader } from "./TaxonomyTreeHeader";

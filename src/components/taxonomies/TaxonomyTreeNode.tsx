@@ -49,7 +49,7 @@ export const TaxonomyTreeNode: React.FC<TaxonomyTreeNodeProps> = ({
 }) => {
   const { isOpen, onToggle } = useDisclosure({ defaultIsOpen: level < 2 });
 
-  const children = concept.narrower || [];
+  const children = useMemo(() => concept.narrower || [], [concept.narrower]);
   const hasChildren = children.length > 0;
 
   // Filter children based on search term

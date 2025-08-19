@@ -6,15 +6,21 @@ import { renderHook } from "@testing-library/react";
 vi.mock("../SocketContext", () => ({
   SocketContext: {
     _currentValue: null,
-    Provider: ({ children }: any) => children,
-    Consumer: ({ children }: any) => children(null),
+    Provider: ({ children }: { children: React.ReactNode }) => children,
+    Consumer: ({
+      children,
+    }: {
+      children: (value: null) => React.ReactNode;
+    }) => children(null),
   },
 }));
 
 // Mock React useContext to return a mock socket
 const mockSocketContext = {
   textCompletion: vi.fn(),
-  graphRag: vi.fn(),
+  graphRag: vi
+    .fn()
+    .mockImplementation(() => Promise.resolve("mock response")),
   agent: vi.fn(),
   embeddings: vi.fn(),
   graphEmbeddingsQuery: vi.fn(),

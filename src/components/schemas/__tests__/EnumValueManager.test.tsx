@@ -4,7 +4,7 @@
  */
 
 import React from "react";
-import { render, screen, fireEvent, waitFor } from "../../../test/test-utils";
+import { render, screen, fireEvent } from "../../../test/test-utils";
 import userEvent from "@testing-library/user-event";
 import { describe, test, expect, vi, beforeEach } from "vitest";
 import { EnumValueManager } from "../EnumValueManager";
@@ -23,7 +23,7 @@ describe("EnumValueManager", () => {
         values={[]}
         onAddValue={mockOnAddValue}
         onRemoveValue={mockOnRemoveValue}
-      />
+      />,
     );
 
     expect(screen.getByText("Enum Values")).toBeInTheDocument();
@@ -40,7 +40,7 @@ describe("EnumValueManager", () => {
         values={values}
         onAddValue={mockOnAddValue}
         onRemoveValue={mockOnRemoveValue}
-      />
+      />,
     );
 
     expect(screen.getByText("active")).toBeInTheDocument();
@@ -57,7 +57,7 @@ describe("EnumValueManager", () => {
         values={[]}
         onAddValue={mockOnAddValue}
         onRemoveValue={mockOnRemoveValue}
-      />
+      />,
     );
 
     const input = screen.getByPlaceholderText("Add enum value");
@@ -77,7 +77,7 @@ describe("EnumValueManager", () => {
         values={[]}
         onAddValue={mockOnAddValue}
         onRemoveValue={mockOnRemoveValue}
-      />
+      />,
     );
 
     const input = screen.getByPlaceholderText("Add enum value");
@@ -95,7 +95,7 @@ describe("EnumValueManager", () => {
         values={[]}
         onAddValue={mockOnAddValue}
         onRemoveValue={mockOnRemoveValue}
-      />
+      />,
     );
 
     const input = screen.getByPlaceholderText("Add enum value");
@@ -113,7 +113,7 @@ describe("EnumValueManager", () => {
         values={[]}
         onAddValue={mockOnAddValue}
         onRemoveValue={mockOnRemoveValue}
-      />
+      />,
     );
 
     const input = screen.getByPlaceholderText("Add enum value");
@@ -131,7 +131,7 @@ describe("EnumValueManager", () => {
         values={[]}
         onAddValue={mockOnAddValue}
         onRemoveValue={mockOnRemoveValue}
-      />
+      />,
     );
 
     const input = screen.getByPlaceholderText("Add enum value");
@@ -147,7 +147,7 @@ describe("EnumValueManager", () => {
         values={[]}
         onAddValue={mockOnAddValue}
         onRemoveValue={mockOnRemoveValue}
-      />
+      />,
     );
 
     const addButton = screen.getByRole("button", { name: "Add" });
@@ -162,7 +162,7 @@ describe("EnumValueManager", () => {
         values={[]}
         onAddValue={mockOnAddValue}
         onRemoveValue={mockOnRemoveValue}
-      />
+      />,
     );
 
     const input = screen.getByPlaceholderText("Add enum value");
@@ -181,7 +181,7 @@ describe("EnumValueManager", () => {
         values={values}
         onAddValue={mockOnAddValue}
         onRemoveValue={mockOnRemoveValue}
-      />
+      />,
     );
 
     const input = screen.getByPlaceholderText("Add enum value");
@@ -200,7 +200,7 @@ describe("EnumValueManager", () => {
         values={values}
         onAddValue={mockOnAddValue}
         onRemoveValue={mockOnRemoveValue}
-      />
+      />,
     );
 
     const input = screen.getByPlaceholderText("Add enum value");
@@ -220,7 +220,7 @@ describe("EnumValueManager", () => {
         values={values}
         onAddValue={mockOnAddValue}
         onRemoveValue={mockOnRemoveValue}
-      />
+      />,
     );
 
     const input = screen.getByPlaceholderText("Add enum value");
@@ -239,7 +239,7 @@ describe("EnumValueManager", () => {
         values={values}
         onAddValue={mockOnAddValue}
         onRemoveValue={mockOnRemoveValue}
-      />
+      />,
     );
 
     const removeButton = screen.getByLabelText("Remove active");
@@ -256,10 +256,10 @@ describe("EnumValueManager", () => {
         values={values}
         onAddValue={mockOnAddValue}
         onRemoveValue={mockOnRemoveValue}
-      />
+      />,
     );
 
-    values.forEach(value => {
+    values.forEach((value) => {
       expect(screen.getByText(value)).toBeInTheDocument();
       expect(screen.getByLabelText(`Remove ${value}`)).toBeInTheDocument();
     });
@@ -273,7 +273,7 @@ describe("EnumValueManager", () => {
         values={[]}
         onAddValue={mockOnAddValue}
         onRemoveValue={mockOnRemoveValue}
-      />
+      />,
     );
 
     const input = screen.getByPlaceholderText("Add enum value");
@@ -299,7 +299,7 @@ describe("EnumValueManager", () => {
         values={[]}
         onAddValue={mockOnAddValue}
         onRemoveValue={mockOnRemoveValue}
-      />
+      />,
     );
 
     const input = screen.getByPlaceholderText("Add enum value");
@@ -318,7 +318,7 @@ describe("EnumValueManager", () => {
         values={[]}
         onAddValue={mockOnAddValue}
         onRemoveValue={mockOnRemoveValue}
-      />
+      />,
     );
 
     expect(screen.getByText("No values added yet")).toBeInTheDocument();
@@ -327,10 +327,10 @@ describe("EnumValueManager", () => {
   test("handles undefined values prop", () => {
     render(
       <EnumValueManager
-        values={undefined as any}
+        values={undefined as undefined}
         onAddValue={mockOnAddValue}
         onRemoveValue={mockOnRemoveValue}
-      />
+      />,
     );
 
     // Should default to empty array and show empty state
@@ -345,7 +345,7 @@ describe("EnumValueManager", () => {
         values={[]}
         onAddValue={mockOnAddValue}
         onRemoveValue={mockOnRemoveValue}
-      />
+      />,
     );
 
     const input = screen.getByPlaceholderText("Add enum value");
@@ -368,7 +368,7 @@ describe("EnumValueManager", () => {
         values={values}
         onAddValue={mockOnAddValue}
         onRemoveValue={mockOnRemoveValue}
-      />
+      />,
     );
 
     const badge = screen.getByText("test_value").closest(".chakra-badge");
@@ -383,11 +383,11 @@ describe("EnumValueManager", () => {
         values={[]}
         onAddValue={mockOnAddValue}
         onRemoveValue={mockOnRemoveValue}
-      />
+      />,
     );
 
     const input = screen.getByPlaceholderText("Add enum value");
-    
+
     // Add a value which should refocus the input
     await user.type(input, "test");
     await user.keyboard("{Enter}");
@@ -404,7 +404,7 @@ describe("EnumValueManager", () => {
         values={[]}
         onAddValue={mockOnAddValue}
         onRemoveValue={mockOnRemoveValue}
-      />
+      />,
     );
 
     const input = screen.getByPlaceholderText("Add enum value");
