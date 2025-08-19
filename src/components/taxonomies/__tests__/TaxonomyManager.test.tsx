@@ -31,6 +31,17 @@ vi.mock("../../../state/taxonomies", () => ({
   TaxonomyConcept: null,
 }));
 
+interface TaxonomyManagerHeaderProps {
+  currentTaxonomy: Taxonomy | null;
+  selectedConcept?: TaxonomyConcept;
+  taxonomies: Array<[string, Taxonomy]>;
+  conceptBreadcrumb: string[];
+  onTaxonomyChange: (taxonomyId: string) => void;
+  onConceptAdd: () => void;
+  onImport: () => void;
+  onExport: () => void;
+}
+
 vi.mock("../TaxonomyManagerHeader", () => ({
   TaxonomyManagerHeader: ({
     currentTaxonomy,
@@ -41,7 +52,7 @@ vi.mock("../TaxonomyManagerHeader", () => ({
     onConceptAdd,
     onImport,
     onExport,
-  }: any) => (
+  }: TaxonomyManagerHeaderProps) => (
     <div data-testid="taxonomy-manager-header">
       <span data-testid="current-taxonomy">
         {currentTaxonomy?.metadata?.name || "None"}
@@ -74,6 +85,15 @@ vi.mock("../TaxonomyManagerHeader", () => ({
   ),
 }));
 
+interface TaxonomyTreeProps {
+  taxonomy: Taxonomy;
+  selectedConceptId?: string;
+  onConceptSelect: (conceptId: string) => void;
+  onConceptAdd: (parentId?: string) => void;
+  onConceptEdit: (conceptId: string) => void;
+  onConceptDelete: (conceptId: string) => void;
+}
+
 vi.mock("../TaxonomyTree", () => ({
   TaxonomyTree: ({
     taxonomy,
@@ -82,12 +102,12 @@ vi.mock("../TaxonomyTree", () => ({
     onConceptAdd,
     onConceptEdit,
     onConceptDelete,
-  }: any) => (
+  }: TaxonomyTreeProps) => (
     <div data-testid="taxonomy-tree">
       <div data-testid="selected-concept-id">
         {selectedConceptId || "None"}
       </div>
-      {Object.values(taxonomy.concepts).map((concept: any) => (
+      {Object.values(taxonomy.concepts).map((concept) => (
         <div key={concept.id} data-testid={`concept-${concept.id}`}>
           <span>{concept.prefLabel}</span>
           <button
@@ -120,8 +140,15 @@ vi.mock("../TaxonomyTree", () => ({
   ),
 }));
 
+interface ConceptEditorProps {
+  concept?: TaxonomyConcept;
+  taxonomy: Taxonomy;
+  onSave: (concept: TaxonomyConcept) => void;
+  onCancel: () => void;
+}
+
 vi.mock("../ConceptEditor", () => ({
-  ConceptEditor: ({ concept, taxonomy, onSave, onCancel }: any) => (
+  ConceptEditor: ({ concept, taxonomy, onSave, onCancel }: ConceptEditorProps) => (
     <div data-testid="concept-editor">
       <span data-testid="editing-concept">
         {concept?.prefLabel || "New Concept"}
@@ -144,8 +171,13 @@ vi.mock("../ConceptEditor", () => ({
   ),
 }));
 
+interface ConceptDetailViewProps {
+  concept: TaxonomyConcept;
+  onEdit: () => void;
+}
+
 vi.mock("../ConceptDetailView", () => ({
-  ConceptDetailView: ({ concept, onEdit }: any) => (
+  ConceptDetailView: ({ concept, onEdit }: ConceptDetailViewProps) => (
     <div data-testid="concept-detail-view">
       <span data-testid="concept-name">{concept.prefLabel}</span>
       <span data-testid="concept-definition">{concept.definition || ""}</span>
@@ -156,8 +188,14 @@ vi.mock("../ConceptDetailView", () => ({
   ),
 }));
 
+interface TaxonomyEmptyStatesProps {
+  type: string;
+  taxonomies?: Array<[string, Taxonomy]>;
+  onTaxonomyChange?: (taxonomyId: string) => void;
+}
+
 vi.mock("../TaxonomyEmptyStates", () => ({
-  TaxonomyEmptyStates: ({ type, taxonomies, onTaxonomyChange }: any) => (
+  TaxonomyEmptyStates: ({ type, taxonomies, onTaxonomyChange }: TaxonomyEmptyStatesProps) => (
     <div data-testid={`empty-state-${type}`}>
       {type === "no-taxonomy-selected" && taxonomies && (
         <select onChange={(e) => onTaxonomyChange(e.target.value)}>
@@ -173,8 +211,16 @@ vi.mock("../TaxonomyEmptyStates", () => ({
   ),
 }));
 
+interface SKOSDialogProps {
+  open: boolean;
+  mode: string;
+  taxonomy?: Taxonomy;
+  onOpenChange: (open: boolean) => void;
+  onImport?: (taxonomy: Taxonomy, taxonomyId: string) => void;
+}
+
 vi.mock("../SKOSDialog", () => ({
-  SKOSDialog: ({ open, mode, taxonomy, onOpenChange, onImport }: any) =>
+  SKOSDialog: ({ open, mode, taxonomy, onOpenChange, onImport }: SKOSDialogProps) =>
     open ? (
       <div data-testid={`skos-dialog-${mode}`}>
         <span>{mode} Dialog</span>
@@ -266,7 +312,11 @@ describe("TaxonomyManager", () => {
     isUpdatingTaxonomy: false,
   };
 
-  let mockNotify: any;
+  let mockNotify: {
+    error: ReturnType<typeof vi.fn>;
+    success: ReturnType<typeof vi.fn>;
+    info: ReturnType<typeof vi.fn>;
+  };
 
   beforeEach(() => {
     vi.clearAllMocks();
