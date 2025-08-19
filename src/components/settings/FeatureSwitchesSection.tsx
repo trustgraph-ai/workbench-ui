@@ -1,5 +1,5 @@
 import React from "react";
-import { VStack, HStack, Text, Switch } from "@chakra-ui/react";
+import { VStack, HStack, Text, Switch, Tag } from "@chakra-ui/react";
 import { ToggleLeft } from "lucide-react";
 import Card from "../common/Card";
 
@@ -44,6 +44,10 @@ const FeatureSwitchesSection: React.FC<FeatureSwitchesSectionProps> = ({
             <Text fontWeight="medium">Taxonomy Editor</Text>
             <Text fontSize="sm" color="fg.muted">
               Enable the taxonomy management interface for SKOS concepts
+              {' '}
+              <Tag.Root colorPalette="accent">
+                <Tag.Label>preview</Tag.Label>
+              </Tag.Root>              
             </Text>
           </VStack>
           <Switch.Root
@@ -61,7 +65,7 @@ const FeatureSwitchesSection: React.FC<FeatureSwitchesSectionProps> = ({
           <VStack gap={1} align="start">
             <Text fontWeight="medium">Submissions</Text>
             <Text fontSize="sm" color="fg.muted">
-              Enable the submissions and processing interface
+              Enable the submissions page
             </Text>
           </VStack>
           <Switch.Root
