@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
-import { Schema, SchemaField } from "../model/schemas-table";
-import { DEFAULT_FIELD } from "../constants/schemaTypes";
+import { Schema, SchemaField } from "../../model/schemas-table";
+import { DEFAULT_FIELD } from "../../model/schemaTypes";
 
 interface UseSchemaFormProps {
   isOpen: boolean;

@@ -11,7 +11,7 @@ import { Trash2 } from "lucide-react";
 import { SchemaField } from "../../model/schemas-table";
 import SelectField from "../common/SelectField";
 import { EnumValueManager } from "./EnumValueManager";
-import { SCHEMA_TYPE_OPTIONS } from "../../constants/schemaTypes";
+import { SCHEMA_TYPE_OPTIONS } from "../../model/schemaTypes";
 
 interface SchemaFieldEditorProps {
   field: SchemaField;
