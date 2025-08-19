@@ -8,10 +8,11 @@ import { render, screen, fireEvent, waitFor } from "../../../test/test-utils";
 import userEvent from "@testing-library/user-event";
 import { describe, test, expect, vi, beforeEach } from "vitest";
 import { TaxonomyManager } from "../TaxonomyManager";
-import { Taxonomy, TaxonomyConcept } from "../../../state/taxonomies";
+import { Taxonomy, TaxonomyConcept, useTaxonomies } from "../../../state/taxonomies";
+import { useNotification } from "../../../state/notify";
 
 // Mock dependencies
-vi.mock("../../state/notify", () => ({
+vi.mock("../../../state/notify", () => ({
   useNotification: vi.fn(() => ({
     error: vi.fn(),
     success: vi.fn(),
@@ -19,7 +20,7 @@ vi.mock("../../state/notify", () => ({
   })),
 }));
 
-vi.mock("../../state/taxonomies", () => ({
+vi.mock("../../../state/taxonomies", () => ({
   useTaxonomies: vi.fn(),
   // Re-export types for type checking
   Taxonomy: null,
@@ -248,11 +249,8 @@ describe("TaxonomyManager", () => {
       info: vi.fn(),
     };
     
-    const { useNotification } = require("../../../state/notify");
-    const { useTaxonomies } = require("../../../state/taxonomies");
-    
-    useNotification.mockReturnValue(mockNotify);
-    useTaxonomies.mockReturnValue(mockUseTaxonomies);
+    vi.mocked(useNotification).mockReturnValue(mockNotify);
+    vi.mocked(useTaxonomies).mockReturnValue(mockUseTaxonomies);
     
     global.confirm = vi.fn().mockReturnValue(true);
     
@@ -265,7 +263,7 @@ describe("TaxonomyManager", () => {
   });
 
   test("shows empty state when no taxonomies exist", () => {
-    const { useTaxonomies } = require("../../../state/taxonomies");
+    vi.mocked(useTaxonomies).mockReturnValue({
     useTaxonomies.mockReturnValue({ ...mockUseTaxonomies, taxonomies: [] });
 
     render(<TaxonomyManager />);
