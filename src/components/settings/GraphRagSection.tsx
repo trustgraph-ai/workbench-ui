@@ -68,7 +68,7 @@ const GraphRagSection: React.FC<GraphRagSectionProps> = ({
           <HStack gap={2} justify="center">
             <Button
               size="sm"
-              variant="outline"
+              variant="solid"
               colorPalette="accent"
               onClick={() => applyPreset('small')}
             >
@@ -77,7 +77,7 @@ const GraphRagSection: React.FC<GraphRagSectionProps> = ({
             </Button>
             <Button
               size="sm"
-              variant="outline"
+              variant="solid"
               colorPalette="accent"
               onClick={() => applyPreset('medium')}
             >
@@ -86,7 +86,7 @@ const GraphRagSection: React.FC<GraphRagSectionProps> = ({
             </Button>
             <Button
               size="sm"
-              variant="outline"
+              variant="solid"
               colorPalette="accent"
               onClick={() => applyPreset('large')}
             >
