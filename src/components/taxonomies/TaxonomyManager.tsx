@@ -156,7 +156,8 @@ export const TaxonomyManager: React.FC<TaxonomyManagerProps> = ({
         "Are you sure you want to delete this concept? This action cannot be undone.",
       )
     ) {
-      const { [conceptId]: _, ...remainingConcepts } =
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { [conceptId]: deleted, ...remainingConcepts } =
         currentTaxonomy.concepts;
 
       // Remove from parent's narrower list
