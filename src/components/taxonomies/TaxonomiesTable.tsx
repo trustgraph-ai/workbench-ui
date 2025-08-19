@@ -14,7 +14,7 @@ import {
 import { EditTaxonomyDialog } from "./EditTaxonomyDialog";
 
 export const TaxonomiesTable: React.FC = () => {
-  const { taxonomies, taxonomiesLoading, taxonomiesError } = useTaxonomies();
+  const { taxonomies, taxonomiesError } = useTaxonomies();
   const [isOpen, setIsOpen] = React.useState(false);
   const [selectedTaxonomy, setSelectedTaxonomy] =
     React.useState<TaxonomyTableRow | null>(null);

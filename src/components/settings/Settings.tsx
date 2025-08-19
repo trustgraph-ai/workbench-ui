@@ -10,7 +10,6 @@ import FeatureSwitchesSection from "./FeatureSwitchesSection";
 const Settings: React.FC = () => {
   const {
     settings,
-    isLoaded,
     updateSetting,
     resetSettings,
     exportSettings,

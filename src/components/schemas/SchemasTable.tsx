@@ -12,7 +12,7 @@ import { EditSchemaDialog } from "./EditSchemaDialog";
 import { ErrorState, EmptyState } from "./SchemaTableStates";
 
 export const SchemasTable: React.FC = () => {
-  const { schemas, schemasLoading, schemasError } = useSchemas();
+  const { schemas, schemasError } = useSchemas();
   const [isOpen, setIsOpen] = React.useState(false);
   const [selectedSchema, setSelectedSchema] =
     React.useState<SchemaTableRow | null>(null);
