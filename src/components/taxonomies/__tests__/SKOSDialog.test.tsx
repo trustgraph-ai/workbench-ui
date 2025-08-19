@@ -225,7 +225,7 @@ describe("SKOSDialog", () => {
       expect(formatElements.length).toBeGreaterThan(0);
     });
 
-    test("generates SKOS content on dialog open", () => {
+    test("generates SKOS content on dialog open", async () => {
       render(
         <SKOSDialog
           open={true}
@@ -236,7 +236,14 @@ describe("SKOSDialog", () => {
       );
 
       expect(vi.mocked(serializeToSKOS)).toHaveBeenCalledWith(mockTaxonomy, "rdf");
-      expect(screen.getByDisplayValue(mockSKOSContent)).toBeInTheDocument();
+      
+      await waitFor(() => {
+        // Find the large content textarea (should have many rows)
+        const contentTextarea = screen.getAllByRole("textbox").find(textarea => 
+          textarea.getAttribute("rows") === "20"
+        );
+        expect(contentTextarea).toHaveValue(mockSKOSContent);
+      });
     });
 
     test("changes export format and regenerates content", async () => {
@@ -279,7 +286,7 @@ describe("SKOSDialog", () => {
       });
     });
 
-    test("validates SKOS content during export", () => {
+    test("validates SKOS content during export", async () => {
       render(
         <SKOSDialog
           open={true}
@@ -290,7 +297,9 @@ describe("SKOSDialog", () => {
       );
 
       expect(vi.mocked(validateTaxonomy)).toHaveBeenCalledWith(mockTaxonomy);
-      expect(screen.getByRole("tab", { name: /Validation/ })).toBeInTheDocument();
+      await waitFor(() => {
+        expect(screen.getByRole("tab", { name: /Validation/ })).toBeInTheDocument();
+      });
     });
 
     test("copies content to clipboard", async () => {
@@ -570,8 +579,8 @@ describe("SKOSDialog", () => {
       mockFileReader.onload({ target: { result: mockSKOSContent } });
 
       await waitFor(() => {
-        expect(screen.getByDisplayValue(mockSKOSContent)).toBeInTheDocument();
-        expect(screen.getByDisplayValue("test")).toBeInTheDocument(); // ID from filename
+        expect(screen.getByRole("textbox", { name: /content/ })).toHaveValue(mockSKOSContent);
+        expect(screen.getByRole("textbox", { name: /taxonomy id/i })).toHaveValue("test"); // ID from filename
       });
     });
 

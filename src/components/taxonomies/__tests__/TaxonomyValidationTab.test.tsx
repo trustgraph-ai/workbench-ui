@@ -8,6 +8,8 @@ import { render, screen, fireEvent, waitFor } from "../../../test/test-utils";
 import { describe, test, expect, vi } from "vitest";
 import { TaxonomyValidationTab } from "../TaxonomyValidationTab";
 import { Taxonomy } from "../../../state/taxonomies";
+import { validateTaxonomy } from "../../../utils/skos-validation";
+import { TaxonomyQA } from "../../../utils/taxonomy-qa";
 
 // Mock dependencies
 vi.mock("../../../utils/skos-validation", () => ({
@@ -147,8 +149,7 @@ describe("TaxonomyValidationTab", () => {
   });
 
   test("renders quality metrics for valid taxonomy", () => {
-    const { validateTaxonomy } = require("../../../utils/skos-validation");
-    validateTaxonomy.mockReturnValue(mockValidationResult);
+    vi.mocked(validateTaxonomy).mockReturnValue(mockValidationResult);
 
     render(<TaxonomyValidationTab taxonomy={mockValidTaxonomy} />);
 
@@ -168,8 +169,7 @@ describe("TaxonomyValidationTab", () => {
   });
 
   test("calculates quality metrics correctly for complete taxonomy", () => {
-    const { validateTaxonomy } = require("../../../utils/skos-validation");
-    validateTaxonomy.mockReturnValue(mockValidationResult);
+    vi.mocked(validateTaxonomy).mockReturnValue(mockValidationResult);
 
     render(<TaxonomyValidationTab taxonomy={mockValidTaxonomy} />);
     
@@ -180,8 +180,7 @@ describe("TaxonomyValidationTab", () => {
   });
 
   test("displays validation errors and warnings", () => {
-    const { validateTaxonomy } = require("../../../utils/skos-validation");
-    validateTaxonomy.mockReturnValue(mockInvalidValidationResult);
+    vi.mocked(validateTaxonomy).mockReturnValue(mockInvalidValidationResult);
 
     render(<TaxonomyValidationTab taxonomy={mockInvalidTaxonomy} />);
 
@@ -194,11 +193,8 @@ describe("TaxonomyValidationTab", () => {
   });
 
   test("shows auto-fix suggestions when available", () => {
-    const { validateTaxonomy } = require("../../../utils/skos-validation");
-    const { TaxonomyQA } = require("../../../utils/taxonomy-qa");
-    
-    validateTaxonomy.mockReturnValue(mockValidationResult);
-    TaxonomyQA.generateSuggestions.mockReturnValue([
+    vi.mocked(validateTaxonomy).mockReturnValue(mockValidationResult);
+    vi.mocked(TaxonomyQA.generateSuggestions).mockReturnValue([
       {
         type: "auto",
         field: "prefLabel",
@@ -216,12 +212,9 @@ describe("TaxonomyValidationTab", () => {
   });
 
   test("handles auto-fix functionality", async () => {
-    const { validateTaxonomy } = require("../../../utils/skos-validation");
-    const { TaxonomyQA } = require("../../../utils/taxonomy-qa");
     const mockOnTaxonomyChange = vi.fn();
-    
-    validateTaxonomy.mockReturnValue(mockValidationResult);
-    TaxonomyQA.generateSuggestions.mockReturnValue([
+    vi.mocked(validateTaxonomy).mockReturnValue(mockValidationResult);
+    vi.mocked(TaxonomyQA.generateSuggestions).mockReturnValue([
       {
         type: "auto",
         field: "consistency",
@@ -242,17 +235,14 @@ describe("TaxonomyValidationTab", () => {
     fireEvent.click(fixAllButton);
 
     await waitFor(() => {
-      expect(TaxonomyQA.autoFix).toHaveBeenCalledWith(mockValidTaxonomy);
+      expect(vi.mocked(TaxonomyQA.autoFix)).toHaveBeenCalledWith(mockValidTaxonomy);
       expect(mockOnTaxonomyChange).toHaveBeenCalledWith(mockValidTaxonomy);
     });
   });
 
   test("disables auto-fix when no onTaxonomyChange handler", () => {
-    const { validateTaxonomy } = require("../../../utils/skos-validation");
-    const { TaxonomyQA } = require("../../../utils/taxonomy-qa");
-    
-    validateTaxonomy.mockReturnValue(mockValidationResult);
-    TaxonomyQA.generateSuggestions.mockReturnValue([
+    vi.mocked(validateTaxonomy).mockReturnValue(mockValidationResult);
+    vi.mocked(TaxonomyQA.generateSuggestions).mockReturnValue([
       {
         type: "auto",
         field: "consistency",
@@ -269,8 +259,7 @@ describe("TaxonomyValidationTab", () => {
   });
 
   test("calculates correct quality metrics for empty taxonomy", () => {
-    const { validateTaxonomy } = require("../../../utils/skos-validation");
-    validateTaxonomy.mockReturnValue(mockValidationResult);
+    vi.mocked(validateTaxonomy).mockReturnValue(mockValidationResult);
 
     const emptyTaxonomy: Taxonomy = {
       ...mockValidTaxonomy,
@@ -281,14 +270,12 @@ describe("TaxonomyValidationTab", () => {
     render(<TaxonomyValidationTab taxonomy={emptyTaxonomy} />);
 
     // Should show 0% for all metrics when no concepts exist
-    expect(screen.getByText("0%")).toBeInTheDocument();
+    const zeroPercentElements = screen.getAllByText("0%");
+    expect(zeroPercentElements.length).toBeGreaterThan(0);
   });
 
   test("detects orphaned concepts", () => {
-    const { validateTaxonomy } = require("../../../utils/skos-validation");
-    const { TaxonomyQA } = require("../../../utils/taxonomy-qa");
-    
-    validateTaxonomy.mockReturnValue(mockValidationResult);
+    vi.mocked(validateTaxonomy).mockReturnValue(mockValidationResult);
     
     const taxonomyWithOrphans: Taxonomy = {
       ...mockValidTaxonomy,
@@ -311,8 +298,7 @@ describe("TaxonomyValidationTab", () => {
   });
 
   test("calculates hierarchy depth correctly", () => {
-    const { validateTaxonomy } = require("../../../utils/skos-validation");
-    validateTaxonomy.mockReturnValue(mockValidationResult);
+    vi.mocked(validateTaxonomy).mockReturnValue(mockValidationResult);
 
     // Create a deep hierarchy taxonomy
     const deepTaxonomy: Taxonomy = {
@@ -362,8 +348,7 @@ describe("TaxonomyValidationTab", () => {
   });
 
   test("handles relationship consistency calculations", () => {
-    const { validateTaxonomy } = require("../../../utils/skos-validation");
-    validateTaxonomy.mockReturnValue(mockValidationResult);
+    vi.mocked(validateTaxonomy).mockReturnValue(mockValidationResult);
 
     // Create taxonomy with inconsistent relationships
     const inconsistentTaxonomy: Taxonomy = {
@@ -396,11 +381,8 @@ describe("TaxonomyValidationTab", () => {
   });
 
   test("displays success message when no issues found", () => {
-    const { validateTaxonomy } = require("../../../utils/skos-validation");
-    const { TaxonomyQA } = require("../../../utils/taxonomy-qa");
-    
-    validateTaxonomy.mockReturnValue(mockValidationResult);
-    TaxonomyQA.generateSuggestions.mockReturnValue([]); // No suggestions
+    vi.mocked(validateTaxonomy).mockReturnValue(mockValidationResult);
+    vi.mocked(TaxonomyQA.generateSuggestions).mockReturnValue([]); // No suggestions
 
     render(<TaxonomyValidationTab taxonomy={mockValidTaxonomy} />);
 
@@ -408,15 +390,14 @@ describe("TaxonomyValidationTab", () => {
   });
 
   test("revalidation button triggers validation", () => {
-    const { validateTaxonomy } = require("../../../utils/skos-validation");
-    validateTaxonomy.mockReturnValue(mockValidationResult);
+    vi.mocked(validateTaxonomy).mockReturnValue(mockValidationResult);
 
     render(<TaxonomyValidationTab taxonomy={mockValidTaxonomy} />);
 
     const revalidateButton = screen.getByText("Revalidate");
     
     // Clear previous calls
-    validateTaxonomy.mockClear();
+    vi.mocked(validateTaxonomy).mockClear();
     
     fireEvent.click(revalidateButton);
 

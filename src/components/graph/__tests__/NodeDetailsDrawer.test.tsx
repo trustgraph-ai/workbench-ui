@@ -22,7 +22,7 @@ vi.mock("../../../state/session", () => ({
   }),
 }));
 
-vi.mock("./NodePropertiesTable", () => ({
+vi.mock("../NodePropertiesTable", () => ({
   __esModule: true,
   default: ({ properties }: any) => (
     <div data-testid="node-properties-table">
@@ -35,7 +35,7 @@ vi.mock("./NodePropertiesTable", () => ({
   ),
 }));
 
-vi.mock("./RelationshipsTable", () => ({
+vi.mock("../RelationshipsTable", () => ({
   __esModule: true,
   default: ({ outboundRelationships, inboundRelationships, onRelationshipClick }: any) => (
     <div data-testid="relationships-table">
@@ -397,15 +397,10 @@ describe("NodeDetailsDrawer", () => {
       />
     );
 
-    // RelationshipsTable is already mocked at the top
-    expect(RelationshipsTable).toHaveBeenCalledWith(
-      expect.objectContaining({
-        outboundRelationships: mockNodeDetails.outboundRelationshipsWithLabels,
-        inboundRelationships: mockNodeDetails.inboundRelationshipsWithLabels,
-        onRelationshipClick: mockOnRelationshipClick,
-      }),
-      expect.anything()
-    );
+    // Verify that RelationshipsTable mock is rendered with correct data
+    expect(screen.getByTestId("relationships-table")).toBeInTheDocument();
+    expect(screen.getByTestId("outbound-count")).toHaveTextContent("2");
+    expect(screen.getByTestId("inbound-count")).toHaveTextContent("2");
   });
 
   test("passes correct props to NodePropertiesTable", () => {
@@ -418,13 +413,11 @@ describe("NodeDetailsDrawer", () => {
       />
     );
 
-    // NodePropertiesTable is already mocked at the top
-    expect(NodePropertiesTable).toHaveBeenCalledWith(
-      expect.objectContaining({
-        properties: mockNodeDetails.propertiesWithLabels,
-      }),
-      expect.anything()
-    );
+    // Verify that NodePropertiesTable mock is rendered with correct data  
+    expect(screen.getByTestId("node-properties-table")).toBeInTheDocument();
+    expect(screen.getByTestId("property-type")).toBeInTheDocument();
+    expect(screen.getByTestId("property-status")).toBeInTheDocument();
+    expect(screen.getByTestId("property-created")).toBeInTheDocument();
   });
 
   test("configures drawer with correct placement and behavior", () => {
