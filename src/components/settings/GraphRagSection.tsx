@@ -37,9 +37,9 @@ const GraphRagSection: React.FC<GraphRagSectionProps> = ({
             <NumberField
               label="Entity Limit"
               value={entityLimit}
-              onValueChange={(_, valueAsNumber) => onEntityLimitChange(valueAsNumber)}
-              min={1}
-              max={1000}
+              onValueChange={onEntityLimitChange}
+              minValue={1}
+              maxValue={1000}
             />
             <Text fontSize="sm" color="fg.muted">
               Maximum number of entities to include in graph queries
@@ -50,9 +50,9 @@ const GraphRagSection: React.FC<GraphRagSectionProps> = ({
             <NumberField
               label="Triple Limit"
               value={tripleLimit}
-              onValueChange={(_, valueAsNumber) => onTripleLimitChange(valueAsNumber)}
-              min={1}
-              max={500}
+              onValueChange={onTripleLimitChange}
+              minValue={1}
+              maxValue={500}
             />
             <Text fontSize="sm" color="fg.muted">
               Maximum number of triples to retrieve per query
@@ -63,9 +63,9 @@ const GraphRagSection: React.FC<GraphRagSectionProps> = ({
             <NumberField
               label="Max Subgraph Size"
               value={maxSubgraphSize}
-              onValueChange={(_, valueAsNumber) => onMaxSubgraphSizeChange(valueAsNumber)}
-              min={100}
-              max={10000}
+              onValueChange={onMaxSubgraphSizeChange}
+              minValue={100}
+              maxValue={10000}
             />
             <Text fontSize="sm" color="fg.muted">
               Maximum size of subgraphs for processing
@@ -76,9 +76,9 @@ const GraphRagSection: React.FC<GraphRagSectionProps> = ({
             <NumberField
               label="Path Length"
               value={pathLength}
-              onValueChange={(_, valueAsNumber) => onPathLengthChange(valueAsNumber)}
-              min={1}
-              max={10}
+              onValueChange={onPathLengthChange}
+              minValue={1}
+              maxValue={10}
             />
             <Text fontSize="sm" color="fg.muted">
               Maximum path length for graph traversal

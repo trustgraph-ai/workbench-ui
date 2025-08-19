@@ -24,7 +24,12 @@ const NumberField: React.FC<NumberFieldProps> = ({
         min={minValue}
         max={maxValue}
         value={value.toString()}
-        onValueChange={(e) => onValueChange(Number(e.value))}
+        onValueChange={(e) => {
+          const numValue = e.value === '' || e.value == null ? 0 : Number(e.value);
+          if (!isNaN(numValue)) {
+            onValueChange(numValue);
+          }
+        }}
       >
         <NumberInput.Input />
         <NumberInput.Control>
