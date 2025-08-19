@@ -11,6 +11,10 @@ export interface Settings {
   featureSwitches: {
     taxonomyEditor: boolean;
     submissions: boolean;
+    agentTools: boolean;
+    mcpTools: boolean;
+    schemas: boolean;
+    tokenCost: boolean;
   };
 }
 
@@ -27,6 +31,10 @@ export const DEFAULT_SETTINGS: Settings = {
   featureSwitches: {
     taxonomyEditor: false,
     submissions: false,
+    agentTools: true,     // On by default
+    mcpTools: false,      // Off by default
+    schemas: false,       // Off by default
+    tokenCost: false,     // Off by default
   },
 };
 
