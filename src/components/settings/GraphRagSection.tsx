@@ -1,6 +1,6 @@
 import React from "react";
 import { VStack, SimpleGrid, Text, HStack, Button } from "@chakra-ui/react";
-import { Network } from "lucide-react";
+import { Network, Circle, Minimize2, Maximize2 } from "lucide-react";
 import Card from "../common/Card";
 import NumberField from "../common/NumberField";
 
@@ -69,22 +69,28 @@ const GraphRagSection: React.FC<GraphRagSectionProps> = ({
             <Button
               size="sm"
               variant="outline"
+              colorPalette="accent"
               onClick={() => applyPreset('small')}
             >
+              <Minimize2 />
               Small
             </Button>
             <Button
               size="sm"
               variant="outline"
+              colorPalette="accent"
               onClick={() => applyPreset('medium')}
             >
+              <Circle />
               Medium
             </Button>
             <Button
               size="sm"
               variant="outline"
+              colorPalette="accent"
               onClick={() => applyPreset('large')}
             >
+              <Maximize2 />
               Large
             </Button>
           </HStack>
