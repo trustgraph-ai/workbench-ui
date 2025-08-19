@@ -35,13 +35,13 @@ const SubmitDialog = ({ open, onOpenChange, onSubmit, docs }) => {
     };
   });
 
-  const [flow, setFlow] = useState(undefined);
+  const [flow, setFlow] = useState([]);
   const [tags, setTags] = useState([]);
 
   // Set default flow when flows are loaded or dialog opens
   useEffect(() => {
-    if (open && flows.length > 0 && !flow) {
-      setFlow(flows[0].id);
+    if (open && flows.length > 0 && flow.length === 0) {
+      setFlow([flows[0].id]);
     }
   }, [open, flows, flow]);
 
@@ -80,8 +80,8 @@ const SubmitDialog = ({ open, onOpenChange, onSubmit, docs }) => {
                   label="Processing flow"
                   items={flowOptions}
                   value={flow}
-                  onValueChange={(x) => {
-                    setFlow(x);
+                  onValueChange={(values) => {
+                    setFlow(values);
                   }}
                   contentRef={contentRef}
                 />
@@ -98,7 +98,7 @@ const SubmitDialog = ({ open, onOpenChange, onSubmit, docs }) => {
                 Cancel
               </Button>
               <Button
-                onClick={() => onSubmit(flow, tags)}
+                onClick={() => onSubmit(flow.length > 0 ? flow[0] : null, tags)}
                 colorPalette="primary"
               >
                 <SendHorizontal /> Submit
