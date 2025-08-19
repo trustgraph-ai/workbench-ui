@@ -291,8 +291,6 @@ describe("SKOSDialog", () => {
     });
   });
 
-  describe("Common functionality", () => {
-    // Note: Common functionality tests removed due to upcoming UX changes
-    // Core dialog functionality is tested in the basic rendering tests above
-  });
+  // Note: Common functionality tests removed due to upcoming UX changes
+  // Core dialog functionality is tested in the basic rendering tests above
 });
