@@ -149,7 +149,6 @@ export const useChat = () => {
     addActivity(activity);
 
     return new Promise<string>((resolve, reject) => {
-      let finalAnswer = "";
 
       const think = (thought: string) => {
         addMessage("ai", thought, "thinking");
@@ -161,7 +160,6 @@ export const useChat = () => {
 
       const answer = (response: string) => {
         addMessage("ai", response, "answer");
-        finalAnswer = response;
         removeActivity(activity);
         setEntities([]);
         resolve(response);

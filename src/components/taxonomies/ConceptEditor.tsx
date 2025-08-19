@@ -47,7 +47,7 @@ export const ConceptEditor: React.FC<ConceptEditorProps> = ({
     onSave(editedConcept);
   };
 
-  const updateField = (field: keyof TaxonomyConcept, value: any) => {
+  const updateField = (field: keyof TaxonomyConcept, value: unknown) => {
     setEditedConcept((prev) => ({
       ...prev,
       [field]: value,

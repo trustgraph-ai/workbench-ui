@@ -1,6 +1,6 @@
 import React from "react";
 import { Box, Text, Alert, HStack, Badge } from "@chakra-ui/react";
-import { AlertTriangle, Check, X } from "lucide-react";
+import { AlertTriangle, X } from "lucide-react";
 import { ValidationResult } from "../../utils/skos-validation";
 
 interface ValidationResultsProps {

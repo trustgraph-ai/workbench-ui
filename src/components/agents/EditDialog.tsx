@@ -99,14 +99,14 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
   const contentRef = useRef<HTMLDivElement>(null);
 
   // Create options for MCP tools select menu
-  const mcpToolOptions = mcpTools.map(([id, tool]) => ({
+  const mcpToolOptions = mcpTools.map(([id]) => ({
     value: id,
     label: id,
     description: id,
   }));
 
   // Create options for prompt templates select menu
-  const promptTemplateOptions = prompts.map(([id, prompt]) => ({
+  const promptTemplateOptions = prompts.map(([id]) => ({
     value: id,
     label: id,
     description: id,

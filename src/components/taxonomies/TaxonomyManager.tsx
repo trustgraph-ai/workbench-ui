@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Grid, GridItem, VStack, Text } from "@chakra-ui/react";
+import { Box, Grid, GridItem, VStack } from "@chakra-ui/react";
 import { TaxonomyManagerHeader } from "./TaxonomyManagerHeader";
 import { ConceptDetailView } from "./ConceptDetailView";
 import { TaxonomyEmptyStates } from "./TaxonomyEmptyStates";
@@ -22,7 +22,7 @@ export const TaxonomyManager: React.FC<TaxonomyManagerProps> = ({
   selectedTaxonomyId,
   onTaxonomySelect,
 }) => {
-  const { taxonomies, updateTaxonomy, createTaxonomy, isUpdatingTaxonomy } =
+  const { taxonomies, updateTaxonomy, createTaxonomy } =
     useTaxonomies();
   const notify = useNotification();
 
@@ -156,7 +156,7 @@ export const TaxonomyManager: React.FC<TaxonomyManagerProps> = ({
         "Are you sure you want to delete this concept? This action cannot be undone.",
       )
     ) {
-      const { [conceptId]: deleted, ...remainingConcepts } =
+      const { [conceptId]: _, ...remainingConcepts } =
         currentTaxonomy.concepts;
 
       // Remove from parent's narrower list
@@ -201,7 +201,7 @@ export const TaxonomyManager: React.FC<TaxonomyManagerProps> = ({
     }
   };
 
-  const handleConceptMove = (conceptId: string, newParentId?: string) => {
+  const handleConceptMove = () => {
     // TODO: Implement drag-and-drop concept moving
     notify.info(
       "Drag-and-drop concept moving will be implemented in a future update",

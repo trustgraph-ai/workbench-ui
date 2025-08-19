@@ -49,7 +49,6 @@ const GraphView = () => {
     view,
     isLoading,
     isError,
-    updateSubgraph: updateSubgraphMutation,
     navigateByRelationship,
   } = useGraphSubgraph(selected?.uri, flowId);
 

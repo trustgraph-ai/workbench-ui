@@ -4,7 +4,7 @@ import userEvent from "@testing-library/user-event";
 import TextField from "../TextField";
 
 // Helper function to filter out Chakra UI props
-const filterChakraProps = (props: any) => {
+const filterChakraProps = (props: Record<string, unknown>) => {
   const chakraProps = [
     "alignItems",
     "justifyContent",
@@ -108,28 +108,32 @@ const filterChakraProps = (props: any) => {
 // Mock Chakra UI components
 vi.mock("@chakra-ui/react", () => ({
   Field: {
-    Root: ({ children, ...props }: any) => (
+    Root: ({ children, ...props }: React.PropsWithChildren<Record<string, unknown>>) => (
       <div data-testid="field-root" {...filterChakraProps(props)}>
         {children}
       </div>
     ),
-    Label: ({ children, ...props }: any) => (
+    Label: ({ children, ...props }: React.PropsWithChildren<Record<string, unknown>>) => (
       <label data-testid="field-label" {...filterChakraProps(props)}>
         {children}
       </label>
     ),
-    RequiredIndicator: ({ ...props }: any) => (
+    RequiredIndicator: ({ ...props }: Record<string, unknown>) => (
       <span data-testid="required-indicator" {...filterChakraProps(props)}>
         *
       </span>
     ),
-    HelperText: ({ children, ...props }: any) => (
+    HelperText: ({ children, ...props }: React.PropsWithChildren<Record<string, unknown>>) => (
       <div data-testid="helper-text" {...filterChakraProps(props)}>
         {children}
       </div>
     ),
   },
-  Input: ({ value, onChange, placeholder, ...props }: any) => (
+  Input: ({ value, onChange, placeholder, ...props }: {
+    value?: string;
+    onChange?: React.ChangeEventHandler<HTMLInputElement>;
+    placeholder?: string;
+  } & Record<string, unknown>) => (
     <input
       data-testid="text-input"
       value={value}

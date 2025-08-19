@@ -4,7 +4,7 @@
  */
 
 import React from "react";
-import { render, screen, fireEvent, waitFor } from "../../../test/test-utils";
+import { render, screen } from "../../../test/test-utils";
 import userEvent from "@testing-library/user-event";
 import { describe, test, expect, vi, beforeEach } from "vitest";
 import { SchemaFieldEditor } from "../SchemaFieldEditor";
@@ -13,7 +13,7 @@ import { SchemaField } from "../../../model/schemas-table";
 // Mock dependencies
 vi.mock("../../common/SelectField", () => ({
   __esModule: true,
-  default: ({ label, value, onValueChange, items, contentRef }: any) => (
+  default: ({ label, value, onValueChange, items }: { label: string; value: string | string[]; onValueChange: (value: string) => void; items: { value: string; label: string }[] }) => (
     <div data-testid="type-select-field">
       <label>{label}</label>
       <select
@@ -22,7 +22,7 @@ vi.mock("../../common/SelectField", () => ({
         onChange={(e) => onValueChange(e.target.value)}
       >
         <option value="">Select type</option>
-        {items.map((item: any) => (
+        {items.map((item: { value: string; label: string }) => (
           <option key={item.value} value={item.value}>
             {item.label}
           </option>
@@ -33,10 +33,10 @@ vi.mock("../../common/SelectField", () => ({
 }));
 
 vi.mock("../EnumValueManager", () => ({
-  EnumValueManager: ({ values, onAddValue, onRemoveValue }: any) => (
+  EnumValueManager: ({ values, onAddValue, onRemoveValue }: { values: string[]; onAddValue: (value: string) => void; onRemoveValue: (value: string) => void }) => (
     <div data-testid="enum-value-manager">
       <span data-testid="enum-values-count">{values.length}</span>
-      {values.map((value: string, index: number) => (
+      {values.map((value: string) => (
         <div key={value} data-testid={`enum-value-${value}`}>
           <span>{value}</span>
           <button
@@ -344,7 +344,7 @@ describe("SchemaFieldEditor", () => {
   });
 
   test("handles empty type selection correctly", () => {
-    const fieldWithoutType = { ...mockField, type: undefined as any };
+    const fieldWithoutType = { ...mockField, type: undefined as undefined };
 
     render(
       <SchemaFieldEditor

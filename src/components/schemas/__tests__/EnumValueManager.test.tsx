@@ -4,7 +4,7 @@
  */
 
 import React from "react";
-import { render, screen, fireEvent, waitFor } from "../../../test/test-utils";
+import { render, screen, fireEvent } from "../../../test/test-utils";
 import userEvent from "@testing-library/user-event";
 import { describe, test, expect, vi, beforeEach } from "vitest";
 import { EnumValueManager } from "../EnumValueManager";
@@ -327,7 +327,7 @@ describe("EnumValueManager", () => {
   test("handles undefined values prop", () => {
     render(
       <EnumValueManager
-        values={undefined as any}
+        values={undefined as undefined}
         onAddValue={mockOnAddValue}
         onRemoveValue={mockOnRemoveValue}
       />,

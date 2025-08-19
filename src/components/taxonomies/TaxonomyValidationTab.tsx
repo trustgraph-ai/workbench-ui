@@ -23,16 +23,14 @@ import {
 } from "lucide-react";
 import {
   validateTaxonomy,
-  ValidationResult,
 } from "../../utils/skos-validation";
 import { Taxonomy } from "../../state/taxonomies";
 import { ValidationResults } from "./ValidationResults";
-import { TaxonomyQA, QAFix } from "../../utils/taxonomy-qa";
+import { TaxonomyQA } from "../../utils/taxonomy-qa";
 
 interface TaxonomyValidationTabProps {
   taxonomy: Taxonomy;
   onTaxonomyChange?: (taxonomy: Taxonomy) => void;
-  onFixIssue?: (issue: ValidationIssue) => void;
 }
 
 interface ValidationIssue {
@@ -55,7 +53,6 @@ interface QualityMetrics {
 export const TaxonomyValidationTab: React.FC<TaxonomyValidationTabProps> = ({
   taxonomy,
   onTaxonomyChange,
-  onFixIssue,
 }) => {
   // Run validation
   const validation = useMemo(() => validateTaxonomy(taxonomy), [taxonomy]);

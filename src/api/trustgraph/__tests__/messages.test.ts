@@ -13,7 +13,6 @@ import type {
   GraphEmbeddingsQueryRequest,
   GraphEmbeddingsQueryResponse,
   TriplesQueryRequest,
-  TriplesQueryResponse,
   LoadDocumentRequest,
   LoadTextRequest,
   LibraryRequest,

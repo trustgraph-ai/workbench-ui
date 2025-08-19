@@ -10,7 +10,7 @@ interface SettingsState {
   isLoaded: boolean;
 
   // Actions
-  updateSetting: (path: string, value: any) => void;
+  updateSetting: (path: string, value: unknown) => void;
   saveSettings: (newSettings: Settings) => void;
   resetSettings: () => void;
   exportSettings: () => string;
@@ -49,7 +49,7 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
     }
   },
 
-  updateSetting: (path: string, value: any) => {
+  updateSetting: (path: string, value: unknown) => {
     const { settings } = get();
     const newSettings = { ...settings };
     const keys = path.split(".");
@@ -57,8 +57,8 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
     if (keys.length === 2) {
       const [section, key] = keys;
       if (section in newSettings) {
-        (newSettings as any)[section] = {
-          ...(newSettings as any)[section],
+        (newSettings as Record<string, Record<string, unknown>>)[section] = {
+          ...(newSettings as Record<string, Record<string, unknown>>)[section],
           [key]: value,
         };
       }

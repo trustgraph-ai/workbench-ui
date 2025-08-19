@@ -1,5 +1,5 @@
 import React from "react";
-import { Drawer, Text, VStack, Heading, List } from "@chakra-ui/react";
+import { Drawer, VStack, Heading } from "@chakra-ui/react";
 import { X } from "lucide-react";
 
 import { useNodeDetails } from "../../state/node-details";
@@ -33,7 +33,6 @@ const NodeDetailsDrawer: React.FC<NodeDetailsDrawerProps> = ({
     outboundRelationshipsWithLabels,
     inboundRelationshipsWithLabels,
     propertiesWithLabels,
-    isLoading,
   } = useNodeDetails(node?.id, flowId);
   return (
     <Drawer.Root

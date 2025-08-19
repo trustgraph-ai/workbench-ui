@@ -6,8 +6,6 @@ import { ServiceCall } from "./service-call";
 // Import all message types for different services
 import {
   //  AgentRequest,
-  AgentResponse,
-  ApiResponse,
   ConfigRequest,
   ConfigResponse,
   //  DocumentMetadata,
@@ -850,7 +848,7 @@ export class FlowApi {
     error: (s: string) => void, // Called on errors
   ) {
     // Create a receiver function to handle streaming responses
-    const receiver = (response: any) => {
+    const receiver = (response: unknown) => {
       console.log("Agent response received:", response);
 
       // Check for backend errors

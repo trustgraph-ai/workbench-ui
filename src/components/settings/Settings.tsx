@@ -23,7 +23,7 @@ const Settings: React.FC = () => {
     try {
       resetSettings();
       notify.success("Settings reset to defaults successfully");
-    } catch (error) {
+    } catch {
       notify.error("Failed to reset settings");
     }
   };
@@ -41,7 +41,7 @@ const Settings: React.FC = () => {
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
       notify.success("Settings exported successfully");
-    } catch (error) {
+    } catch {
       notify.error("Failed to export settings");
     }
   };
@@ -59,7 +59,7 @@ const Settings: React.FC = () => {
             const content = e.target?.result as string;
             importSettings(content);
             notify.success("Settings imported successfully");
-          } catch (error) {
+          } catch {
             notify.error("Failed to import settings - invalid format");
           }
         };

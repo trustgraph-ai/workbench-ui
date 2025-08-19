@@ -1,5 +1,6 @@
 import "@testing-library/jest-dom";
-import { vi, beforeEach, afterEach } from "vitest";
+import { vi, beforeEach } from "vitest";
+import type { MockedObject } from "vitest";
 
 // Mock WebSocket globally
 global.WebSocket = vi.fn(() => ({
@@ -8,7 +9,7 @@ global.WebSocket = vi.fn(() => ({
   send: vi.fn(),
   close: vi.fn(),
   readyState: 1,
-})) as any;
+})) as MockedObject<WebSocket>;
 
 // Mock ResizeObserver
 global.ResizeObserver = vi.fn(() => ({

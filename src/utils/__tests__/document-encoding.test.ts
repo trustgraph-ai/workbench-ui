@@ -41,12 +41,12 @@ describe("fileToBase64", () => {
     // Mock FileReader
     const mockReader = {
       result: "data:text/plain;base64,SGVsbG8gV29ybGQ=",
-      onloadend: null as any,
+      onloadend: null as (() => void) | null,
       readAsDataURL: vi.fn(),
     };
 
     vi.spyOn(window, "FileReader").mockImplementation(
-      () => mockReader as any,
+      () => mockReader as Partial<FileReader>,
     );
 
     const promise = fileToBase64(mockFile);
@@ -67,12 +67,12 @@ describe("fileToBase64", () => {
     const mockReader = {
       result:
         "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==",
-      onloadend: null as any,
+      onloadend: null as (() => void) | null,
       readAsDataURL: vi.fn(),
     };
 
     vi.spyOn(window, "FileReader").mockImplementation(
-      () => mockReader as any,
+      () => mockReader as Partial<FileReader>,
     );
 
     const promise = fileToBase64(mockFile);
@@ -89,12 +89,12 @@ describe("fileToBase64", () => {
 
     const mockReader = {
       result: "data:text/plain;base64,",
-      onloadend: null as any,
+      onloadend: null as (() => void) | null,
       readAsDataURL: vi.fn(),
     };
 
     vi.spyOn(window, "FileReader").mockImplementation(
-      () => mockReader as any,
+      () => mockReader as Partial<FileReader>,
     );
 
     const promise = fileToBase64(mockFile);
@@ -109,12 +109,12 @@ describe("fileToBase64", () => {
 
     const mockReader = {
       result: "data:text/plain;charset=utf-8;base64,dGVzdA==",
-      onloadend: null as any,
+      onloadend: null as (() => void) | null,
       readAsDataURL: vi.fn(),
     };
 
     vi.spyOn(window, "FileReader").mockImplementation(
-      () => mockReader as any,
+      () => mockReader as Partial<FileReader>,
     );
 
     const promise = fileToBase64(mockFile);

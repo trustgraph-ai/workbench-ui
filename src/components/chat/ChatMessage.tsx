@@ -1,4 +1,4 @@
-import { Box, Flex, Text, Avatar, Badge } from "@chakra-ui/react";
+import { Box, Flex, Avatar, Badge } from "@chakra-ui/react";
 import { Brain, Eye, CheckCircle } from "lucide-react";
 import Markdown from "react-markdown-it";
 

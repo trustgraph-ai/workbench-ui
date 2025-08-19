@@ -209,7 +209,7 @@ export class SKOSSerializer {
     ttl.push("");
 
     // Concepts
-    concepts.forEach((concept, index) => {
+    concepts.forEach((concept) => {
       ttl.push(`<${this.getConceptURI(concept.id)}>`);
       ttl.push("  a skos:Concept ;");
       ttl.push(`  skos:inScheme <${scheme.uri}> ;`);
@@ -329,7 +329,7 @@ export class SKOSParser {
 
     const concepts: Record<string, TaxonomyConcept> = {};
     let scheme: TaxonomyScheme | null = null;
-    let metadata = {
+    const metadata = {
       name: "",
       description: "",
       version: "1.0",
@@ -510,7 +510,7 @@ export class SKOSParser {
   /**
    * Parse SKOS Turtle and convert to internal taxonomy format
    */
-  async parseTurtle(turtle: string, taxonomyId: string): Promise<Taxonomy> {
+  async parseTurtle(): Promise<Taxonomy> {
     // For a complete implementation, we'd use a proper Turtle parser
     // This is a placeholder for the Turtle parsing functionality
     throw new Error(

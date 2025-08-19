@@ -4,7 +4,7 @@
  */
 
 import React from "react";
-import { render, screen, fireEvent, waitFor } from "../../../test/test-utils";
+import { render, screen, fireEvent } from "../../../test/test-utils";
 import userEvent from "@testing-library/user-event";
 import { describe, test, expect, vi, beforeEach } from "vitest";
 import GraphView from "../Graph";
@@ -47,8 +47,7 @@ vi.mock("react-force-graph", () => ({
         onNodeDragEnd,
         graphData,
         ...props
-      }: any,
-      ref,
+      }: { graphData: { nodes?: unknown[]; links?: unknown[] }; [key: string]: unknown },
     ) => (
       <div
         data-testid="force-graph-3d"
@@ -64,7 +63,7 @@ vi.mock("react-force-graph", () => ({
         >
           Background
         </div>
-        {graphData?.nodes?.map((node: any) => (
+        {graphData?.nodes?.map((node: unknown) => (
           <div
             key={node.id}
             data-testid={`graph-node-${node.id}`}
@@ -75,7 +74,7 @@ vi.mock("react-force-graph", () => ({
             {node.label}
           </div>
         ))}
-        {graphData?.links?.map((link: any, index: number) => (
+        {graphData?.links?.map((link: unknown, index: number) => (
           <div
             key={index}
             data-testid={`graph-link-${index}`}
@@ -149,7 +148,7 @@ vi.mock("./GraphHelp", () => ({
 
 vi.mock("../NodeDetailsDrawer", () => ({
   __esModule: true,
-  default: ({ node, isOpen, onClose, onRelationshipClick }: any) =>
+  default: ({ node, isOpen, onClose, onRelationshipClick }: { node: unknown; isOpen: boolean; onClose: () => void; onRelationshipClick: () => void }) =>
     isOpen ? (
       <div data-testid="node-details-drawer">
         <div data-testid="drawer-node-id">{node?.id || "No node"}</div>
@@ -193,7 +192,7 @@ describe("Graph Component", () => {
     vi.clearAllMocks();
 
     // Mock useRef to return a valid ref
-    const React = require("react");
+    const React = await import("react");
     React.useRef = vi.fn(() => ({ current: null }));
 
     // Default setup for workbench store with selected item
@@ -398,7 +397,6 @@ describe("Graph Component", () => {
   });
 
   test("handles node drag end to pin position", async () => {
-    const user = userEvent.setup();
 
     render(<GraphView />);
 
@@ -442,7 +440,6 @@ describe("Graph Component", () => {
   });
 
   test("warns when relationship navigation attempted without selected node", async () => {
-    const user = userEvent.setup();
 
     render(<GraphView />);
 

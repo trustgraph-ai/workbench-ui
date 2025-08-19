@@ -10,19 +10,14 @@ import {
   Tabs,
   Box,
   Badge,
-  Alert,
   Separator,
   IconButton,
-  Code,
 } from "@chakra-ui/react";
 import {
   Download,
   Upload,
   Copy,
   Check,
-  AlertTriangle,
-  Info,
-  X,
 } from "lucide-react";
 import { useNotification } from "../../state/notify";
 import { Taxonomy } from "../../state/taxonomies";

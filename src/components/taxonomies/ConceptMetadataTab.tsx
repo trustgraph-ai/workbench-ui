@@ -14,7 +14,7 @@ import { TaxonomyConcept } from "../../state/taxonomies";
 interface ConceptMetadataTabProps {
   concept?: TaxonomyConcept;
   editedConcept: TaxonomyConcept;
-  onUpdateField: (field: keyof TaxonomyConcept, value: any) => void;
+  onUpdateField: (field: keyof TaxonomyConcept, value: unknown) => void;
 }
 
 export const ConceptMetadataTab: React.FC<ConceptMetadataTabProps> = ({
