@@ -6,48 +6,12 @@ import {
   Input,
   Checkbox,
   IconButton,
-  Text,
-  Button,
-  Badge,
-  Flex,
-  CloseButton,
 } from "@chakra-ui/react";
 import { Trash2 } from "lucide-react";
 import { SchemaField } from "../../model/schemas-table";
 import SelectField from "../common/SelectField";
-
-const typeOptions = [
-  {
-    value: "string",
-    label: "String",
-    description: "Text data of variable length",
-  },
-  {
-    value: "integer",
-    label: "Integer",
-    description: "Whole numbers (e.g., 1, 42, -10)",
-  },
-  {
-    value: "float",
-    label: "Float",
-    description: "Decimal numbers (e.g., 3.14, -2.5)",
-  },
-  {
-    value: "boolean",
-    label: "Boolean",
-    description: "True or false values",
-  },
-  {
-    value: "timestamp",
-    label: "Timestamp",
-    description: "Date and time values",
-  },
-  {
-    value: "enum",
-    label: "Enum",
-    description: "Predefined set of allowed values",
-  },
-];
+import { EnumValueManager } from "./EnumValueManager";
+import { SCHEMA_TYPE_OPTIONS } from "../../constants/schemaTypes";
 
 interface SchemaFieldEditorProps {
   field: SchemaField;
@@ -98,7 +62,7 @@ export const SchemaFieldEditor: React.FC<SchemaFieldEditorProps> = ({
                 type: typeValue as SchemaField["type"],
               });
             }}
-            items={typeOptions}
+            items={SCHEMA_TYPE_OPTIONS}
             contentRef={contentRef}
           />
         </Box>
@@ -149,53 +113,11 @@ export const SchemaFieldEditor: React.FC<SchemaFieldEditorProps> = ({
 
       {field.type === "enum" && (
         <Box mt={3}>
-          <Text>Enum Values</Text>
-          <HStack mb={2}>
-            <Input
-              placeholder="Add enum value"
-              onKeyPress={(e) => {
-                if (e.key === "Enter") {
-                  onAddEnumValue(index, (e.target as HTMLInputElement).value);
-                  (e.target as HTMLInputElement).value = "";
-                }
-              }}
-            />
-            <Button
-              size="sm"
-              onClick={() => {
-                const input = document.querySelector(
-                  `input[placeholder="Add enum value"]`,
-                ) as HTMLInputElement;
-                if (input) {
-                  onAddEnumValue(index, input.value);
-                  input.value = "";
-                }
-              }}
-              colorPalette="primary"
-            >
-              Add
-            </Button>
-          </HStack>
-          <Flex wrap="wrap" gap={2}>
-            {(field.enum || []).map((value) => (
-              <Badge
-                key={value}
-                colorPalette="accent"
-                borderRadius="full"
-                px={3}
-                py={1}
-                display="flex"
-                alignItems="center"
-                gap={2}
-              >
-                {value}
-                <CloseButton
-                  size="sm"
-                  onClick={() => onRemoveEnumValue(index, value)}
-                />
-              </Badge>
-            ))}
-          </Flex>
+          <EnumValueManager
+            values={field.enum || []}
+            onAddValue={(value) => onAddEnumValue(index, value)}
+            onRemoveValue={(value) => onRemoveEnumValue(index, value)}
+          />
         </Box>
       )}
     </Box>

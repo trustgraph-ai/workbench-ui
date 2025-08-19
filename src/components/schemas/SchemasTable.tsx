@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Table, Text, Spinner, Center } from "@chakra-ui/react";
+import { Box, Table } from "@chakra-ui/react";
 import {
   useReactTable,
   getCoreRowModel,
@@ -9,6 +9,7 @@ import {
 import { useSchemas } from "../../state/schemas";
 import { SchemaTableRow, schemaColumns } from "../../model/schemas-table";
 import { EditSchemaDialog } from "./EditSchemaDialog";
+import { LoadingState, ErrorState, EmptyState } from "./SchemaTableStates";
 
 export const SchemasTable: React.FC = () => {
   const { schemas, schemasLoading, schemasError } = useSchemas();
@@ -29,37 +30,15 @@ export const SchemasTable: React.FC = () => {
   };
 
   if (schemasLoading) {
-    return (
-      <Center h="200px">
-        <Spinner size="xl" />
-      </Center>
-    );
+    return <LoadingState message="Loading schemas..." />;
   }
 
   if (schemasError) {
-    return (
-      <Box
-        p={4}
-        borderWidth="1px"
-        borderColor="red.500"
-        borderRadius="md"
-        bg="red.50"
-      >
-        <Text color="red.700">
-          Error loading schemas: {schemasError.toString()}
-        </Text>
-      </Box>
-    );
+    return <ErrorState error={schemasError} />;
   }
 
   if (schemas.length === 0) {
-    return (
-      <Center h="200px">
-        <Text color="fg.muted">
-          No schemas found. Create one to get started.
-        </Text>
-      </Center>
-    );
+    return <EmptyState />;
   }
 
   return (
