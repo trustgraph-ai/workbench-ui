@@ -41,6 +41,14 @@ import {
   //  Response,
 } from "./messages";
 
+// GraphRAG options interface for configurable parameters
+export interface GraphRagOptions {
+  entityLimit?: number;
+  tripleLimit?: number;
+  maxSubgraphSize?: number;
+  pathLength?: number;
+}
+
 // Configuration constants
 const SOCKET_RECONNECTION_TIMEOUT = 2000; // 2 seconds between reconnection
 // attempts
@@ -58,7 +66,7 @@ export interface Socket {
   textCompletion: (system: string, text: string) => Promise<string>;
 
   // Graph-based Retrieval Augmented Generation
-  graphRag: (text: string) => Promise<string>;
+  graphRag: (text: string, options?: GraphRagOptions) => Promise<string>;
 
   // Agent interaction with streaming callbacks for different phases
   agent: (
@@ -813,12 +821,16 @@ export class FlowApi {
   /**
    * Performs Graph RAG (Retrieval Augmented Generation) query
    */
-  graphRag(text: string) {
+  graphRag(text: string, options?: GraphRagOptions) {
     return this.api
       .makeRequest<GraphRagRequest, GraphRagResponse>(
         "graph-rag",
         {
           query: text,
+          entityLimit: options?.entityLimit,
+          tripleLimit: options?.tripleLimit,
+          maxSubgraphSize: options?.maxSubgraphSize,
+          pathLength: options?.pathLength,
         },
         60000, // Longer timeout for complex graph operations
         null,

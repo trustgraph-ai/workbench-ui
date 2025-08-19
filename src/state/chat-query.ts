@@ -7,6 +7,7 @@ import { useChatStateStore } from "./chat";
 import { useWorkbenchStateStore } from "./workbench";
 import { useProgressStateStore } from "./progress";
 import { useSessionStore } from "./session";
+import { useSettings } from "./settings";
 import { RDFS_LABEL } from "../utils/knowledge-graph";
 import { Entity } from "./entity";
 import { Triple, Value } from "./triples";
@@ -38,6 +39,9 @@ export const useChat = () => {
   const flowId = useSessionStore((state) => state.flowId);
   const setEntities = useWorkbenchStateStore((state) => state.setEntities);
 
+  // Settings for GraphRAG configuration
+  const { settings } = useSettings();
+
   /**
    * Graph RAG chat handling
    */
@@ -49,8 +53,13 @@ export const useChat = () => {
     addActivity(ragActivity);
 
     try {
-      // Execute Graph RAG request
-      const ragResponse = await socket.flow(flowId).graphRag(input);
+      // Execute Graph RAG request with settings
+      const ragResponse = await socket.flow(flowId).graphRag(input, {
+        entityLimit: settings.graphrag.entityLimit,
+        tripleLimit: settings.graphrag.tripleLimit,
+        maxSubgraphSize: settings.graphrag.maxSubgraphSize,
+        pathLength: settings.graphrag.pathLength,
+      });
       addMessage("ai", ragResponse);
       removeActivity(ragActivity);
 
@@ -60,10 +69,10 @@ export const useChat = () => {
       // Get embeddings for the input
       const embeddings = await socket.flow(flowId).embeddings(input);
 
-      // Query graph embeddings to find entities
+      // Query graph embeddings to find entities using settings
       const entities = await socket
         .flow(flowId)
-        .graphEmbeddingsQuery(embeddings, 15);
+        .graphEmbeddingsQuery(embeddings, settings.graphrag.entityLimit);
 
       // Get labels for each entity
       const labelPromises = entities.map(async (entity: Value) => {

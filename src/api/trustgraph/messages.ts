@@ -42,6 +42,10 @@ export interface TextCompletionResponse {
 
 export interface GraphRagRequest {
   query: string;
+  entityLimit?: number;    // Default: 50
+  tripleLimit?: number;    // Default: 30  
+  maxSubgraphSize?: number; // Default: 1000
+  pathLength?: number;     // Default: 2
 }
 
 export interface GraphRagResponse {
