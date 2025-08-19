@@ -9,6 +9,8 @@ import userEvent from "@testing-library/user-event";
 import { describe, test, expect, vi, beforeEach } from "vitest";
 import GraphView from "../Graph";
 import { useGraphSubgraph } from "../../../state/graph-query";
+import { useWorkbenchStateStore } from "../../../state/workbench";
+import { useResizeDetector } from "react-resize-detector";
 
 // Mock all the external dependencies
 vi.mock("react-resize-detector", () => ({
@@ -21,6 +23,10 @@ vi.mock("react-resize-detector", () => ({
 
 vi.mock("../../../state/graph-query", () => ({
   useGraphSubgraph: vi.fn(),
+}));
+
+vi.mock("../../../state/workbench", () => ({
+  useWorkbenchStateStore: vi.fn(),
 }));
 
 vi.mock("react-force-graph", () => ({
@@ -79,7 +85,7 @@ vi.mock("three-spritetext", () => {
   };
 });
 
-vi.mock("../../ui/graph-colors", () => ({
+vi.mock("../ui/graph-colors", () => ({
   useBorderColor: vi.fn(() => "#cccccc"),
   useBackgroundColor: vi.fn(() => "#ffffff"),
   useNodeColor: vi.fn(() => "#0066cc"),
@@ -162,6 +168,12 @@ describe("Graph Component", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     
+    // Default setup for workbench store with selected item
+    vi.mocked(useWorkbenchStateStore).mockImplementation((selector) => {
+      const state = { selected: { uri: "test-selected-node", label: "Test Selected Node" } };
+      return selector(state);
+    });
+    
     vi.mocked(useGraphSubgraph).mockReturnValue({
       view: mockGraphData,
       isLoading: false,
@@ -180,8 +192,7 @@ describe("Graph Component", () => {
   });
 
   test("shows info message when no data is selected", () => {
-    const { useWorkbenchStateStore } = require("../../state/workbench");
-    useWorkbenchStateStore.mockImplementation((selector) => {
+    vi.mocked(useWorkbenchStateStore).mockImplementation((selector) => {
       const state = { selected: null };
       return selector(state);
     });
@@ -193,6 +204,11 @@ describe("Graph Component", () => {
   });
 
   test("shows loading state while graph data is loading", () => {
+    vi.mocked(useWorkbenchStateStore).mockImplementation((selector) => {
+      const state = { selected: { uri: "test-uri" } };
+      return selector(state);
+    });
+    
     vi.mocked(useGraphSubgraph).mockReturnValue({
       view: null,
       isLoading: true,
@@ -207,8 +223,13 @@ describe("Graph Component", () => {
   });
 
   test("shows error state when graph loading fails", () => {
+    vi.mocked(useWorkbenchStateStore).mockImplementation((selector) => {
+      const state = { selected: { uri: "test-uri" } };
+      return selector(state);
+    });
+    
     vi.mocked(useGraphSubgraph).mockReturnValue({
-      view: null,
+      view: mockGraphData, // Provide view so it doesn't hit the !view condition
       isLoading: false,
       isError: true,
       updateSubgraph: mockUpdateSubgraph,
@@ -244,7 +265,8 @@ describe("Graph Component", () => {
   test("renders graph help component", () => {
     render(<GraphView />);
 
-    expect(screen.getByTestId("graph-help")).toBeInTheDocument();
+    // Look for the help button by its aria attributes or content
+    expect(screen.getByRole("button", { name: /circle-help/i })).toBeInTheDocument();
   });
 
   test("handles node selection", async () => {
@@ -429,7 +451,7 @@ describe("Graph Component", () => {
   });
 
   test("uses correct colors from theme hooks", () => {
-    const colorHooks = require("../../ui/graph-colors");
+    const colorHooks = require("../ui/graph-colors");
     
     render(<GraphView />);
 
@@ -467,8 +489,7 @@ describe("Graph Component", () => {
   });
 
   test("handles resize detector changes", () => {
-    const { useResizeDetector } = require("react-resize-detector");
-    useResizeDetector.mockReturnValue({
+    vi.mocked(useResizeDetector).mockReturnValue({
       width: 1000,
       height: 800,
       ref: { current: document.createElement("div") },

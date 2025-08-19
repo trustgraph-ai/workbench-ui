@@ -344,7 +344,7 @@ describe("NodeDetailsDrawer", () => {
   });
 
   test("fetches node details with correct parameters", () => {
-    const { useNodeDetails } = require("../../../state/node-details");
+    // useNodeDetails is already mocked at the top
 
     render(
       <NodeDetailsDrawer
@@ -359,7 +359,7 @@ describe("NodeDetailsDrawer", () => {
   });
 
   test("handles null node gracefully", () => {
-    const { useNodeDetails } = require("../../../state/node-details");
+    // useNodeDetails is already mocked at the top
 
     render(
       <NodeDetailsDrawer
@@ -397,7 +397,7 @@ describe("NodeDetailsDrawer", () => {
       />
     );
 
-    const RelationshipsTable = require("./RelationshipsTable").default;
+    // RelationshipsTable is already mocked at the top
     expect(RelationshipsTable).toHaveBeenCalledWith(
       expect.objectContaining({
         outboundRelationships: mockNodeDetails.outboundRelationshipsWithLabels,
@@ -418,7 +418,7 @@ describe("NodeDetailsDrawer", () => {
       />
     );
 
-    const NodePropertiesTable = require("./NodePropertiesTable").default;
+    // NodePropertiesTable is already mocked at the top
     expect(NodePropertiesTable).toHaveBeenCalledWith(
       expect.objectContaining({
         properties: mockNodeDetails.propertiesWithLabels,
