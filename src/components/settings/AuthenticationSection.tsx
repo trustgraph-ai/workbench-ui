@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { VStack, HStack, Button, Text } from "@chakra-ui/react";
+import { VStack, HStack, IconButton, Text } from "@chakra-ui/react";
 import { Eye, EyeOff, Key } from "lucide-react";
 import Card from "../common/Card";
 import TextField from "../common/TextField";
@@ -29,14 +29,14 @@ const AuthenticationSection: React.FC<AuthenticationSectionProps> = ({
         <VStack gap={2} align="stretch">
           <HStack justify="space-between">
             <Text fontWeight="medium">API Key</Text>
-            <Button
+            <IconButton
               size="sm"
               variant="ghost"
               onClick={toggleApiKeyVisibility}
               aria-label={showApiKey ? "Hide API key" : "Show API key"}
             >
               {showApiKey ? <EyeOff /> : <Eye />}
-            </Button>
+            </IconButton>
           </HStack>
           <TextField
             placeholder="Enter API key (leave empty for no authentication)"
