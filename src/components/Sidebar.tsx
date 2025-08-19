@@ -125,14 +125,22 @@ const Sidebar = () => {
         {settings.featureSwitches.submissions && (
           <NavItem to="/procs" icon={CircleArrowRight} label="Submissions" />
         )}
-        <NavItem to="/tokencost" icon={HandCoins} label="Token Cost" />
+        {settings.featureSwitches.tokenCost && (
+          <NavItem to="/tokencost" icon={HandCoins} label="Token Cost" />
+        )}
         <NavItem to="/prompts" icon={MessageCircleCode} label="Prompts" />
-        <NavItem to="/schemas" icon={Database} label="Schemas" />
+        {settings.featureSwitches.schemas && (
+          <NavItem to="/schemas" icon={Database} label="Schemas" />
+        )}
         {settings.featureSwitches.taxonomyEditor && (
           <NavItem to="/taxonomies" icon={Network} label="Taxonomies" />
         )}
-        <NavItem to="/agents" icon={Hammer} label="Agent Tools" />
-        <NavItem to="/mcp-tools" icon={Plug} label="MCP Tools" />
+        {settings.featureSwitches.agentTools && (
+          <NavItem to="/agents" icon={Hammer} label="Agent Tools" />
+        )}
+        {settings.featureSwitches.mcpTools && (
+          <NavItem to="/mcp-tools" icon={Plug} label="MCP Tools" />
+        )}
         <NavItem to="/settings" icon={Settings} label="Settings" />
       </VStack>
     </Box>

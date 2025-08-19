@@ -123,8 +123,16 @@ const Settings: React.FC = () => {
       <FeatureSwitchesSection
         taxonomyEditor={settings.featureSwitches.taxonomyEditor}
         submissions={settings.featureSwitches.submissions}
+        agentTools={settings.featureSwitches.agentTools}
+        mcpTools={settings.featureSwitches.mcpTools}
+        schemas={settings.featureSwitches.schemas}
+        tokenCost={settings.featureSwitches.tokenCost}
         onTaxonomyEditorChange={(value) => updateSetting('featureSwitches.taxonomyEditor', value)}
         onSubmissionsChange={(value) => updateSetting('featureSwitches.submissions', value)}
+        onAgentToolsChange={(value) => updateSetting('featureSwitches.agentTools', value)}
+        onMcpToolsChange={(value) => updateSetting('featureSwitches.mcpTools', value)}
+        onSchemasChange={(value) => updateSetting('featureSwitches.schemas', value)}
+        onTokenCostChange={(value) => updateSetting('featureSwitches.tokenCost', value)}
       />
     </VStack>
   );
