@@ -83,22 +83,28 @@ export const useSettings = () => {
         const res = await socket
           .config()
           .getConfig([{ type: "settings", key: "user" }]);
-        
+
         if (res["error"]) {
-          console.log("Settings backend error, falling back to localStorage:", res);
+          console.log(
+            "Settings backend error, falling back to localStorage:",
+            res,
+          );
           // Fall back to localStorage if backend fails
           return loadFromLocalStorage();
         }
-        
+
         const settings = JSON.parse(res.values[0].value);
         const mergedSettings = mergeWithDefaults(settings);
-        
+
         // Update localStorage cache
         updateLocalStorage(mergedSettings);
-        
+
         return mergedSettings;
       } catch (error) {
-        console.log("Settings fetch failed, falling back to localStorage:", error);
+        console.log(
+          "Settings fetch failed, falling back to localStorage:",
+          error,
+        );
         // Fall back to localStorage if anything goes wrong
         return loadFromLocalStorage();
       }
@@ -110,26 +116,30 @@ export const useSettings = () => {
 
   // Mutation for updating settings
   const updateSettingsMutation = useMutation({
-    mutationFn: async ({ settings, onSuccess }: { settings: Settings; onSuccess?: () => void }) => {
+    mutationFn: async ({
+      settings,
+      onSuccess,
+    }: {
+      settings: Settings;
+      onSuccess?: () => void;
+    }) => {
       try {
-        const res = await socket
-          .config()
-          .putConfig([
-            {
-              type: "settings",
-              key: "user",
-              value: JSON.stringify(settings),
-            },
-          ]);
-        
+        const res = await socket.config().putConfig([
+          {
+            type: "settings",
+            key: "user",
+            value: JSON.stringify(settings),
+          },
+        ]);
+
         if (res["error"]) {
           console.log("Error:", res);
           throw new Error(res.error.message);
         }
-        
+
         // Update localStorage cache
         updateLocalStorage(settings);
-        
+
         // Execute callback if provided
         if (onSuccess) onSuccess();
       } catch (error) {
@@ -160,10 +170,10 @@ export const useSettings = () => {
             key: "user",
           },
         ]);
-        
+
         // Clear localStorage
         localStorage.removeItem(SETTINGS_STORAGE_KEY);
-        
+
         // Execute callback if provided
         if (onSuccess) onSuccess();
       } catch (error) {
@@ -200,10 +210,12 @@ export const useSettings = () => {
       const [section, key] = keys;
       if (section in newSettings) {
         (newSettings as Record<string, Record<string, unknown>>)[section] = {
-          ...(newSettings as Record<string, Record<string, unknown>>)[section],
+          ...(newSettings as Record<string, Record<string, unknown>>)[
+            section
+          ],
           [key]: value,
         };
-        
+
         updateSettingsMutation.mutate({ settings: newSettings });
       }
     }

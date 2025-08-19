@@ -144,10 +144,9 @@ export class BaseApi {
     this.tag = makeid(16); // Generate unique client tag
     this.id = 1; // Start message ID counter
 
-      console.log("SOCKET: opening socket...");
+    console.log("SOCKET: opening socket...");
     this.openSocket(); // Establish WebSocket connection
-      console.log("SOCKET: socket opened");
-
+    console.log("SOCKET: socket opened");
   }
 
   /**
