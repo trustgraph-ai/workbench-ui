@@ -205,12 +205,6 @@ describe("SKOSDialog", () => {
 
   afterEach(() => {
     vi.restoreAllMocks();
-    
-    // Cleanup portal root
-    const portalRoot = document.getElementById('portal-root');
-    if (portalRoot) {
-      document.body.removeChild(portalRoot);
-    }
   });
 
   describe("Export Mode", () => {
@@ -335,9 +329,6 @@ describe("SKOSDialog", () => {
 
     test("downloads exported content", async () => {
       const user = userEvent.setup();
-      const mockCreateElement = vi.fn();
-      const mockAppendChild = vi.fn();
-      const mockRemoveChild = vi.fn();
       const mockClick = vi.fn();
       
       const mockAnchor = {
@@ -346,13 +337,16 @@ describe("SKOSDialog", () => {
         click: mockClick,
       };
       
+      // Mock only createElement, but allow body methods to work normally for portals
       const originalCreateElement = document.createElement;
-      const originalAppendChild = document.body.appendChild;
-      const originalRemoveChild = document.body.removeChild;
+      const mockCreateElement = vi.fn().mockImplementation((tagName) => {
+        if (tagName === 'a') {
+          return mockAnchor;
+        }
+        return originalCreateElement.call(document, tagName);
+      });
       
-      document.createElement = mockCreateElement.mockReturnValue(mockAnchor);
-      document.body.appendChild = mockAppendChild;
-      document.body.removeChild = mockRemoveChild;
+      document.createElement = mockCreateElement;
       
       render(
         <SKOSDialog
@@ -366,15 +360,14 @@ describe("SKOSDialog", () => {
       const downloadButton = screen.getByText("Download");
       await user.click(downloadButton);
 
-      expect(mockCreateElement).toHaveBeenCalledWith("a");
+      // Check that 'a' was called somewhere in the createElement calls
+      expect(mockCreateElement.mock.calls.some(call => call[0] === "a")).toBe(true);
       expect(mockAnchor.download).toBe("Test-Taxonomy.rdf");
       expect(mockClick).toHaveBeenCalled();
       expect(mockNotify.success).toHaveBeenCalledWith("SKOS RDF/XML file downloaded");
       
       // Restore original methods
       document.createElement = originalCreateElement;
-      document.body.appendChild = originalAppendChild;
-      document.body.removeChild = originalRemoveChild;
     });
 
     test("handles export errors gracefully", () => {
