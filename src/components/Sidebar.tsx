@@ -33,6 +33,7 @@ import {
   MessageCircleCode,
   Database,
   Network,
+  Settings,
 } from "lucide-react";
 
 interface NavItemProps {
@@ -125,6 +126,7 @@ const Sidebar = () => {
         <NavItem to="/taxonomies" icon={Network} label="Taxonomies" />
         <NavItem to="/agents" icon={Hammer} label="Agent Tools" />
         <NavItem to="/mcp-tools" icon={Plug} label="MCP Tools" />
+        <NavItem to="/settings" icon={Settings} label="Settings" />
       </VStack>
     </Box>
   );
