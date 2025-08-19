@@ -16,12 +16,9 @@ const customRender = (ui: React.ReactElement, options?: RenderOptions) => {
     },
   });
 
-
   const Wrapper = ({ children }: { children: React.ReactNode }) => (
     <QueryClientProvider client={queryClient}>
-      <ChakraProvider value={defaultSystem}>
-        {children}
-      </ChakraProvider>
+      <ChakraProvider value={defaultSystem}>{children}</ChakraProvider>
     </QueryClientProvider>
   );
 

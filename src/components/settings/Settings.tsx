@@ -16,7 +16,7 @@ const Settings: React.FC = () => {
     exportSettings,
     importSettings,
   } = useSettings();
-  
+
   const notify = useNotification();
 
   const handleReset = async () => {
@@ -31,11 +31,11 @@ const Settings: React.FC = () => {
   const handleExport = () => {
     try {
       const settingsJson = exportSettings();
-      const blob = new Blob([settingsJson], { type: 'application/json' });
+      const blob = new Blob([settingsJson], { type: "application/json" });
       const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       link.href = url;
-      link.download = 'trustgraph-settings.json';
+      link.download = "trustgraph-settings.json";
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -47,9 +47,9 @@ const Settings: React.FC = () => {
   };
 
   const handleImport = () => {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = '.json';
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = ".json";
     input.onchange = (event) => {
       const file = (event.target as HTMLInputElement).files?.[0];
       if (file) {
@@ -106,7 +106,9 @@ const Settings: React.FC = () => {
 
       <AuthenticationSection
         apiKey={settings.authentication.apiKey}
-        onApiKeyChange={(value) => updateSetting('authentication.apiKey', value)}
+        onApiKeyChange={(value) =>
+          updateSetting("authentication.apiKey", value)
+        }
       />
 
       <GraphRagSection
@@ -114,10 +116,18 @@ const Settings: React.FC = () => {
         tripleLimit={settings.graphrag.tripleLimit}
         maxSubgraphSize={settings.graphrag.maxSubgraphSize}
         pathLength={settings.graphrag.pathLength}
-        onEntityLimitChange={(value) => updateSetting('graphrag.entityLimit', value)}
-        onTripleLimitChange={(value) => updateSetting('graphrag.tripleLimit', value)}
-        onMaxSubgraphSizeChange={(value) => updateSetting('graphrag.maxSubgraphSize', value)}
-        onPathLengthChange={(value) => updateSetting('graphrag.pathLength', value)}
+        onEntityLimitChange={(value) =>
+          updateSetting("graphrag.entityLimit", value)
+        }
+        onTripleLimitChange={(value) =>
+          updateSetting("graphrag.tripleLimit", value)
+        }
+        onMaxSubgraphSizeChange={(value) =>
+          updateSetting("graphrag.maxSubgraphSize", value)
+        }
+        onPathLengthChange={(value) =>
+          updateSetting("graphrag.pathLength", value)
+        }
       />
 
       <FeatureSwitchesSection
@@ -127,12 +137,24 @@ const Settings: React.FC = () => {
         mcpTools={settings.featureSwitches.mcpTools}
         schemas={settings.featureSwitches.schemas}
         tokenCost={settings.featureSwitches.tokenCost}
-        onTaxonomyEditorChange={(value) => updateSetting('featureSwitches.taxonomyEditor', value)}
-        onSubmissionsChange={(value) => updateSetting('featureSwitches.submissions', value)}
-        onAgentToolsChange={(value) => updateSetting('featureSwitches.agentTools', value)}
-        onMcpToolsChange={(value) => updateSetting('featureSwitches.mcpTools', value)}
-        onSchemasChange={(value) => updateSetting('featureSwitches.schemas', value)}
-        onTokenCostChange={(value) => updateSetting('featureSwitches.tokenCost', value)}
+        onTaxonomyEditorChange={(value) =>
+          updateSetting("featureSwitches.taxonomyEditor", value)
+        }
+        onSubmissionsChange={(value) =>
+          updateSetting("featureSwitches.submissions", value)
+        }
+        onAgentToolsChange={(value) =>
+          updateSetting("featureSwitches.agentTools", value)
+        }
+        onMcpToolsChange={(value) =>
+          updateSetting("featureSwitches.mcpTools", value)
+        }
+        onSchemasChange={(value) =>
+          updateSetting("featureSwitches.schemas", value)
+        }
+        onTokenCostChange={(value) =>
+          updateSetting("featureSwitches.tokenCost", value)
+        }
       />
     </VStack>
   );

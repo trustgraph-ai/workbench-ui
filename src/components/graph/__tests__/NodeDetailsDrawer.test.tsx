@@ -37,10 +37,18 @@ vi.mock("../NodePropertiesTable", () => ({
 
 vi.mock("../RelationshipsTable", () => ({
   __esModule: true,
-  default: ({ outboundRelationships, inboundRelationships, onRelationshipClick }: any) => (
+  default: ({
+    outboundRelationships,
+    inboundRelationships,
+    onRelationshipClick,
+  }: any) => (
     <div data-testid="relationships-table">
-      <div data-testid="outbound-count">{outboundRelationships?.length || 0}</div>
-      <div data-testid="inbound-count">{inboundRelationships?.length || 0}</div>
+      <div data-testid="outbound-count">
+        {outboundRelationships?.length || 0}
+      </div>
+      <div data-testid="inbound-count">
+        {inboundRelationships?.length || 0}
+      </div>
       {outboundRelationships?.map((rel: any, index: number) => (
         <button
           key={`out-${index}`}
@@ -99,7 +107,7 @@ describe("NodeDetailsDrawer", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    
+
     vi.mocked(useNodeDetails).mockReturnValue(mockNodeDetails);
   });
 
@@ -110,11 +118,13 @@ describe("NodeDetailsDrawer", () => {
         isOpen={false}
         onClose={mockOnClose}
         onRelationshipClick={mockOnRelationshipClick}
-      />
+      />,
     );
 
     expect(screen.queryByText("Test Node")).not.toBeInTheDocument();
-    expect(screen.queryByTestId("relationships-table")).not.toBeInTheDocument();
+    expect(
+      screen.queryByTestId("relationships-table"),
+    ).not.toBeInTheDocument();
   });
 
   test("renders open drawer with node details when isOpen is true", () => {
@@ -124,7 +134,7 @@ describe("NodeDetailsDrawer", () => {
         isOpen={true}
         onClose={mockOnClose}
         onRelationshipClick={mockOnRelationshipClick}
-      />
+      />,
     );
 
     expect(screen.getByText("Test Node")).toBeInTheDocument();
@@ -139,7 +149,7 @@ describe("NodeDetailsDrawer", () => {
         isOpen={true}
         onClose={mockOnClose}
         onRelationshipClick={mockOnRelationshipClick}
-      />
+      />,
     );
 
     expect(screen.getByText("Test Node")).toBeInTheDocument();
@@ -154,7 +164,7 @@ describe("NodeDetailsDrawer", () => {
         isOpen={true}
         onClose={mockOnClose}
         onRelationshipClick={mockOnRelationshipClick}
-      />
+      />,
     );
 
     expect(screen.getByText("node-456")).toBeInTheDocument();
@@ -167,7 +177,7 @@ describe("NodeDetailsDrawer", () => {
         isOpen={true}
         onClose={mockOnClose}
         onRelationshipClick={mockOnRelationshipClick}
-      />
+      />,
     );
 
     expect(screen.getByText("Node Details")).toBeInTheDocument();
@@ -180,7 +190,7 @@ describe("NodeDetailsDrawer", () => {
         isOpen={true}
         onClose={mockOnClose}
         onRelationshipClick={mockOnRelationshipClick}
-      />
+      />,
     );
 
     expect(screen.getByText("Relationships")).toBeInTheDocument();
@@ -195,7 +205,7 @@ describe("NodeDetailsDrawer", () => {
         isOpen={true}
         onClose={mockOnClose}
         onRelationshipClick={mockOnRelationshipClick}
-      />
+      />,
     );
 
     expect(screen.getByText("Properties")).toBeInTheDocument();
@@ -212,11 +222,13 @@ describe("NodeDetailsDrawer", () => {
         isOpen={true}
         onClose={mockOnClose}
         onRelationshipClick={mockOnRelationshipClick}
-      />
+      />,
     );
 
     expect(screen.queryByText("Relationships")).not.toBeInTheDocument();
-    expect(screen.queryByTestId("relationships-table")).not.toBeInTheDocument();
+    expect(
+      screen.queryByTestId("relationships-table"),
+    ).not.toBeInTheDocument();
   });
 
   test("hides properties section when no properties exist", () => {
@@ -228,17 +240,20 @@ describe("NodeDetailsDrawer", () => {
         isOpen={true}
         onClose={mockOnClose}
         onRelationshipClick={mockOnRelationshipClick}
-      />
+      />,
     );
 
     expect(screen.queryByText("Properties")).not.toBeInTheDocument();
-    expect(screen.queryByTestId("node-properties-table")).not.toBeInTheDocument();
+    expect(
+      screen.queryByTestId("node-properties-table"),
+    ).not.toBeInTheDocument();
   });
 
   test("shows relationships section when only outbound relationships exist", () => {
     vi.mocked(useNodeDetails).mockReturnValue({
       ...mockEmptyNodeDetails,
-      outboundRelationshipsWithLabels: mockNodeDetails.outboundRelationshipsWithLabels,
+      outboundRelationshipsWithLabels:
+        mockNodeDetails.outboundRelationshipsWithLabels,
     });
 
     render(
@@ -247,7 +262,7 @@ describe("NodeDetailsDrawer", () => {
         isOpen={true}
         onClose={mockOnClose}
         onRelationshipClick={mockOnRelationshipClick}
-      />
+      />,
     );
 
     expect(screen.getByText("Relationships")).toBeInTheDocument();
@@ -258,7 +273,8 @@ describe("NodeDetailsDrawer", () => {
   test("shows relationships section when only inbound relationships exist", () => {
     vi.mocked(useNodeDetails).mockReturnValue({
       ...mockEmptyNodeDetails,
-      inboundRelationshipsWithLabels: mockNodeDetails.inboundRelationshipsWithLabels,
+      inboundRelationshipsWithLabels:
+        mockNodeDetails.inboundRelationshipsWithLabels,
     });
 
     render(
@@ -267,7 +283,7 @@ describe("NodeDetailsDrawer", () => {
         isOpen={true}
         onClose={mockOnClose}
         onRelationshipClick={mockOnRelationshipClick}
-      />
+      />,
     );
 
     expect(screen.getByText("Relationships")).toBeInTheDocument();
@@ -284,11 +300,13 @@ describe("NodeDetailsDrawer", () => {
         isOpen={true}
         onClose={mockOnClose}
         onRelationshipClick={mockOnRelationshipClick}
-      />
+      />,
     );
 
     // Find and click the close button (X icon)
-    const closeButton = document.querySelector('button[style*="position: absolute"]');
+    const closeButton = document.querySelector(
+      'button[style*="position: absolute"]',
+    );
     expect(closeButton).toBeInTheDocument();
 
     if (closeButton) {
@@ -305,7 +323,7 @@ describe("NodeDetailsDrawer", () => {
         isOpen={true}
         onClose={mockOnClose}
         onRelationshipClick={mockOnRelationshipClick}
-      />
+      />,
     );
 
     // Simulate drawer closing event
@@ -327,20 +345,26 @@ describe("NodeDetailsDrawer", () => {
         isOpen={true}
         onClose={mockOnClose}
         onRelationshipClick={mockOnRelationshipClick}
-      />
+      />,
     );
 
     // Click outbound relationship
     const outboundRel = screen.getByTestId("outbound-rel-connects-to");
     await user.click(outboundRel);
 
-    expect(mockOnRelationshipClick).toHaveBeenCalledWith("connects-to", "outgoing");
+    expect(mockOnRelationshipClick).toHaveBeenCalledWith(
+      "connects-to",
+      "outgoing",
+    );
 
     // Click inbound relationship
     const inboundRel = screen.getByTestId("inbound-rel-owned-by");
     await user.click(inboundRel);
 
-    expect(mockOnRelationshipClick).toHaveBeenCalledWith("owned-by", "incoming");
+    expect(mockOnRelationshipClick).toHaveBeenCalledWith(
+      "owned-by",
+      "incoming",
+    );
   });
 
   test("fetches node details with correct parameters", () => {
@@ -352,7 +376,7 @@ describe("NodeDetailsDrawer", () => {
         isOpen={true}
         onClose={mockOnClose}
         onRelationshipClick={mockOnRelationshipClick}
-      />
+      />,
     );
 
     expect(useNodeDetails).toHaveBeenCalledWith("node-123", "test-flow-123");
@@ -367,7 +391,7 @@ describe("NodeDetailsDrawer", () => {
         isOpen={true}
         onClose={mockOnClose}
         onRelationshipClick={mockOnRelationshipClick}
-      />
+      />,
     );
 
     expect(useNodeDetails).toHaveBeenCalledWith(undefined, "test-flow-123");
@@ -380,11 +404,15 @@ describe("NodeDetailsDrawer", () => {
         isOpen={true}
         onClose={mockOnClose}
         onRelationshipClick={mockOnRelationshipClick}
-      />
+      />,
     );
 
-    expect(screen.queryByTestId("relationships-table")).not.toBeInTheDocument();
-    expect(screen.queryByTestId("node-properties-table")).not.toBeInTheDocument();
+    expect(
+      screen.queryByTestId("relationships-table"),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByTestId("node-properties-table"),
+    ).not.toBeInTheDocument();
   });
 
   test("passes correct props to RelationshipsTable", () => {
@@ -394,7 +422,7 @@ describe("NodeDetailsDrawer", () => {
         isOpen={true}
         onClose={mockOnClose}
         onRelationshipClick={mockOnRelationshipClick}
-      />
+      />,
     );
 
     // Verify that RelationshipsTable mock is rendered with correct data
@@ -410,10 +438,10 @@ describe("NodeDetailsDrawer", () => {
         isOpen={true}
         onClose={mockOnClose}
         onRelationshipClick={mockOnRelationshipClick}
-      />
+      />,
     );
 
-    // Verify that NodePropertiesTable mock is rendered with correct data  
+    // Verify that NodePropertiesTable mock is rendered with correct data
     expect(screen.getByTestId("node-properties-table")).toBeInTheDocument();
     expect(screen.getByTestId("property-type")).toBeInTheDocument();
     expect(screen.getByTestId("property-status")).toBeInTheDocument();
@@ -427,7 +455,7 @@ describe("NodeDetailsDrawer", () => {
         isOpen={true}
         onClose={mockOnClose}
         onRelationshipClick={mockOnRelationshipClick}
-      />
+      />,
     );
 
     // Drawer should be configured as end placement, non-modal, no close on outside interaction
@@ -447,7 +475,7 @@ describe("NodeDetailsDrawer", () => {
         isOpen={true}
         onClose={mockOnClose}
         onRelationshipClick={mockOnRelationshipClick}
-      />
+      />,
     );
 
     // Should still render drawer structure even when loading
@@ -468,7 +496,7 @@ describe("NodeDetailsDrawer", () => {
         isOpen={true}
         onClose={mockOnClose}
         onRelationshipClick={mockOnRelationshipClick}
-      />
+      />,
     );
 
     // Should not crash and should not show sections
@@ -483,7 +511,7 @@ describe("NodeDetailsDrawer", () => {
         isOpen={true}
         onClose={mockOnClose}
         onRelationshipClick={mockOnRelationshipClick}
-      />
+      />,
     );
 
     // This tests that the drawer is configured with size="sm"

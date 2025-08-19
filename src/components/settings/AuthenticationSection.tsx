@@ -45,10 +45,9 @@ const AuthenticationSection: React.FC<AuthenticationSectionProps> = ({
             type={showApiKey ? "text" : "password"}
           />
           <Text fontSize="sm" color="fg.muted">
-            {apiKey 
-              ? "API key will be used for socket authentication" 
-              : "No API key set - authentication disabled"
-            }
+            {apiKey
+              ? "API key will be used for socket authentication"
+              : "No API key set - authentication disabled"}
           </Text>
         </VStack>
       </VStack>

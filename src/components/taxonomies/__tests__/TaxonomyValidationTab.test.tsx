@@ -26,7 +26,8 @@ vi.mock("../../../utils/taxonomy-qa", () => ({
 vi.mock("../ValidationResults", () => ({
   ValidationResults: ({ validation }: { validation: any }) => (
     <div data-testid="validation-results">
-      Errors: {validation.errors.length}, Warnings: {validation.warnings.length}
+      Errors: {validation.errors.length}, Warnings:{" "}
+      {validation.warnings.length}
     </div>
   ),
 }));
@@ -132,14 +133,34 @@ const mockValidationResult = {
 const mockInvalidValidationResult = {
   isValid: false,
   errors: [
-    { type: "error", code: "CONCEPT_NO_PREFLABEL", message: "Concept missing preferred label", conceptId: "concept-1" },
-    { type: "error", code: "CONCEPT_INVALID_BROADER", message: "Invalid broader reference", conceptId: "concept-2" },
+    {
+      type: "error",
+      code: "CONCEPT_NO_PREFLABEL",
+      message: "Concept missing preferred label",
+      conceptId: "concept-1",
+    },
+    {
+      type: "error",
+      code: "CONCEPT_INVALID_BROADER",
+      message: "Invalid broader reference",
+      conceptId: "concept-2",
+    },
   ],
   warnings: [
-    { type: "warning", code: "CONCEPT_NO_DEFINITION", message: "Concept missing definition", conceptId: "concept-1" },
+    {
+      type: "warning",
+      code: "CONCEPT_NO_DEFINITION",
+      message: "Concept missing definition",
+      conceptId: "concept-1",
+    },
   ],
   info: [
-    { type: "info", code: "CONCEPT_COULD_IMPROVE", message: "Concept could be improved", conceptId: "concept-2" },
+    {
+      type: "info",
+      code: "CONCEPT_COULD_IMPROVE",
+      message: "Concept could be improved",
+      conceptId: "concept-2",
+    },
   ],
 };
 
@@ -155,13 +176,13 @@ describe("TaxonomyValidationTab", () => {
 
     // Check that quality score is displayed
     expect(screen.getByText("Taxonomy Quality Score")).toBeInTheDocument();
-    
+
     // Check individual metrics
     expect(screen.getByText("Completeness")).toBeInTheDocument();
     expect(screen.getByText("Consistency")).toBeInTheDocument();
     expect(screen.getByText("Coverage")).toBeInTheDocument();
     expect(screen.getByText("SKOS Compliance")).toBeInTheDocument();
-    
+
     // Check validation summary
     expect(screen.getByText("Validation Summary")).toBeInTheDocument();
     expect(screen.getByText("Errors")).toBeInTheDocument();
@@ -172,7 +193,7 @@ describe("TaxonomyValidationTab", () => {
     vi.mocked(validateTaxonomy).mockReturnValue(mockValidationResult);
 
     render(<TaxonomyValidationTab taxonomy={mockValidTaxonomy} />);
-    
+
     // Since all concepts have prefLabel, definition, and proper hierarchy,
     // completeness should be 100%
     const completenessMetrics = screen.getAllByText(/100%|[89][0-9]%/);
@@ -186,7 +207,7 @@ describe("TaxonomyValidationTab", () => {
 
     // Check error count badge
     expect(screen.getByText("2")).toBeInTheDocument(); // 2 errors
-    
+
     // Check validation results component is rendered
     expect(screen.getByTestId("validation-results")).toBeInTheDocument();
     expect(screen.getByText("Errors: 2, Warnings: 1")).toBeInTheDocument();
@@ -199,8 +220,8 @@ describe("TaxonomyValidationTab", () => {
         type: "auto",
         field: "prefLabel",
         description: "Some concepts can be auto-fixed",
-        conceptId: "concept-1"
-      }
+        conceptId: "concept-1",
+      },
     ]);
 
     render(<TaxonomyValidationTab taxonomy={mockValidTaxonomy} />);
@@ -219,15 +240,15 @@ describe("TaxonomyValidationTab", () => {
         type: "auto",
         field: "consistency",
         description: "Fix relationship inconsistencies",
-        conceptId: "concept-1"
-      }
+        conceptId: "concept-1",
+      },
     ]);
 
     render(
       <TaxonomyValidationTab
         taxonomy={mockValidTaxonomy}
         onTaxonomyChange={mockOnTaxonomyChange}
-      />
+      />,
     );
 
     // Click Fix All button
@@ -235,7 +256,9 @@ describe("TaxonomyValidationTab", () => {
     fireEvent.click(fixAllButton);
 
     await waitFor(() => {
-      expect(vi.mocked(TaxonomyQA.autoFix)).toHaveBeenCalledWith(mockValidTaxonomy);
+      expect(vi.mocked(TaxonomyQA.autoFix)).toHaveBeenCalledWith(
+        mockValidTaxonomy,
+      );
       expect(mockOnTaxonomyChange).toHaveBeenCalledWith(mockValidTaxonomy);
     });
   });
@@ -247,8 +270,8 @@ describe("TaxonomyValidationTab", () => {
         type: "auto",
         field: "consistency",
         description: "Fix relationship inconsistencies",
-        conceptId: "concept-1"
-      }
+        conceptId: "concept-1",
+      },
     ]);
 
     render(<TaxonomyValidationTab taxonomy={mockValidTaxonomy} />);
@@ -276,7 +299,7 @@ describe("TaxonomyValidationTab", () => {
 
   test("detects orphaned concepts", () => {
     vi.mocked(validateTaxonomy).mockReturnValue(mockValidationResult);
-    
+
     const taxonomyWithOrphans: Taxonomy = {
       ...mockValidTaxonomy,
       scheme: { ...mockValidTaxonomy.scheme, hasTopConcept: [] },
@@ -386,7 +409,9 @@ describe("TaxonomyValidationTab", () => {
 
     render(<TaxonomyValidationTab taxonomy={mockValidTaxonomy} />);
 
-    expect(screen.getByText("No issues found. Your taxonomy looks great!")).toBeInTheDocument();
+    expect(
+      screen.getByText("No issues found. Your taxonomy looks great!"),
+    ).toBeInTheDocument();
   });
 
   test("revalidation button triggers validation", () => {
@@ -395,10 +420,10 @@ describe("TaxonomyValidationTab", () => {
     render(<TaxonomyValidationTab taxonomy={mockValidTaxonomy} />);
 
     const revalidateButton = screen.getByText("Revalidate");
-    
+
     // Clear previous calls
     vi.mocked(validateTaxonomy).mockClear();
-    
+
     fireEvent.click(revalidateButton);
 
     // Note: The component uses useMemo for validation, so clicking revalidate

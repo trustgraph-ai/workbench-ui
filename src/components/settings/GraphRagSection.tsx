@@ -70,7 +70,7 @@ const GraphRagSection: React.FC<GraphRagSectionProps> = ({
               size="sm"
               variant="solid"
               colorPalette="accent"
-              onClick={() => applyPreset('small')}
+              onClick={() => applyPreset("small")}
             >
               <Minimize2 />
               Small
@@ -79,7 +79,7 @@ const GraphRagSection: React.FC<GraphRagSectionProps> = ({
               size="sm"
               variant="solid"
               colorPalette="accent"
-              onClick={() => applyPreset('medium')}
+              onClick={() => applyPreset("medium")}
             >
               <Circle />
               Medium
@@ -88,7 +88,7 @@ const GraphRagSection: React.FC<GraphRagSectionProps> = ({
               size="sm"
               variant="solid"
               colorPalette="accent"
-              onClick={() => applyPreset('large')}
+              onClick={() => applyPreset("large")}
             >
               <Maximize2 />
               Large

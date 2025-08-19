@@ -20,7 +20,7 @@ export interface Settings {
 
 export const DEFAULT_SETTINGS: Settings = {
   authentication: {
-    apiKey: '',
+    apiKey: "",
   },
   graphrag: {
     entityLimit: 50,
@@ -31,11 +31,11 @@ export const DEFAULT_SETTINGS: Settings = {
   featureSwitches: {
     taxonomyEditor: false,
     submissions: false,
-    agentTools: true,     // On by default
-    mcpTools: false,      // Off by default
-    schemas: false,       // Off by default
-    tokenCost: false,     // Off by default
+    agentTools: true, // On by default
+    mcpTools: false, // Off by default
+    schemas: false, // Off by default
+    tokenCost: false, // Off by default
   },
 };
 
-export const SETTINGS_STORAGE_KEY = 'trustgraph-settings';
+export const SETTINGS_STORAGE_KEY = "trustgraph-settings";

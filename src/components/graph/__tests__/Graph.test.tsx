@@ -1,5 +1,5 @@
 /**
- * Tests for Graph component  
+ * Tests for Graph component
  * Tests 3D graph rendering, node interactions, selection, and navigation with mocked Three.js
  */
 
@@ -38,41 +38,56 @@ vi.mock("../../../state/workbench", () => ({
 }));
 
 vi.mock("react-force-graph", () => ({
-  ForceGraph3D: React.forwardRef(({ onNodeClick, onBackgroundClick, onLinkClick, onNodeDragEnd, graphData, ...props }: any, ref) => (
-    <div 
-      data-testid="force-graph-3d"
-      data-width={props.width}
-      data-height={props.height}
-      data-node-count={graphData?.nodes?.length || 0}
-      data-link-count={graphData?.links?.length || 0}
-      style={{ width: props.width, height: props.height }}
-    >
-      <div data-testid="graph-background" onClick={() => onBackgroundClick?.()}>
-        Background
+  ForceGraph3D: React.forwardRef(
+    (
+      {
+        onNodeClick,
+        onBackgroundClick,
+        onLinkClick,
+        onNodeDragEnd,
+        graphData,
+        ...props
+      }: any,
+      ref,
+    ) => (
+      <div
+        data-testid="force-graph-3d"
+        data-width={props.width}
+        data-height={props.height}
+        data-node-count={graphData?.nodes?.length || 0}
+        data-link-count={graphData?.links?.length || 0}
+        style={{ width: props.width, height: props.height }}
+      >
+        <div
+          data-testid="graph-background"
+          onClick={() => onBackgroundClick?.()}
+        >
+          Background
+        </div>
+        {graphData?.nodes?.map((node: any) => (
+          <div
+            key={node.id}
+            data-testid={`graph-node-${node.id}`}
+            onClick={() => onNodeClick?.(node)}
+            onMouseUp={() => onNodeDragEnd?.(node)}
+            style={{ cursor: "pointer" }}
+          >
+            {node.label}
+          </div>
+        ))}
+        {graphData?.links?.map((link: any, index: number) => (
+          <div
+            key={index}
+            data-testid={`graph-link-${index}`}
+            onClick={() => onLinkClick?.(link)}
+            style={{ cursor: "pointer" }}
+          >
+            Link: {link.label}
+          </div>
+        ))}
       </div>
-      {graphData?.nodes?.map((node: any) => (
-        <div 
-          key={node.id}
-          data-testid={`graph-node-${node.id}`}
-          onClick={() => onNodeClick?.(node)}
-          onMouseUp={() => onNodeDragEnd?.(node)}
-          style={{ cursor: "pointer" }}
-        >
-          {node.label}
-        </div>
-      ))}
-      {graphData?.links?.map((link: any, index: number) => (
-        <div 
-          key={index}
-          data-testid={`graph-link-${index}`}
-          onClick={() => onLinkClick?.(link)}
-          style={{ cursor: "pointer" }}
-        >
-          Link: {link.label}
-        </div>
-      ))}
-    </div>
-  )),
+    ),
+  ),
 }));
 
 vi.mock("three-spritetext", () => {
@@ -134,21 +149,22 @@ vi.mock("./GraphHelp", () => ({
 
 vi.mock("../NodeDetailsDrawer", () => ({
   __esModule: true,
-  default: ({ node, isOpen, onClose, onRelationshipClick }: any) => (
+  default: ({ node, isOpen, onClose, onRelationshipClick }: any) =>
     isOpen ? (
       <div data-testid="node-details-drawer">
         <div data-testid="drawer-node-id">{node?.id || "No node"}</div>
         <div data-testid="drawer-node-label">{node?.label || "No label"}</div>
-        <button onClick={onClose} data-testid="close-drawer">Close</button>
-        <button 
+        <button onClick={onClose} data-testid="close-drawer">
+          Close
+        </button>
+        <button
           onClick={() => onRelationshipClick("test-relationship", "outgoing")}
           data-testid="test-relationship-click"
         >
           Test Relationship
         </button>
       </div>
-    ) : null
-  ),
+    ) : null,
 }));
 
 // Mock graph data
@@ -175,17 +191,19 @@ describe("Graph Component", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    
+
     // Mock useRef to return a valid ref
     const React = require("react");
     React.useRef = vi.fn(() => ({ current: null }));
-    
+
     // Default setup for workbench store with selected item
     vi.mocked(useWorkbenchStateStore).mockImplementation((selector) => {
-      const state = { selected: { uri: "test-selected-node", label: "Test Selected Node" } };
+      const state = {
+        selected: { uri: "test-selected-node", label: "Test Selected Node" },
+      };
       return selector(state);
     });
-    
+
     vi.mocked(useGraphSubgraph).mockReturnValue({
       view: mockGraphData,
       isLoading: false,
@@ -195,8 +213,8 @@ describe("Graph Component", () => {
     });
 
     // Mock console.log to avoid noise in tests
-    vi.spyOn(console, 'log').mockImplementation(() => {});
-    vi.spyOn(console, 'warn').mockImplementation(() => {});
+    vi.spyOn(console, "log").mockImplementation(() => {});
+    vi.spyOn(console, "warn").mockImplementation(() => {});
   });
 
   afterEach(() => {
@@ -211,7 +229,9 @@ describe("Graph Component", () => {
 
     render(<GraphView />);
 
-    expect(screen.getByText("No data to view. Try Chat or Search to find data.")).toBeInTheDocument();
+    expect(
+      screen.getByText("No data to view. Try Chat or Search to find data."),
+    ).toBeInTheDocument();
     expect(screen.queryByTestId("force-graph-3d")).not.toBeInTheDocument();
   });
 
@@ -220,7 +240,7 @@ describe("Graph Component", () => {
       const state = { selected: { uri: "test-uri" } };
       return selector(state);
     });
-    
+
     vi.mocked(useGraphSubgraph).mockReturnValue({
       view: null,
       isLoading: true,
@@ -239,7 +259,7 @@ describe("Graph Component", () => {
       const state = { selected: { uri: "test-uri" } };
       return selector(state);
     });
-    
+
     vi.mocked(useGraphSubgraph).mockReturnValue({
       view: mockGraphData, // Provide view so it doesn't hit the !view condition
       isLoading: false,
@@ -257,13 +277,19 @@ describe("Graph Component", () => {
     render(<GraphView />);
 
     expect(screen.getByTestId("force-graph-3d")).toBeInTheDocument();
-    expect(screen.getByTestId("force-graph-3d")).toHaveAttribute("data-node-count", "3");
-    expect(screen.getByTestId("force-graph-3d")).toHaveAttribute("data-link-count", "2");
-    
+    expect(screen.getByTestId("force-graph-3d")).toHaveAttribute(
+      "data-node-count",
+      "3",
+    );
+    expect(screen.getByTestId("force-graph-3d")).toHaveAttribute(
+      "data-link-count",
+      "2",
+    );
+
     expect(screen.getByTestId("graph-node-node1")).toBeInTheDocument();
     expect(screen.getByTestId("graph-node-node2")).toBeInTheDocument();
     expect(screen.getByTestId("graph-node-node3")).toBeInTheDocument();
-    
+
     expect(screen.getByText("First Node")).toBeInTheDocument();
     expect(screen.getByText("Second Node")).toBeInTheDocument();
   });
@@ -294,7 +320,9 @@ describe("Graph Component", () => {
     // Should open drawer with selected node
     expect(screen.getByTestId("node-details-drawer")).toBeInTheDocument();
     expect(screen.getByTestId("drawer-node-id")).toHaveTextContent("node1");
-    expect(screen.getByTestId("drawer-node-label")).toHaveTextContent("First Node");
+    expect(screen.getByTestId("drawer-node-label")).toHaveTextContent(
+      "First Node",
+    );
   });
 
   test("handles background click to deselect node", async () => {
@@ -312,7 +340,9 @@ describe("Graph Component", () => {
     const background = screen.getByTestId("graph-background");
     await user.click(background);
 
-    expect(screen.queryByTestId("node-details-drawer")).not.toBeInTheDocument();
+    expect(
+      screen.queryByTestId("node-details-drawer"),
+    ).not.toBeInTheDocument();
   });
 
   test("closes drawer when close button is clicked", async () => {
@@ -330,7 +360,9 @@ describe("Graph Component", () => {
     const closeButton = screen.getByTestId("close-drawer");
     await user.click(closeButton);
 
-    expect(screen.queryByTestId("node-details-drawer")).not.toBeInTheDocument();
+    expect(
+      screen.queryByTestId("node-details-drawer"),
+    ).not.toBeInTheDocument();
   });
 
   test("handles relationship navigation from drawer", async () => {
@@ -358,7 +390,7 @@ describe("Graph Component", () => {
     // Simplified test - just verify the component renders with graph data
     // Particle effects are a visual feature that's difficult to test properly
     // and causes cleanup issues with the force graph library
-    
+
     render(<GraphView />);
 
     // Verify the graph component is rendered
@@ -371,7 +403,7 @@ describe("Graph Component", () => {
     render(<GraphView />);
 
     const node1 = screen.getByTestId("graph-node-node1");
-    
+
     // Simulate drag end
     fireEvent.mouseUp(node1);
 
@@ -399,8 +431,14 @@ describe("Graph Component", () => {
     render(<GraphView />);
 
     expect(screen.getByTestId("force-graph-3d")).toBeInTheDocument();
-    expect(screen.getByTestId("force-graph-3d")).toHaveAttribute("data-node-count", "0");
-    expect(screen.getByTestId("force-graph-3d")).toHaveAttribute("data-link-count", "0");
+    expect(screen.getByTestId("force-graph-3d")).toHaveAttribute(
+      "data-node-count",
+      "0",
+    );
+    expect(screen.getByTestId("force-graph-3d")).toHaveAttribute(
+      "data-link-count",
+      "0",
+    );
   });
 
   test("warns when relationship navigation attempted without selected node", async () => {
@@ -410,7 +448,9 @@ describe("Graph Component", () => {
 
     // Try to click relationship without selecting node first
     // This would normally not be possible in the UI, but tests edge case
-    const relationshipButton = screen.queryByTestId("test-relationship-click");
+    const relationshipButton = screen.queryByTestId(
+      "test-relationship-click",
+    );
     expect(relationshipButton).not.toBeInTheDocument();
 
     expect(console.warn).not.toHaveBeenCalled();
@@ -422,7 +462,9 @@ describe("Graph Component", () => {
     render(<GraphView />);
 
     // Initially no drawer
-    expect(screen.queryByTestId("node-details-drawer")).not.toBeInTheDocument();
+    expect(
+      screen.queryByTestId("node-details-drawer"),
+    ).not.toBeInTheDocument();
 
     // Select node - drawer should open
     const node1 = screen.getByTestId("graph-node-node1");
@@ -464,7 +506,12 @@ describe("Graph Component", () => {
     const node1 = screen.getByTestId("graph-node-node1");
     await user.click(node1);
 
-    expect(console.log).toHaveBeenCalledWith("Node selected:", "node1", "Label:", "First Node");
+    expect(console.log).toHaveBeenCalledWith(
+      "Node selected:",
+      "node1",
+      "Label:",
+      "First Node",
+    );
   });
 
   test("logs background click events", async () => {
@@ -475,7 +522,9 @@ describe("Graph Component", () => {
     const background = screen.getByTestId("graph-background");
     await user.click(background);
 
-    expect(console.log).toHaveBeenCalledWith("Background clicked - deselecting node");
+    expect(console.log).toHaveBeenCalledWith(
+      "Background clicked - deselecting node",
+    );
   });
 
   test("handles resize detector changes", () => {

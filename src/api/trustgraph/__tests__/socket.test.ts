@@ -14,9 +14,11 @@ vi.mock("../SocketContext", () => ({
 // Mock React useContext to return a mock socket
 const mockSocketContext = {
   textCompletion: vi.fn(),
-  graphRag: vi.fn().mockImplementation((text: string, options?: any) => 
-    Promise.resolve("mock response")
-  ),
+  graphRag: vi
+    .fn()
+    .mockImplementation((text: string, options?: any) =>
+      Promise.resolve("mock response"),
+    ),
   agent: vi.fn(),
   embeddings: vi.fn(),
   graphEmbeddingsQuery: vi.fn(),

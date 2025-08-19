@@ -25,7 +25,8 @@ const NumberField: React.FC<NumberFieldProps> = ({
         max={maxValue}
         value={value.toString()}
         onValueChange={(e) => {
-          const numValue = e.value === '' || e.value == null ? 0 : Number(e.value);
+          const numValue =
+            e.value === "" || e.value == null ? 0 : Number(e.value);
           if (!isNaN(numValue)) {
             onValueChange(numValue);
           }

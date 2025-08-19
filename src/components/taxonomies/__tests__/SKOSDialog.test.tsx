@@ -43,17 +43,17 @@ vi.mock("../../../utils/export-formats", () => ({
     },
     "skos-turtle": {
       name: "SKOS Turtle",
-      extension: "ttl", 
+      extension: "ttl",
       mimeType: "text/turtle",
       description: "SKOS in Turtle format",
     },
-    "json": {
+    json: {
       name: "JSON",
       extension: "json",
-      mimeType: "application/json", 
+      mimeType: "application/json",
       description: "Native taxonomy JSON format",
     },
-    "csv": {
+    csv: {
       name: "CSV",
       extension: "csv",
       mimeType: "text/csv",
@@ -109,7 +109,7 @@ const mockWriteText = vi.fn().mockResolvedValue(undefined);
 
 // Check if clipboard already exists to avoid redefining
 if (!navigator.clipboard) {
-  Object.defineProperty(navigator, 'clipboard', {
+  Object.defineProperty(navigator, "clipboard", {
     value: {
       writeText: mockWriteText,
     },
@@ -173,7 +173,11 @@ const mockValidationResult = {
 const mockInvalidValidationResult = {
   isValid: false,
   errors: [
-    { type: "error", code: "CONCEPT_NO_PREFLABEL", message: "Missing preferred label" },
+    {
+      type: "error",
+      code: "CONCEPT_NO_PREFLABEL",
+      message: "Missing preferred label",
+    },
   ],
   warnings: [],
   info: [],
@@ -191,14 +195,16 @@ describe("SKOSDialog", () => {
       success: vi.fn(),
       info: vi.fn(),
     };
-    
+
     vi.mocked(useNotification).mockReturnValue(mockNotify);
-    
+
     vi.mocked(serializeToSKOS).mockReturnValue(mockSKOSContent);
     vi.mocked(parseFromSKOS).mockResolvedValue(mockTaxonomy);
     vi.mocked(validateTaxonomy).mockReturnValue(mockValidationResult);
-    vi.mocked(exportTaxonomy).mockReturnValue(JSON.stringify(mockTaxonomy, null, 2));
-    
+    vi.mocked(exportTaxonomy).mockReturnValue(
+      JSON.stringify(mockTaxonomy, null, 2),
+    );
+
     // Reset clipboard mock
     mockWriteText.mockClear();
   });
@@ -215,11 +221,11 @@ describe("SKOSDialog", () => {
           onOpenChange={mockOnOpenChange}
           taxonomy={mockTaxonomy}
           mode="export"
-        />
+        />,
       );
 
       expect(screen.getByText("Export Taxonomy")).toBeInTheDocument();
-      
+
       // Check for the presence of format selection - use more flexible approach
       const formatElements = screen.getAllByText(/Export Format/);
       expect(formatElements.length).toBeGreaterThan(0);
@@ -232,12 +238,15 @@ describe("SKOSDialog", () => {
           onOpenChange={mockOnOpenChange}
           taxonomy={mockTaxonomy}
           mode="export"
-        />
+        />,
       );
 
       // Simply verify the export function was called
       await waitFor(() => {
-        expect(vi.mocked(serializeToSKOS)).toHaveBeenCalledWith(mockTaxonomy, "rdf");
+        expect(vi.mocked(serializeToSKOS)).toHaveBeenCalledWith(
+          mockTaxonomy,
+          "rdf",
+        );
       });
 
       // Verify dialog title is rendered
@@ -255,7 +264,7 @@ describe("SKOSDialog", () => {
           onOpenChange={mockOnOpenChange}
           taxonomy={mockTaxonomy}
           mode="export"
-        />
+        />,
       );
 
       // Simply verify validation was called
@@ -274,7 +283,7 @@ describe("SKOSDialog", () => {
   describe("Import Mode", () => {
     // Note: Most import mode tests removed due to upcoming UX changes
     // Simplified test to avoid Portal rendering issues
-    
+
     test("initializes in import mode correctly", () => {
       // Just verify the component can be rendered in import mode without errors
       const { container } = render(
@@ -283,7 +292,7 @@ describe("SKOSDialog", () => {
           onOpenChange={mockOnOpenChange}
           mode="import"
           onImport={mockOnImport}
-        />
+        />,
       );
 
       // Basic check that something was rendered

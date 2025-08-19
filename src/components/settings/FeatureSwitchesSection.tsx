@@ -43,16 +43,17 @@ const FeatureSwitchesSection: React.FC<FeatureSwitchesSectionProps> = ({
           <VStack gap={1} align="start">
             <Text fontWeight="medium">Taxonomy Editor</Text>
             <Text fontSize="sm" color="fg.muted">
-              Enable the taxonomy management interface for SKOS concepts
-              {' '}
+              Enable the taxonomy management interface for SKOS concepts{" "}
               <Tag.Root colorPalette="accent">
                 <Tag.Label>preview</Tag.Label>
-              </Tag.Root>              
+              </Tag.Root>
             </Text>
           </VStack>
           <Switch.Root
             checked={taxonomyEditor}
-            onCheckedChange={(details) => onTaxonomyEditorChange(details.checked)}
+            onCheckedChange={(details) =>
+              onTaxonomyEditorChange(details.checked)
+            }
           >
             <Switch.HiddenInput />
             <Switch.Control>
@@ -70,7 +71,9 @@ const FeatureSwitchesSection: React.FC<FeatureSwitchesSectionProps> = ({
           </VStack>
           <Switch.Root
             checked={submissions}
-            onCheckedChange={(details) => onSubmissionsChange(details.checked)}
+            onCheckedChange={(details) =>
+              onSubmissionsChange(details.checked)
+            }
           >
             <Switch.HiddenInput />
             <Switch.Control>

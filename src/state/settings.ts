@@ -1,10 +1,14 @@
-import { create } from 'zustand';
-import { Settings, DEFAULT_SETTINGS, SETTINGS_STORAGE_KEY } from '../model/settings-types';
+import { create } from "zustand";
+import {
+  Settings,
+  DEFAULT_SETTINGS,
+  SETTINGS_STORAGE_KEY,
+} from "../model/settings-types";
 
 interface SettingsState {
   settings: Settings;
   isLoaded: boolean;
-  
+
   // Actions
   updateSetting: (path: string, value: any) => void;
   saveSettings: (newSettings: Settings) => void;
@@ -25,16 +29,22 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
         const parsed = JSON.parse(stored);
         // Merge with defaults to ensure all properties exist
         const mergedSettings = {
-          authentication: { ...DEFAULT_SETTINGS.authentication, ...parsed.authentication },
+          authentication: {
+            ...DEFAULT_SETTINGS.authentication,
+            ...parsed.authentication,
+          },
           graphrag: { ...DEFAULT_SETTINGS.graphrag, ...parsed.graphrag },
-          featureSwitches: { ...DEFAULT_SETTINGS.featureSwitches, ...parsed.featureSwitches },
+          featureSwitches: {
+            ...DEFAULT_SETTINGS.featureSwitches,
+            ...parsed.featureSwitches,
+          },
         };
         set({ settings: mergedSettings, isLoaded: true });
       } else {
         set({ isLoaded: true });
       }
     } catch (error) {
-      console.warn('Failed to load settings from localStorage:', error);
+      console.warn("Failed to load settings from localStorage:", error);
       set({ isLoaded: true });
     }
   },
@@ -42,8 +52,8 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
   updateSetting: (path: string, value: any) => {
     const { settings } = get();
     const newSettings = { ...settings };
-    const keys = path.split('.');
-    
+    const keys = path.split(".");
+
     if (keys.length === 2) {
       const [section, key] = keys;
       if (section in newSettings) {
@@ -53,13 +63,13 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
         };
       }
     }
-    
+
     // Update state and localStorage
     set({ settings: newSettings });
     try {
       localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(newSettings));
     } catch (error) {
-      console.error('Failed to save settings to localStorage:', error);
+      console.error("Failed to save settings to localStorage:", error);
     }
   },
 
@@ -68,7 +78,7 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
     try {
       localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(newSettings));
     } catch (error) {
-      console.error('Failed to save settings to localStorage:', error);
+      console.error("Failed to save settings to localStorage:", error);
       throw error;
     }
   },
@@ -78,7 +88,7 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
     try {
       localStorage.removeItem(SETTINGS_STORAGE_KEY);
     } catch (error) {
-      console.error('Failed to reset settings:', error);
+      console.error("Failed to reset settings:", error);
       throw error;
     }
   },
@@ -93,13 +103,19 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
       const imported = JSON.parse(jsonString);
       // Validate structure by merging with defaults
       const validatedSettings = {
-        authentication: { ...DEFAULT_SETTINGS.authentication, ...imported.authentication },
+        authentication: {
+          ...DEFAULT_SETTINGS.authentication,
+          ...imported.authentication,
+        },
         graphrag: { ...DEFAULT_SETTINGS.graphrag, ...imported.graphrag },
-        featureSwitches: { ...DEFAULT_SETTINGS.featureSwitches, ...imported.featureSwitches },
+        featureSwitches: {
+          ...DEFAULT_SETTINGS.featureSwitches,
+          ...imported.featureSwitches,
+        },
       };
       get().saveSettings(validatedSettings);
     } catch (error) {
-      console.error('Failed to import settings:', error);
+      console.error("Failed to import settings:", error);
       throw error;
     }
   },
@@ -108,11 +124,11 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
 // Hook for convenience
 export const useSettings = () => {
   const store = useSettingsStore();
-  
+
   // Load settings on first use
   if (!store.isLoaded) {
     store.loadSettings();
   }
-  
+
   return store;
 };

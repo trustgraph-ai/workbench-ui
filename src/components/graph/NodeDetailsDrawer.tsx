@@ -50,7 +50,10 @@ const NodeDetailsDrawer: React.FC<NodeDetailsDrawerProps> = ({
       closeOnInteractOutside={false}
     >
       <Drawer.Positioner style={{ pointerEvents: "none" }}>
-        <Drawer.Content style={{ pointerEvents: "auto" }} data-testid="node-details-drawer">
+        <Drawer.Content
+          style={{ pointerEvents: "auto" }}
+          data-testid="node-details-drawer"
+        >
           <Drawer.CloseTrigger asChild>
             <button
               style={{

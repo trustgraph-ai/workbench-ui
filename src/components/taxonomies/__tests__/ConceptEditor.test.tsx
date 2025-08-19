@@ -48,7 +48,12 @@ vi.mock("../ConceptMetadataTab", () => ({
 }));
 
 vi.mock("../ConceptBasicTab", () => ({
-  ConceptBasicTab: ({ editedConcept, onUpdateField, onAddItem, onRemoveItem }: any) => (
+  ConceptBasicTab: ({
+    editedConcept,
+    onUpdateField,
+    onAddItem,
+    onRemoveItem,
+  }: any) => (
     <div data-testid="concept-basic-tab">
       <input
         data-testid="prefLabel-input"
@@ -67,29 +72,38 @@ vi.mock("../ConceptBasicTab", () => ({
         }}
       />
       <div data-testid="alt-labels">
-        {(editedConcept.altLabel || []).map((label: string, index: number) => (
-          <div key={index}>
-            {label}
-            <button
-              onClick={() => onRemoveItem("altLabel", index)}
-              data-testid={`remove-alt-label-${index}`}
-            >
-              Remove
-            </button>
-          </div>
-        ))}
+        {(editedConcept.altLabel || []).map(
+          (label: string, index: number) => (
+            <div key={index}>
+              {label}
+              <button
+                onClick={() => onRemoveItem("altLabel", index)}
+                data-testid={`remove-alt-label-${index}`}
+              >
+                Remove
+              </button>
+            </div>
+          ),
+        )}
       </div>
     </div>
   ),
 }));
 
 vi.mock("../ConceptRelationshipsTab", () => ({
-  ConceptRelationshipsTab: ({ editedConcept, availableConcepts, onUpdateField, onAddItem }: any) => (
+  ConceptRelationshipsTab: ({
+    editedConcept,
+    availableConcepts,
+    onUpdateField,
+    onAddItem,
+  }: any) => (
     <div data-testid="concept-relationships-tab">
       <select
         data-testid="broader-select"
         value={editedConcept.broader || ""}
-        onChange={(e) => onUpdateField("broader", e.target.value || undefined)}
+        onChange={(e) =>
+          onUpdateField("broader", e.target.value || undefined)
+        }
       >
         <option value="">No broader concept</option>
         {availableConcepts.map((c: TaxonomyConcept) => (
@@ -149,7 +163,7 @@ vi.mock("../common/TextAreaField", () => ({
     <div>
       <label>{label}</label>
       <textarea
-        data-testid={`${label.toLowerCase().replace(' ', '-')}-textarea`}
+        data-testid={`${label.toLowerCase().replace(" ", "-")}-textarea`}
         value={value}
         onChange={(e) => onValueChange(e.target.value)}
         placeholder={placeholder}
@@ -203,7 +217,8 @@ const mockTaxonomy: Taxonomy = {
   },
 };
 
-const mockExistingConcept: TaxonomyConcept = mockTaxonomy.concepts["concept-2"];
+const mockExistingConcept: TaxonomyConcept =
+  mockTaxonomy.concepts["concept-2"];
 
 describe("ConceptEditor", () => {
   const mockOnSave = vi.fn();
@@ -217,7 +232,7 @@ describe("ConceptEditor", () => {
       success: vi.fn(),
       info: vi.fn(),
     };
-    
+
     vi.mocked(useNotification).mockReturnValue(mockNotify);
   });
 
@@ -227,7 +242,7 @@ describe("ConceptEditor", () => {
         taxonomy={mockTaxonomy}
         onSave={mockOnSave}
         onCancel={mockOnCancel}
-      />
+      />,
     );
 
     expect(screen.getByTestId("concept-mode")).toHaveTextContent("Create");
@@ -241,11 +256,13 @@ describe("ConceptEditor", () => {
         taxonomy={mockTaxonomy}
         onSave={mockOnSave}
         onCancel={mockOnCancel}
-      />
+      />,
     );
 
     expect(screen.getByTestId("concept-mode")).toHaveTextContent("Edit");
-    expect(screen.getByPlaceholderText("Preferred Label")).toHaveValue("Mammals");
+    expect(screen.getByPlaceholderText("Preferred Label")).toHaveValue(
+      "Mammals",
+    );
   });
 
   test("displays all tabs", () => {
@@ -255,29 +272,35 @@ describe("ConceptEditor", () => {
         taxonomy={mockTaxonomy}
         onSave={mockOnSave}
         onCancel={mockOnCancel}
-      />
+      />,
     );
 
-    expect(screen.getByRole("tab", { name: "Basic Info" })).toBeInTheDocument();
-    expect(screen.getByRole("tab", { name: "Definition" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("tab", { name: "Basic Info" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("tab", { name: "Definition" }),
+    ).toBeInTheDocument();
     expect(screen.getByRole("tab", { name: "Examples" })).toBeInTheDocument();
-    expect(screen.getByRole("tab", { name: "Relationships" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("tab", { name: "Relationships" }),
+    ).toBeInTheDocument();
     expect(screen.getByRole("tab", { name: "Metadata" })).toBeInTheDocument();
   });
 
   test("updates preferred label", async () => {
     const user = userEvent.setup();
-    
+
     render(
       <ConceptEditor
         taxonomy={mockTaxonomy}
         onSave={mockOnSave}
         onCancel={mockOnCancel}
-      />
+      />,
     );
 
     const prefLabelInput = screen.getByPlaceholderText("Preferred Label");
-    
+
     await user.clear(prefLabelInput);
     await user.type(prefLabelInput, "New Concept");
 
@@ -290,25 +313,27 @@ describe("ConceptEditor", () => {
         taxonomy={mockTaxonomy}
         onSave={mockOnSave}
         onCancel={mockOnCancel}
-      />
+      />,
     );
 
     const saveButton = screen.getByTestId("save-button");
     fireEvent.click(saveButton);
 
-    expect(mockNotify.error).toHaveBeenCalledWith("Preferred label is required");
+    expect(mockNotify.error).toHaveBeenCalledWith(
+      "Preferred label is required",
+    );
     expect(mockOnSave).not.toHaveBeenCalled();
   });
 
   test("saves concept with valid data", async () => {
     const user = userEvent.setup();
-    
+
     render(
       <ConceptEditor
         taxonomy={mockTaxonomy}
         onSave={mockOnSave}
         onCancel={mockOnCancel}
-      />
+      />,
     );
 
     const prefLabelInput = screen.getByPlaceholderText("Preferred Label");
@@ -322,7 +347,7 @@ describe("ConceptEditor", () => {
         prefLabel: "Test Concept",
         narrower: [],
         related: [],
-      })
+      }),
     );
   });
 
@@ -333,7 +358,7 @@ describe("ConceptEditor", () => {
         taxonomy={mockTaxonomy}
         onSave={mockOnSave}
         onCancel={mockOnCancel}
-      />
+      />,
     );
 
     const cancelButton = screen.getByTestId("cancel-button");
@@ -344,14 +369,14 @@ describe("ConceptEditor", () => {
 
   test("switches between tabs", async () => {
     const user = userEvent.setup();
-    
+
     render(
       <ConceptEditor
         concept={mockExistingConcept}
         taxonomy={mockTaxonomy}
         onSave={mockOnSave}
         onCancel={mockOnCancel}
-      />
+      />,
     );
 
     // Switch to Definition tab
@@ -359,7 +384,9 @@ describe("ConceptEditor", () => {
     await user.click(definitionTab);
 
     // Check if definition content exists (may be hidden due to Chakra UI tabs behavior in tests)
-    const definitionTextareas = screen.queryAllByTestId("definition-textarea");
+    const definitionTextareas = screen.queryAllByTestId(
+      "definition-textarea",
+    );
     if (definitionTextareas.length > 0) {
       expect(definitionTextareas[0]).toBeInTheDocument();
     } else {
@@ -368,30 +395,36 @@ describe("ConceptEditor", () => {
     }
 
     // Switch to Relationships tab
-    const relationshipsTab = screen.getByRole("tab", { name: "Relationships" });
+    const relationshipsTab = screen.getByRole("tab", {
+      name: "Relationships",
+    });
     await user.click(relationshipsTab);
 
     // This should work as relationships tab content is visible in other tests
-    expect(screen.getByTestId("concept-relationships-tab")).toBeInTheDocument();
+    expect(
+      screen.getByTestId("concept-relationships-tab"),
+    ).toBeInTheDocument();
   });
 
   test("updates definition and scope note", async () => {
     const user = userEvent.setup();
-    
+
     render(
       <ConceptEditor
         concept={mockExistingConcept}
         taxonomy={mockTaxonomy}
         onSave={mockOnSave}
         onCancel={mockOnCancel}
-      />
+      />,
     );
 
     // Switch to Definition tab and wait for state change
     await user.click(screen.getByRole("tab", { name: "Definition" }));
 
     // Check if the textareas are available (they should be rendered but might be hidden)
-    const definitionTextareas = screen.queryAllByTestId("definition-textarea");
+    const definitionTextareas = screen.queryAllByTestId(
+      "definition-textarea",
+    );
     const scopeNoteTextareas = screen.queryAllByTestId("scope-note-textarea");
 
     // If textareas exist, the test should pass
@@ -410,27 +443,31 @@ describe("ConceptEditor", () => {
     } else {
       // If textareas are not found, this might be a Chakra UI tabs rendering issue in tests
       // For now, verify that the Definition tab is accessible
-      expect(screen.getByRole("tab", { name: "Definition" })).toBeInTheDocument();
+      expect(
+        screen.getByRole("tab", { name: "Definition" }),
+      ).toBeInTheDocument();
     }
   });
 
   test("manages alternative labels", async () => {
     const user = userEvent.setup();
-    
+
     render(
       <ConceptEditor
         concept={mockExistingConcept}
         taxonomy={mockTaxonomy}
         onSave={mockOnSave}
         onCancel={mockOnCancel}
-      />
+      />,
     );
 
     // Should show existing alternative labels
     expect(screen.getByText("Mammalia")).toBeInTheDocument();
 
     // Add new alternative label
-    const altLabelInput = screen.getByPlaceholderText("Add alternative label");
+    const altLabelInput = screen.getByPlaceholderText(
+      "Add alternative label",
+    );
     await user.type(altLabelInput, "New Alt Label");
     await user.keyboard("{Enter}");
 
@@ -443,14 +480,14 @@ describe("ConceptEditor", () => {
 
   test("manages examples", async () => {
     const user = userEvent.setup();
-    
+
     render(
       <ConceptEditor
         concept={mockExistingConcept}
         taxonomy={mockTaxonomy}
         onSave={mockOnSave}
         onCancel={mockOnCancel}
-      />
+      />,
     );
 
     // Switch to Examples tab
@@ -472,14 +509,14 @@ describe("ConceptEditor", () => {
 
   test("manages relationships", async () => {
     const user = userEvent.setup();
-    
+
     render(
       <ConceptEditor
         concept={mockExistingConcept}
         taxonomy={mockTaxonomy}
         onSave={mockOnSave}
         onCancel={mockOnCancel}
-      />
+      />,
     );
 
     // Switch to Relationships tab
@@ -495,19 +532,21 @@ describe("ConceptEditor", () => {
     const addNarrowerButton = screen.getByTestId("add-narrower");
     fireEvent.click(addNarrowerButton);
 
-    expect(screen.getByTestId("narrower-concepts")).toHaveTextContent("related-concept-1");
+    expect(screen.getByTestId("narrower-concepts")).toHaveTextContent(
+      "related-concept-1",
+    );
   });
 
   test("handles metadata editing", async () => {
     const user = userEvent.setup();
-    
+
     render(
       <ConceptEditor
         concept={mockExistingConcept}
         taxonomy={mockTaxonomy}
         onSave={mockOnSave}
         onCancel={mockOnCancel}
-      />
+      />,
     );
 
     // Switch to Metadata tab
@@ -526,12 +565,14 @@ describe("ConceptEditor", () => {
         taxonomy={mockTaxonomy}
         onSave={mockOnSave}
         onCancel={mockOnCancel}
-      />
+      />,
     );
 
     // The relationships tab should not show the concept being edited
     // This is tested indirectly through the availableConcepts prop passed to subcomponents
-    expect(screen.getByTestId("concept-relationships-tab")).toBeInTheDocument();
+    expect(
+      screen.getByTestId("concept-relationships-tab"),
+    ).toBeInTheDocument();
   });
 
   test("resets form when concept prop changes", () => {
@@ -541,10 +582,12 @@ describe("ConceptEditor", () => {
         taxonomy={mockTaxonomy}
         onSave={mockOnSave}
         onCancel={mockOnCancel}
-      />
+      />,
     );
 
-    expect(screen.getByPlaceholderText("Preferred Label")).toHaveValue("Mammals");
+    expect(screen.getByPlaceholderText("Preferred Label")).toHaveValue(
+      "Mammals",
+    );
 
     // Change to a different concept
     const differentConcept = mockTaxonomy.concepts["concept-3"];
@@ -554,10 +597,12 @@ describe("ConceptEditor", () => {
         taxonomy={mockTaxonomy}
         onSave={mockOnSave}
         onCancel={mockOnCancel}
-      />
+      />,
     );
 
-    expect(screen.getByPlaceholderText("Preferred Label")).toHaveValue("Birds");
+    expect(screen.getByPlaceholderText("Preferred Label")).toHaveValue(
+      "Birds",
+    );
   });
 
   test("generates unique ID for new concepts", () => {
@@ -570,7 +615,7 @@ describe("ConceptEditor", () => {
         taxonomy={mockTaxonomy}
         onSave={mockOnSave}
         onCancel={mockOnCancel}
-      />
+      />,
     );
 
     const prefLabelInput = screen.getByPlaceholderText("Preferred Label");
@@ -583,7 +628,7 @@ describe("ConceptEditor", () => {
       expect.objectContaining({
         id: `concept-${mockTimestamp}`,
         prefLabel: "New Concept",
-      })
+      }),
     );
 
     // Restore Date.now
@@ -592,18 +637,20 @@ describe("ConceptEditor", () => {
 
   test("handles array field operations correctly", async () => {
     const user = userEvent.setup();
-    
+
     render(
       <ConceptEditor
         concept={mockExistingConcept}
         taxonomy={mockTaxonomy}
         onSave={mockOnSave}
         onCancel={mockOnCancel}
-      />
+      />,
     );
 
     // Test adding to alternative labels
-    const altLabelInput = screen.getByPlaceholderText("Add alternative label");
+    const altLabelInput = screen.getByPlaceholderText(
+      "Add alternative label",
+    );
     await user.type(altLabelInput, "Test Label");
     await user.keyboard("{Enter}");
 
