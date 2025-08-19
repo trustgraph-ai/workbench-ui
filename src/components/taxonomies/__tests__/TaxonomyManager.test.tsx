@@ -263,8 +263,7 @@ describe("TaxonomyManager", () => {
   });
 
   test("shows empty state when no taxonomies exist", () => {
-    vi.mocked(useTaxonomies).mockReturnValue({
-    useTaxonomies.mockReturnValue({ ...mockUseTaxonomies, taxonomies: [] });
+    vi.mocked(useTaxonomies).mockReturnValue({ ...mockUseTaxonomies, taxonomies: [] });
 
     render(<TaxonomyManager />);
 
@@ -292,7 +291,7 @@ describe("TaxonomyManager", () => {
 
     render(<TaxonomyManager onTaxonomySelect={mockOnTaxonomySelect} />);
 
-    const taxonomySelect = screen.getByTestId("taxonomy-select");
+    const taxonomySelect = screen.getByRole("combobox");
     await user.selectOptions(taxonomySelect, "tax-1");
 
     expect(mockOnTaxonomySelect).toHaveBeenCalledWith("tax-1");
