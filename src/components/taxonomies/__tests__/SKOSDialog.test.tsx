@@ -9,9 +9,10 @@ import userEvent from "@testing-library/user-event";
 import { describe, test, expect, vi, beforeEach } from "vitest";
 import { SKOSDialog } from "../SKOSDialog";
 import { Taxonomy } from "../../../state/taxonomies";
+import { useNotification } from "../../../state/notify";
 
 // Mock dependencies
-vi.mock("../../state/notify", () => ({
+vi.mock("../../../state/notify", () => ({
   useNotification: vi.fn(() => ({
     error: vi.fn(),
     success: vi.fn(),
@@ -177,8 +178,7 @@ describe("SKOSDialog", () => {
       info: vi.fn(),
     };
     
-    const { useNotification } = require("../../../state/notify");
-    useNotification.mockReturnValue(mockNotify);
+    vi.mocked(useNotification).mockReturnValue(mockNotify);
     
     const { serializeToSKOS, parseFromSKOS } = require("../../utils/skos");
     const { validateTaxonomy } = require("../../utils/skos-validation");
