@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 
 import { SendHorizontal } from "lucide-react";
 import { useFlows } from "../../state/flows";
@@ -18,7 +18,7 @@ import ChipInputField from "../common/ChipInputField";
 
 const SubmitDialog = ({ open, onOpenChange, onSubmit, docs }) => {
   const flowState = useFlows();
-  const flows = flowState.flows ? flowState.flows : [];
+  const flows = useMemo(() => flowState.flows ? flowState.flows : [], [flowState.flows]);
 
   const flowOptions = flows.map((flow) => {
     return {

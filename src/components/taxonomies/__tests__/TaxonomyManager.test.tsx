@@ -142,13 +142,13 @@ vi.mock("../TaxonomyTree", () => ({
 
 interface ConceptEditorProps {
   concept?: TaxonomyConcept;
-  taxonomy: Taxonomy;
+  taxonomy?: Taxonomy;
   onSave: (concept: TaxonomyConcept) => void;
   onCancel: () => void;
 }
 
 vi.mock("../ConceptEditor", () => ({
-  ConceptEditor: ({ concept, taxonomy, onSave, onCancel }: ConceptEditorProps) => (
+  ConceptEditor: ({ concept, onSave, onCancel }: ConceptEditorProps) => (
     <div data-testid="concept-editor">
       <span data-testid="editing-concept">
         {concept?.prefLabel || "New Concept"}
@@ -214,13 +214,12 @@ vi.mock("../TaxonomyEmptyStates", () => ({
 interface SKOSDialogProps {
   open: boolean;
   mode: string;
-  taxonomy?: Taxonomy;
   onOpenChange: (open: boolean) => void;
   onImport?: (taxonomy: Taxonomy, taxonomyId: string) => void;
 }
 
 vi.mock("../SKOSDialog", () => ({
-  SKOSDialog: ({ open, mode, taxonomy, onOpenChange, onImport }: SKOSDialogProps) =>
+  SKOSDialog: ({ open, mode, onOpenChange, onImport }: SKOSDialogProps) =>
     open ? (
       <div data-testid={`skos-dialog-${mode}`}>
         <span>{mode} Dialog</span>
@@ -579,12 +578,10 @@ describe("TaxonomyManager", () => {
   });
 
   test("handles export when no taxonomy selected", async () => {
-    const user = userEvent.setup();
-
     render(<TaxonomyManager />);
 
     // Manually trigger export (normally button would be disabled)
-    const component = screen.getByTestId("empty-state-no-taxonomy-selected");
+    screen.getByTestId("empty-state-no-taxonomy-selected");
     // Simulate calling the export handler directly
 
     expect(mockNotify.error).not.toHaveBeenCalled(); // No export attempted yet
@@ -644,8 +641,6 @@ describe("TaxonomyManager", () => {
   });
 
   test("handles concept move notification", async () => {
-    const user = userEvent.setup();
-
     render(<TaxonomyManager selectedTaxonomyId="tax-1" />);
 
     // This would normally be triggered by drag-and-drop
@@ -686,11 +681,6 @@ describe("TaxonomyManager", () => {
     await user.click(editBtn);
 
     // Simulate changing the concept to have a broader concept
-    const conceptToSave = {
-      ...mockTaxonomy.concepts["concept-1"],
-      broader: "concept-2",
-      topConcept: false,
-    };
 
     // This would normally be done through the editor UI
     const saveBtn = screen.getByTestId("save-btn");

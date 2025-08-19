@@ -16,15 +16,29 @@ vi.mock("../../../utils/skos-validation", () => ({
   validateTaxonomy: vi.fn(),
 }));
 
+interface QualitySuggestion {
+  type: "auto" | "manual";
+  field: string;
+  description: string;
+  conceptId?: string;
+}
+
 vi.mock("../../../utils/taxonomy-qa", () => ({
   TaxonomyQA: {
     generateSuggestions: vi.fn().mockReturnValue([]),
-    autoFix: vi.fn().mockImplementation((taxonomy) => ({ taxonomy })),
+    autoFix: vi.fn().mockImplementation((taxonomy: Taxonomy) => ({ taxonomy })),
   },
 }));
 
+interface ValidationResult {
+  isValid: boolean;
+  errors: Array<{ type: string; code: string; message: string; conceptId?: string }>;
+  warnings: Array<{ type: string; code: string; message: string; conceptId?: string }>;
+  info: Array<{ type: string; code: string; message: string; conceptId?: string }>;
+}
+
 vi.mock("../ValidationResults", () => ({
-  ValidationResults: ({ validation }: { validation: any }) => (
+  ValidationResults: ({ validation }: { validation: ValidationResult }) => (
     <div data-testid="validation-results">
       Errors: {validation.errors.length}, Warnings:{" "}
       {validation.warnings.length}
@@ -103,25 +117,6 @@ const mockInvalidTaxonomy: Taxonomy = {
   },
 };
 
-const mockCircularTaxonomy: Taxonomy = {
-  ...mockValidTaxonomy,
-  concepts: {
-    "concept-1": {
-      id: "concept-1",
-      prefLabel: "A",
-      broader: "concept-2",
-      narrower: [],
-      related: [],
-    },
-    "concept-2": {
-      id: "concept-2",
-      prefLabel: "B",
-      broader: "concept-1", // Circular reference
-      narrower: [],
-      related: [],
-    },
-  },
-};
 
 const mockValidationResult = {
   isValid: true,
@@ -221,7 +216,7 @@ describe("TaxonomyValidationTab", () => {
         field: "prefLabel",
         description: "Some concepts can be auto-fixed",
         conceptId: "concept-1",
-      },
+      } as QualitySuggestion,
     ]);
 
     render(<TaxonomyValidationTab taxonomy={mockValidTaxonomy} />);
@@ -241,7 +236,7 @@ describe("TaxonomyValidationTab", () => {
         field: "consistency",
         description: "Fix relationship inconsistencies",
         conceptId: "concept-1",
-      },
+      } as QualitySuggestion,
     ]);
 
     render(
@@ -271,7 +266,7 @@ describe("TaxonomyValidationTab", () => {
         field: "consistency",
         description: "Fix relationship inconsistencies",
         conceptId: "concept-1",
-      },
+      } as QualitySuggestion,
     ]);
 
     render(<TaxonomyValidationTab taxonomy={mockValidTaxonomy} />);
@@ -405,7 +400,7 @@ describe("TaxonomyValidationTab", () => {
 
   test("displays success message when no issues found", () => {
     vi.mocked(validateTaxonomy).mockReturnValue(mockValidationResult);
-    vi.mocked(TaxonomyQA.generateSuggestions).mockReturnValue([]); // No suggestions
+    vi.mocked(TaxonomyQA.generateSuggestions).mockReturnValue([]);
 
     render(<TaxonomyValidationTab taxonomy={mockValidTaxonomy} />);
 

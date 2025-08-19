@@ -4,8 +4,7 @@
  */
 
 import React from "react";
-import { render, screen, fireEvent, waitFor } from "../../../test/test-utils";
-import userEvent from "@testing-library/user-event";
+import { render, screen, waitFor } from "../../../test/test-utils";
 import { describe, test, expect, vi, beforeEach } from "vitest";
 import { SKOSDialog } from "../SKOSDialog";
 import { Taxonomy } from "../../../state/taxonomies";
@@ -187,19 +186,6 @@ const mockSKOSContent = `<?xml version="1.0" encoding="UTF-8"?>
 const mockValidationResult = {
   isValid: true,
   errors: [],
-  warnings: [],
-  info: [],
-};
-
-const mockInvalidValidationResult = {
-  isValid: false,
-  errors: [
-    {
-      type: "error",
-      code: "CONCEPT_NO_PREFLABEL",
-      message: "Missing preferred label",
-    },
-  ],
   warnings: [],
   info: [],
 };

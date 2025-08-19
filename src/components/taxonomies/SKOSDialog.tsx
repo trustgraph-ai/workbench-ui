@@ -200,7 +200,7 @@ export const SKOSDialog: React.FC<SKOSDialogProps> = ({
     if (open && mode === "export" && taxonomy) {
       handleExport();
     }
-  }, [open, mode, taxonomy]);
+  }, [open, mode, taxonomy, handleExport]);
 
   React.useEffect(() => {
     // Reset state when dialog opens
