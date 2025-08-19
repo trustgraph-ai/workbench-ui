@@ -177,7 +177,7 @@ describe("SKOSDialog", () => {
       info: vi.fn(),
     };
     
-    const { useNotification } = require("../../state/notify");
+    const { useNotification } = require("../../../state/notify");
     useNotification.mockReturnValue(mockNotify);
     
     const { serializeToSKOS, parseFromSKOS } = require("../../utils/skos");

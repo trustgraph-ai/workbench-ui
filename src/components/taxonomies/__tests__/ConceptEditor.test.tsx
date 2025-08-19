@@ -9,9 +9,10 @@ import userEvent from "@testing-library/user-event";
 import { describe, test, expect, vi, beforeEach } from "vitest";
 import { ConceptEditor } from "../ConceptEditor";
 import { TaxonomyConcept, Taxonomy } from "../../../state/taxonomies";
+import { useNotification } from "../../../state/notify";
 
 // Mock dependencies
-vi.mock("../../state/notify", () => ({
+vi.mock("../../../state/notify", () => ({
   useNotification: vi.fn(() => ({
     error: vi.fn(),
     success: vi.fn(),
@@ -217,8 +218,7 @@ describe("ConceptEditor", () => {
       info: vi.fn(),
     };
     
-    const { useNotification } = require("../../state/notify");
-    useNotification.mockReturnValue(mockNotify);
+    vi.mocked(useNotification).mockReturnValue(mockNotify);
   });
 
   test("renders in create mode when no concept provided", () => {

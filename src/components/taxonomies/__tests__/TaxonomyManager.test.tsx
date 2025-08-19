@@ -248,8 +248,8 @@ describe("TaxonomyManager", () => {
       info: vi.fn(),
     };
     
-    const { useNotification } = require("../../state/notify");
-    const { useTaxonomies } = require("../../state/taxonomies");
+    const { useNotification } = require("../../../state/notify");
+    const { useTaxonomies } = require("../../../state/taxonomies");
     
     useNotification.mockReturnValue(mockNotify);
     useTaxonomies.mockReturnValue(mockUseTaxonomies);
@@ -265,7 +265,7 @@ describe("TaxonomyManager", () => {
   });
 
   test("shows empty state when no taxonomies exist", () => {
-    const { useTaxonomies } = require("../../state/taxonomies");
+    const { useTaxonomies } = require("../../../state/taxonomies");
     useTaxonomies.mockReturnValue({ ...mockUseTaxonomies, taxonomies: [] });
 
     render(<TaxonomyManager />);
