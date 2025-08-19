@@ -1,5 +1,81 @@
 # UI Toolkits and Framework Notes
 
+## Directory Structure and Organization Rationale
+
+### Core Principles
+
+We follow a **domain-driven, flat structure** that avoids unnecessary nesting and keeps related code together:
+
+1. **Avoid generic aggregation directories** - No `src/hooks/`, `src/constants/`, `src/utils/` that become dumping grounds
+2. **Colocate by domain** - Keep related code together in feature-specific directories  
+3. **Flat when possible** - Single files don't need their own subdirectories
+4. **Clear separation of concerns** - Different types of logic go in appropriate places
+
+### Directory Layout
+
+```
+src/
+├── components/          # UI components organized by domain
+│   ├── schemas/         # All schema-related UI components
+│   │   ├── EditSchemaDialog.tsx      # Main orchestrator component
+│   │   ├── SchemaFieldEditor.tsx     # Individual field editing
+│   │   ├── SchemaFieldsList.tsx      # Fields list management
+│   │   ├── SchemaTableStates.tsx     # Reusable table states
+│   │   ├── useSchemaForm.ts          # Form state logic (colocated)
+│   │   └── ...
+│   ├── taxonomies/      # All taxonomy-related UI components
+│   └── common/          # Truly shared/generic components
+├── model/               # Data models, types, and domain constants
+│   ├── schemas-table.tsx            # Schema data models
+│   ├── schemaTypes.ts               # Schema type constants
+│   └── ...
+├── state/               # Application state management
+│   ├── schemas.ts                   # Schema API calls and state
+│   └── ...
+├── api/                 # Direct API communication
+└── utils/               # Pure utility functions (no React/UI)
+```
+
+### Rationale by Directory
+
+**`src/components/[domain]/`**
+- Contains ALL UI components for a specific domain (schemas, taxonomies, etc.)
+- Includes domain-specific hooks like `useSchemaForm.ts` 
+- **Why**: Keeps everything needed to work on a feature in one place
+- **Avoid**: Generic `src/hooks/` that becomes a dumping ground
+
+**`src/model/`**
+- Data types, interfaces, constants, and domain models
+- **Why**: Centralized data definitions that can be imported anywhere
+- **Example**: `schemaTypes.ts` contains `SCHEMA_TYPE_OPTIONS` and `DEFAULT_FIELD`
+
+**`src/state/`**
+- High-level application state management
+- React Query hooks for API calls and caching
+- **Why**: Separates data fetching/caching from UI logic
+
+**`src/api/`**
+- Direct API communication layer
+- WebSocket management
+- **Why**: Abstracts network concerns from business logic
+
+### Benefits of This Approach
+
+1. **Discoverability**: All schema-related code is in `src/components/schemas/`
+2. **Maintainability**: Changes to schema features are localized
+3. **Reusability**: Shared types in `src/model/` can be imported anywhere
+4. **Scalability**: New domains get their own component directories
+5. **Avoids Anti-patterns**: No generic directories that accumulate unrelated files
+
+### Example: Schema Feature Organization
+
+When working on schema-related features, everything you need is in one place:
+- UI components: `src/components/schemas/`
+- Data models: `src/model/schemas-table.tsx`, `src/model/schemaTypes.ts` 
+- API/state: `src/state/schemas.ts`
+
+This eliminates the need to hunt through multiple generic directories to understand or modify a feature.
+
 ## Icon Library
 
 **CRITICAL**: Always use `lucide-react` for icons throughout the application. Do NOT use `react-icons` or any other icon library.
