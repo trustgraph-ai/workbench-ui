@@ -26,43 +26,57 @@ export const useSettings = () => {
     }
   }, []);
 
-  // Save settings to localStorage
+  // Save settings to localStorage with functional update
   const saveSettings = useCallback((newSettings: Settings) => {
-    try {
-      localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(newSettings));
-      setSettings(newSettings);
-    } catch (error) {
-      console.error('Failed to save settings to localStorage:', error);
-      throw error;
-    }
+    setSettings(() => {
+      try {
+        localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(newSettings));
+        return newSettings;
+      } catch (error) {
+        console.error('Failed to save settings to localStorage:', error);
+        throw error;
+      }
+    });
   }, []);
 
-  // Update a specific setting
+  // Update a specific setting using functional updates to prevent stale closure issues
   const updateSetting = useCallback((path: string, value: any) => {
-    const newSettings = { ...settings };
-    const keys = path.split('.');
-    
-    if (keys.length === 2) {
-      const [section, key] = keys;
-      if (section in newSettings) {
-        (newSettings as any)[section] = {
-          ...(newSettings as any)[section],
-          [key]: value,
-        };
-        saveSettings(newSettings);
+    setSettings(prevSettings => {
+      const newSettings = { ...prevSettings };
+      const keys = path.split('.');
+      
+      if (keys.length === 2) {
+        const [section, key] = keys;
+        if (section in newSettings) {
+          (newSettings as any)[section] = {
+            ...(newSettings as any)[section],
+            [key]: value,
+          };
+        }
       }
-    }
-  }, [settings, saveSettings]);
+      
+      // Async update to localStorage
+      try {
+        localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(newSettings));
+      } catch (error) {
+        console.error('Failed to save settings to localStorage:', error);
+      }
+      
+      return newSettings;
+    });
+  }, []);
 
-  // Reset to defaults
+  // Reset to defaults using functional update
   const resetSettings = useCallback(() => {
-    try {
-      localStorage.removeItem(SETTINGS_STORAGE_KEY);
-      setSettings(DEFAULT_SETTINGS);
-    } catch (error) {
-      console.error('Failed to reset settings:', error);
-      throw error;
-    }
+    setSettings(() => {
+      try {
+        localStorage.removeItem(SETTINGS_STORAGE_KEY);
+        return DEFAULT_SETTINGS;
+      } catch (error) {
+        console.error('Failed to reset settings:', error);
+        throw error;
+      }
+    });
   }, []);
 
   // Export settings as JSON
