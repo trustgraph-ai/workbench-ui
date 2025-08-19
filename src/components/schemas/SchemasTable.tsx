@@ -9,7 +9,7 @@ import {
 import { useSchemas } from "../../state/schemas";
 import { SchemaTableRow, schemaColumns } from "../../model/schemas-table";
 import { EditSchemaDialog } from "./EditSchemaDialog";
-import { LoadingState, ErrorState, EmptyState } from "./SchemaTableStates";
+import { ErrorState, EmptyState } from "./SchemaTableStates";
 
 export const SchemasTable: React.FC = () => {
   const { schemas, schemasLoading, schemasError } = useSchemas();
@@ -29,9 +29,8 @@ export const SchemasTable: React.FC = () => {
     setIsOpen(true);
   };
 
-  if (schemasLoading) {
-    return <LoadingState message="Loading schemas..." />;
-  }
+  // Loading state is handled by useActivity in the schemas hook
+  // CenterSpinner component automatically shows when activities are active
 
   if (schemasError) {
     return <ErrorState error={schemasError} />;

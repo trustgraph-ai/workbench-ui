@@ -1,18 +1,5 @@
 import React from "react";
-import { Box, Text, Spinner, Center } from "@chakra-ui/react";
-
-interface LoadingStateProps {
-  message?: string;
-}
-
-export const LoadingState: React.FC<LoadingStateProps> = ({
-  message = "Loading...",
-}) => (
-  <Center h="200px">
-    <Spinner size="xl" />
-    {message && <Text ml={3}>{message}</Text>}
-  </Center>
-);
+import { Box, Text, Center } from "@chakra-ui/react";
 
 interface ErrorStateProps {
   error: Error | unknown;
