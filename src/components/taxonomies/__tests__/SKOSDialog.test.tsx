@@ -10,6 +10,9 @@ import { describe, test, expect, vi, beforeEach } from "vitest";
 import { SKOSDialog } from "../SKOSDialog";
 import { Taxonomy } from "../../../state/taxonomies";
 import { useNotification } from "../../../state/notify";
+import { serializeToSKOS, parseFromSKOS } from "../../../utils/skos";
+import { validateTaxonomy } from "../../../utils/skos-validation";
+import { exportTaxonomy } from "../../../utils/export-formats";
 
 // Mock dependencies
 vi.mock("../../../state/notify", () => ({
@@ -20,16 +23,16 @@ vi.mock("../../../state/notify", () => ({
   })),
 }));
 
-vi.mock("../../utils/skos", () => ({
+vi.mock("../../../utils/skos", () => ({
   serializeToSKOS: vi.fn(),
   parseFromSKOS: vi.fn(),
 }));
 
-vi.mock("../../utils/skos-validation", () => ({
+vi.mock("../../../utils/skos-validation", () => ({
   validateTaxonomy: vi.fn(),
 }));
 
-vi.mock("../../utils/export-formats", () => ({
+vi.mock("../../../utils/export-formats", () => ({
   exportTaxonomy: vi.fn(),
   EXPORT_FORMATS: {
     "skos-rdf": {
@@ -99,11 +102,20 @@ vi.mock("../common/SelectField", () => ({
 global.URL.createObjectURL = vi.fn(() => "mock-url");
 global.URL.revokeObjectURL = vi.fn();
 
-Object.assign(navigator, {
-  clipboard: {
-    writeText: vi.fn().mockResolvedValue(undefined),
-  },
-});
+// Mock navigator.clipboard
+const mockWriteText = vi.fn().mockResolvedValue(undefined);
+
+// Check if clipboard already exists to avoid redefining
+if (!navigator.clipboard) {
+  Object.defineProperty(navigator, 'clipboard', {
+    value: {
+      writeText: mockWriteText,
+    },
+    configurable: true,
+  });
+} else {
+  navigator.clipboard.writeText = mockWriteText;
+}
 
 const mockFileReader = {
   readAsText: vi.fn(),
@@ -180,14 +192,17 @@ describe("SKOSDialog", () => {
     
     vi.mocked(useNotification).mockReturnValue(mockNotify);
     
-    const { serializeToSKOS, parseFromSKOS } = require("../../utils/skos");
-    const { validateTaxonomy } = require("../../utils/skos-validation");
-    const { exportTaxonomy } = require("../../utils/export-formats");
+    vi.mocked(serializeToSKOS).mockReturnValue(mockSKOSContent);
+    vi.mocked(parseFromSKOS).mockResolvedValue(mockTaxonomy);
+    vi.mocked(validateTaxonomy).mockReturnValue(mockValidationResult);
+    vi.mocked(exportTaxonomy).mockReturnValue(JSON.stringify(mockTaxonomy, null, 2));
     
-    serializeToSKOS.mockReturnValue(mockSKOSContent);
-    parseFromSKOS.mockResolvedValue(mockTaxonomy);
-    validateTaxonomy.mockReturnValue(mockValidationResult);
-    exportTaxonomy.mockReturnValue(JSON.stringify(mockTaxonomy, null, 2));
+    // Reset clipboard mock
+    mockWriteText.mockClear();
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   describe("Export Mode", () => {
@@ -206,8 +221,6 @@ describe("SKOSDialog", () => {
     });
 
     test("generates SKOS content on dialog open", () => {
-      const { serializeToSKOS } = require("../../utils/skos");
-      
       render(
         <SKOSDialog
           open={true}
@@ -217,13 +230,12 @@ describe("SKOSDialog", () => {
         />
       );
 
-      expect(serializeToSKOS).toHaveBeenCalledWith(mockTaxonomy, "rdf");
+      expect(vi.mocked(serializeToSKOS)).toHaveBeenCalledWith(mockTaxonomy, "rdf");
       expect(screen.getByDisplayValue(mockSKOSContent)).toBeInTheDocument();
     });
 
     test("changes export format and regenerates content", async () => {
       const user = userEvent.setup();
-      const { serializeToSKOS } = require("../../utils/skos");
       
       render(
         <SKOSDialog
@@ -238,13 +250,12 @@ describe("SKOSDialog", () => {
       await user.selectOptions(formatSelect, "skos-turtle");
 
       await waitFor(() => {
-        expect(serializeToSKOS).toHaveBeenCalledWith(mockTaxonomy, "turtle");
+        expect(vi.mocked(serializeToSKOS)).toHaveBeenCalledWith(mockTaxonomy, "turtle");
       });
     });
 
     test("exports non-SKOS formats", async () => {
       const user = userEvent.setup();
-      const { exportTaxonomy } = require("../../utils/export-formats");
       
       render(
         <SKOSDialog
@@ -259,13 +270,11 @@ describe("SKOSDialog", () => {
       await user.selectOptions(formatSelect, "json");
 
       await waitFor(() => {
-        expect(exportTaxonomy).toHaveBeenCalledWith(mockTaxonomy, "json");
+        expect(vi.mocked(exportTaxonomy)).toHaveBeenCalledWith(mockTaxonomy, "json");
       });
     });
 
     test("validates SKOS content during export", () => {
-      const { validateTaxonomy } = require("../../utils/skos-validation");
-      
       render(
         <SKOSDialog
           open={true}
@@ -275,7 +284,7 @@ describe("SKOSDialog", () => {
         />
       );
 
-      expect(validateTaxonomy).toHaveBeenCalledWith(mockTaxonomy);
+      expect(vi.mocked(validateTaxonomy)).toHaveBeenCalledWith(mockTaxonomy);
       expect(screen.getByRole("tab", { name: /Validation/ })).toBeInTheDocument();
     });
 
@@ -294,7 +303,7 @@ describe("SKOSDialog", () => {
       const copyButton = screen.getByLabelText("Copy");
       await user.click(copyButton);
 
-      expect(navigator.clipboard.writeText).toHaveBeenCalledWith(mockSKOSContent);
+      expect(mockWriteText).toHaveBeenCalledWith(mockSKOSContent);
       expect(mockNotify.success).toHaveBeenCalledWith("SKOS content copied to clipboard");
     });
 
@@ -310,6 +319,10 @@ describe("SKOSDialog", () => {
         download: "",
         click: mockClick,
       };
+      
+      const originalCreateElement = document.createElement;
+      const originalAppendChild = document.body.appendChild;
+      const originalRemoveChild = document.body.removeChild;
       
       document.createElement = mockCreateElement.mockReturnValue(mockAnchor);
       document.body.appendChild = mockAppendChild;
@@ -331,11 +344,15 @@ describe("SKOSDialog", () => {
       expect(mockAnchor.download).toBe("Test-Taxonomy.rdf");
       expect(mockClick).toHaveBeenCalled();
       expect(mockNotify.success).toHaveBeenCalledWith("SKOS RDF/XML file downloaded");
+      
+      // Restore original methods
+      document.createElement = originalCreateElement;
+      document.body.appendChild = originalAppendChild;
+      document.body.removeChild = originalRemoveChild;
     });
 
     test("handles export errors gracefully", () => {
-      const { serializeToSKOS } = require("../../utils/skos");
-      serializeToSKOS.mockImplementation(() => {
+      vi.mocked(serializeToSKOS).mockImplementation(() => {
         throw new Error("Export failed");
       });
       
@@ -353,7 +370,6 @@ describe("SKOSDialog", () => {
 
     test("regenerates content when clicking regenerate", async () => {
       const user = userEvent.setup();
-      const { serializeToSKOS } = require("../../utils/skos");
       
       render(
         <SKOSDialog
@@ -364,12 +380,12 @@ describe("SKOSDialog", () => {
         />
       );
 
-      serializeToSKOS.mockClear();
+      vi.mocked(serializeToSKOS).mockClear();
       
       const regenerateButton = screen.getByText("Regenerate");
       await user.click(regenerateButton);
 
-      expect(serializeToSKOS).toHaveBeenCalledWith(mockTaxonomy, "rdf");
+      expect(vi.mocked(serializeToSKOS)).toHaveBeenCalledWith(mockTaxonomy, "rdf");
     });
   });
 
@@ -431,7 +447,6 @@ describe("SKOSDialog", () => {
 
     test("imports SKOS RDF content successfully", async () => {
       const user = userEvent.setup();
-      const { parseFromSKOS } = require("../../utils/skos");
       
       render(
         <SKOSDialog
@@ -453,7 +468,7 @@ describe("SKOSDialog", () => {
       await user.click(importButton);
 
       await waitFor(() => {
-        expect(parseFromSKOS).toHaveBeenCalledWith(
+        expect(vi.mocked(parseFromSKOS)).toHaveBeenCalledWith(
           mockSKOSContent,
           "test-taxonomy",
           "rdf"
@@ -498,10 +513,8 @@ describe("SKOSDialog", () => {
 
     test("handles SKOS validation errors during import", async () => {
       const user = userEvent.setup();
-      const { parseFromSKOS } = require("../../utils/skos");
-      const { validateTaxonomy } = require("../../utils/skos-validation");
       
-      validateTaxonomy.mockReturnValue(mockInvalidValidationResult);
+      vi.mocked(validateTaxonomy).mockReturnValue(mockInvalidValidationResult);
       
       render(
         <SKOSDialog
@@ -591,9 +604,8 @@ describe("SKOSDialog", () => {
 
     test("handles import errors gracefully", async () => {
       const user = userEvent.setup();
-      const { parseFromSKOS } = require("../../utils/skos");
       
-      parseFromSKOS.mockRejectedValue(new Error("Parse failed"));
+      vi.mocked(parseFromSKOS).mockRejectedValue(new Error("Parse failed"));
       
       render(
         <SKOSDialog
@@ -647,10 +659,9 @@ describe("SKOSDialog", () => {
 
     test("shows processing state during import", async () => {
       const user = userEvent.setup();
-      const { parseFromSKOS } = require("../../utils/skos");
       
       // Make parse operation slow
-      parseFromSKOS.mockImplementation(() => new Promise(resolve => 
+      vi.mocked(parseFromSKOS).mockImplementation(() => new Promise(resolve => 
         setTimeout(() => resolve(mockTaxonomy), 100)
       ));
       
@@ -725,8 +736,7 @@ describe("SKOSDialog", () => {
     });
 
     test("shows validation results tab when validation is available", () => {
-      const { validateTaxonomy } = require("../../utils/skos-validation");
-      validateTaxonomy.mockReturnValue(mockInvalidValidationResult);
+      vi.mocked(validateTaxonomy).mockReturnValue(mockInvalidValidationResult);
       
       render(
         <SKOSDialog
@@ -743,8 +753,7 @@ describe("SKOSDialog", () => {
 
     test("switches between content and validation tabs", async () => {
       const user = userEvent.setup();
-      const { validateTaxonomy } = require("../../utils/skos-validation");
-      validateTaxonomy.mockReturnValue(mockValidationResult);
+      vi.mocked(validateTaxonomy).mockReturnValue(mockValidationResult);
       
       render(
         <SKOSDialog
