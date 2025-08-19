@@ -108,12 +108,18 @@ const filterChakraProps = (props: Record<string, unknown>) => {
 // Mock Chakra UI components
 vi.mock("@chakra-ui/react", () => ({
   Field: {
-    Root: ({ children, ...props }: React.PropsWithChildren<Record<string, unknown>>) => (
+    Root: ({
+      children,
+      ...props
+    }: React.PropsWithChildren<Record<string, unknown>>) => (
       <div data-testid="field-root" {...filterChakraProps(props)}>
         {children}
       </div>
     ),
-    Label: ({ children, ...props }: React.PropsWithChildren<Record<string, unknown>>) => (
+    Label: ({
+      children,
+      ...props
+    }: React.PropsWithChildren<Record<string, unknown>>) => (
       <label data-testid="field-label" {...filterChakraProps(props)}>
         {children}
       </label>
@@ -123,13 +129,21 @@ vi.mock("@chakra-ui/react", () => ({
         *
       </span>
     ),
-    HelperText: ({ children, ...props }: React.PropsWithChildren<Record<string, unknown>>) => (
+    HelperText: ({
+      children,
+      ...props
+    }: React.PropsWithChildren<Record<string, unknown>>) => (
       <div data-testid="helper-text" {...filterChakraProps(props)}>
         {children}
       </div>
     ),
   },
-  Input: ({ value, onChange, placeholder, ...props }: {
+  Input: ({
+    value,
+    onChange,
+    placeholder,
+    ...props
+  }: {
     value?: string;
     onChange?: React.ChangeEventHandler<HTMLInputElement>;
     placeholder?: string;

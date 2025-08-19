@@ -13,7 +13,17 @@ import { SchemaField } from "../../../model/schemas-table";
 // Mock dependencies
 vi.mock("../../common/SelectField", () => ({
   __esModule: true,
-  default: ({ label, value, onValueChange, items }: { label: string; value: string | string[]; onValueChange: (value: string) => void; items: { value: string; label: string }[] }) => (
+  default: ({
+    label,
+    value,
+    onValueChange,
+    items,
+  }: {
+    label: string;
+    value: string | string[];
+    onValueChange: (value: string) => void;
+    items: { value: string; label: string }[];
+  }) => (
     <div data-testid="type-select-field">
       <label>{label}</label>
       <select
@@ -33,7 +43,15 @@ vi.mock("../../common/SelectField", () => ({
 }));
 
 vi.mock("../EnumValueManager", () => ({
-  EnumValueManager: ({ values, onAddValue, onRemoveValue }: { values: string[]; onAddValue: (value: string) => void; onRemoveValue: (value: string) => void }) => (
+  EnumValueManager: ({
+    values,
+    onAddValue,
+    onRemoveValue,
+  }: {
+    values: string[];
+    onAddValue: (value: string) => void;
+    onRemoveValue: (value: string) => void;
+  }) => (
     <div data-testid="enum-value-manager">
       <span data-testid="enum-values-count">{values.length}</span>
       {values.map((value: string) => (

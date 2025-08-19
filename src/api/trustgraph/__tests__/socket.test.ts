@@ -7,7 +7,11 @@ vi.mock("../SocketContext", () => ({
   SocketContext: {
     _currentValue: null,
     Provider: ({ children }: { children: React.ReactNode }) => children,
-    Consumer: ({ children }: { children: (value: null) => React.ReactNode }) => children(null),
+    Consumer: ({
+      children,
+    }: {
+      children: (value: null) => React.ReactNode;
+    }) => children(null),
   },
 }));
 
@@ -16,9 +20,7 @@ const mockSocketContext = {
   textCompletion: vi.fn(),
   graphRag: vi
     .fn()
-    .mockImplementation(() =>
-      Promise.resolve("mock response"),
-    ),
+    .mockImplementation(() => Promise.resolve("mock response")),
   agent: vi.fn(),
   embeddings: vi.fn(),
   graphEmbeddingsQuery: vi.fn(),

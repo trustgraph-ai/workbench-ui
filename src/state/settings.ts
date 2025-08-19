@@ -58,7 +58,9 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
       const [section, key] = keys;
       if (section in newSettings) {
         (newSettings as Record<string, Record<string, unknown>>)[section] = {
-          ...(newSettings as Record<string, Record<string, unknown>>)[section],
+          ...(newSettings as Record<string, Record<string, unknown>>)[
+            section
+          ],
           [key]: value,
         };
       }

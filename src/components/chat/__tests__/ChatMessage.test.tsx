@@ -105,34 +105,52 @@ const filterChakraProps = (props: Record<string, unknown>) => {
 
 // Mock Chakra UI components
 vi.mock("@chakra-ui/react", () => ({
-  Box: ({ children, ...props }: React.PropsWithChildren<Record<string, unknown>>) => (
+  Box: ({
+    children,
+    ...props
+  }: React.PropsWithChildren<Record<string, unknown>>) => (
     <div data-testid="box" {...filterChakraProps(props)}>
       {children}
     </div>
   ),
-  Flex: ({ children, ...props }: React.PropsWithChildren<Record<string, unknown>>) => (
+  Flex: ({
+    children,
+    ...props
+  }: React.PropsWithChildren<Record<string, unknown>>) => (
     <div data-testid="flex" {...filterChakraProps(props)}>
       {children}
     </div>
   ),
-  Text: ({ children, ...props }: React.PropsWithChildren<Record<string, unknown>>) => (
+  Text: ({
+    children,
+    ...props
+  }: React.PropsWithChildren<Record<string, unknown>>) => (
     <p data-testid="text" {...filterChakraProps(props)}>
       {children}
     </p>
   ),
   Avatar: {
-    Root: ({ children, ...props }: React.PropsWithChildren<Record<string, unknown>>) => (
+    Root: ({
+      children,
+      ...props
+    }: React.PropsWithChildren<Record<string, unknown>>) => (
       <div data-testid="avatar-root" {...filterChakraProps(props)}>
         {children}
       </div>
     ),
-    Fallback: ({ name, ...props }: { name?: string } & Record<string, unknown>) => (
+    Fallback: ({
+      name,
+      ...props
+    }: { name?: string } & Record<string, unknown>) => (
       <div data-testid="avatar-fallback" {...filterChakraProps(props)}>
         {name}
       </div>
     ),
   },
-  Badge: ({ children, ...props }: React.PropsWithChildren<Record<string, unknown>>) => (
+  Badge: ({
+    children,
+    ...props
+  }: React.PropsWithChildren<Record<string, unknown>>) => (
     <span data-testid="badge" {...filterChakraProps(props)}>
       {children}
     </span>

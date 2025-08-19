@@ -1,11 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  Portal,
-  Button,
-  Dialog,
-  CloseButton,
-  Tabs,
-} from "@chakra-ui/react";
+import { Portal, Button, Dialog, CloseButton, Tabs } from "@chakra-ui/react";
 import { useNotification } from "../../state/notify";
 import {
   useTaxonomies,
@@ -178,7 +172,11 @@ export const EditTaxonomyDialog: React.FC<EditTaxonomyDialogProps> = ({
     });
   };
 
-  const updateConcept = (conceptId: string, field: string, value: unknown) => {
+  const updateConcept = (
+    conceptId: string,
+    field: string,
+    value: unknown,
+  ) => {
     setTaxonomy({
       ...taxonomy,
       concepts: {

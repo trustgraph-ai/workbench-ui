@@ -145,7 +145,9 @@ const mockFileReader: MockFileReader = {
   onload: null,
 };
 
-global.FileReader = vi.fn(() => mockFileReader) as unknown as typeof FileReader;
+global.FileReader = vi.fn(
+  () => mockFileReader,
+) as unknown as typeof FileReader;
 
 // Mock data
 const mockTaxonomy: Taxonomy = {

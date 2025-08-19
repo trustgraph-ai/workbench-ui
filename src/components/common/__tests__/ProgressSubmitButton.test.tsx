@@ -106,16 +106,27 @@ const filterChakraProps = (props: Record<string, unknown>) => {
 
 // Mock Chakra UI components
 vi.mock("@chakra-ui/react", () => ({
-  Box: ({ children, ...props }: React.PropsWithChildren<Record<string, unknown>>) => (
+  Box: ({
+    children,
+    ...props
+  }: React.PropsWithChildren<Record<string, unknown>>) => (
     <div data-testid="box" {...filterChakraProps(props)}>
       {children}
     </div>
   ),
-  Button: ({ children, onClick, disabled, loading, ...props }: React.PropsWithChildren<{
-    onClick?: React.MouseEventHandler<HTMLButtonElement>;
-    disabled?: boolean;
-    loading?: boolean;
-  } & Record<string, unknown>>) => (
+  Button: ({
+    children,
+    onClick,
+    disabled,
+    loading,
+    ...props
+  }: React.PropsWithChildren<
+    {
+      onClick?: React.MouseEventHandler<HTMLButtonElement>;
+      disabled?: boolean;
+      loading?: boolean;
+    } & Record<string, unknown>
+  >) => (
     <button
       data-testid="progress-button"
       onClick={onClick}

@@ -14,11 +14,15 @@ vi.mock("@chakra-ui/react", () => ({
     Body: ({ children }: React.PropsWithChildren) => (
       <tbody data-testid="table-body">{children}</tbody>
     ),
-    Row: ({ children }: React.PropsWithChildren) => <tr data-testid="table-row">{children}</tr>,
+    Row: ({ children }: React.PropsWithChildren) => (
+      <tr data-testid="table-row">{children}</tr>
+    ),
     ColumnHeader: ({ children }: React.PropsWithChildren) => (
       <th data-testid="table-column-header">{children}</th>
     ),
-    Cell: ({ children }: React.PropsWithChildren) => <td data-testid="table-cell">{children}</td>,
+    Cell: ({ children }: React.PropsWithChildren) => (
+      <td data-testid="table-cell">{children}</td>
+    ),
   },
 }));
 

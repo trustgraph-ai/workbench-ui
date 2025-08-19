@@ -22,8 +22,7 @@ export const TaxonomyManager: React.FC<TaxonomyManagerProps> = ({
   selectedTaxonomyId,
   onTaxonomySelect,
 }) => {
-  const { taxonomies, updateTaxonomy, createTaxonomy } =
-    useTaxonomies();
+  const { taxonomies, updateTaxonomy, createTaxonomy } = useTaxonomies();
   const notify = useNotification();
 
   const [currentTaxonomyId, setCurrentTaxonomyId] = useState<string | null>(

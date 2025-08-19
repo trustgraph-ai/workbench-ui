@@ -105,22 +105,34 @@ const filterChakraProps = (props: Record<string, unknown>) => {
 
 // Mock Chakra UI components
 vi.mock("@chakra-ui/react", () => ({
-  Box: ({ children, ...props }: React.PropsWithChildren<Record<string, unknown>>) => (
+  Box: ({
+    children,
+    ...props
+  }: React.PropsWithChildren<Record<string, unknown>>) => (
     <div data-testid="box" {...filterChakraProps(props)}>
       {children}
     </div>
   ),
-  Flex: ({ children, ...props }: React.PropsWithChildren<Record<string, unknown>>) => (
+  Flex: ({
+    children,
+    ...props
+  }: React.PropsWithChildren<Record<string, unknown>>) => (
     <div data-testid="flex" {...filterChakraProps(props)}>
       {children}
     </div>
   ),
-  Heading: ({ children, ...props }: React.PropsWithChildren<Record<string, unknown>>) => (
+  Heading: ({
+    children,
+    ...props
+  }: React.PropsWithChildren<Record<string, unknown>>) => (
     <h3 data-testid="heading" {...filterChakraProps(props)}>
       {children}
     </h3>
   ),
-  Text: ({ children, ...props }: React.PropsWithChildren<Record<string, unknown>>) => (
+  Text: ({
+    children,
+    ...props
+  }: React.PropsWithChildren<Record<string, unknown>>) => (
     <p data-testid="text" {...filterChakraProps(props)}>
       {children}
     </p>

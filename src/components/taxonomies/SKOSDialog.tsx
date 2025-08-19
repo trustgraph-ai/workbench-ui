@@ -13,12 +13,7 @@ import {
   Separator,
   IconButton,
 } from "@chakra-ui/react";
-import {
-  Download,
-  Upload,
-  Copy,
-  Check,
-} from "lucide-react";
+import { Download, Upload, Copy, Check } from "lucide-react";
 import { useNotification } from "../../state/notify";
 import { Taxonomy } from "../../state/taxonomies";
 import { serializeToSKOS, parseFromSKOS } from "../../utils/skos";

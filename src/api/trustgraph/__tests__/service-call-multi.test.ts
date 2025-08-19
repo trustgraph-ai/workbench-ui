@@ -1,7 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import {
-  ServiceCallMulti,
-} from "../service-call-multi";
+import { ServiceCallMulti } from "../service-call-multi";
 
 // Mock WebSocket constants
 vi.stubGlobal("WebSocket", {

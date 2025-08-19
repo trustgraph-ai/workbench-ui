@@ -149,7 +149,6 @@ export const useChat = () => {
     addActivity(activity);
 
     return new Promise<string>((resolve, reject) => {
-
       const think = (thought: string) => {
         addMessage("ai", thought, "thinking");
       };

@@ -24,13 +24,25 @@ vi.mock("../../../state/session", () => ({
 
 vi.mock("../NodePropertiesTable", () => ({
   __esModule: true,
-  default: ({ properties }: { properties: { predicate: { uri: string; label: string }; value: string }[] }) => (
+  default: ({
+    properties,
+  }: {
+    properties: {
+      predicate: { uri: string; label: string };
+      value: string;
+    }[];
+  }) => (
     <div data-testid="node-properties-table">
-      {properties?.map((prop: { predicate: { uri: string; label: string }; value: string }, index: number) => (
-        <div key={index} data-testid={`property-${prop.predicate.uri}`}>
-          {prop.predicate.label}: {prop.value}
-        </div>
-      ))}
+      {properties?.map(
+        (
+          prop: { predicate: { uri: string; label: string }; value: string },
+          index: number,
+        ) => (
+          <div key={index} data-testid={`property-${prop.predicate.uri}`}>
+            {prop.predicate.label}: {prop.value}
+          </div>
+        ),
+      )}
     </div>
   ),
 }));
@@ -41,7 +53,11 @@ vi.mock("../RelationshipsTable", () => ({
     outboundRelationships,
     inboundRelationships,
     onRelationshipClick,
-  }: { outboundRelationships: { uri: string; label: string }[]; inboundRelationships: { uri: string; label: string }[]; onRelationshipClick: (uri: string, type: string) => void }) => (
+  }: {
+    outboundRelationships: { uri: string; label: string }[];
+    inboundRelationships: { uri: string; label: string }[];
+    onRelationshipClick: (uri: string, type: string) => void;
+  }) => (
     <div data-testid="relationships-table">
       <div data-testid="outbound-count">
         {outboundRelationships?.length || 0}
@@ -49,24 +65,28 @@ vi.mock("../RelationshipsTable", () => ({
       <div data-testid="inbound-count">
         {inboundRelationships?.length || 0}
       </div>
-      {outboundRelationships?.map((rel: { uri: string; label: string }, index: number) => (
-        <button
-          key={`out-${index}`}
-          data-testid={`outbound-rel-${rel.uri}`}
-          onClick={() => onRelationshipClick(rel.uri, "outgoing")}
-        >
-          {rel.label} (outgoing)
-        </button>
-      ))}
-      {inboundRelationships?.map((rel: { uri: string; label: string }, index: number) => (
-        <button
-          key={`in-${index}`}
-          data-testid={`inbound-rel-${rel.uri}`}
-          onClick={() => onRelationshipClick(rel.uri, "incoming")}
-        >
-          {rel.label} (incoming)
-        </button>
-      ))}
+      {outboundRelationships?.map(
+        (rel: { uri: string; label: string }, index: number) => (
+          <button
+            key={`out-${index}`}
+            data-testid={`outbound-rel-${rel.uri}`}
+            onClick={() => onRelationshipClick(rel.uri, "outgoing")}
+          >
+            {rel.label} (outgoing)
+          </button>
+        ),
+      )}
+      {inboundRelationships?.map(
+        (rel: { uri: string; label: string }, index: number) => (
+          <button
+            key={`in-${index}`}
+            data-testid={`inbound-rel-${rel.uri}`}
+            onClick={() => onRelationshipClick(rel.uri, "incoming")}
+          >
+            {rel.label} (incoming)
+          </button>
+        ),
+      )}
     </div>
   ),
 }));

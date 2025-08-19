@@ -27,7 +27,11 @@ interface ConceptEditorHeaderProps {
 }
 
 vi.mock("../ConceptEditorHeader", () => ({
-  ConceptEditorHeader: ({ concept, onSave, onCancel }: ConceptEditorHeaderProps) => (
+  ConceptEditorHeader: ({
+    concept,
+    onSave,
+    onCancel,
+  }: ConceptEditorHeaderProps) => (
     <div data-testid="concept-editor-header">
       <button onClick={onSave} data-testid="save-button">
         Save
@@ -41,7 +45,13 @@ vi.mock("../ConceptEditorHeader", () => ({
 }));
 
 vi.mock("../ConceptMetadataTab", () => ({
-  ConceptMetadataTab: ({ editedConcept, onUpdateField }: { editedConcept: TaxonomyConcept; onUpdateField: (field: string, value: string) => void }) => (
+  ConceptMetadataTab: ({
+    editedConcept,
+    onUpdateField,
+  }: {
+    editedConcept: TaxonomyConcept;
+    onUpdateField: (field: string, value: string) => void;
+  }) => (
     <div data-testid="concept-metadata-tab">
       <input
         data-testid="notation-input"
@@ -155,7 +165,12 @@ interface ArrayFieldEditorProps {
 }
 
 vi.mock("../ArrayFieldEditor", () => ({
-  ArrayFieldEditor: ({ field, items, onAddItem, onRemoveItem }: ArrayFieldEditorProps) => (
+  ArrayFieldEditor: ({
+    field,
+    items,
+    onAddItem,
+    onRemoveItem,
+  }: ArrayFieldEditorProps) => (
     <div data-testid={`array-field-${field}`}>
       <input
         data-testid={`${field}-input`}
@@ -193,7 +208,12 @@ interface TextAreaFieldProps {
 
 vi.mock("../common/TextAreaField", () => ({
   __esModule: true,
-  default: ({ label, value, onValueChange, placeholder }: TextAreaFieldProps) => (
+  default: ({
+    label,
+    value,
+    onValueChange,
+    placeholder,
+  }: TextAreaFieldProps) => (
     <div>
       <label>{label}</label>
       <textarea

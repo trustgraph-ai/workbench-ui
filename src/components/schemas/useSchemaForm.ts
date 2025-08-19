@@ -14,7 +14,7 @@ export const useSchemaForm = ({
   isOpen,
   schemaId,
   initialSchema,
-}: Omit<UseSchemaFormProps, 'mode'>) => {
+}: Omit<UseSchemaFormProps, "mode">) => {
   const [id, setId] = useState(schemaId || "");
   const [name, setName] = useState(initialSchema?.name || "");
   const [description, setDescription] = useState(

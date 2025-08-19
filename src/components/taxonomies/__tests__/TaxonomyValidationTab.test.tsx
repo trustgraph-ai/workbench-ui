@@ -26,15 +26,32 @@ interface QualitySuggestion {
 vi.mock("../../../utils/taxonomy-qa", () => ({
   TaxonomyQA: {
     generateSuggestions: vi.fn().mockReturnValue([]),
-    autoFix: vi.fn().mockImplementation((taxonomy: Taxonomy) => ({ taxonomy })),
+    autoFix: vi
+      .fn()
+      .mockImplementation((taxonomy: Taxonomy) => ({ taxonomy })),
   },
 }));
 
 interface ValidationResult {
   isValid: boolean;
-  errors: Array<{ type: string; code: string; message: string; conceptId?: string }>;
-  warnings: Array<{ type: string; code: string; message: string; conceptId?: string }>;
-  info: Array<{ type: string; code: string; message: string; conceptId?: string }>;
+  errors: Array<{
+    type: string;
+    code: string;
+    message: string;
+    conceptId?: string;
+  }>;
+  warnings: Array<{
+    type: string;
+    code: string;
+    message: string;
+    conceptId?: string;
+  }>;
+  info: Array<{
+    type: string;
+    code: string;
+    message: string;
+    conceptId?: string;
+  }>;
 }
 
 vi.mock("../ValidationResults", () => ({
@@ -116,7 +133,6 @@ const mockInvalidTaxonomy: Taxonomy = {
     },
   },
 };
-
 
 const mockValidationResult = {
   isValid: true,

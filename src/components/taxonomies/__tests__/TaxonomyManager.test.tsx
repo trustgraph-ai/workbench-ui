@@ -195,7 +195,11 @@ interface TaxonomyEmptyStatesProps {
 }
 
 vi.mock("../TaxonomyEmptyStates", () => ({
-  TaxonomyEmptyStates: ({ type, taxonomies, onTaxonomyChange }: TaxonomyEmptyStatesProps) => (
+  TaxonomyEmptyStates: ({
+    type,
+    taxonomies,
+    onTaxonomyChange,
+  }: TaxonomyEmptyStatesProps) => (
     <div data-testid={`empty-state-${type}`}>
       {type === "no-taxonomy-selected" && taxonomies && (
         <select onChange={(e) => onTaxonomyChange(e.target.value)}>

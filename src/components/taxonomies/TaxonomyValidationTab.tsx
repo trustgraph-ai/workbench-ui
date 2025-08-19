@@ -21,9 +21,7 @@ import {
   Target,
   Zap,
 } from "lucide-react";
-import {
-  validateTaxonomy,
-} from "../../utils/skos-validation";
+import { validateTaxonomy } from "../../utils/skos-validation";
 import { Taxonomy } from "../../state/taxonomies";
 import { ValidationResults } from "./ValidationResults";
 import { TaxonomyQA } from "../../utils/taxonomy-qa";

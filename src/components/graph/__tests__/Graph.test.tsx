@@ -39,16 +39,17 @@ vi.mock("../../../state/workbench", () => ({
 
 vi.mock("react-force-graph", () => ({
   ForceGraph3D: React.forwardRef(
-    (
-      {
-        onNodeClick,
-        onBackgroundClick,
-        onLinkClick,
-        onNodeDragEnd,
-        graphData,
-        ...props
-      }: { graphData: { nodes?: unknown[]; links?: unknown[] }; [key: string]: unknown },
-    ) => (
+    ({
+      onNodeClick,
+      onBackgroundClick,
+      onLinkClick,
+      onNodeDragEnd,
+      graphData,
+      ...props
+    }: {
+      graphData: { nodes?: unknown[]; links?: unknown[] };
+      [key: string]: unknown;
+    }) => (
       <div
         data-testid="force-graph-3d"
         data-width={props.width}
@@ -148,7 +149,17 @@ vi.mock("./GraphHelp", () => ({
 
 vi.mock("../NodeDetailsDrawer", () => ({
   __esModule: true,
-  default: ({ node, isOpen, onClose, onRelationshipClick }: { node: unknown; isOpen: boolean; onClose: () => void; onRelationshipClick: () => void }) =>
+  default: ({
+    node,
+    isOpen,
+    onClose,
+    onRelationshipClick,
+  }: {
+    node: unknown;
+    isOpen: boolean;
+    onClose: () => void;
+    onRelationshipClick: () => void;
+  }) =>
     isOpen ? (
       <div data-testid="node-details-drawer">
         <div data-testid="drawer-node-id">{node?.id || "No node"}</div>
@@ -397,7 +408,6 @@ describe("Graph Component", () => {
   });
 
   test("handles node drag end to pin position", async () => {
-
     render(<GraphView />);
 
     const node1 = screen.getByTestId("graph-node-node1");
@@ -440,7 +450,6 @@ describe("Graph Component", () => {
   });
 
   test("warns when relationship navigation attempted without selected node", async () => {
-
     render(<GraphView />);
 
     // Try to click relationship without selecting node first
