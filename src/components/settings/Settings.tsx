@@ -1,5 +1,5 @@
 import React from "react";
-import { VStack, HStack, Button, Spinner, Center } from "@chakra-ui/react";
+import { VStack, HStack, Button } from "@chakra-ui/react";
 import { RotateCcw, Download, Upload } from "lucide-react";
 import { useSettings } from "../../state/settings";
 import { useNotification } from "../../state/notify";
@@ -69,13 +69,8 @@ const Settings: React.FC = () => {
     input.click();
   };
 
-  if (!isLoaded) {
-    return (
-      <Center py={8}>
-        <Spinner />
-      </Center>
-    );
-  }
+  // Loading state is handled by useActivity in the settings hook
+  // CenterSpinner component automatically shows when activities are active
 
   return (
     <VStack gap={6} align="stretch" p={6} maxW="4xl" mx="auto">
