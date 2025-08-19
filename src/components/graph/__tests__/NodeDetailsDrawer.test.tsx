@@ -4,17 +4,18 @@
  */
 
 import React from "react";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "../../../test/test-utils";
 import userEvent from "@testing-library/user-event";
 import { describe, test, expect, vi, beforeEach } from "vitest";
 import NodeDetailsDrawer from "../NodeDetailsDrawer";
+import { useNodeDetails } from "../../../state/node-details";
 
 // Mock dependencies
-vi.mock("../../state/node-details", () => ({
+vi.mock("../../../state/node-details", () => ({
   useNodeDetails: vi.fn(),
 }));
 
-vi.mock("../../state/session", () => ({
+vi.mock("../../../state/session", () => ({
   useSessionStore: vi.fn((selector) => {
     const state = { flowId: "test-flow-123" };
     return selector(state);
@@ -99,8 +100,7 @@ describe("NodeDetailsDrawer", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     
-    const { useNodeDetails } = require("../../state/node-details");
-    useNodeDetails.mockReturnValue(mockNodeDetails);
+    vi.mocked(useNodeDetails).mockReturnValue(mockNodeDetails);
   });
 
   test("renders closed drawer when isOpen is false", () => {
@@ -204,8 +204,7 @@ describe("NodeDetailsDrawer", () => {
   });
 
   test("hides relationships section when no relationships exist", () => {
-    const { useNodeDetails } = require("../../state/node-details");
-    useNodeDetails.mockReturnValue(mockEmptyNodeDetails);
+    vi.mocked(useNodeDetails).mockReturnValue(mockEmptyNodeDetails);
 
     render(
       <NodeDetailsDrawer
@@ -221,8 +220,7 @@ describe("NodeDetailsDrawer", () => {
   });
 
   test("hides properties section when no properties exist", () => {
-    const { useNodeDetails } = require("../../state/node-details");
-    useNodeDetails.mockReturnValue(mockEmptyNodeDetails);
+    vi.mocked(useNodeDetails).mockReturnValue(mockEmptyNodeDetails);
 
     render(
       <NodeDetailsDrawer
@@ -238,8 +236,7 @@ describe("NodeDetailsDrawer", () => {
   });
 
   test("shows relationships section when only outbound relationships exist", () => {
-    const { useNodeDetails } = require("../../state/node-details");
-    useNodeDetails.mockReturnValue({
+    vi.mocked(useNodeDetails).mockReturnValue({
       ...mockEmptyNodeDetails,
       outboundRelationshipsWithLabels: mockNodeDetails.outboundRelationshipsWithLabels,
     });
@@ -259,8 +256,7 @@ describe("NodeDetailsDrawer", () => {
   });
 
   test("shows relationships section when only inbound relationships exist", () => {
-    const { useNodeDetails } = require("../../state/node-details");
-    useNodeDetails.mockReturnValue({
+    vi.mocked(useNodeDetails).mockReturnValue({
       ...mockEmptyNodeDetails,
       inboundRelationshipsWithLabels: mockNodeDetails.inboundRelationshipsWithLabels,
     });
@@ -348,7 +344,7 @@ describe("NodeDetailsDrawer", () => {
   });
 
   test("fetches node details with correct parameters", () => {
-    const { useNodeDetails } = require("../../state/node-details");
+    const { useNodeDetails } = require("../../../state/node-details");
 
     render(
       <NodeDetailsDrawer
@@ -363,7 +359,7 @@ describe("NodeDetailsDrawer", () => {
   });
 
   test("handles null node gracefully", () => {
-    const { useNodeDetails } = require("../../state/node-details");
+    const { useNodeDetails } = require("../../../state/node-details");
 
     render(
       <NodeDetailsDrawer
@@ -447,8 +443,7 @@ describe("NodeDetailsDrawer", () => {
   });
 
   test("handles loading state", () => {
-    const { useNodeDetails } = require("../../state/node-details");
-    useNodeDetails.mockReturnValue({
+    vi.mocked(useNodeDetails).mockReturnValue({
       ...mockEmptyNodeDetails,
       isLoading: true,
     });
@@ -467,8 +462,7 @@ describe("NodeDetailsDrawer", () => {
   });
 
   test("handles missing relationship and property data gracefully", () => {
-    const { useNodeDetails } = require("../../state/node-details");
-    useNodeDetails.mockReturnValue({
+    vi.mocked(useNodeDetails).mockReturnValue({
       outboundRelationshipsWithLabels: null,
       inboundRelationshipsWithLabels: undefined,
       propertiesWithLabels: null,

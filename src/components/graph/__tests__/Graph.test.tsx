@@ -4,10 +4,11 @@
  */
 
 import React from "react";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "../../../test/test-utils";
 import userEvent from "@testing-library/user-event";
 import { describe, test, expect, vi, beforeEach } from "vitest";
 import GraphView from "../Graph";
+import { useGraphSubgraph } from "../../../state/graph-query";
 
 // Mock all the external dependencies
 vi.mock("react-resize-detector", () => ({
@@ -18,8 +19,12 @@ vi.mock("react-resize-detector", () => ({
   })),
 }));
 
+vi.mock("../../../state/graph-query", () => ({
+  useGraphSubgraph: vi.fn(),
+}));
+
 vi.mock("react-force-graph", () => ({
-  ForceGraph3D: vi.forwardRef(({ onNodeClick, onBackgroundClick, onLinkClick, onNodeDragEnd, graphData, ...props }: any, ref) => (
+  ForceGraph3D: React.forwardRef(({ onNodeClick, onBackgroundClick, onLinkClick, onNodeDragEnd, graphData, ...props }: any, ref) => (
     <div 
       data-testid="force-graph-3d"
       data-width={props.width}
@@ -74,7 +79,7 @@ vi.mock("three-spritetext", () => {
   };
 });
 
-vi.mock("../ui/graph-colors", () => ({
+vi.mock("../../ui/graph-colors", () => ({
   useBorderColor: vi.fn(() => "#cccccc"),
   useBackgroundColor: vi.fn(() => "#ffffff"),
   useNodeColor: vi.fn(() => "#0066cc"),
@@ -157,8 +162,7 @@ describe("Graph Component", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     
-    const { useGraphSubgraph } = require("../../state/graph-query");
-    useGraphSubgraph.mockReturnValue({
+    vi.mocked(useGraphSubgraph).mockReturnValue({
       view: mockGraphData,
       isLoading: false,
       isError: false,
@@ -189,8 +193,7 @@ describe("Graph Component", () => {
   });
 
   test("shows loading state while graph data is loading", () => {
-    const { useGraphSubgraph } = require("../../state/graph-query");
-    useGraphSubgraph.mockReturnValue({
+    vi.mocked(useGraphSubgraph).mockReturnValue({
       view: null,
       isLoading: true,
       isError: false,
@@ -204,8 +207,7 @@ describe("Graph Component", () => {
   });
 
   test("shows error state when graph loading fails", () => {
-    const { useGraphSubgraph } = require("../../state/graph-query");
-    useGraphSubgraph.mockReturnValue({
+    vi.mocked(useGraphSubgraph).mockReturnValue({
       view: null,
       isLoading: false,
       isError: true,
@@ -366,8 +368,7 @@ describe("Graph Component", () => {
   });
 
   test("handles empty graph data", () => {
-    const { useGraphSubgraph } = require("../../state/graph-query");
-    useGraphSubgraph.mockReturnValue({
+    vi.mocked(useGraphSubgraph).mockReturnValue({
       view: mockEmptyGraphData,
       isLoading: false,
       isError: false,
@@ -428,7 +429,7 @@ describe("Graph Component", () => {
   });
 
   test("uses correct colors from theme hooks", () => {
-    const colorHooks = require("../ui/graph-colors");
+    const colorHooks = require("../../ui/graph-colors");
     
     render(<GraphView />);
 

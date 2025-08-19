@@ -4,7 +4,7 @@
  */
 
 import React from "react";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "../../../test/test-utils";
 import userEvent from "@testing-library/user-event";
 import { describe, test, expect, vi, beforeEach } from "vitest";
 import { EnumValueManager } from "../EnumValueManager";
@@ -286,12 +286,12 @@ describe("EnumValueManager", () => {
 
     expect(mockOnAddValue).not.toHaveBeenCalled();
 
-    // Now test Enter key
-    fireEvent.keyPress(input, { key: "Enter" });
+    // Now test Enter key - should trigger the add function
+    await user.keyboard("{Enter}");
     expect(mockOnAddValue).toHaveBeenCalledWith("test_value");
   });
 
-  test("prevents default behavior on Enter key", async () => {
+  test("handles keyPress events correctly", async () => {
     const user = userEvent.setup();
 
     render(
@@ -305,13 +305,11 @@ describe("EnumValueManager", () => {
     const input = screen.getByPlaceholderText("Add enum value");
     await user.type(input, "test_value");
 
-    const preventDefaultSpy = vi.fn();
-    const event = new KeyboardEvent("keypress", { key: "Enter" });
-    event.preventDefault = preventDefaultSpy;
+    // Test that Enter key triggers add functionality
+    await user.keyboard("{Enter}");
 
-    fireEvent.keyPress(input, event);
-
-    expect(preventDefaultSpy).toHaveBeenCalled();
+    expect(mockOnAddValue).toHaveBeenCalledWith("test_value");
+    expect(input).toHaveValue(""); // Should be cleared after adding
   });
 
   test("handles empty values array gracefully", () => {

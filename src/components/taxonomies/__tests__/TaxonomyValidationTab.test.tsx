@@ -4,7 +4,7 @@
  */
 
 import React from "react";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "../../../test/test-utils";
 import { describe, test, expect, vi } from "vitest";
 import { TaxonomyValidationTab } from "../TaxonomyValidationTab";
 import { Taxonomy } from "../../../state/taxonomies";
@@ -17,7 +17,7 @@ vi.mock("../../../utils/skos-validation", () => ({
 vi.mock("../../../utils/taxonomy-qa", () => ({
   TaxonomyQA: {
     generateSuggestions: vi.fn().mockReturnValue([]),
-    autoFix: vi.fn().mockReturnValue({ taxonomy: mockValidTaxonomy }),
+    autoFix: vi.fn().mockImplementation((taxonomy) => ({ taxonomy })),
   },
 }));
 
