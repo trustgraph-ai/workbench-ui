@@ -1,5 +1,5 @@
 import React from "react";
-import { VStack, SimpleGrid, Text } from "@chakra-ui/react";
+import { VStack, SimpleGrid, Text, HStack, Button } from "@chakra-ui/react";
 import { Network } from "lucide-react";
 import Card from "../common/Card";
 import NumberField from "../common/NumberField";
@@ -25,6 +25,35 @@ const GraphRagSection: React.FC<GraphRagSectionProps> = ({
   onMaxSubgraphSizeChange,
   onPathLengthChange,
 }) => {
+  // Preset configurations
+  const presets = {
+    small: {
+      entityLimit: 10,
+      tripleLimit: 10,
+      maxSubgraphSize: 100,
+      pathLength: 1,
+    },
+    medium: {
+      entityLimit: 20,
+      tripleLimit: 20,
+      maxSubgraphSize: 400,
+      pathLength: 2,
+    },
+    large: {
+      entityLimit: 50,
+      tripleLimit: 30,
+      maxSubgraphSize: 1000,
+      pathLength: 2,
+    },
+  };
+
+  const applyPreset = (preset: keyof typeof presets) => {
+    const config = presets[preset];
+    onEntityLimitChange(config.entityLimit);
+    onTripleLimitChange(config.tripleLimit);
+    onMaxSubgraphSizeChange(config.maxSubgraphSize);
+    onPathLengthChange(config.pathLength);
+  };
   return (
     <Card
       title="GraphRAG Configuration"
@@ -32,6 +61,35 @@ const GraphRagSection: React.FC<GraphRagSectionProps> = ({
       icon={<Network />}
     >
       <VStack gap={4} align="stretch">
+        <VStack gap={3} align="stretch">
+          <Text fontSize="sm" fontWeight="medium" color="fg.muted">
+            Quick Presets
+          </Text>
+          <HStack gap={2} justify="center">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => applyPreset('small')}
+            >
+              Small
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => applyPreset('medium')}
+            >
+              Medium
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => applyPreset('large')}
+            >
+              Large
+            </Button>
+          </HStack>
+        </VStack>
+
         <SimpleGrid columns={{ base: 1, md: 2 }} gap={4}>
           <VStack gap={2} align="stretch">
             <NumberField
