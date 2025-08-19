@@ -1,3 +1,8 @@
+
+// Appears not to be used.
+
+/*
+
 import { ReactNode } from "react";
 import { createTrustGraphSocket } from "./trustgraph-socket";
 
@@ -14,3 +19,4 @@ export const SocketProvider = (props: ISocketProvider) => {
     </SocketContext.Provider>
   );
 };
+*/
