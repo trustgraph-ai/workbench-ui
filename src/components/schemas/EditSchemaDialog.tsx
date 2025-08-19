@@ -18,6 +18,7 @@ import {
   Flex,
 } from "@chakra-ui/react";
 import { Plus, Trash2 } from "lucide-react";
+import { v4 as uuidv4 } from "uuid";
 import { useSchemas } from "../../state/schemas";
 import { Schema, SchemaField } from "../../model/schemas-table";
 import { validateSchema } from "../../utils/schema-validation";
@@ -84,10 +85,10 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
   const [fields, setFields] = React.useState<SchemaField[]>(
     initialSchema?.fields?.map((field) => ({
       ...field,
-      id: field.id || crypto.randomUUID(),
+      id: field.id || uuidv4(),
     })) || [
       {
-        id: crypto.randomUUID(),
+        id: uuidv4(),
         name: "",
         type: "string",
         primary_key: false,
@@ -108,10 +109,10 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
       setFields(
         initialSchema?.fields?.map((field) => ({
           ...field,
-          id: field.id || crypto.randomUUID(),
+          id: field.id || uuidv4(),
         })) || [
           {
-            id: crypto.randomUUID(),
+            id: uuidv4(),
             name: "",
             type: "string",
             primary_key: false,
@@ -129,7 +130,7 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
     setFields([
       ...fields,
       {
-        id: crypto.randomUUID(),
+        id: uuidv4(),
         name: "",
         type: "string",
         primary_key: false,
@@ -220,7 +221,7 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
             setDescription("");
             setFields([
               {
-                id: crypto.randomUUID(),
+                id: uuidv4(),
                 name: "",
                 type: "string",
                 primary_key: false,
