@@ -62,8 +62,16 @@ vi.mock("../../../utils/export-formats", () => ({
   },
 }));
 
+interface ValidationResultsProps {
+  validation: {
+    errors: Array<{ type: string; code: string; message: string }>;
+    warnings: Array<{ type: string; code: string; message: string }>;
+    isValid: boolean;
+  } | null;
+}
+
 vi.mock("../ValidationResults", () => ({
-  ValidationResults: ({ validation }: any) => (
+  ValidationResults: ({ validation }: ValidationResultsProps) => (
     <div data-testid="validation-results">
       {validation ? (
         <div>
@@ -78,9 +86,16 @@ vi.mock("../ValidationResults", () => ({
   ),
 }));
 
+interface SelectFieldProps {
+  label: string;
+  items: Array<{ value: string; label: string }>;
+  value: string;
+  onValueChange: (value: string) => void;
+}
+
 vi.mock("../common/SelectField", () => ({
   __esModule: true,
-  default: ({ label, items, value, onValueChange }: any) => (
+  default: ({ label, items, value, onValueChange }: SelectFieldProps) => (
     <div data-testid="format-select">
       <label htmlFor="format-select-input">{label}</label>
       <select
@@ -90,7 +105,7 @@ vi.mock("../common/SelectField", () => ({
         data-testid="format-select-input"
         aria-label={label}
       >
-        {items.map((item: any) => (
+        {items.map((item) => (
           <option key={item.value} value={item.value}>
             {item.label}
           </option>
@@ -119,13 +134,19 @@ if (!navigator.clipboard) {
   navigator.clipboard.writeText = mockWriteText;
 }
 
-const mockFileReader = {
+interface MockFileReader {
+  readAsText: ReturnType<typeof vi.fn>;
+  result: string | null;
+  onload: ((this: FileReader, ev: ProgressEvent<FileReader>) => void) | null;
+}
+
+const mockFileReader: MockFileReader = {
   readAsText: vi.fn(),
   result: null,
-  onload: null as any,
+  onload: null,
 };
 
-global.FileReader = vi.fn(() => mockFileReader) as any;
+global.FileReader = vi.fn(() => mockFileReader) as unknown as typeof FileReader;
 
 // Mock data
 const mockTaxonomy: Taxonomy = {
@@ -186,7 +207,11 @@ const mockInvalidValidationResult = {
 describe("SKOSDialog", () => {
   const mockOnOpenChange = vi.fn();
   const mockOnImport = vi.fn();
-  let mockNotify: any;
+  let mockNotify: {
+    error: ReturnType<typeof vi.fn>;
+    success: ReturnType<typeof vi.fn>;
+    info: ReturnType<typeof vi.fn>;
+  };
 
   beforeEach(() => {
     vi.clearAllMocks();

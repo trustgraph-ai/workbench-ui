@@ -4,7 +4,7 @@
  */
 
 import React from "react";
-import { render, screen, fireEvent, waitFor } from "../../../test/test-utils";
+import { render, screen, fireEvent } from "../../../test/test-utils";
 import userEvent from "@testing-library/user-event";
 import { describe, test, expect, vi, beforeEach } from "vitest";
 import { ConceptEditor } from "../ConceptEditor";
@@ -20,8 +20,14 @@ vi.mock("../../../state/notify", () => ({
   })),
 }));
 
+interface ConceptEditorHeaderProps {
+  concept: TaxonomyConcept | null;
+  onSave: () => void;
+  onCancel: () => void;
+}
+
 vi.mock("../ConceptEditorHeader", () => ({
-  ConceptEditorHeader: ({ concept, onSave, onCancel }: any) => (
+  ConceptEditorHeader: ({ concept, onSave, onCancel }: ConceptEditorHeaderProps) => (
     <div data-testid="concept-editor-header">
       <button onClick={onSave} data-testid="save-button">
         Save
@@ -35,7 +41,7 @@ vi.mock("../ConceptEditorHeader", () => ({
 }));
 
 vi.mock("../ConceptMetadataTab", () => ({
-  ConceptMetadataTab: ({ concept, editedConcept, onUpdateField }: any) => (
+  ConceptMetadataTab: ({ editedConcept, onUpdateField }: { editedConcept: TaxonomyConcept; onUpdateField: (field: string, value: string) => void }) => (
     <div data-testid="concept-metadata-tab">
       <input
         data-testid="notation-input"
@@ -47,13 +53,20 @@ vi.mock("../ConceptMetadataTab", () => ({
   ),
 }));
 
+interface ConceptBasicTabProps {
+  editedConcept: TaxonomyConcept;
+  onUpdateField: (field: string, value: string) => void;
+  onAddItem: (field: string, value: string) => void;
+  onRemoveItem: (field: string, index: number) => void;
+}
+
 vi.mock("../ConceptBasicTab", () => ({
   ConceptBasicTab: ({
     editedConcept,
     onUpdateField,
     onAddItem,
     onRemoveItem,
-  }: any) => (
+  }: ConceptBasicTabProps) => (
     <div data-testid="concept-basic-tab">
       <input
         data-testid="prefLabel-input"
@@ -90,13 +103,20 @@ vi.mock("../ConceptBasicTab", () => ({
   ),
 }));
 
+interface ConceptRelationshipsTabProps {
+  editedConcept: TaxonomyConcept;
+  availableConcepts: TaxonomyConcept[];
+  onUpdateField: (field: string, value: string | undefined) => void;
+  onAddItem: (field: string, value: string) => void;
+}
+
 vi.mock("../ConceptRelationshipsTab", () => ({
   ConceptRelationshipsTab: ({
     editedConcept,
     availableConcepts,
     onUpdateField,
     onAddItem,
-  }: any) => (
+  }: ConceptRelationshipsTabProps) => (
     <div data-testid="concept-relationships-tab">
       <select
         data-testid="broader-select"
@@ -127,8 +147,15 @@ vi.mock("../ConceptRelationshipsTab", () => ({
   ),
 }));
 
+interface ArrayFieldEditorProps {
+  field: string;
+  items: string[];
+  onAddItem: (field: string, value: string) => void;
+  onRemoveItem: (field: string, index: number) => void;
+}
+
 vi.mock("../ArrayFieldEditor", () => ({
-  ArrayFieldEditor: ({ field, items, onAddItem, onRemoveItem }: any) => (
+  ArrayFieldEditor: ({ field, items, onAddItem, onRemoveItem }: ArrayFieldEditorProps) => (
     <div data-testid={`array-field-${field}`}>
       <input
         data-testid={`${field}-input`}
@@ -157,9 +184,16 @@ vi.mock("../ArrayFieldEditor", () => ({
   ),
 }));
 
+interface TextAreaFieldProps {
+  label: string;
+  value: string;
+  onValueChange: (value: string) => void;
+  placeholder?: string;
+}
+
 vi.mock("../common/TextAreaField", () => ({
   __esModule: true,
-  default: ({ label, value, onValueChange, placeholder }: any) => (
+  default: ({ label, value, onValueChange, placeholder }: TextAreaFieldProps) => (
     <div>
       <label>{label}</label>
       <textarea
@@ -223,7 +257,11 @@ const mockExistingConcept: TaxonomyConcept =
 describe("ConceptEditor", () => {
   const mockOnSave = vi.fn();
   const mockOnCancel = vi.fn();
-  let mockNotify: any;
+  let mockNotify: {
+    error: ReturnType<typeof vi.fn>;
+    success: ReturnType<typeof vi.fn>;
+    info: ReturnType<typeof vi.fn>;
+  };
 
   beforeEach(() => {
     vi.clearAllMocks();
