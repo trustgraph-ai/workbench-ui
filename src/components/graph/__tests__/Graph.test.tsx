@@ -188,7 +188,7 @@ describe("Graph Component", () => {
   const mockUpdateSubgraph = vi.fn();
   const mockNavigateByRelationship = vi.fn();
 
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.clearAllMocks();
 
     // Mock useRef to return a valid ref
