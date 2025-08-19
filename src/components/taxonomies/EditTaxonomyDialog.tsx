@@ -8,7 +8,11 @@ import {
   Separator,
 } from "@chakra-ui/react";
 import { useNotification } from "../../state/notify";
-import { useTaxonomies, Taxonomy, TaxonomyConcept } from "../../state/taxonomies";
+import {
+  useTaxonomies,
+  Taxonomy,
+  TaxonomyConcept,
+} from "../../state/taxonomies";
 import { validateTaxonomy } from "../../utils/skos-validation";
 import { TaxonomyMetadataTab } from "./TaxonomyMetadataTab";
 import { TaxonomyConceptsTab } from "./TaxonomyConceptsTab";
@@ -59,7 +63,7 @@ export const EditTaxonomyDialog: React.FC<EditTaxonomyDialogProps> = ({
         prefLabel: "",
         hasTopConcept: [],
       },
-    }
+    },
   );
 
   useEffect(() => {
@@ -90,22 +94,26 @@ export const EditTaxonomyDialog: React.FC<EditTaxonomyDialogProps> = ({
       },
       scheme: {
         ...taxonomy.scheme,
-        uri: taxonomy.scheme.uri || `${taxonomy.metadata.namespace}${taxonomyId}`,
+        uri:
+          taxonomy.scheme.uri ||
+          `${taxonomy.metadata.namespace}${taxonomyId}`,
         prefLabel: taxonomy.scheme.prefLabel || taxonomy.metadata.name,
       },
     };
 
     // Run validation and warn about issues
     const validation = validateTaxonomy(updatedTaxonomy);
-    
+
     if (validation.errors.length > 0) {
       const shouldContinue = window.confirm(
-        `This taxonomy has ${validation.errors.length} validation error${validation.errors.length !== 1 ? 's' : ''}. ` +
-        'Saving may result in an invalid SKOS taxonomy. Do you want to continue?'
+        `This taxonomy has ${validation.errors.length} validation error${validation.errors.length !== 1 ? "s" : ""}. ` +
+          "Saving may result in an invalid SKOS taxonomy. Do you want to continue?",
       );
       if (!shouldContinue) return;
     } else if (validation.warnings.length > 0) {
-      notify.warning(`Taxonomy saved with ${validation.warnings.length} validation warning${validation.warnings.length !== 1 ? 's' : ''}`);
+      notify.warning(
+        `Taxonomy saved with ${validation.warnings.length} validation warning${validation.warnings.length !== 1 ? "s" : ""}`,
+      );
     }
 
     const mutation = mode === "create" ? createTaxonomy : updateTaxonomy;
@@ -121,7 +129,7 @@ export const EditTaxonomyDialog: React.FC<EditTaxonomyDialogProps> = ({
   const handleDelete = () => {
     if (
       window.confirm(
-        `Are you sure you want to delete the taxonomy "${taxonomy.metadata.name}"?`
+        `Are you sure you want to delete the taxonomy "${taxonomy.metadata.name}"?`,
       )
     ) {
       deleteTaxonomy({
@@ -161,7 +169,7 @@ export const EditTaxonomyDialog: React.FC<EditTaxonomyDialogProps> = ({
       narrower: [],
       related: [],
     };
-    
+
     setTaxonomy({
       ...taxonomy,
       concepts: {
@@ -192,7 +200,8 @@ export const EditTaxonomyDialog: React.FC<EditTaxonomyDialogProps> = ({
     });
   };
 
-  const isLoading = isCreatingTaxonomy || isUpdatingTaxonomy || isDeletingTaxonomy;
+  const isLoading =
+    isCreatingTaxonomy || isUpdatingTaxonomy || isDeletingTaxonomy;
 
   return (
     <Dialog.Root
@@ -213,56 +222,62 @@ export const EditTaxonomyDialog: React.FC<EditTaxonomyDialogProps> = ({
               </Dialog.Title>
             </Dialog.Header>
             <Dialog.Body>
-          <Tabs.Root defaultValue="metadata">
-            <Tabs.List>
-              <Tabs.Trigger value="metadata">Metadata</Tabs.Trigger>
-              <Tabs.Trigger value="concepts">Concepts ({Object.keys(taxonomy.concepts).length})</Tabs.Trigger>
-              <Tabs.Trigger value="scheme">Scheme</Tabs.Trigger>
-              <Tabs.Trigger value="validation">Validation</Tabs.Trigger>
-              <Tabs.Trigger value="json">JSON Preview</Tabs.Trigger>
-            </Tabs.List>
+              <Tabs.Root defaultValue="metadata">
+                <Tabs.List>
+                  <Tabs.Trigger value="metadata">Metadata</Tabs.Trigger>
+                  <Tabs.Trigger value="concepts">
+                    Concepts ({Object.keys(taxonomy.concepts).length})
+                  </Tabs.Trigger>
+                  <Tabs.Trigger value="scheme">Scheme</Tabs.Trigger>
+                  <Tabs.Trigger value="validation">Validation</Tabs.Trigger>
+                  <Tabs.Trigger value="json">JSON Preview</Tabs.Trigger>
+                </Tabs.List>
 
-              <Tabs.Content value="metadata">
-                <TaxonomyMetadataTab
-                  taxonomyId={taxonomyId}
-                  taxonomy={taxonomy}
-                  mode={mode}
-                  onTaxonomyIdChange={setTaxonomyId}
-                  onMetadataChange={handleMetadataChange}
-                />
-              </Tabs.Content>
+                <Tabs.Content value="metadata">
+                  <TaxonomyMetadataTab
+                    taxonomyId={taxonomyId}
+                    taxonomy={taxonomy}
+                    mode={mode}
+                    onTaxonomyIdChange={setTaxonomyId}
+                    onMetadataChange={handleMetadataChange}
+                  />
+                </Tabs.Content>
 
-              <Tabs.Content value="concepts">
-                <TaxonomyConceptsTab
-                  taxonomy={taxonomy}
-                  onAddConcept={addConcept}
-                  onDeleteConcept={deleteConcept}
-                  onUpdateConcept={updateConcept}
-                />
-              </Tabs.Content>
+                <Tabs.Content value="concepts">
+                  <TaxonomyConceptsTab
+                    taxonomy={taxonomy}
+                    onAddConcept={addConcept}
+                    onDeleteConcept={deleteConcept}
+                    onUpdateConcept={updateConcept}
+                  />
+                </Tabs.Content>
 
-              <Tabs.Content value="scheme">
-                <TaxonomySchemeTab
-                  taxonomy={taxonomy}
-                  onSchemeChange={handleSchemeChange}
-                />
-              </Tabs.Content>
+                <Tabs.Content value="scheme">
+                  <TaxonomySchemeTab
+                    taxonomy={taxonomy}
+                    onSchemeChange={handleSchemeChange}
+                  />
+                </Tabs.Content>
 
-              <Tabs.Content value="validation">
-                <TaxonomyValidationTab 
-                  taxonomy={taxonomy} 
-                  onTaxonomyChange={setTaxonomy}
-                />
-              </Tabs.Content>
+                <Tabs.Content value="validation">
+                  <TaxonomyValidationTab
+                    taxonomy={taxonomy}
+                    onTaxonomyChange={setTaxonomy}
+                  />
+                </Tabs.Content>
 
-              <Tabs.Content value="json">
-                <TaxonomyJsonPreviewTab taxonomy={taxonomy} />
-              </Tabs.Content>
-          </Tabs.Root>
+                <Tabs.Content value="json">
+                  <TaxonomyJsonPreviewTab taxonomy={taxonomy} />
+                </Tabs.Content>
+              </Tabs.Root>
             </Dialog.Body>
 
             <Dialog.Footer>
-              <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isLoading}>
+              <Button
+                variant="outline"
+                onClick={() => onOpenChange(false)}
+                disabled={isLoading}
+              >
                 Cancel
               </Button>
               {mode === "edit" && (

@@ -1,8 +1,5 @@
 import React, { useState, useMemo } from "react";
-import {
-  Box,
-  VStack,
-} from "@chakra-ui/react";
+import { Box, VStack } from "@chakra-ui/react";
 import { TaxonomyConcept, Taxonomy } from "../../state/taxonomies";
 import { TaxonomyTreeNode } from "./TaxonomyTreeNode";
 import { TaxonomyTreeSearch } from "./TaxonomyTreeSearch";
@@ -34,23 +31,23 @@ export const TaxonomyTree: React.FC<TaxonomyTreeProps> = ({
   const topConcepts = useMemo(() => {
     const topConceptIds = taxonomy.scheme?.hasTopConcept || [];
     const conceptsWithTopFlag = Object.values(taxonomy.concepts)
-      .filter(c => c.topConcept)
-      .map(c => c.id);
-    
+      .filter((c) => c.topConcept)
+      .map((c) => c.id);
+
     // Combine both sources and remove duplicates
-    const allTopIds = [...new Set([...topConceptIds, ...conceptsWithTopFlag])];
-    
-    return allTopIds
-      .map(id => taxonomy.concepts[id])
-      .filter(Boolean);
+    const allTopIds = [
+      ...new Set([...topConceptIds, ...conceptsWithTopFlag]),
+    ];
+
+    return allTopIds.map((id) => taxonomy.concepts[id]).filter(Boolean);
   }, [taxonomy.concepts, taxonomy.scheme?.hasTopConcept]);
 
   // Get orphaned concepts (no broader relation and not in top concepts)
   const orphanedConcepts = useMemo(() => {
-    const topConceptIds = new Set(topConcepts.map(c => c.id));
+    const topConceptIds = new Set(topConcepts.map((c) => c.id));
     return Object.values(taxonomy.concepts)
-      .filter(concept => !concept.broader && !topConceptIds.has(concept.id))
-      .filter(concept => !concept.topConcept);
+      .filter((concept) => !concept.broader && !topConceptIds.has(concept.id))
+      .filter((concept) => !concept.topConcept);
   }, [taxonomy.concepts, topConcepts]);
 
   const allRootConcepts = [...topConcepts, ...orphanedConcepts];

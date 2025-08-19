@@ -62,9 +62,13 @@ export const useTaxonomies = () => {
   });
 
   const updateTaxonomyMutation = useMutation({
-    mutationFn: ({ id, taxonomy, onSuccess }: { 
-      id: string; 
-      taxonomy: Taxonomy; 
+    mutationFn: ({
+      id,
+      taxonomy,
+      onSuccess,
+    }: {
+      id: string;
+      taxonomy: Taxonomy;
       onSuccess?: () => void;
     }) => {
       return socket
@@ -95,7 +99,11 @@ export const useTaxonomies = () => {
   });
 
   const createTaxonomyMutation = useMutation({
-    mutationFn: ({ id, taxonomy, onSuccess }: {
+    mutationFn: ({
+      id,
+      taxonomy,
+      onSuccess,
+    }: {
       id: string;
       taxonomy: Taxonomy;
       onSuccess?: () => void;
@@ -128,7 +136,10 @@ export const useTaxonomies = () => {
   });
 
   const deleteTaxonomyMutation = useMutation({
-    mutationFn: ({ id, onSuccess }: {
+    mutationFn: ({
+      id,
+      onSuccess,
+    }: {
       id: string;
       onSuccess?: () => void;
     }) => {

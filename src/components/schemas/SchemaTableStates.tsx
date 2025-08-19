@@ -5,8 +5,8 @@ interface LoadingStateProps {
   message?: string;
 }
 
-export const LoadingState: React.FC<LoadingStateProps> = ({ 
-  message = "Loading..." 
+export const LoadingState: React.FC<LoadingStateProps> = ({
+  message = "Loading...",
 }) => (
   <Center h="200px">
     <Spinner size="xl" />
@@ -19,9 +19,9 @@ interface ErrorStateProps {
   title?: string;
 }
 
-export const ErrorState: React.FC<ErrorStateProps> = ({ 
-  error, 
-  title = "Error loading schemas" 
+export const ErrorState: React.FC<ErrorStateProps> = ({
+  error,
+  title = "Error loading schemas",
 }) => (
   <Box
     p={4}
@@ -40,8 +40,8 @@ interface EmptyStateProps {
   message?: string;
 }
 
-export const EmptyState: React.FC<EmptyStateProps> = ({ 
-  message = "No schemas found. Create one to get started." 
+export const EmptyState: React.FC<EmptyStateProps> = ({
+  message = "No schemas found. Create one to get started.",
 }) => (
   <Center h="200px">
     <Text color="fg.muted">{message}</Text>

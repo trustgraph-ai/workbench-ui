@@ -1,6 +1,6 @@
 /**
  * Taxonomy Quality Assurance Utilities
- * 
+ *
  * This module provides tools for automatically fixing common taxonomy issues
  * and enhancing taxonomy quality.
  */
@@ -9,7 +9,7 @@ import { Taxonomy, TaxonomyConcept } from "../state/taxonomies";
 import { validateTaxonomy, ValidationError } from "./skos-validation";
 
 export interface QAFix {
-  type: 'auto' | 'manual';
+  type: "auto" | "manual";
   description: string;
   conceptId?: string;
   field?: string;
@@ -30,10 +30,10 @@ export class TaxonomyQA {
   static autoFix(taxonomy: Taxonomy, issueTypes?: string[]): QAResult {
     let updatedTaxonomy = { ...taxonomy };
     const fixes: QAFix[] = [];
-    
+
     // Fix missing scheme URI
     if (!updatedTaxonomy.scheme.uri && updatedTaxonomy.metadata.namespace) {
-      const newUri = `${updatedTaxonomy.metadata.namespace}${updatedTaxonomy.metadata.name.replace(/\s+/g, '-').toLowerCase()}`;
+      const newUri = `${updatedTaxonomy.metadata.namespace}${updatedTaxonomy.metadata.name.replace(/\s+/g, "-").toLowerCase()}`;
       updatedTaxonomy = {
         ...updatedTaxonomy,
         scheme: {
@@ -42,9 +42,9 @@ export class TaxonomyQA {
         },
       };
       fixes.push({
-        type: 'auto',
-        description: 'Generated missing scheme URI',
-        field: 'scheme.uri',
+        type: "auto",
+        description: "Generated missing scheme URI",
+        field: "scheme.uri",
         newValue: newUri,
       });
     }
@@ -59,15 +59,16 @@ export class TaxonomyQA {
         },
       };
       fixes.push({
-        type: 'auto',
-        description: 'Set scheme prefLabel from taxonomy name',
-        field: 'scheme.prefLabel',
+        type: "auto",
+        description: "Set scheme prefLabel from taxonomy name",
+        field: "scheme.prefLabel",
         newValue: updatedTaxonomy.metadata.name,
       });
     }
 
     // Fix relationship inconsistencies
-    const relationshipFixes = this.fixRelationshipInconsistencies(updatedTaxonomy);
+    const relationshipFixes =
+      this.fixRelationshipInconsistencies(updatedTaxonomy);
     updatedTaxonomy = relationshipFixes.taxonomy;
     fixes.push(...relationshipFixes.fixes);
 
@@ -88,7 +89,7 @@ export class TaxonomyQA {
 
     // Validate the fixed taxonomy
     const validation = validateTaxonomy(updatedTaxonomy);
-    
+
     return {
       taxonomy: updatedTaxonomy,
       fixes,
@@ -99,11 +100,14 @@ export class TaxonomyQA {
   /**
    * Fix relationship inconsistencies (ensure broader/narrower relationships are reciprocated)
    */
-  private static fixRelationshipInconsistencies(taxonomy: Taxonomy): { taxonomy: Taxonomy; fixes: QAFix[] } {
+  private static fixRelationshipInconsistencies(taxonomy: Taxonomy): {
+    taxonomy: Taxonomy;
+    fixes: QAFix[];
+  } {
     const updatedConcepts = { ...taxonomy.concepts };
     const fixes: QAFix[] = [];
 
-    Object.values(updatedConcepts).forEach(concept => {
+    Object.values(updatedConcepts).forEach((concept) => {
       // Ensure broader relationships are reciprocated
       if (concept.broader && updatedConcepts[concept.broader]) {
         const broaderConcept = updatedConcepts[concept.broader];
@@ -113,17 +117,17 @@ export class TaxonomyQA {
             narrower: [...(broaderConcept.narrower || []), concept.id],
           };
           fixes.push({
-            type: 'auto',
+            type: "auto",
             description: `Added ${concept.prefLabel} as narrower concept to ${broaderConcept.prefLabel}`,
             conceptId: concept.broader,
-            field: 'narrower',
+            field: "narrower",
           });
         }
       }
 
       // Ensure narrower relationships are reciprocated
       if (concept.narrower) {
-        concept.narrower.forEach(narrowerId => {
+        concept.narrower.forEach((narrowerId) => {
           const narrowerConcept = updatedConcepts[narrowerId];
           if (narrowerConcept && narrowerConcept.broader !== concept.id) {
             updatedConcepts[narrowerId] = {
@@ -131,10 +135,10 @@ export class TaxonomyQA {
               broader: concept.id,
             };
             fixes.push({
-              type: 'auto',
+              type: "auto",
               description: `Set ${concept.prefLabel} as broader concept for ${narrowerConcept.prefLabel}`,
               conceptId: narrowerId,
-              field: 'broader',
+              field: "broader",
             });
           }
         });
@@ -142,18 +146,21 @@ export class TaxonomyQA {
 
       // Ensure related relationships are symmetric
       if (concept.related) {
-        concept.related.forEach(relatedId => {
+        concept.related.forEach((relatedId) => {
           const relatedConcept = updatedConcepts[relatedId];
-          if (relatedConcept && !relatedConcept.related?.includes(concept.id)) {
+          if (
+            relatedConcept &&
+            !relatedConcept.related?.includes(concept.id)
+          ) {
             updatedConcepts[relatedId] = {
               ...relatedConcept,
               related: [...(relatedConcept.related || []), concept.id],
             };
             fixes.push({
-              type: 'auto',
+              type: "auto",
               description: `Made ${concept.prefLabel} and ${relatedConcept.prefLabel} mutually related`,
               conceptId: relatedId,
-              field: 'related',
+              field: "related",
             });
           }
         });
@@ -172,11 +179,14 @@ export class TaxonomyQA {
   /**
    * Remove duplicate relationships within concepts
    */
-  private static removeDuplicateRelationships(taxonomy: Taxonomy): { taxonomy: Taxonomy; fixes: QAFix[] } {
+  private static removeDuplicateRelationships(taxonomy: Taxonomy): {
+    taxonomy: Taxonomy;
+    fixes: QAFix[];
+  } {
     const updatedConcepts = { ...taxonomy.concepts };
     const fixes: QAFix[] = [];
 
-    Object.values(updatedConcepts).forEach(concept => {
+    Object.values(updatedConcepts).forEach((concept) => {
       let hasChanges = false;
 
       // Remove duplicate narrower relationships
@@ -217,7 +227,7 @@ export class TaxonomyQA {
 
       if (hasChanges) {
         fixes.push({
-          type: 'auto',
+          type: "auto",
           description: `Removed duplicate relationships and labels from ${concept.prefLabel}`,
           conceptId: concept.id,
         });
@@ -236,15 +246,18 @@ export class TaxonomyQA {
   /**
    * Fix orphaned concepts by suggesting connections or promoting to top concepts
    */
-  private static fixOrphanedConcepts(taxonomy: Taxonomy): { taxonomy: Taxonomy; fixes: QAFix[] } {
+  private static fixOrphanedConcepts(taxonomy: Taxonomy): {
+    taxonomy: Taxonomy;
+    fixes: QAFix[];
+  } {
     const updatedTaxonomy = { ...taxonomy };
     const fixes: QAFix[] = [];
     const concepts = Object.values(taxonomy.concepts);
     const topConceptIds = new Set(taxonomy.scheme.hasTopConcept);
 
     // Find orphaned concepts (no broader and not a top concept)
-    const orphanedConcepts = concepts.filter(concept => 
-      !concept.broader && !topConceptIds.has(concept.id)
+    const orphanedConcepts = concepts.filter(
+      (concept) => !concept.broader && !topConceptIds.has(concept.id),
     );
 
     if (orphanedConcepts.length > 0) {
@@ -254,22 +267,22 @@ export class TaxonomyQA {
           ...updatedTaxonomy.scheme,
           hasTopConcept: [
             ...updatedTaxonomy.scheme.hasTopConcept,
-            ...orphanedConcepts.map(c => c.id),
+            ...orphanedConcepts.map((c) => c.id),
           ],
         };
-        
-        orphanedConcepts.forEach(concept => {
+
+        orphanedConcepts.forEach((concept) => {
           fixes.push({
-            type: 'auto',
+            type: "auto",
             description: `Promoted "${concept.prefLabel}" to top concept`,
             conceptId: concept.id,
           });
         });
       } else {
         // For larger taxonomies, suggest manual review
-        orphanedConcepts.forEach(concept => {
+        orphanedConcepts.forEach((concept) => {
           fixes.push({
-            type: 'manual',
+            type: "manual",
             description: `Orphaned concept "${concept.prefLabel}" needs to be connected to the hierarchy or marked as a top concept`,
             conceptId: concept.id,
           });
@@ -286,16 +299,21 @@ export class TaxonomyQA {
   /**
    * Clean up empty or invalid relationships
    */
-  private static cleanupEmptyRelationships(taxonomy: Taxonomy): { taxonomy: Taxonomy; fixes: QAFix[] } {
+  private static cleanupEmptyRelationships(taxonomy: Taxonomy): {
+    taxonomy: Taxonomy;
+    fixes: QAFix[];
+  } {
     const updatedConcepts = { ...taxonomy.concepts };
     const fixes: QAFix[] = [];
 
-    Object.values(updatedConcepts).forEach(concept => {
+    Object.values(updatedConcepts).forEach((concept) => {
       let hasChanges = false;
 
       // Remove invalid narrower relationships (pointing to non-existent concepts)
       if (concept.narrower && concept.narrower.length > 0) {
-        const validNarrower = concept.narrower.filter(id => updatedConcepts[id]);
+        const validNarrower = concept.narrower.filter(
+          (id) => updatedConcepts[id],
+        );
         if (validNarrower.length !== concept.narrower.length) {
           updatedConcepts[concept.id] = {
             ...concept,
@@ -307,7 +325,9 @@ export class TaxonomyQA {
 
       // Remove invalid related relationships
       if (concept.related && concept.related.length > 0) {
-        const validRelated = concept.related.filter(id => updatedConcepts[id]);
+        const validRelated = concept.related.filter(
+          (id) => updatedConcepts[id],
+        );
         if (validRelated.length !== concept.related.length) {
           updatedConcepts[concept.id] = {
             ...updatedConcepts[concept.id],
@@ -328,7 +348,7 @@ export class TaxonomyQA {
 
       if (hasChanges) {
         fixes.push({
-          type: 'auto',
+          type: "auto",
           description: `Cleaned up invalid relationships for ${concept.prefLabel}`,
           conceptId: concept.id,
         });
@@ -336,17 +356,19 @@ export class TaxonomyQA {
     });
 
     // Clean up invalid top concepts
-    const validTopConcepts = taxonomy.scheme.hasTopConcept.filter(id => updatedConcepts[id]);
+    const validTopConcepts = taxonomy.scheme.hasTopConcept.filter(
+      (id) => updatedConcepts[id],
+    );
     if (validTopConcepts.length !== taxonomy.scheme.hasTopConcept.length) {
       const updatedScheme = {
         ...taxonomy.scheme,
         hasTopConcept: validTopConcepts,
       };
-      
+
       fixes.push({
-        type: 'auto',
-        description: 'Removed invalid top concept references',
-        field: 'scheme.hasTopConcept',
+        type: "auto",
+        description: "Removed invalid top concept references",
+        field: "scheme.hasTopConcept",
       });
 
       return {
@@ -376,42 +398,48 @@ export class TaxonomyQA {
     const concepts = Object.values(taxonomy.concepts);
 
     // Suggest adding definitions for concepts without them
-    concepts.filter(c => !c.definition).forEach(concept => {
-      suggestions.push({
-        type: 'manual',
-        description: `Add definition for "${concept.prefLabel}" to improve clarity`,
-        conceptId: concept.id,
-        field: 'definition',
+    concepts
+      .filter((c) => !c.definition)
+      .forEach((concept) => {
+        suggestions.push({
+          type: "manual",
+          description: `Add definition for "${concept.prefLabel}" to improve clarity`,
+          conceptId: concept.id,
+          field: "definition",
+        });
       });
-    });
 
     // Suggest adding alternative labels for better searchability
-    concepts.filter(c => !c.altLabel || c.altLabel.length === 0).forEach(concept => {
-      suggestions.push({
-        type: 'manual',
-        description: `Consider adding alternative labels for "${concept.prefLabel}" to improve searchability`,
-        conceptId: concept.id,
-        field: 'altLabel',
+    concepts
+      .filter((c) => !c.altLabel || c.altLabel.length === 0)
+      .forEach((concept) => {
+        suggestions.push({
+          type: "manual",
+          description: `Consider adding alternative labels for "${concept.prefLabel}" to improve searchability`,
+          conceptId: concept.id,
+          field: "altLabel",
+        });
       });
-    });
 
     // Suggest notation for concepts in larger taxonomies
     if (concepts.length > 20) {
-      concepts.filter(c => !c.notation).forEach(concept => {
-        suggestions.push({
-          type: 'manual',
-          description: `Consider adding notation/code for "${concept.prefLabel}" to aid in referencing`,
-          conceptId: concept.id,
-          field: 'notation',
+      concepts
+        .filter((c) => !c.notation)
+        .forEach((concept) => {
+          suggestions.push({
+            type: "manual",
+            description: `Consider adding notation/code for "${concept.prefLabel}" to aid in referencing`,
+            conceptId: concept.id,
+            field: "notation",
+          });
         });
-      });
     }
 
     // Suggest improving hierarchy depth if too shallow
     const maxDepth = this.calculateMaxDepth(taxonomy);
     if (maxDepth < 3 && concepts.length > 10) {
       suggestions.push({
-        type: 'manual',
+        type: "manual",
         description: `Taxonomy hierarchy is shallow (max depth: ${maxDepth}). Consider adding more specific subconcepts.`,
       });
     }
@@ -425,28 +453,31 @@ export class TaxonomyQA {
   private static calculateMaxDepth(taxonomy: Taxonomy): number {
     const concepts = taxonomy.concepts;
     const topConcepts = taxonomy.scheme.hasTopConcept;
-    
+
     if (topConcepts.length === 0) return 0;
-    
+
     let maxDepth = 1;
-    
-    const calculateDepth = (conceptId: string, currentDepth: number): void => {
+
+    const calculateDepth = (
+      conceptId: string,
+      currentDepth: number,
+    ): void => {
       const concept = concepts[conceptId];
       if (!concept) return;
-      
+
       maxDepth = Math.max(maxDepth, currentDepth);
-      
+
       if (concept.narrower) {
-        concept.narrower.forEach(narrowerId => {
+        concept.narrower.forEach((narrowerId) => {
           calculateDepth(narrowerId, currentDepth + 1);
         });
       }
     };
-    
-    topConcepts.forEach(topConceptId => {
+
+    topConcepts.forEach((topConceptId) => {
       calculateDepth(topConceptId, 1);
     });
-    
+
     return maxDepth;
   }
 }

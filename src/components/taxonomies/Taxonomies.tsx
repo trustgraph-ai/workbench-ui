@@ -7,15 +7,14 @@ import { TaxonomyManager } from "./TaxonomyManager";
 
 export const Taxonomies: React.FC = () => {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
-  const [selectedTaxonomyId, setSelectedTaxonomyId] = useState<string | null>(null);
+  const [selectedTaxonomyId, setSelectedTaxonomyId] = useState<string | null>(
+    null,
+  );
 
   return (
     <VStack gap={6} align="stretch" h="calc(100vh - 200px)">
       <HStack justify="flex-end">
-        <Button
-          colorPalette="primary"
-          onClick={() => setIsCreateOpen(true)}
-        >
+        <Button colorPalette="primary" onClick={() => setIsCreateOpen(true)}>
           <Plus /> Create Taxonomy
         </Button>
       </HStack>
@@ -33,15 +32,15 @@ export const Taxonomies: React.FC = () => {
             </Tabs.Trigger>
           </Tabs.List>
 
-            <Tabs.Content value="list" height="calc(100% - 40px)">
-              <TaxonomiesTable />
-            </Tabs.Content>
-            <Tabs.Content value="editor" height="100%" p={0}>
-              <TaxonomyManager
-                selectedTaxonomyId={selectedTaxonomyId || undefined}
-                onTaxonomySelect={setSelectedTaxonomyId}
-              />
-            </Tabs.Content>
+          <Tabs.Content value="list" height="calc(100% - 40px)">
+            <TaxonomiesTable />
+          </Tabs.Content>
+          <Tabs.Content value="editor" height="100%" p={0}>
+            <TaxonomyManager
+              selectedTaxonomyId={selectedTaxonomyId || undefined}
+              onTaxonomySelect={setSelectedTaxonomyId}
+            />
+          </Tabs.Content>
         </Tabs.Root>
       </Box>
 

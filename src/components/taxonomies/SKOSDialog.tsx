@@ -15,12 +15,27 @@ import {
   IconButton,
   Code,
 } from "@chakra-ui/react";
-import { Download, Upload, Copy, Check, AlertTriangle, Info, X } from "lucide-react";
+import {
+  Download,
+  Upload,
+  Copy,
+  Check,
+  AlertTriangle,
+  Info,
+  X,
+} from "lucide-react";
 import { useNotification } from "../../state/notify";
 import { Taxonomy } from "../../state/taxonomies";
 import { serializeToSKOS, parseFromSKOS } from "../../utils/skos";
-import { validateTaxonomy, ValidationResult } from "../../utils/skos-validation";
-import { exportTaxonomy, EXPORT_FORMATS, ExportFormat } from "../../utils/export-formats";
+import {
+  validateTaxonomy,
+  ValidationResult,
+} from "../../utils/skos-validation";
+import {
+  exportTaxonomy,
+  EXPORT_FORMATS,
+  ExportFormat,
+} from "../../utils/export-formats";
 import SelectField from "../common/SelectField";
 import { ValidationResults } from "./ValidationResults";
 
@@ -39,9 +54,9 @@ export const SKOSDialog: React.FC<SKOSDialogProps> = ({
   mode,
   onImport,
 }) => {
-  const [format, setFormat] = useState<ExportFormat>('skos-rdf');
-  const [content, setContent] = useState('');
-  const [importId, setImportId] = useState('');
+  const [format, setFormat] = useState<ExportFormat>("skos-rdf");
+  const [content, setContent] = useState("");
+  const [importId, setImportId] = useState("");
   const [validation, setValidation] = useState<ValidationResult | null>(null);
   const [copied, setCopied] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -50,72 +65,81 @@ export const SKOSDialog: React.FC<SKOSDialogProps> = ({
 
   const handleExport = React.useCallback(() => {
     if (!taxonomy) return;
-    
+
     try {
       let exported: string;
-      
-      if (format === 'skos-rdf' || format === 'skos-turtle') {
+
+      if (format === "skos-rdf" || format === "skos-turtle") {
         // Use SKOS serializer for SKOS formats
-        const skosFormat = format === 'skos-rdf' ? 'rdf' : 'turtle';
-        exported = serializeToSKOS(taxonomy, skosFormat as 'rdf' | 'turtle');
+        const skosFormat = format === "skos-rdf" ? "rdf" : "turtle";
+        exported = serializeToSKOS(taxonomy, skosFormat as "rdf" | "turtle");
       } else {
         // Use additional export formats
         exported = exportTaxonomy(taxonomy, format);
       }
-      
+
       setContent(exported);
-      
+
       // Also validate the taxonomy (only for SKOS formats)
-      if (format === 'skos-rdf' || format === 'skos-turtle') {
+      if (format === "skos-rdf" || format === "skos-turtle") {
         const validationResult = validateTaxonomy(taxonomy);
         setValidation(validationResult);
       } else {
         setValidation(null); // No SKOS validation for non-SKOS formats
       }
-      
     } catch (error) {
-      notify.error(`Export failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      notify.error(
+        `Export failed: ${error instanceof Error ? error.message : "Unknown error"}`,
+      );
     }
   }, [taxonomy, format, notify]);
 
   const handleImport = async () => {
     if (!content.trim() || !importId.trim()) {
-      notify.error('Please provide both content and taxonomy ID');
+      notify.error("Please provide both content and taxonomy ID");
       return;
     }
 
     setIsProcessing(true);
     try {
       let imported: Taxonomy;
-      
-      if (format === 'skos-rdf' || format === 'skos-turtle') {
+
+      if (format === "skos-rdf" || format === "skos-turtle") {
         // Use SKOS parser for SKOS formats
-        const skosFormat = format === 'skos-rdf' ? 'rdf' : 'turtle';
-        imported = await parseFromSKOS(content, importId, skosFormat as 'rdf' | 'turtle');
-        
+        const skosFormat = format === "skos-rdf" ? "rdf" : "turtle";
+        imported = await parseFromSKOS(
+          content,
+          importId,
+          skosFormat as "rdf" | "turtle",
+        );
+
         // Validate SKOS taxonomy
         const validationResult = validateTaxonomy(imported);
         setValidation(validationResult);
-        
+
         if (validationResult.errors.length > 0) {
-          notify.error(`Import validation failed with ${validationResult.errors.length} errors`);
+          notify.error(
+            `Import validation failed with ${validationResult.errors.length} errors`,
+          );
           return;
         }
-      } else if (format === 'json') {
+      } else if (format === "json") {
         // Parse JSON format
         imported = JSON.parse(content);
       } else {
-        notify.error('Import is only supported for SKOS and JSON formats');
+        notify.error("Import is only supported for SKOS and JSON formats");
         return;
       }
-      
+
       if (onImport) {
         onImport(imported, importId);
-        notify.success('Taxonomy imported successfully');
+        notify.success("Taxonomy imported successfully");
         onOpenChange(false);
       }
     } catch (error) {
-      notify.error(`Import failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      notify.error(
+        `Import failed: ${error instanceof Error ? error.message : "Unknown error"}`,
+      );
     } finally {
       setIsProcessing(false);
     }
@@ -126,29 +150,29 @@ export const SKOSDialog: React.FC<SKOSDialogProps> = ({
       await navigator.clipboard.writeText(content);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-      notify.success('SKOS content copied to clipboard');
+      notify.success("SKOS content copied to clipboard");
     } catch {
-      notify.error('Failed to copy to clipboard');
+      notify.error("Failed to copy to clipboard");
     }
   };
 
   const handleDownload = () => {
     if (!content || !taxonomy) return;
-    
+
     const formatInfo = EXPORT_FORMATS[format];
     const extension = formatInfo.extension;
     const mimeType = formatInfo.mimeType;
-    
+
     const blob = new Blob([content], { type: mimeType });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
+    const a = document.createElement("a");
     a.href = url;
-    a.download = `${taxonomy.metadata.name.replace(/\s+/g, '-')}.${extension}`;
+    a.download = `${taxonomy.metadata.name.replace(/\s+/g, "-")}.${extension}`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-    
+
     notify.success(`${formatInfo.name} file downloaded`);
   };
 
@@ -160,26 +184,25 @@ export const SKOSDialog: React.FC<SKOSDialogProps> = ({
     reader.onload = (e) => {
       const text = e.target?.result as string;
       setContent(text);
-      
+
       // Auto-detect format from file extension
-      if (file.name.endsWith('.ttl')) {
-        setFormat('skos-turtle');
-      } else if (file.name.endsWith('.rdf') || file.name.endsWith('.xml')) {
-        setFormat('skos-rdf');
-      } else if (file.name.endsWith('.json')) {
-        setFormat('json');
+      if (file.name.endsWith(".ttl")) {
+        setFormat("skos-turtle");
+      } else if (file.name.endsWith(".rdf") || file.name.endsWith(".xml")) {
+        setFormat("skos-rdf");
+      } else if (file.name.endsWith(".json")) {
+        setFormat("json");
       }
-      
+
       // Set default import ID from filename
-      const baseName = file.name.replace(/\.(ttl|rdf|xml)$/, '');
-      setImportId(baseName.replace(/[^a-zA-Z0-9-]/g, '-').toLowerCase());
+      const baseName = file.name.replace(/\.(ttl|rdf|xml)$/, "");
+      setImportId(baseName.replace(/[^a-zA-Z0-9-]/g, "-").toLowerCase());
     };
     reader.readAsText(file);
   };
 
-
   React.useEffect(() => {
-    if (open && mode === 'export' && taxonomy) {
+    if (open && mode === "export" && taxonomy) {
       handleExport();
     }
   }, [open, mode, taxonomy]);
@@ -187,8 +210,8 @@ export const SKOSDialog: React.FC<SKOSDialogProps> = ({
   React.useEffect(() => {
     // Reset state when dialog opens
     if (open) {
-      setContent('');
-      setImportId('');
+      setContent("");
+      setImportId("");
       setValidation(null);
       setCopied(false);
       setIsProcessing(false);
@@ -196,14 +219,17 @@ export const SKOSDialog: React.FC<SKOSDialogProps> = ({
   }, [open]);
 
   return (
-    <Dialog.Root open={open} onOpenChange={(details) => onOpenChange(details.open)}>
+    <Dialog.Root
+      open={open}
+      onOpenChange={(details) => onOpenChange(details.open)}
+    >
       <Portal>
         <Dialog.Backdrop />
         <Dialog.Positioner>
           <Dialog.Content maxW="6xl" maxH="90vh">
             <Dialog.Header>
               <Dialog.Title>
-                {mode === 'export' ? 'Export Taxonomy' : 'Import Taxonomy'}
+                {mode === "export" ? "Export Taxonomy" : "Import Taxonomy"}
               </Dialog.Title>
             </Dialog.Header>
 
@@ -211,9 +237,17 @@ export const SKOSDialog: React.FC<SKOSDialogProps> = ({
               <VStack gap={4} align="stretch">
                 {/* Format Selection */}
                 <SelectField
-                  label={mode === 'export' ? 'Export Format' : 'Import Format'}
+                  label={
+                    mode === "export" ? "Export Format" : "Import Format"
+                  }
                   items={Object.entries(EXPORT_FORMATS)
-                    .filter(([key]) => mode === 'export' || key === 'skos-rdf' || key === 'skos-turtle' || key === 'json')
+                    .filter(
+                      ([key]) =>
+                        mode === "export" ||
+                        key === "skos-rdf" ||
+                        key === "skos-turtle" ||
+                        key === "json",
+                    )
                     .map(([key, info]) => ({
                       value: key,
                       label: info.name,
@@ -223,16 +257,18 @@ export const SKOSDialog: React.FC<SKOSDialogProps> = ({
                   onValueChange={(value) => {
                     setFormat(value as ExportFormat);
                     // Re-export with new format if dialog is in export mode
-                    if (mode === 'export' && taxonomy) {
+                    if (mode === "export" && taxonomy) {
                       setTimeout(() => handleExport(), 0);
                     }
                   }}
                 />
 
-                {mode === 'import' && (
+                {mode === "import" && (
                   <>
                     <Box>
-                      <Text fontSize="sm" fontWeight="bold" mb={2}>Import Source</Text>
+                      <Text fontSize="sm" fontWeight="bold" mb={2}>
+                        Import Source
+                      </Text>
                       <HStack>
                         <Button
                           variant="outline"
@@ -243,20 +279,24 @@ export const SKOSDialog: React.FC<SKOSDialogProps> = ({
                           Choose File
                         </Button>
                         <Text fontSize="sm" color="fg.muted">
-                          Or paste {format.includes('skos') ? 'SKOS' : 'taxonomy'} content below
+                          Or paste{" "}
+                          {format.includes("skos") ? "SKOS" : "taxonomy"}{" "}
+                          content below
                         </Text>
                       </HStack>
                       <input
                         ref={fileInputRef}
                         type="file"
                         accept=".rdf,.xml,.ttl,.json"
-                        style={{ display: 'none' }}
+                        style={{ display: "none" }}
                         onChange={handleFileUpload}
                       />
                     </Box>
 
                     <Box>
-                      <Text fontSize="sm" fontWeight="bold" mb={2}>Taxonomy ID</Text>
+                      <Text fontSize="sm" fontWeight="bold" mb={2}>
+                        Taxonomy ID
+                      </Text>
                       <Textarea
                         value={importId}
                         onChange={(e) => setImportId(e.target.value)}
@@ -273,17 +313,23 @@ export const SKOSDialog: React.FC<SKOSDialogProps> = ({
                 <Tabs.Root defaultValue="content">
                   <Tabs.List>
                     <Tabs.Trigger value="content">
-                      {format.includes('skos') ? 'SKOS Content' : `${EXPORT_FORMATS[format].name} Content`}
+                      {format.includes("skos")
+                        ? "SKOS Content"
+                        : `${EXPORT_FORMATS[format].name} Content`}
                     </Tabs.Trigger>
                     {validation && (
                       <Tabs.Trigger value="validation">
-                        Validation 
-                        <Badge 
-                          ml={2} 
-                          colorPalette={validation.isValid ? "primary" : "red"}
+                        Validation
+                        <Badge
+                          ml={2}
+                          colorPalette={
+                            validation.isValid ? "primary" : "red"
+                          }
                           size="xs"
                         >
-                          {validation.errors.length > 0 ? validation.errors.length : '✓'}
+                          {validation.errors.length > 0
+                            ? validation.errors.length
+                            : "✓"}
                         </Badge>
                       </Tabs.Trigger>
                     )}
@@ -291,7 +337,7 @@ export const SKOSDialog: React.FC<SKOSDialogProps> = ({
 
                   <Tabs.Content value="content">
                     <VStack gap={3} align="stretch">
-                      {mode === 'export' && (
+                      {mode === "export" && (
                         <HStack justify="space-between">
                           <Text fontSize="sm" color="fg.muted">
                             Generated {EXPORT_FORMATS[format].name}
@@ -304,7 +350,11 @@ export const SKOSDialog: React.FC<SKOSDialogProps> = ({
                               onClick={handleCopy}
                               disabled={!content}
                             >
-                              {copied ? <Check size={16} /> : <Copy size={16} />}
+                              {copied ? (
+                                <Check size={16} />
+                              ) : (
+                                <Copy size={16} />
+                              )}
                             </IconButton>
                             <Button
                               size="sm"
@@ -323,14 +373,14 @@ export const SKOSDialog: React.FC<SKOSDialogProps> = ({
                         value={content}
                         onChange={(e) => setContent(e.target.value)}
                         placeholder={
-                          mode === 'import' 
-                            ? `Paste ${format.includes('skos') ? 'SKOS' : 'taxonomy'} content here...`
+                          mode === "import"
+                            ? `Paste ${format.includes("skos") ? "SKOS" : "taxonomy"} content here...`
                             : `${EXPORT_FORMATS[format].name} content will appear here`
                         }
                         rows={20}
                         fontFamily="mono"
                         fontSize="sm"
-                        readOnly={mode === 'export'}
+                        readOnly={mode === "export"}
                       />
                     </VStack>
                   </Tabs.Content>
@@ -344,27 +394,23 @@ export const SKOSDialog: React.FC<SKOSDialogProps> = ({
 
             <Dialog.Footer>
               <HStack gap={3}>
-                <Button 
-                  variant="ghost" 
-                  onClick={() => onOpenChange(false)}
-                >
-                  {mode === 'export' ? 'Close' : 'Cancel'}
+                <Button variant="ghost" onClick={() => onOpenChange(false)}>
+                  {mode === "export" ? "Close" : "Cancel"}
                 </Button>
-                
-                {mode === 'export' && (
-                  <Button
-                    colorPalette="primary"
-                    onClick={handleExport}
-                  >
+
+                {mode === "export" && (
+                  <Button colorPalette="primary" onClick={handleExport}>
                     Regenerate
                   </Button>
                 )}
-                
-                {mode === 'import' && (
+
+                {mode === "import" && (
                   <Button
                     colorPalette="primary"
                     onClick={handleImport}
-                    disabled={!content.trim() || !importId.trim() || isProcessing}
+                    disabled={
+                      !content.trim() || !importId.trim() || isProcessing
+                    }
                     loading={isProcessing}
                   >
                     Import Taxonomy

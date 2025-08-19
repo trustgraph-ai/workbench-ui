@@ -10,7 +10,11 @@ interface ConceptBasicTabProps {
   onUpdateField: (field: keyof TaxonomyConcept, value: any) => void;
   onAddItem: (field: keyof TaxonomyConcept, value: string) => void;
   onRemoveItem: (field: keyof TaxonomyConcept, index: number) => void;
-  onUpdateItem: (field: keyof TaxonomyConcept, index: number, value: string) => void;
+  onUpdateItem: (
+    field: keyof TaxonomyConcept,
+    index: number,
+    value: string,
+  ) => void;
 }
 
 export const ConceptBasicTab: React.FC<ConceptBasicTabProps> = ({

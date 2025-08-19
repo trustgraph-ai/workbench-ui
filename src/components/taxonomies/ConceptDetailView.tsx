@@ -1,12 +1,5 @@
 import React from "react";
-import {
-  Box,
-  VStack,
-  HStack,
-  Text,
-  Button,
-  Heading,
-} from "@chakra-ui/react";
+import { Box, VStack, HStack, Text, Button, Heading } from "@chakra-ui/react";
 import { TaxonomyConcept } from "../../state/taxonomies";
 
 interface ConceptDetailViewProps {
@@ -22,15 +15,11 @@ export const ConceptDetailView: React.FC<ConceptDetailViewProps> = ({
     <VStack gap={4} align="stretch">
       <HStack justify="space-between">
         <Heading size="md">{concept.prefLabel}</Heading>
-        <Button
-          size="sm"
-          colorPalette="primary"
-          onClick={onEdit}
-        >
+        <Button size="sm" colorPalette="primary" onClick={onEdit}>
           Edit
         </Button>
       </HStack>
-      
+
       <Box p={4} borderWidth="1px" borderRadius="md" bg="bg.muted">
         <VStack align="start" gap={3}>
           {concept.definition && (
@@ -41,7 +30,7 @@ export const ConceptDetailView: React.FC<ConceptDetailViewProps> = ({
               <Text>{concept.definition}</Text>
             </Box>
           )}
-          
+
           {concept.scopeNote && (
             <Box>
               <Text fontSize="sm" fontWeight="bold" color="fg.muted">
@@ -50,7 +39,7 @@ export const ConceptDetailView: React.FC<ConceptDetailViewProps> = ({
               <Text fontSize="sm">{concept.scopeNote}</Text>
             </Box>
           )}
-          
+
           {concept.example && concept.example.length > 0 && (
             <Box>
               <Text fontSize="sm" fontWeight="bold" color="fg.muted">
@@ -58,7 +47,9 @@ export const ConceptDetailView: React.FC<ConceptDetailViewProps> = ({
               </Text>
               <VStack align="start" gap={1}>
                 {concept.example.map((ex, index) => (
-                  <Text key={index} fontSize="sm">• {ex}</Text>
+                  <Text key={index} fontSize="sm">
+                    • {ex}
+                  </Text>
                 ))}
               </VStack>
             </Box>

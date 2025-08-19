@@ -90,10 +90,7 @@ export const SchemaIndexesSection: React.FC<SchemaIndexesSectionProps> = ({
             gap={2}
           >
             {index}
-            <CloseButton
-              size="sm"
-              onClick={() => onRemoveIndex(index)}
-            />
+            <CloseButton size="sm" onClick={() => onRemoveIndex(index)} />
           </Badge>
         ))}
       </Flex>

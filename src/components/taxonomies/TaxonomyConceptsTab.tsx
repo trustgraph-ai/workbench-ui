@@ -16,7 +16,11 @@ interface TaxonomyConceptsTabProps {
   taxonomy: Taxonomy;
   onAddConcept: () => void;
   onDeleteConcept: (id: string) => void;
-  onUpdateConcept: (id: string, field: keyof TaxonomyConcept, value: string) => void;
+  onUpdateConcept: (
+    id: string,
+    field: keyof TaxonomyConcept,
+    value: string,
+  ) => void;
 }
 
 export const TaxonomyConceptsTab: React.FC<TaxonomyConceptsTabProps> = ({
@@ -31,11 +35,7 @@ export const TaxonomyConceptsTab: React.FC<TaxonomyConceptsTabProps> = ({
         <Text fontSize="lg" fontWeight="bold">
           Concepts
         </Text>
-        <Button
-          colorPalette="primary"
-          size="sm"
-          onClick={onAddConcept}
-        >
+        <Button colorPalette="primary" size="sm" onClick={onAddConcept}>
           <Plus /> Add Concept
         </Button>
       </HStack>
@@ -49,12 +49,7 @@ export const TaxonomyConceptsTab: React.FC<TaxonomyConceptsTabProps> = ({
       ) : (
         <VStack gap={4} align="stretch">
           {Object.entries(taxonomy.concepts).map(([id, concept]) => (
-            <Box
-              key={id}
-              p={4}
-              borderWidth="1px"
-              borderRadius="md"
-            >
+            <Box key={id} p={4} borderWidth="1px" borderRadius="md">
               <HStack justify="space-between" mb={3}>
                 <Text fontWeight="bold">{concept.prefLabel}</Text>
                 <IconButton
@@ -71,12 +66,16 @@ export const TaxonomyConceptsTab: React.FC<TaxonomyConceptsTabProps> = ({
                 <TextField
                   label="Preferred Label"
                   value={concept.prefLabel}
-                  onValueChange={(value) => onUpdateConcept(id, "prefLabel", value)}
+                  onValueChange={(value) =>
+                    onUpdateConcept(id, "prefLabel", value)
+                  }
                 />
                 <TextAreaField
                   label="Definition"
                   value={concept.definition || ""}
-                  onValueChange={(value) => onUpdateConcept(id, "definition", value)}
+                  onValueChange={(value) =>
+                    onUpdateConcept(id, "definition", value)
+                  }
                 />
               </VStack>
             </Box>

@@ -5,9 +5,9 @@ interface SchemaValidationErrorsProps {
   errors: string[];
 }
 
-export const SchemaValidationErrors: React.FC<SchemaValidationErrorsProps> = ({
-  errors,
-}) => {
+export const SchemaValidationErrors: React.FC<
+  SchemaValidationErrorsProps
+> = ({ errors }) => {
   if (errors.length === 0) return null;
 
   return (

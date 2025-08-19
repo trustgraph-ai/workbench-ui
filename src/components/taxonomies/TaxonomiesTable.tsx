@@ -7,7 +7,10 @@ import {
   flexRender,
 } from "@tanstack/react-table";
 import { useTaxonomies } from "../../state/taxonomies";
-import { TaxonomyTableRow, taxonomyColumns } from "../../model/taxonomies-table";
+import {
+  TaxonomyTableRow,
+  taxonomyColumns,
+} from "../../model/taxonomies-table";
 import { EditTaxonomyDialog } from "./EditTaxonomyDialog";
 
 export const TaxonomiesTable: React.FC = () => {

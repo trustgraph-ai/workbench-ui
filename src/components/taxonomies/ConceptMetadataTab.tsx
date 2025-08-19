@@ -49,7 +49,9 @@ export const ConceptMetadataTab: React.FC<ConceptMetadataTabProps> = ({
             </Badge>
           </WrapItem>
           <WrapItem>
-            <Badge colorPalette={editedConcept.definition ? "primary" : "yellow"}>
+            <Badge
+              colorPalette={editedConcept.definition ? "primary" : "yellow"}
+            >
               {editedConcept.definition ? "Defined" : "No Definition"}
             </Badge>
           </WrapItem>
@@ -59,14 +61,10 @@ export const ConceptMetadataTab: React.FC<ConceptMetadataTabProps> = ({
             </Badge>
           </WrapItem>
           <WrapItem>
-            <Badge>
-              {(editedConcept.narrower || []).length} Children
-            </Badge>
+            <Badge>{(editedConcept.narrower || []).length} Children</Badge>
           </WrapItem>
           <WrapItem>
-            <Badge>
-              {(editedConcept.related || []).length} Related
-            </Badge>
+            <Badge>{(editedConcept.related || []).length} Related</Badge>
           </WrapItem>
         </Wrap>
       </Box>
