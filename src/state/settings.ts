@@ -1,12 +1,24 @@
-import { useState, useCallback, useEffect } from 'react';
+import { create } from 'zustand';
 import { Settings, DEFAULT_SETTINGS, SETTINGS_STORAGE_KEY } from '../model/settings-types';
 
-export const useSettings = () => {
-  const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS);
-  const [isLoaded, setIsLoaded] = useState(false);
+interface SettingsState {
+  settings: Settings;
+  isLoaded: boolean;
+  
+  // Actions
+  updateSetting: (path: string, value: any) => void;
+  saveSettings: (newSettings: Settings) => void;
+  resetSettings: () => void;
+  exportSettings: () => string;
+  importSettings: (jsonString: string) => void;
+  loadSettings: () => void;
+}
 
-  // Load settings from localStorage on mount
-  useEffect(() => {
+export const useSettingsStore = create<SettingsState>((set, get) => ({
+  settings: DEFAULT_SETTINGS,
+  isLoaded: false,
+
+  loadSettings: () => {
     try {
       const stored = localStorage.getItem(SETTINGS_STORAGE_KEY);
       if (stored) {
@@ -17,75 +29,66 @@ export const useSettings = () => {
           graphrag: { ...DEFAULT_SETTINGS.graphrag, ...parsed.graphrag },
           featureSwitches: { ...DEFAULT_SETTINGS.featureSwitches, ...parsed.featureSwitches },
         };
-        setSettings(mergedSettings);
+        set({ settings: mergedSettings, isLoaded: true });
+      } else {
+        set({ isLoaded: true });
       }
     } catch (error) {
       console.warn('Failed to load settings from localStorage:', error);
-    } finally {
-      setIsLoaded(true);
+      set({ isLoaded: true });
     }
-  }, []);
+  },
 
-  // Save settings to localStorage with functional update
-  const saveSettings = useCallback((newSettings: Settings) => {
-    setSettings(() => {
-      try {
-        localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(newSettings));
-        return newSettings;
-      } catch (error) {
-        console.error('Failed to save settings to localStorage:', error);
-        throw error;
+  updateSetting: (path: string, value: any) => {
+    const { settings } = get();
+    const newSettings = { ...settings };
+    const keys = path.split('.');
+    
+    if (keys.length === 2) {
+      const [section, key] = keys;
+      if (section in newSettings) {
+        (newSettings as any)[section] = {
+          ...(newSettings as any)[section],
+          [key]: value,
+        };
       }
-    });
-  }, []);
+    }
+    
+    // Update state and localStorage
+    set({ settings: newSettings });
+    try {
+      localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(newSettings));
+    } catch (error) {
+      console.error('Failed to save settings to localStorage:', error);
+    }
+  },
 
-  // Update a specific setting using functional updates to prevent stale closure issues
-  const updateSetting = useCallback((path: string, value: any) => {
-    setSettings(prevSettings => {
-      const newSettings = { ...prevSettings };
-      const keys = path.split('.');
-      
-      if (keys.length === 2) {
-        const [section, key] = keys;
-        if (section in newSettings) {
-          (newSettings as any)[section] = {
-            ...(newSettings as any)[section],
-            [key]: value,
-          };
-        }
-      }
-      
-      // Async update to localStorage
-      try {
-        localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(newSettings));
-      } catch (error) {
-        console.error('Failed to save settings to localStorage:', error);
-      }
-      
-      return newSettings;
-    });
-  }, []);
+  saveSettings: (newSettings: Settings) => {
+    set({ settings: newSettings });
+    try {
+      localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(newSettings));
+    } catch (error) {
+      console.error('Failed to save settings to localStorage:', error);
+      throw error;
+    }
+  },
 
-  // Reset to defaults using functional update
-  const resetSettings = useCallback(() => {
-    setSettings(() => {
-      try {
-        localStorage.removeItem(SETTINGS_STORAGE_KEY);
-        return DEFAULT_SETTINGS;
-      } catch (error) {
-        console.error('Failed to reset settings:', error);
-        throw error;
-      }
-    });
-  }, []);
+  resetSettings: () => {
+    set({ settings: DEFAULT_SETTINGS });
+    try {
+      localStorage.removeItem(SETTINGS_STORAGE_KEY);
+    } catch (error) {
+      console.error('Failed to reset settings:', error);
+      throw error;
+    }
+  },
 
-  // Export settings as JSON
-  const exportSettings = useCallback(() => {
+  exportSettings: () => {
+    const { settings } = get();
     return JSON.stringify(settings, null, 2);
-  }, [settings]);
+  },
 
-  // Import settings from JSON
-  const importSettings = useCallback((jsonString: string) => {
+  importSettings: (jsonString: string) => {
     try {
       const imported = JSON.parse(jsonString);
       // Validate structure by merging with defaults
@@ -94,20 +97,22 @@ export const useSettings = () => {
         graphrag: { ...DEFAULT_SETTINGS.graphrag, ...imported.graphrag },
         featureSwitches: { ...DEFAULT_SETTINGS.featureSwitches, ...imported.featureSwitches },
       };
-      saveSettings(validatedSettings);
+      get().saveSettings(validatedSettings);
     } catch (error) {
       console.error('Failed to import settings:', error);
       throw error;
     }
-  }, [saveSettings]);
+  },
+}));
 
-  return {
-    settings,
-    isLoaded,
-    updateSetting,
-    saveSettings,
-    resetSettings,
-    exportSettings,
-    importSettings,
-  };
+// Hook for convenience
+export const useSettings = () => {
+  const store = useSettingsStore();
+  
+  // Load settings on first use
+  if (!store.isLoaded) {
+    store.loadSettings();
+  }
+  
+  return store;
 };
