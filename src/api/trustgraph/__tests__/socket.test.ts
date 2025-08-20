@@ -42,10 +42,10 @@ vi.mock("react", async (importOriginal) => {
   return {
     ...actual,
     createContext: vi.fn(() => ({
-      Provider: ({ children, value }: { children: React.ReactNode; value: any }) => (
+      Provider: ({ children }: { children: React.ReactNode }) => (
         React.createElement('div', { 'data-testid': 'socket-provider' }, children)
       ),
-      Consumer: ({ children }: { children: (value: any) => React.ReactNode }) => 
+      Consumer: ({ children }: { children: (value: unknown) => React.ReactNode }) => 
         children(mockSocket)
     })),
     useContext: vi.fn(() => mockSocket),
