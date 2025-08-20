@@ -70,7 +70,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
       }
       setIsSocketReady(false);
     };
-  }, [isLoaded, settings.authentication.apiKey]); // Reconnects when API key changes
+  }, [isLoaded, settings.authentication.apiKey, socket]); // Reconnects when API key changes
 
   // Show loading state until both settings and socket are ready
   if (!isSocketReady) {

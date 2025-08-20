@@ -9,7 +9,7 @@ import {
 import { useFlows } from "../../state/flows";
 
 // Define the flow class data structure
-type FlowClassRow = [string, { description: string; [key: string]: any }];
+type FlowClassRow = [string, { description: string; [key: string]: unknown }];
 
 // Table columns configuration
 const flowClassColumns = [
@@ -28,7 +28,7 @@ const flowClassColumns = [
 ];
 
 const FlowClasses: React.FC = () => {
-  const { flowClasses, isFlowClassesLoading, isFlowClassesError, flowClassesError } = useFlows();
+  const { flowClasses, isFlowClassesError, flowClassesError } = useFlows();
 
   const table = useReactTable({
     data: (flowClasses as FlowClassRow[]) || [],
