@@ -77,6 +77,7 @@ export const EditableArgumentsTable: React.FC<EditableArgumentsTableProps> = ({
               <Popover.Root
                 open={editArgIx === row.index}
                 onOpenChange={(e) => {
+                  // Close popover when selection changes
                   if (!e.open) setEditArgIx(-1);
                 }}
               >
@@ -89,9 +90,10 @@ export const EditableArgumentsTable: React.FC<EditableArgumentsTableProps> = ({
                     <Popover.Body>
                       <RadioGroup.Root
                         value={row.original.type}
-                        onValueChange={(v) =>
-                          setArgAttr(row.index, "type", v.value)
-                        }
+                        onValueChange={(v) => {
+                          setArgAttr(row.index, "type", v.value);
+                          setEditArgIx(-1); // Close popover after selection
+                        }}
                       >
                         <Stack gap="6">
                           <RadioGroup.Item value="string">
@@ -118,7 +120,7 @@ export const EditableArgumentsTable: React.FC<EditableArgumentsTableProps> = ({
         ),
       }),
     ],
-    [editArgIx, setEditArgIx, setArgAttr]
+    [editArgIx] // Only depend on editArgIx, not the functions
   );
 
   const table = useReactTable({
