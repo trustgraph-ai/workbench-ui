@@ -89,17 +89,34 @@ export const useSettings = () => {
   // Mutation for updating settings
   const updateSettingsMutation = useMutation({
     mutationFn: async ({
-      settings,
+      path,
+      value,
       onSuccess,
     }: {
-      settings: Settings;
+      path: string;
+      value: unknown;
       onSuccess?: () => void;
     }) => {
       // Simulate async operation for consistency with future backend integration
       await new Promise((resolve) => setTimeout(resolve, 100));
       
+      // Get fresh settings from localStorage to avoid race conditions
+      const currentSettings = loadFromLocalStorage();
+      const newSettings = { ...currentSettings };
+      const keys = path.split(".");
+      
+      if (keys.length === 2) {
+        const [section, key] = keys;
+        if (section in newSettings) {
+          (newSettings as Record<string, Record<string, unknown>>)[section] = {
+            ...(newSettings as Record<string, Record<string, unknown>>)[section],
+            [key]: value,
+          };
+        }
+      }
+      
       // Update localStorage
-      updateLocalStorage(settings);
+      updateLocalStorage(newSettings);
       
       // Execute callback if provided
       if (onSuccess) onSuccess();
@@ -148,27 +165,16 @@ export const useSettings = () => {
 
   // Helper function to update a specific setting path
   const updateSetting = (path: string, value: unknown) => {
-    const newSettings = { ...settings };
-    const keys = path.split(".");
-
-    if (keys.length === 2) {
-      const [section, key] = keys;
-      if (section in newSettings) {
-        (newSettings as Record<string, Record<string, unknown>>)[section] = {
-          ...(newSettings as Record<string, Record<string, unknown>>)[
-            section
-          ],
-          [key]: value,
-        };
-
-        updateSettingsMutation.mutate({ settings: newSettings });
-      }
-    }
+    updateSettingsMutation.mutate({ path, value });
   };
 
   // Helper function to save complete settings
   const saveSettings = (newSettings: Settings) => {
-    updateSettingsMutation.mutate({ settings: newSettings });
+    // For complete settings replacement, directly update localStorage
+    updateLocalStorage(newSettings);
+    // Then invalidate the query to refetch
+    queryClient.invalidateQueries({ queryKey: ["settings"] });
+    notify.success("Settings updated");
   };
 
   // Helper function to reset settings
@@ -186,7 +192,7 @@ export const useSettings = () => {
     try {
       const imported = JSON.parse(jsonString);
       const validatedSettings = mergeWithDefaults(imported);
-      updateSettingsMutation.mutate({ settings: validatedSettings });
+      saveSettings(validatedSettings);
     } catch (error) {
       notify.error("Failed to import settings: Invalid JSON format");
       throw error;
