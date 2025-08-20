@@ -62,7 +62,7 @@ const AuthenticationSection: React.FC<AuthenticationSectionProps> = ({
             onValueChange={setStagedApiKey}
             type={showApiKey ? "text" : "password"}
           />
-          
+
           {hasChanges && (
             <HStack gap={2} justify="flex-end">
               <Button
@@ -87,16 +87,12 @@ const AuthenticationSection: React.FC<AuthenticationSectionProps> = ({
             </HStack>
           )}
 
-          <Text 
-            fontSize="sm" 
-            color={hasChanges ? "accent.fg" : "fg.muted"}
-          >
-            {hasChanges 
+          <Text fontSize="sm" color={hasChanges ? "accent.fg" : "fg.muted"}>
+            {hasChanges
               ? "API key changes require applying to reconnect websocket"
-              : apiKey 
+              : apiKey
                 ? "API key active - socket authentication enabled"
-                : "No API key set - authentication disabled"
-            }
+                : "No API key set - authentication disabled"}
           </Text>
         </VStack>
       </VStack>

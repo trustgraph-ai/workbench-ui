@@ -22,8 +22,9 @@ export const usePrompts = () => {
   const notify = useNotification();
 
   // Only enable queries when socket is connected and ready
-  const isSocketReady = connectionState?.status === "authenticated" || 
-                       connectionState?.status === "unauthenticated";
+  const isSocketReady =
+    connectionState?.status === "authenticated" ||
+    connectionState?.status === "unauthenticated";
 
   // Query to fetch the system prompt configuration
   // System prompt defines the AI assistant's behavior and instructions

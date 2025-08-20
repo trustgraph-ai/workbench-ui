@@ -47,8 +47,9 @@ export const useTaxonomies = () => {
   const notify = useNotification();
 
   // Only enable queries when socket is connected and ready
-  const isSocketReady = connectionState?.status === "authenticated" || 
-                       connectionState?.status === "unauthenticated";
+  const isSocketReady =
+    connectionState?.status === "authenticated" ||
+    connectionState?.status === "unauthenticated";
 
   const taxonomiesQuery = useQuery({
     queryKey: ["taxonomies"],

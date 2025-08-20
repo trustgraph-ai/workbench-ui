@@ -22,8 +22,9 @@ export const useAgentTools = () => {
   const notify = useNotification();
 
   // Only enable queries when socket is connected and ready
-  const isSocketReady = connectionState?.status === "authenticated" || 
-                       connectionState?.status === "unauthenticated";
+  const isSocketReady =
+    connectionState?.status === "authenticated" ||
+    connectionState?.status === "unauthenticated";
 
   // Query to fetch all agent tools
   // Gets all tools directly from the 'tool' configuration type

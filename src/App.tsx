@@ -44,11 +44,16 @@ const App = () => {
 
   useEffect(() => {
     // Wait for socket connection to be established before loading flows
-    if (!connectionState || 
-        (connectionState.status !== "connected" && 
-         connectionState.status !== "authenticated" && 
-         connectionState.status !== "unauthenticated")) {
-      console.log("App: Waiting for socket connection...", connectionState?.status);
+    if (
+      !connectionState ||
+      (connectionState.status !== "connected" &&
+        connectionState.status !== "authenticated" &&
+        connectionState.status !== "unauthenticated")
+    ) {
+      console.log(
+        "App: Waiting for socket connection...",
+        connectionState?.status,
+      );
       return;
     }
 
@@ -86,7 +91,14 @@ const App = () => {
         removeActivity(act);
         console.log("Error:", err);
       });
-  }, [socket, connectionState, addActivity, removeActivity, setFlow, setFlowId]);
+  }, [
+    socket,
+    connectionState,
+    addActivity,
+    removeActivity,
+    setFlow,
+    setFlowId,
+  ]);
 
   return (
     <Box width="100%" minHeight="100vh" bg="colors.background">

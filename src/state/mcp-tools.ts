@@ -22,8 +22,9 @@ export const useMcpTools = () => {
   const notify = useNotification();
 
   // Only enable queries when socket is connected and ready
-  const isSocketReady = connectionState?.status === "authenticated" || 
-                       connectionState?.status === "unauthenticated";
+  const isSocketReady =
+    connectionState?.status === "authenticated" ||
+    connectionState?.status === "unauthenticated";
 
   // Query to fetch all MCP tools
   // Uses the list operation to get all MCP tools directly
