@@ -1,10 +1,8 @@
 import React from "react";
-import { Box, Table, Text, Center } from "@chakra-ui/react";
 import {
   useReactTable,
   getCoreRowModel,
   getSortedRowModel,
-  flexRender,
 } from "@tanstack/react-table";
 import { useTaxonomies } from "../../state/taxonomies";
 import {
@@ -12,6 +10,7 @@ import {
   taxonomyColumns,
 } from "../../model/taxonomies-table";
 import { EditTaxonomyDialog } from "./EditTaxonomyDialog";
+import TableWithStates from "../common/TableWithStates";
 
 export const TaxonomiesTable: React.FC = () => {
   const { taxonomies, taxonomiesError } = useTaxonomies();
@@ -34,72 +33,16 @@ export const TaxonomiesTable: React.FC = () => {
   // Loading state is handled by useActivity in the taxonomies hook
   // CenterSpinner component automatically shows when activities are active
 
-  if (taxonomiesError) {
-    return (
-      <Box
-        p={4}
-        borderWidth="1px"
-        borderColor="red.500"
-        borderRadius="md"
-        bg="red.50"
-      >
-        <Text color="red.700">
-          Error loading taxonomies: {taxonomiesError.toString()}
-        </Text>
-      </Box>
-    );
-  }
-
-  if (taxonomies.length === 0) {
-    return (
-      <Center h="200px">
-        <Text color="gray.500">
-          No taxonomies found. Create one to get started.
-        </Text>
-      </Center>
-    );
-  }
-
   return (
     <>
-      <Box overflowX="auto" borderWidth="1px" borderRadius="lg">
-        <Table.Root interactive>
-          <Table.Header>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <Table.Row key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <Table.ColumnHeader key={header.id}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext(),
-                        )}
-                  </Table.ColumnHeader>
-                ))}
-              </Table.Row>
-            ))}
-          </Table.Header>
-          <Table.Body>
-            {table.getRowModel().rows.map((row) => (
-              <Table.Row
-                key={row.id}
-                onClick={() => handleRowClick(row.original)}
-                style={{ cursor: "pointer" }}
-              >
-                {row.getVisibleCells().map((cell) => (
-                  <Table.Cell key={cell.id}>
-                    {flexRender(
-                      cell.column.columnDef.cell,
-                      cell.getContext(),
-                    )}
-                  </Table.Cell>
-                ))}
-              </Table.Row>
-            ))}
-          </Table.Body>
-        </Table.Root>
-      </Box>
+      <TableWithStates
+        table={table}
+        data={taxonomies}
+        error={taxonomiesError}
+        onClick={handleRowClick}
+        emptyMessage="No taxonomies found. Create one to get started."
+        errorTitle="Error loading taxonomies"
+      />
 
       {selectedTaxonomy && (
         <EditTaxonomyDialog

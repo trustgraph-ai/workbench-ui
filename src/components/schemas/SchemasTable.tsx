@@ -1,15 +1,13 @@
 import React from "react";
-import { Box, Table } from "@chakra-ui/react";
 import {
   useReactTable,
   getCoreRowModel,
   getSortedRowModel,
-  flexRender,
 } from "@tanstack/react-table";
 import { useSchemas } from "../../state/schemas";
 import { SchemaTableRow, schemaColumns } from "../../model/schemas-table";
 import { EditSchemaDialog } from "./EditSchemaDialog";
-import { ErrorState, EmptyState } from "./SchemaTableStates";
+import TableWithStates from "../common/TableWithStates";
 
 export const SchemasTable: React.FC = () => {
   const { schemas, schemasError } = useSchemas();
@@ -32,54 +30,16 @@ export const SchemasTable: React.FC = () => {
   // Loading state is handled by useActivity in the schemas hook
   // CenterSpinner component automatically shows when activities are active
 
-  if (schemasError) {
-    return <ErrorState error={schemasError} />;
-  }
-
-  if (schemas.length === 0) {
-    return <EmptyState />;
-  }
-
   return (
     <>
-      <Box overflowX="auto" borderWidth="1px" borderRadius="lg">
-        <Table.Root interactive>
-          <Table.Header>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <Table.Row key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <Table.ColumnHeader key={header.id}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext(),
-                        )}
-                  </Table.ColumnHeader>
-                ))}
-              </Table.Row>
-            ))}
-          </Table.Header>
-          <Table.Body>
-            {table.getRowModel().rows.map((row) => (
-              <Table.Row
-                key={row.id}
-                onClick={() => handleRowClick(row.original)}
-                style={{ cursor: "pointer" }}
-              >
-                {row.getVisibleCells().map((cell) => (
-                  <Table.Cell key={cell.id}>
-                    {flexRender(
-                      cell.column.columnDef.cell,
-                      cell.getContext(),
-                    )}
-                  </Table.Cell>
-                ))}
-              </Table.Row>
-            ))}
-          </Table.Body>
-        </Table.Root>
-      </Box>
+      <TableWithStates
+        table={table}
+        data={schemas}
+        error={schemasError}
+        onClick={handleRowClick}
+        emptyMessage="No schemas found. Create one to get started."
+        errorTitle="Error loading schemas"
+      />
 
       {selectedSchema && (
         <EditSchemaDialog

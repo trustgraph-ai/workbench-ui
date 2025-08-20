@@ -99,25 +99,28 @@ export const useSettings = () => {
     }) => {
       // Simulate async operation for consistency with future backend integration
       await new Promise((resolve) => setTimeout(resolve, 100));
-      
+
       // Get fresh settings from localStorage to avoid race conditions
       const currentSettings = loadFromLocalStorage();
       const newSettings = { ...currentSettings };
       const keys = path.split(".");
-      
+
       if (keys.length === 2) {
         const [section, key] = keys;
         if (section in newSettings) {
-          (newSettings as Record<string, Record<string, unknown>>)[section] = {
-            ...(newSettings as Record<string, Record<string, unknown>>)[section],
-            [key]: value,
-          };
+          (newSettings as Record<string, Record<string, unknown>>)[section] =
+            {
+              ...(newSettings as Record<string, Record<string, unknown>>)[
+                section
+              ],
+              [key]: value,
+            };
         }
       }
-      
+
       // Update localStorage
       updateLocalStorage(newSettings);
-      
+
       // Execute callback if provided
       if (onSuccess) onSuccess();
     },
@@ -137,10 +140,10 @@ export const useSettings = () => {
     mutationFn: async ({ onSuccess }: { onSuccess?: () => void } = {}) => {
       // Simulate async operation for consistency with future backend integration
       await new Promise((resolve) => setTimeout(resolve, 100));
-      
+
       // Clear localStorage
       localStorage.removeItem(SETTINGS_STORAGE_KEY);
-      
+
       // Execute callback if provided
       if (onSuccess) onSuccess();
     },

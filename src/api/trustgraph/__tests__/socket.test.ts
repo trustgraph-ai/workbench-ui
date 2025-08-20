@@ -1,22 +1,22 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import { useSocket } from "../socket";
 import { renderHook } from "@testing-library/react";
+import React from "react";
 
-// Mock the SocketContext
-vi.mock("../SocketContext", () => ({
-  SocketContext: {
-    _currentValue: null,
-    Provider: ({ children }: { children: React.ReactNode }) => children,
-    Consumer: ({
-      children,
-    }: {
-      children: (value: null) => React.ReactNode;
-    }) => children(null),
-  },
+// Mock the settings hook
+vi.mock("../../state/settings", () => ({
+  useSettings: vi.fn(() => ({
+    settings: {
+      authentication: {
+        apiKey: "test-api-key"
+      }
+    },
+    isLoaded: true
+  }))
 }));
 
-// Mock React useContext to return a mock socket
-const mockSocketContext = {
+// Mock socket instance
+const mockSocket = {
   textCompletion: vi.fn(),
   graphRag: vi
     .fn()
@@ -31,9 +31,26 @@ const mockSocketContext = {
   close: vi.fn(),
 };
 
-vi.mock("react", () => ({
-  useContext: vi.fn(() => mockSocketContext),
+// Mock the trustgraph socket creation
+vi.mock("../trustgraph-socket", () => ({
+  createTrustGraphSocket: vi.fn(() => mockSocket)
 }));
+
+// Mock React with proper createContext support
+vi.mock("react", async (importOriginal) => {
+  const actual = await importOriginal<typeof React>();
+  return {
+    ...actual,
+    createContext: vi.fn(() => ({
+      Provider: ({ children }: { children: React.ReactNode }) => (
+        React.createElement('div', { 'data-testid': 'socket-provider' }, children)
+      ),
+      Consumer: ({ children }: { children: (value: unknown) => React.ReactNode }) => 
+        children(mockSocket)
+    })),
+    useContext: vi.fn(() => mockSocket),
+  };
+});
 
 describe("useSocket", () => {
   beforeEach(() => {
@@ -43,7 +60,7 @@ describe("useSocket", () => {
   it("should return socket context", () => {
     const { result } = renderHook(() => useSocket());
 
-    expect(result.current).toBe(mockSocketContext);
+    expect(result.current).toBe(mockSocket);
   });
 
   it("should provide all required socket methods", () => {

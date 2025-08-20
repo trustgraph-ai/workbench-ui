@@ -39,22 +39,26 @@ const UploadDialog = ({ open, onOpenChange }) => {
       encodeURIComponent("trustgraph");
 
     // Use authenticated fetch with current API key
-    const authenticatedFetch = createAuthenticatedFetch(settings.authentication.apiKey);
-    
+    const authenticatedFetch = createAuthenticatedFetch(
+      settings.authentication.apiKey,
+    );
+
     authenticatedFetch(url, {
       method: "POST",
       body: file,
-    }).then(() => {
-      console.log("Upload success.");
-      setFiles([]);
-      setId("");
-      onOpenChange(false);
-      // Refresh the knowledge cores list
-      knowledgeCoresState.refetch();
-    }).catch((error) => {
-      console.error("Upload failed:", error);
-      // TODO: Show error notification to user
-    });
+    })
+      .then(() => {
+        console.log("Upload success.");
+        setFiles([]);
+        setId("");
+        onOpenChange(false);
+        // Refresh the knowledge cores list
+        knowledgeCoresState.refetch();
+      })
+      .catch((error) => {
+        console.error("Upload failed:", error);
+        // TODO: Show error notification to user
+      });
   };
 
   return (

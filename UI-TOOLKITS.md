@@ -642,7 +642,129 @@ export const useSettings = () => {
 };
 ```
 
+### Table Components
+
+**CRITICAL**: Always use TanStack Table with our standardized table components instead of manually implementing Chakra Table structures.
+
+**Standard Table Pattern:**
+
+1. **Create Model File** (`src/model/[feature]-table.tsx`):
+```tsx
+import { createColumnHelper } from "@tanstack/react-table";
+
+export type MyData = {
+  id: string;
+  name: string;
+  description: string;
+};
+
+export const columnHelper = createColumnHelper<MyData>();
+
+export const columns = [
+  columnHelper.accessor("id", {
+    header: "ID",
+    cell: (info) => info.getValue(),
+  }),
+  columnHelper.accessor("name", {
+    header: "Name", 
+    cell: (info) => info.getValue(),
+  }),
+  columnHelper.accessor("description", {
+    header: "Description",
+    cell: (info) => info.getValue(),
+  }),
+];
+```
+
+2. **Use Common Table Components**:
+```tsx
+// ❌ Don't manually implement table structure
+<Table.Root>
+  <Table.Header>
+    <Table.Row>
+      <Table.ColumnHeader>Name</Table.ColumnHeader>
+    </Table.Row>
+  </Table.Header>
+  <Table.Body>
+    {data.map(row => (
+      <Table.Row key={row.id}>
+        <Table.Cell>{row.name}</Table.Cell>
+      </Table.Row>
+    ))}
+  </Table.Body>
+</Table.Root>
+
+// ✅ Use standardized components and models
+import { BasicTable } from "../common/BasicTable";
+import { columns, MyData } from "../../model/my-data-table";
+
+const table = useReactTable({
+  data: myData as MyData[],
+  columns,
+  getCoreRowModel: getCoreRowModel(),
+  getSortedRowModel: getSortedRowModel(),
+});
+
+return <BasicTable table={table} />;
+```
+
+**Available Table Components:**
+- `BasicTable` - Standard table display
+- `ClickableTable` - Table with row click handlers  
+- `SelectableTable` - Table with row selection checkboxes
+
+**Standard Column Patterns:**
+```tsx
+// Selection column (for SelectableTable)
+columnHelper.display({
+  id: "select",
+  header: ({ table }) => (
+    <Checkbox.Root 
+      checked={selectionState(table)}
+      onChange={table.getToggleAllRowsSelectedHandler()}
+    >
+      <Checkbox.HiddenInput />
+      <Checkbox.Control />
+    </Checkbox.Root>
+  ),
+  cell: ({ row }) => (
+    <Checkbox.Root
+      checked={row.getIsSelected()}
+      onChange={row.getToggleSelectedHandler()}
+    >
+      <Checkbox.HiddenInput />
+      <Checkbox.Control />
+    </Checkbox.Root>
+  ),
+});
+
+// Data columns with custom formatting
+columnHelper.accessor("timestamp", {
+  header: "Created",
+  cell: (info) => timeString(info.getValue()),
+});
+
+// Tags/badges column
+columnHelper.accessor("tags", {
+  header: "Tags",
+  cell: (info) => 
+    info.getValue()?.map((tag) => (
+      <Tag.Root key={tag} mr={2}>
+        <Tag.Label>{tag}</Tag.Label>
+      </Tag.Root>
+    )),
+});
+```
+
+**Benefits of Standardized Tables:**
+- ✅ Consistent behavior and styling across the application
+- ✅ Built-in sorting, selection, and interaction patterns
+- ✅ Type safety with column definitions
+- ✅ Easier testing and maintenance
+- ✅ Better performance with TanStack optimizations
+- ✅ Automatic loading state integration with progress system
+
 ### Other Patterns
 - Use Tanstack Query for state management with existing socket-based config API
 - Follow kebab-case naming conventions for IDs and URLs
-- Use existing table patterns with Tanstack Table
+- Always prefer TanStack Table models over manual Chakra Table implementation
