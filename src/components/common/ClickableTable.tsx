@@ -1,10 +1,10 @@
 import { Table } from "@chakra-ui/react";
 import { flexRender } from "@tanstack/react-table";
 
-const ClickableTable = ({ table, onClick }) => {
+const ClickableTable = ({ table, onClick, ...tableProps }) => {
   return (
     <>
-      <Table.Root interactive>
+      <Table.Root interactive {...tableProps}>
         <Table.Header>
           {table.getHeaderGroups().map((headerGroup) => (
             <Table.Row key={headerGroup.id}>
