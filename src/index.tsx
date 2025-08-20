@@ -5,6 +5,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
 import { system } from "./theme";
+import { SocketProvider } from "./api/trustgraph/SocketProvider";
 
 const queryClient = new QueryClient();
 
@@ -13,7 +14,9 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
     <QueryClientProvider client={queryClient}>
       <ChakraProvider value={system}>
         <ThemeProvider attribute="class" disableTransitionOnChange>
-          <App />
+          <SocketProvider>
+            <App />
+          </SocketProvider>
         </ThemeProvider>
       </ChakraProvider>
     </QueryClientProvider>
