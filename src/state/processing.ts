@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 
-import { useSocket } from "../api/trustgraph/socket";
+import { useSocket, useConnectionState } from "../api/trustgraph/socket";
 import { useActivity } from "./activity";
 
 /**
@@ -11,6 +11,12 @@ import { useActivity } from "./activity";
 export const useProcessing = () => {
   // WebSocket connection for communicating with the librarian service
   const socket = useSocket();
+  const connectionState = useConnectionState();
+
+  // Only enable queries when socket is connected and ready
+  const isSocketReady =
+    connectionState?.status === "authenticated" ||
+    connectionState?.status === "unauthenticated";
 
   /**
    * Query for fetching all processing
@@ -18,6 +24,7 @@ export const useProcessing = () => {
    */
   const processingQuery = useQuery({
     queryKey: ["processing"],
+    enabled: isSocketReady,
     queryFn: () => {
       return socket.librarian().getProcessing();
     },

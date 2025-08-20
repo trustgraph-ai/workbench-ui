@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 
-import { useSocket } from "../api/trustgraph/socket";
+import { useSocket, useConnectionState } from "../api/trustgraph/socket";
 import { useNotification } from "./notify";
 import { useActivity } from "./activity";
 
@@ -13,6 +13,12 @@ import { useActivity } from "./activity";
 export const useEmbeddings = ({ flow, term }) => {
   // WebSocket connection for communicating with the configuration service
   const socket = useSocket();
+  const connectionState = useConnectionState();
+
+  // Only enable queries when socket is connected and ready
+  const isSocketReady =
+    connectionState?.status === "authenticated" ||
+    connectionState?.status === "unauthenticated";
 
   // Hook for displaying user notifications
   const notify = useNotification();
@@ -25,6 +31,7 @@ export const useEmbeddings = ({ flow, term }) => {
    */
   const query = useQuery({
     queryKey: ["embeddings", { flow, term }],
+    enabled: isSocketReady && !!term && !!flow,
     queryFn: () => {
       return socket
         .flow(flow)

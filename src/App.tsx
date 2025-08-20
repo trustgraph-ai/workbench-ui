@@ -26,12 +26,13 @@ import CenterSpinner from "./components/common/CenterSpinner";
 import Progress from "./components/common/Progress";
 import { Toaster } from "./components/ui/ToasterComponent";
 
-import { useSocket } from "./api/trustgraph/socket";
+import { useSocket, useConnectionState } from "./api/trustgraph/socket";
 import { useProgressStateStore } from "./state/progress";
 import { useSessionStore } from "./state/session";
 
 const App = () => {
   const socket = useSocket();
+  const connectionState = useConnectionState();
 
   const addActivity = useProgressStateStore((state) => state.addActivity);
   const removeActivity = useProgressStateStore(
@@ -42,6 +43,21 @@ const App = () => {
   const setFlow = useSessionStore((state) => state.setFlow);
 
   useEffect(() => {
+    // Wait for socket connection to be established before loading flows
+    if (
+      !connectionState ||
+      (connectionState.status !== "connected" &&
+        connectionState.status !== "authenticated" &&
+        connectionState.status !== "unauthenticated")
+    ) {
+      console.log(
+        "App: Waiting for socket connection...",
+        connectionState?.status,
+      );
+      return;
+    }
+
+    console.log("App: Socket connected, loading flows...");
     const act = "Load flows";
     addActivity(act);
     socket
@@ -75,7 +91,14 @@ const App = () => {
         removeActivity(act);
         console.log("Error:", err);
       });
-  }, [socket, addActivity, removeActivity, setFlow, setFlowId]);
+  }, [
+    socket,
+    connectionState,
+    addActivity,
+    removeActivity,
+    setFlow,
+    setFlowId,
+  ]);
 
   return (
     <Box width="100%" minHeight="100vh" bg="colors.background">

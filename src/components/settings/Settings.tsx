@@ -14,6 +14,7 @@ const Settings: React.FC = () => {
     resetSettings,
     exportSettings,
     importSettings,
+    isSaving,
   } = useSettings();
 
   const notify = useNotification();
@@ -103,6 +104,7 @@ const Settings: React.FC = () => {
         onApiKeyChange={(value) =>
           updateSetting("authentication.apiKey", value)
         }
+        isSaving={isSaving}
       />
 
       <GraphRagSection

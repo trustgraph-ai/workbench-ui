@@ -2,7 +2,7 @@
 import { useQueryClient, useQuery, useMutation } from "@tanstack/react-query";
 
 // TrustGraph socket connection for API communication
-import { useSocket } from "../api/trustgraph/socket";
+import { useSocket, useConnectionState } from "../api/trustgraph/socket";
 // Notification system for user feedback
 import { useNotification } from "./notify";
 // Activity tracking for loading states
@@ -15,15 +15,22 @@ import { useActivity } from "./activity";
 export const useMcpTools = () => {
   // Socket connection for API calls
   const socket = useSocket();
+  const connectionState = useConnectionState();
   // Query client for cache management
   const queryClient = useQueryClient();
   // Notification system for user feedback
   const notify = useNotification();
 
+  // Only enable queries when socket is connected and ready
+  const isSocketReady =
+    connectionState?.status === "authenticated" ||
+    connectionState?.status === "unauthenticated";
+
   // Query to fetch all MCP tools
   // Uses the list operation to get all MCP tools directly
   const toolsQuery = useQuery({
     queryKey: ["mcp-tools"],
+    enabled: isSocketReady,
     queryFn: () => {
       // Get all MCP tools using the getValues operation
       return socket

@@ -1,6 +1,6 @@
 import { useQueryClient, useQuery, useMutation } from "@tanstack/react-query";
 
-import { useSocket } from "../api/trustgraph/socket";
+import { useSocket, useConnectionState } from "../api/trustgraph/socket";
 import { useNotification } from "./notify";
 import { useActivity } from "./activity";
 
@@ -12,6 +12,7 @@ import { useActivity } from "./activity";
 export const useFlows = () => {
   // WebSocket connection for communicating with the flows service
   const socket = useSocket();
+  const connectionState = useConnectionState();
 
   // React Query client for cache management and invalidation
   const queryClient = useQueryClient();
@@ -19,12 +20,18 @@ export const useFlows = () => {
   // Hook for displaying user notifications
   const notify = useNotification();
 
+  // Only enable queries when socket is connected and ready
+  const isSocketReady =
+    connectionState?.status === "authenticated" ||
+    connectionState?.status === "unauthenticated";
+
   /**
    * Query for fetching all flows
    * Uses React Query for caching and background refetching
    */
   const flowsQuery = useQuery({
     queryKey: ["flows"],
+    enabled: isSocketReady,
     queryFn: () => {
       return socket
         .flows()
@@ -50,6 +57,7 @@ export const useFlows = () => {
    */
   const flowClassesQuery = useQuery({
     queryKey: ["flow-classes"],
+    enabled: isSocketReady,
     queryFn: () => {
       return socket
         .flows()
