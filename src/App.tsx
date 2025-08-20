@@ -12,7 +12,7 @@ import SearchPage from "./pages/SearchPage";
 import EntityPage from "./pages/EntityPage";
 import GraphPage from "./pages/GraphPage";
 import FlowsPage from "./pages/FlowsPage";
-//import FlowClassesPage from "./pages/FlowClassesPage";
+import FlowClassesPage from "./pages/FlowClassesPage";
 import LibraryPage from "./pages/LibraryPage";
 import KnowledgeCoresPage from "./pages/KnowledgeCoresPage";
 import ProcessingPage from "./pages/ProcessingPage";
@@ -93,9 +93,7 @@ const App = () => {
               <Route path="/entity" element={<EntityPage />} />
               <Route path="/graph" element={<GraphPage />} />
               <Route path="/flows" element={<FlowsPage />} />
-              {/*
-            <Route path="/flow-classes" element={<FlowClassesPage />} />
-*/}
+              <Route path="/flow-classes" element={<FlowClassesPage />} />
               <Route path="/library" element={<LibraryPage />} />
               <Route path="/kc" element={<KnowledgeCoresPage />} />
               <Route path="/procs" element={<ProcessingPage />} />
