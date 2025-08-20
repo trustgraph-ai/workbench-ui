@@ -210,8 +210,8 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
               <SelectField
                 label="Tool type"
                 items={typeOptions}
-                value={type}
-                onValueChange={(v) => setType(v)}
+                value={type ? [type] : []}
+                onValueChange={(v) => setType(v[0])}
                 contentRef={contentRef}
               />
 
@@ -219,8 +219,8 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
                 <SelectField
                   label="Template ID"
                   items={promptTemplateOptions}
-                  value={templateId}
-                  onValueChange={(v) => setTemplateId(v)}
+                  value={templateId ? [templateId] : []}
+                  onValueChange={(v) => setTemplateId(v[0] || "")}
                   contentRef={contentRef}
                 />
               )}
@@ -229,8 +229,8 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
                 <SelectField
                   label="MCP Tool ID"
                   items={mcpToolOptions}
-                  value={mcpToolId}
-                  onValueChange={(v) => setMcpToolId(v)}
+                  value={mcpToolId ? [mcpToolId] : []}
+                  onValueChange={(v) => setMcpToolId(v[0] || "")}
                   contentRef={contentRef}
                 />
               )}

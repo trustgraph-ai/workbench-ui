@@ -6,6 +6,7 @@ import {
   Text,
   RadioGroup,
   Stack,
+  Box,
 } from "@chakra-ui/react";
 import {
   createColumnHelper,
@@ -125,6 +126,24 @@ export const EditableArgumentsTable: React.FC<EditableArgumentsTableProps> = ({
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
+
+  // Show helpful message if no arguments yet
+  if (args.length === 0) {
+    return (
+      <Box 
+        p={4} 
+        borderWidth="1px" 
+        borderRadius="md" 
+        borderStyle="dashed"
+        borderColor="border.default"
+        color="fg.muted"
+        textAlign="center"
+        fontSize="sm"
+      >
+        No arguments defined yet. Click "add argument" below to create template variables.
+      </Box>
+    );
+  }
 
   return (
     <Table.Root interactive size="xs">
