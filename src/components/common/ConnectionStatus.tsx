@@ -1,11 +1,8 @@
 import React from "react";
 import { Box, HStack, Text, Tooltip } from "@chakra-ui/react";
 import { 
-  CheckCircle, 
-  AlertCircle, 
   Info,
   Clock,
-  XCircle,
   Wifi,
   WifiOff,
   Shield,
