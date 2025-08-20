@@ -11,11 +11,11 @@ export const SocketContext = createContext<Socket | null>(null);
 // Hook to use the socket context
 export const useSocket = () => {
   const socket = useContext(SocketContext);
-  
+
   if (!socket) {
     throw new Error("useSocket must be used within a SocketProvider");
   }
-  
+
   return socket;
 };
 
@@ -25,13 +25,15 @@ interface SocketProviderProps {
 
 /**
  * SocketProvider - Manages WebSocket connection with authentication
- * 
+ *
  * Critical requirements:
  * 1. Wait for settings to load before creating socket
  * 2. Create socket with token if apiKey is present
  * 3. Reconnect when authentication settings change
  */
-export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
+export const SocketProvider: React.FC<SocketProviderProps> = ({
+  children,
+}) => {
   const { settings, isLoaded } = useSettings();
   const [socket, setSocket] = useState<Socket | null>(null);
   const [isSocketReady, setIsSocketReady] = useState(false);
@@ -43,12 +45,16 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
       return;
     }
 
-    console.log("SocketProvider: Settings loaded, creating socket with auth:", 
-                settings.authentication.apiKey ? 'enabled' : 'disabled');
+    console.log(
+      "SocketProvider: Settings loaded, creating socket with auth:",
+      settings.authentication.apiKey ? "enabled" : "disabled",
+    );
 
     // Clean up existing socket before creating new one (for reconnection)
     if (socket) {
-      console.log("SocketProvider: API key changed, closing existing socket...");
+      console.log(
+        "SocketProvider: API key changed, closing existing socket...",
+      );
       socket.close();
       setIsSocketReady(false);
     }
@@ -75,12 +81,12 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
   // Show loading state until both settings and socket are ready
   if (!isSocketReady) {
     return (
-      <Box 
-        width="100%" 
-        height="100vh" 
-        display="flex" 
-        flexDirection="column" 
-        alignItems="center" 
+      <Box
+        width="100%"
+        height="100vh"
+        display="flex"
+        flexDirection="column"
+        alignItems="center"
         justifyContent="center"
         gap={4}
       >
@@ -93,8 +99,6 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
   }
 
   return (
-    <SocketContext.Provider value={socket}>
-      {children}
-    </SocketContext.Provider>
+    <SocketContext.Provider value={socket}>{children}</SocketContext.Provider>
   );
 };

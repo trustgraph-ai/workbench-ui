@@ -146,7 +146,10 @@ export class BaseApi {
     this.id = 1; // Start message ID counter
     this.token = token; // Store authentication token
 
-    console.log("SOCKET: opening socket...", token ? 'with auth' : 'without auth');
+    console.log(
+      "SOCKET: opening socket...",
+      token ? "with auth" : "without auth",
+    );
     this.openSocket(); // Establish WebSocket connection
     console.log("SOCKET: socket opened");
   }
@@ -175,8 +178,13 @@ export class BaseApi {
 
     try {
       // Build WebSocket URL with optional token parameter
-      const wsUrl = this.token ? `${SOCKET_URL}?token=${this.token}` : SOCKET_URL;
-      console.log("SOCKET: connecting to", wsUrl.replace(/token=[^&]*/, 'token=***'));
+      const wsUrl = this.token
+        ? `${SOCKET_URL}?token=${this.token}`
+        : SOCKET_URL;
+      console.log(
+        "SOCKET: connecting to",
+        wsUrl.replace(/token=[^&]*/, "token=***"),
+      );
       this.ws = new WebSocket(wsUrl);
     } catch (e) {
       console.error("[socket creation error]", e);

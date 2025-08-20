@@ -164,12 +164,15 @@ const FeatureSwitchesSection: React.FC<FeatureSwitchesSectionProps> = ({
           <VStack gap={1} align="start">
             <Text fontWeight="medium">Flow Classes</Text>
             <Text fontSize="sm" color="fg.muted">
-              Enable the flow classes management interface for dataflow definitions
+              Enable the flow classes management interface for dataflow
+              definitions
             </Text>
           </VStack>
           <Switch.Root
             checked={flowClasses}
-            onCheckedChange={(details) => onFlowClassesChange(details.checked)}
+            onCheckedChange={(details) =>
+              onFlowClassesChange(details.checked)
+            }
           >
             <Switch.HiddenInput />
             <Switch.Control>

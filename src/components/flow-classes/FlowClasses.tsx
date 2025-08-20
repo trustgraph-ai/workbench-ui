@@ -20,7 +20,7 @@ const flowClassColumns = [
     cell: ({ getValue }) => <Text fontWeight="medium">{getValue()}</Text>,
   },
   {
-    id: "description", 
+    id: "description",
     header: "Description",
     accessorFn: (row: FlowClassRow) => row[1]?.description || "",
     cell: ({ getValue }) => <Text>{getValue()}</Text>,
@@ -59,9 +59,7 @@ const FlowClasses: React.FC = () => {
   if (!flowClasses || flowClasses.length === 0) {
     return (
       <Center h="200px">
-        <Text color="fg.muted">
-          No flow classes found.
-        </Text>
+        <Text color="fg.muted">No flow classes found.</Text>
       </Center>
     );
   }
@@ -90,10 +88,7 @@ const FlowClasses: React.FC = () => {
             <Table.Row key={row.id}>
               {row.getVisibleCells().map((cell) => (
                 <Table.Cell key={cell.id}>
-                  {flexRender(
-                    cell.column.columnDef.cell,
-                    cell.getContext(),
-                  )}
+                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </Table.Cell>
               ))}
             </Table.Row>
