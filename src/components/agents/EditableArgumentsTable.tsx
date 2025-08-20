@@ -30,16 +30,13 @@ interface EditableArgumentsTableProps {
 
 const columnHelper = createColumnHelper<Argument>();
 
-export const EditableArgumentsTable: React.FC<EditableArgumentsTableProps> = ({
-  args,
-  editArgIx,
-  setEditArgIx,
-  setArgAttr,
-}) => {
+export const EditableArgumentsTable: React.FC<
+  EditableArgumentsTableProps
+> = ({ args, editArgIx, setEditArgIx, setArgAttr }) => {
   // Store latest function references to avoid stale closures
   const setArgAttrRef = useRef(setArgAttr);
   const setEditArgIxRef = useRef(setEditArgIx);
-  
+
   useEffect(() => {
     setArgAttrRef.current = setArgAttr;
     setEditArgIxRef.current = setEditArgIx;
@@ -50,9 +47,12 @@ export const EditableArgumentsTable: React.FC<EditableArgumentsTableProps> = ({
     setArgAttrRef.current(index, "name", value);
   }, []);
 
-  const handleDescriptionChange = useCallback((index: number, value: string) => {
-    setArgAttrRef.current(index, "description", value);
-  }, []);
+  const handleDescriptionChange = useCallback(
+    (index: number, value: string) => {
+      setArgAttrRef.current(index, "description", value);
+    },
+    [],
+  );
 
   const handleTypeChange = useCallback((index: number, value: string) => {
     setArgAttrRef.current(index, "type", value);
@@ -142,7 +142,7 @@ export const EditableArgumentsTable: React.FC<EditableArgumentsTableProps> = ({
         ),
       }),
     ],
-    [editArgIx] // Only editArgIx changes, callbacks are stable
+    [editArgIx], // Only editArgIx changes, callbacks are stable
   );
 
   const table = useReactTable({
@@ -154,17 +154,18 @@ export const EditableArgumentsTable: React.FC<EditableArgumentsTableProps> = ({
   // Show helpful message if no arguments yet
   if (args.length === 0) {
     return (
-      <Box 
-        p={4} 
-        borderWidth="1px" 
-        borderRadius="md" 
+      <Box
+        p={4}
+        borderWidth="1px"
+        borderRadius="md"
         borderStyle="dashed"
         borderColor="border.default"
         color="fg.muted"
         textAlign="center"
         fontSize="sm"
       >
-        No arguments defined yet. Click "add argument" below to create template variables.
+        No arguments defined yet. Click "add argument" below to create
+        template variables.
       </Box>
     );
   }
@@ -187,7 +188,7 @@ export const EditableArgumentsTable: React.FC<EditableArgumentsTableProps> = ({
                   ? null
                   : flexRender(
                       header.column.columnDef.header,
-                      header.getContext()
+                      header.getContext(),
                     )}
               </Table.ColumnHeader>
             ))}

@@ -36,12 +36,15 @@ const Results = () => {
    * Handles entity selection by setting the selected entity in state
    * and navigating to the entity detail page
    */
-  const handleRowClick = useCallback((row: Row) => {
-    // Set selected entity with URI and label (fallback to 'n/a' if no label)
-    setSelected({ uri: row.uri, label: row.label || "n/a" });
-    // Navigate to entity detail page
-    navigate("/entity");
-  }, [navigate, setSelected]);
+  const handleRowClick = useCallback(
+    (row: Row) => {
+      // Set selected entity with URI and label (fallback to 'n/a' if no label)
+      setSelected({ uri: row.uri, label: row.label || "n/a" });
+      // Navigate to entity detail page
+      navigate("/entity");
+    },
+    [navigate, setSelected],
+  );
 
   // Define table columns using TanStack table column helper
   const columns = useMemo(
@@ -72,7 +75,7 @@ const Results = () => {
         },
       }),
     ],
-    [handleRowClick]
+    [handleRowClick],
   );
 
   // Create TanStack table instance
@@ -84,13 +87,15 @@ const Results = () => {
 
   // Handle empty state
   if (rows.length === 0) {
-    return <EmptyState message="No search results found. Try adjusting your search query." />;
+    return (
+      <EmptyState message="No search results found. Try adjusting your search query." />
+    );
   }
 
   // Render table with clickable rows
   return (
-    <ClickableTable 
-      table={table} 
+    <ClickableTable
+      table={table}
       onClick={(row) => handleRowClick(row.original)}
       striped
       size="sm"

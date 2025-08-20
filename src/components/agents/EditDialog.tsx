@@ -2,13 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 
 import { Trash, SendHorizontal, Plus } from "lucide-react";
 
-import {
-  Portal,
-  Button,
-  Dialog,
-  Box,
-  CloseButton,
-} from "@chakra-ui/react";
+import { Portal, Button, Dialog, Box, CloseButton } from "@chakra-ui/react";
 
 import { useSocket } from "../../api/trustgraph/socket";
 import { useAgentTools } from "../../state/agent-tools";
