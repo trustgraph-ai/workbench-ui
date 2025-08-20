@@ -104,9 +104,20 @@ export class ServiceCall {
   }
 
   /**
+   * Calculates exponential backoff delay with jitter
+   * @returns backoff delay in milliseconds
+   */
+  calculateBackoff() {
+    return Math.min(
+      SOCKET_RECONNECTION_TIMEOUT * Math.pow(2, 3 - this.retries) +
+        Math.random() * 1000,
+      30000, // Max 30 seconds
+    );
+  }
+
+  /**
    * Core retry logic - attempts to send the message over the WebSocket
-   * Handles retries, connection failures, and cleanup when retries are
-   * exhausted
+   * Handles retries and waits for BaseApi to handle reconnection
    */
   attempt() {
     // Defensive check - this shouldn't be called on completed requests
@@ -141,47 +152,20 @@ export class ServiceCall {
 
         return; // Success - message sent, waiting for response or timeout
       } catch (e) {
-        // Handle send failure (connection might be broken)
+        // Handle send failure - wait for BaseApi to handle reconnection
         console.log("Error:", e);
-        console.log("Message send failure, retry...");
+        console.log("Message send failure, waiting for socket reconnection...");
 
-        // Calculate backoff delay with jitter
-        const backoffDelay = Math.min(
-          SOCKET_RECONNECTION_TIMEOUT * Math.pow(2, 3 - this.retries) +
-            Math.random() * 1000,
-          30000, // Max 30 seconds
-        );
-
-        // Schedule retry with backoff
-        this.timeoutId = setTimeout(this.attempt.bind(this), backoffDelay);
-
-        console.log("Reopen...");
-        // Attempt to reopen the WebSocket connection
-        this.socket.reopen();
+        // Schedule retry with backoff - let BaseApi handle the reconnection
+        this.timeoutId = setTimeout(this.attempt.bind(this), this.calculateBackoff());
       }
     } else {
       // No WebSocket connection available or not ready
-      // Check if socket is connecting
-      if (
-        this.socket.ws &&
-        this.socket.ws.readyState === WebSocket.CONNECTING
-      ) {
-        // Wait a bit longer for connection to establish
-        setTimeout(this.attempt.bind(this), 500);
-      } else {
-        // Socket is closed or closing, trigger reopen
-        console.log("Socket not ready, reopening...");
-        this.socket.reopen();
-
-        // Calculate backoff delay
-        const backoffDelay = Math.min(
-          SOCKET_RECONNECTION_TIMEOUT * Math.pow(2, 3 - this.retries) +
-            Math.random() * 1000,
-          30000,
-        );
-
-        setTimeout(this.attempt.bind(this), backoffDelay);
-      }
+      // Let BaseApi handle reconnection, just wait and retry
+      console.log("Request", this.mid, "waiting for socket reconnection...");
+      
+      // Use consistent backoff for all waiting scenarios
+      setTimeout(this.attempt.bind(this), this.calculateBackoff());
     }
   }
 }

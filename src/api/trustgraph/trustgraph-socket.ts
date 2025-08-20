@@ -140,6 +140,7 @@ export class BaseApi {
   reconnectAttempts: number = 0; // Track reconnection attempts
   maxReconnectAttempts: number = 10; // Maximum reconnection attempts
   reconnectTimer?: number; // Timer for reconnection attempts
+  reconnectionState: 'idle' | 'reconnecting' | 'failed' = 'idle'; // Connection state
 
   constructor(token?: string) {
     this.tag = makeid(16); // Generate unique client tag
@@ -235,6 +236,7 @@ export class BaseApi {
   onOpen() {
     console.log("[socket open]");
     this.reconnectAttempts = 0; // Reset reconnection attempts on success
+    this.reconnectionState = 'idle'; // Reset connection state
 
     // Clear any pending reconnect timer
     if (this.reconnectTimer) {
@@ -252,13 +254,21 @@ export class BaseApi {
    * Schedules a reconnection attempt with exponential backoff
    */
   scheduleReconnect() {
+    // Prevent concurrent reconnection attempts
+    if (this.reconnectionState === 'reconnecting') {
+      console.log("[socket] Reconnection already in progress, skipping");
+      return;
+    }
+    
     // Don't schedule if already scheduled
     if (this.reconnectTimer) return;
 
+    this.reconnectionState = 'reconnecting';
     this.reconnectAttempts++;
 
     if (this.reconnectAttempts > this.maxReconnectAttempts) {
       console.error("[socket] Max reconnection attempts reached");
+      this.reconnectionState = 'failed';
       // Notify all pending requests of the failure
       for (const mid in this.inflight) {
         this.inflight[mid].error(new Error("WebSocket connection failed"));
@@ -274,7 +284,7 @@ export class BaseApi {
     );
 
     console.log(
-      `[socket] Reconnecting in ${backoffDelay}ms (attempt ${this.reconnectAttempts})`,
+      `[socket] Reconnecting in ${backoffDelay}ms (attempt ${this.reconnectAttempts}/${this.maxReconnectAttempts})`,
     );
 
     this.reconnectTimer = setTimeout(() => {
