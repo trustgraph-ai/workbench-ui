@@ -1,8 +1,6 @@
 // React Query hooks for data fetching and mutation management
 import { useQueryClient, useQuery, useMutation } from "@tanstack/react-query";
 
-// TrustGraph socket connection for API communication
-import { useSocket } from "../api/trustgraph/socket";
 // Notification system for user feedback
 import { useNotification } from "./notify";
 // Activity tracking for loading states
@@ -64,50 +62,24 @@ const loadFromLocalStorage = (): Settings => {
 
 /**
  * Custom hook for managing application settings
- * Provides async operations for loading, updating, and managing settings
- * Uses backend storage with localStorage as fallback/cache
+ * Uses TanStack Query for consistent async patterns while storing in localStorage
+ * Ready for future backend integration when needed
  */
 export const useSettings = () => {
-  // Socket connection for API calls
-  const socket = useSocket();
   // Query client for cache management
   const queryClient = useQueryClient();
   // Notification system for user feedback
   const notify = useNotification();
 
-  // Query to fetch settings from backend
+  // Query to fetch settings from localStorage
   const settingsQuery = useQuery({
     queryKey: ["settings"],
     queryFn: async () => {
-      try {
-        const res = await socket
-          .config()
-          .getConfig([{ type: "settings", key: "user" }]);
-
-        if (res["error"]) {
-          console.log(
-            "Settings backend error, falling back to localStorage:",
-            res,
-          );
-          // Fall back to localStorage if backend fails
-          return loadFromLocalStorage();
-        }
-
-        const settings = JSON.parse(res.values[0].value);
-        const mergedSettings = mergeWithDefaults(settings);
-
-        // Update localStorage cache
-        updateLocalStorage(mergedSettings);
-
-        return mergedSettings;
-      } catch (error) {
-        console.log(
-          "Settings fetch failed, falling back to localStorage:",
-          error,
-        );
-        // Fall back to localStorage if anything goes wrong
-        return loadFromLocalStorage();
-      }
+      // Simulate async operation for consistency with future backend integration
+      await new Promise((resolve) => setTimeout(resolve, 50));
+      const settings = loadFromLocalStorage();
+      console.log("Settings loaded from localStorage");
+      return settings;
     },
     // Enable background refetching
     staleTime: 5 * 60 * 1000, // 5 minutes
@@ -123,30 +95,14 @@ export const useSettings = () => {
       settings: Settings;
       onSuccess?: () => void;
     }) => {
-      try {
-        const res = await socket.config().putConfig([
-          {
-            type: "settings",
-            key: "user",
-            value: JSON.stringify(settings),
-          },
-        ]);
-
-        if (res["error"]) {
-          console.log("Error:", res);
-          throw new Error(res.error.message);
-        }
-
-        // Update localStorage cache
-        updateLocalStorage(settings);
-
-        // Execute callback if provided
-        if (onSuccess) onSuccess();
-      } catch (error) {
-        // On error, still update localStorage as fallback
-        updateLocalStorage(settings);
-        throw error;
-      }
+      // Simulate async operation for consistency with future backend integration
+      await new Promise((resolve) => setTimeout(resolve, 100));
+      
+      // Update localStorage
+      updateLocalStorage(settings);
+      
+      // Execute callback if provided
+      if (onSuccess) onSuccess();
     },
     onError: (err) => {
       console.log("Settings update error:", err);
@@ -162,25 +118,14 @@ export const useSettings = () => {
   // Mutation for resetting settings to defaults
   const resetSettingsMutation = useMutation({
     mutationFn: async ({ onSuccess }: { onSuccess?: () => void } = {}) => {
-      try {
-        // Delete from backend
-        await socket.config().deleteConfig([
-          {
-            type: "settings",
-            key: "user",
-          },
-        ]);
-
-        // Clear localStorage
-        localStorage.removeItem(SETTINGS_STORAGE_KEY);
-
-        // Execute callback if provided
-        if (onSuccess) onSuccess();
-      } catch (error) {
-        // On error, still clear localStorage
-        localStorage.removeItem(SETTINGS_STORAGE_KEY);
-        throw error;
-      }
+      // Simulate async operation for consistency with future backend integration
+      await new Promise((resolve) => setTimeout(resolve, 100));
+      
+      // Clear localStorage
+      localStorage.removeItem(SETTINGS_STORAGE_KEY);
+      
+      // Execute callback if provided
+      if (onSuccess) onSuccess();
     },
     onError: (err) => {
       console.log("Settings reset error:", err);
