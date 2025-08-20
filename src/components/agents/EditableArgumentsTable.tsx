@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useCallback } from "react";
 import {
   Table,
   Editable,
@@ -36,6 +36,20 @@ export const EditableArgumentsTable: React.FC<EditableArgumentsTableProps> = ({
   setEditArgIx,
   setArgAttr,
 }) => {
+  // Create stable callback functions to avoid column recreation
+  const handleNameChange = useCallback((index: number, value: string) => {
+    setArgAttr(index, "name", value);
+  }, [setArgAttr]);
+
+  const handleDescriptionChange = useCallback((index: number, value: string) => {
+    setArgAttr(index, "description", value);
+  }, [setArgAttr]);
+
+  const handleTypeChange = useCallback((index: number, value: string) => {
+    setArgAttr(index, "type", value);
+    setEditArgIx(-1); // Close popover after selection
+  }, [setArgAttr, setEditArgIx]);
+
   const columns = useMemo(
     () => [
       columnHelper.display({
@@ -46,7 +60,7 @@ export const EditableArgumentsTable: React.FC<EditableArgumentsTableProps> = ({
           <Editable.Root
             autoResize={false}
             value={row.original.name}
-            onValueChange={(v) => setArgAttr(row.index, "name", v.value)}
+            onValueChange={(v) => handleNameChange(row.index, v.value)}
           >
             <Editable.Preview />
             <Editable.Input />
@@ -60,7 +74,7 @@ export const EditableArgumentsTable: React.FC<EditableArgumentsTableProps> = ({
         cell: ({ row }) => (
           <Editable.Root
             value={row.original.description}
-            onValueChange={(v) => setArgAttr(row.index, "description", v.value)}
+            onValueChange={(v) => handleDescriptionChange(row.index, v.value)}
           >
             <Editable.Preview />
             <Editable.Input />
@@ -91,8 +105,7 @@ export const EditableArgumentsTable: React.FC<EditableArgumentsTableProps> = ({
                       <RadioGroup.Root
                         value={row.original.type}
                         onValueChange={(v) => {
-                          setArgAttr(row.index, "type", v.value);
-                          setEditArgIx(-1); // Close popover after selection
+                          handleTypeChange(row.index, v.value);
                         }}
                       >
                         <Stack gap="6">
@@ -120,7 +133,7 @@ export const EditableArgumentsTable: React.FC<EditableArgumentsTableProps> = ({
         ),
       }),
     ],
-    [editArgIx] // Only depend on editArgIx, not the functions
+    [editArgIx, handleNameChange, handleDescriptionChange, handleTypeChange]
   );
 
   const table = useReactTable({
