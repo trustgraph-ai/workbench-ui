@@ -531,6 +531,117 @@ export const MyComponent = () => {
 4. Components should not contain their own page-level headings
 5. Use appropriate lucide-react icons for the page icon
 
+### Progress Management and Loading States
+
+**CRITICAL**: Always use the `useActivity` hook for loading states instead of managing spinners manually. This provides consistent loading indicators across the application.
+
+```tsx
+// ❌ Don't manage loading states manually
+const [isLoading, setIsLoading] = useState(false);
+const handleSubmit = async () => {
+  setIsLoading(true);
+  try {
+    await submitData();
+  } finally {
+    setIsLoading(false);
+  }
+};
+
+// ✅ Use useActivity hook instead
+import { useActivity } from "../../state/activity";
+
+const submitMutation = useMutation({
+  mutationFn: submitData,
+});
+
+// Automatically shows/hides loading indicator
+useActivity(submitMutation.isPending, "Submitting data");
+```
+
+**Progress System Components:**
+
+1. **`useProgressStateStore`** - Zustand store that manages global activity tracking
+   - `activity: Set<string>` - Active operations being tracked
+   - `error: string` - Current error state
+   - `addActivity(name)` - Add a loading operation
+   - `removeActivity(name)` - Remove a loading operation
+   - `setError(message)` - Set/clear error state
+
+2. **`useActivity(isActive, description)`** - React hook for automatic activity management
+   - `isActive: boolean` - Whether the activity is currently running
+   - `description: string` - User-friendly description of the activity
+   - Automatically adds/removes activities based on the boolean condition
+   - Handles cleanup when component unmounts or dependencies change
+
+**Usage Patterns:**
+
+```tsx
+// ✅ With React Query mutations
+const updateMutation = useMutation({ mutationFn: updateData });
+useActivity(updateMutation.isPending, "Updating settings");
+
+// ✅ With React Query queries  
+const dataQuery = useQuery({ queryKey: ['data'], queryFn: fetchData });
+useActivity(dataQuery.isLoading, "Loading data");
+
+// ✅ Multiple activities for complex operations
+useActivity(settingsQuery.isLoading, "Loading settings");
+useActivity(updateSettingsMutation.isPending, "Saving settings");
+useActivity(resetSettingsMutation.isPending, "Resetting settings");
+
+// ✅ Manual activity management (when useActivity isn't sufficient)
+const addActivity = useProgressStateStore((state) => state.addActivity);
+const removeActivity = useProgressStateStore((state) => state.removeActivity);
+
+const handleComplexOperation = async () => {
+  const activityId = "Processing complex operation";
+  addActivity(activityId);
+  try {
+    await step1();
+    await step2();
+    await step3();
+  } finally {
+    removeActivity(activityId);
+  }
+};
+```
+
+**Benefits of the Progress System:**
+- **Consistent UX**: All loading states are managed centrally
+- **Automatic cleanup**: Activities are removed when operations complete or components unmount
+- **Deduplication**: Multiple identical activity names are automatically deduplicated
+- **Global visibility**: The UI can show a global loading indicator when any activities are active
+- **Error handling**: Centralized error state management
+- **Zero boilerplate**: Just call `useActivity()` with a boolean and description
+
+**Integration with TanStack Query:**
+The progress system integrates perfectly with TanStack Query's loading states:
+
+```tsx
+// All these patterns work seamlessly together
+export const useSettings = () => {
+  const settingsQuery = useQuery({
+    queryKey: ["settings"],
+    queryFn: fetchSettings,
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: updateSettings,
+  });
+
+  // Automatic activity tracking
+  useActivity(settingsQuery.isLoading, "Loading settings");
+  useActivity(updateMutation.isPending, "Saving settings");
+
+  return {
+    settings: settingsQuery.data,
+    isLoading: settingsQuery.isLoading,
+    updateSettings: updateMutation.mutate,
+    isSaving: updateMutation.isPending,
+  };
+};
+```
+
 ### Other Patterns
 - Use Tanstack Query for state management with existing socket-based config API
 - Follow kebab-case naming conventions for IDs and URLs

@@ -134,16 +134,21 @@ export class BaseApi {
   ws?: WebSocket; // WebSocket connection instance
   tag: string; // Unique client identifier
   id: number; // Counter for generating unique message IDs
+  token?: string; // Optional authentication token
   inflight: { [key: string]: ServiceCall } = {}; // Track active requests by
   // message ID
   reconnectAttempts: number = 0; // Track reconnection attempts
   maxReconnectAttempts: number = 10; // Maximum reconnection attempts
   reconnectTimer?: number; // Timer for reconnection attempts
 
-  constructor() {
+  constructor(token?: string) {
     this.tag = makeid(16); // Generate unique client tag
     this.id = 1; // Start message ID counter
+    this.token = token; // Store authentication token
+
+    console.log("SOCKET: opening socket...", token ? 'with auth' : 'without auth');
     this.openSocket(); // Establish WebSocket connection
+    console.log("SOCKET: socket opened");
   }
 
   /**
@@ -169,7 +174,10 @@ export class BaseApi {
     }
 
     try {
-      this.ws = new WebSocket(SOCKET_URL);
+      // Build WebSocket URL with optional token parameter
+      const wsUrl = this.token ? `${SOCKET_URL}?token=${this.token}` : SOCKET_URL;
+      console.log("SOCKET: connecting to", wsUrl.replace(/token=[^&]*/, 'token=***'));
+      this.ws = new WebSocket(wsUrl);
     } catch (e) {
       console.error("[socket creation error]", e);
       this.scheduleReconnect();
@@ -1240,7 +1248,8 @@ export class KnowledgeApi {
 /**
  * Factory function to create a new TrustGraph WebSocket connection
  * This is the main entry point for using the TrustGraph API
+ * @param token - Optional authentication token for secure connections
  */
-export const createTrustGraphSocket = (): Socket => {
-  return new BaseApi();
+export const createTrustGraphSocket = (token?: string): Socket => {
+  return new BaseApi(token);
 };

@@ -1,72 +1,107 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
+import { Box, Table, Text, Center } from "@chakra-ui/react";
+import {
+  useReactTable,
+  getCoreRowModel,
+  getSortedRowModel,
+  flexRender,
+} from "@tanstack/react-table";
+import { useFlows } from "../../state/flows";
 
-import { Table } from "@chakra-ui/react";
+// Define the flow class data structure
+type FlowClassRow = [string, { description: string; [key: string]: any }];
 
-import { toaster } from "../ui/toaster";
-import { useSocket } from "../../api/trustgraph/socket";
-import { useProgressStateStore } from "../../state/ProgressState";
+// Table columns configuration
+const flowClassColumns = [
+  {
+    id: "name",
+    header: "Name",
+    accessorFn: (row: FlowClassRow) => row[0],
+    cell: ({ getValue }) => <Text fontWeight="medium">{getValue()}</Text>,
+  },
+  {
+    id: "description", 
+    header: "Description",
+    accessorFn: (row: FlowClassRow) => row[1]?.description || "",
+    cell: ({ getValue }) => <Text>{getValue()}</Text>,
+  },
+];
 
-const FlowClassesTable = () => {
-  const addActivity = useProgressStateStore((state) => state.addActivity);
-  const removeActivity = useProgressStateStore(
-    (state) => state.removeActivity,
-  );
+const FlowClasses: React.FC = () => {
+  const { flowClasses, isFlowClassesLoading, isFlowClassesError, flowClassesError } = useFlows();
 
-  const [view, setView] = useState([]);
+  const table = useReactTable({
+    data: (flowClasses as FlowClassRow[]) || [],
+    columns: flowClassColumns,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+  });
 
-  const socket = useSocket();
+  // Loading state is handled by useActivity in the flows hook
+  // CenterSpinner component automatically shows when activities are active
 
-  useEffect(() => {
-    const act = "Load flow classes";
-    addActivity(act);
-    socket
-      .getFlowClasses()
-      .then((names) => {
-        return Promise.all(
-          names.map((name) =>
-            socket.getFlowClass(name).then((x) => [name, x]),
-          ),
-        );
-      })
-      .then((x) => {
-        setView(x);
-        removeActivity(act);
-      })
-      .catch((err) => {
-        console.log("Error:", err);
-        toaster.create({
-          title: "Error: " + err.toString(),
-          type: "error",
-        });
-      });
-  }, [socket, addActivity, removeActivity]);
+  if (isFlowClassesError) {
+    return (
+      <Box
+        p={4}
+        borderWidth="1px"
+        borderColor="red.500"
+        borderRadius="md"
+        bg="red.50"
+      >
+        <Text color="red.700">
+          Error loading flow classes: {flowClassesError?.toString()}
+        </Text>
+      </Box>
+    );
+  }
+
+  if (!flowClasses || flowClasses.length === 0) {
+    return (
+      <Center h="200px">
+        <Text color="fg.muted">
+          No flow classes found.
+        </Text>
+      </Center>
+    );
+  }
 
   return (
-    <Table.Root sx={{ minWidth: 450 }} aria-label="table of entities">
-      <Table.Header>
-        <Table.Row>
-          <Table.ColumnHeader>Name</Table.ColumnHeader>
-          <Table.ColumnHeader>Description</Table.ColumnHeader>
-        </Table.Row>
-      </Table.Header>
-      <Table.Body>
-        {view.map((row: Row) => (
-          <Table.Row
-            key={row[0]}
-            sx={{
-              "&:last-child td": { border: 0 },
-              "&:last-child th": { border: 0 },
-            }}
-          >
-            <Table.Cell component="th" scope="row">
-              {row[0]}
-            </Table.Cell>
-            <Table.Cell>{row[1].description}</Table.Cell>
-          </Table.Row>
-        ))}
-      </Table.Body>
-    </Table.Root>
+    <Box overflowX="auto" borderWidth="1px" borderRadius="lg">
+      <Table.Root>
+        <Table.Header>
+          {table.getHeaderGroups().map((headerGroup) => (
+            <Table.Row key={headerGroup.id}>
+              {headerGroup.headers.map((header) => (
+                <Table.ColumnHeader key={header.id}>
+                  {header.isPlaceholder
+                    ? null
+                    : flexRender(
+                        header.column.columnDef.header,
+                        header.getContext(),
+                      )}
+                </Table.ColumnHeader>
+              ))}
+            </Table.Row>
+          ))}
+        </Table.Header>
+        <Table.Body>
+          {table.getRowModel().rows.map((row) => (
+            <Table.Row key={row.id}>
+              {row.getVisibleCells().map((cell) => (
+                <Table.Cell key={cell.id}>
+                  {flexRender(
+                    cell.column.columnDef.cell,
+                    cell.getContext(),
+                  )}
+                </Table.Cell>
+              ))}
+            </Table.Row>
+          ))}
+        </Table.Body>
+      </Table.Root>
+    </Box>
   );
 };
 
-export default FlowClassesTable;
+export default FlowClasses;

@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Table, Text, Spinner, Center } from "@chakra-ui/react";
+import { Box, Table, Text, Center } from "@chakra-ui/react";
 import {
   useReactTable,
   getCoreRowModel,
@@ -14,7 +14,7 @@ import {
 import { EditTaxonomyDialog } from "./EditTaxonomyDialog";
 
 export const TaxonomiesTable: React.FC = () => {
-  const { taxonomies, taxonomiesLoading, taxonomiesError } = useTaxonomies();
+  const { taxonomies, taxonomiesError } = useTaxonomies();
   const [isOpen, setIsOpen] = React.useState(false);
   const [selectedTaxonomy, setSelectedTaxonomy] =
     React.useState<TaxonomyTableRow | null>(null);
@@ -31,13 +31,8 @@ export const TaxonomiesTable: React.FC = () => {
     setIsOpen(true);
   };
 
-  if (taxonomiesLoading) {
-    return (
-      <Center h="200px">
-        <Spinner size="xl" />
-      </Center>
-    );
-  }
+  // Loading state is handled by useActivity in the taxonomies hook
+  // CenterSpinner component automatically shows when activities are active
 
   if (taxonomiesError) {
     return (

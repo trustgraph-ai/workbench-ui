@@ -98,7 +98,9 @@ const SubmitDialog = ({ open, onOpenChange, onSubmit, docs }) => {
                 Cancel
               </Button>
               <Button
-                onClick={() => onSubmit(flow.length > 0 ? flow[0] : null, tags)}
+                onClick={() =>
+                  onSubmit(flow.length > 0 ? flow[0] : null, tags)
+                }
                 colorPalette="primary"
               >
                 <SendHorizontal /> Submit

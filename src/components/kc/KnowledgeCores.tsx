@@ -4,6 +4,8 @@ import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
 
 import { columns } from "../../model/knowledge-core-table";
 import { useKnowledgeCores } from "../../state/knowledge-cores";
+import { useSettings } from "../../state/settings";
+import { createAuthenticatedFetch } from "../../api/authenticated-fetch";
 
 import SelectableTable from "../common/SelectableTable";
 import Actions from "./Actions";
@@ -12,6 +14,7 @@ import LoadDialog from "./LoadDialog";
 
 const KnowledgeCores = () => {
   const state = useKnowledgeCores();
+  const { settings } = useSettings();
 
   const knowledgeCores = state.knowledgeCores ? state.knowledgeCores : [];
 
@@ -37,8 +40,9 @@ const KnowledgeCores = () => {
     });
   };
 
-  const onDownload = () => {
+  const onDownload = async () => {
     const sels = Array.from(selected);
+    const authenticatedFetch = createAuthenticatedFetch(settings.authentication.apiKey);
 
     for (const sel of sels) {
       const fname =
@@ -49,18 +53,37 @@ const KnowledgeCores = () => {
           .replace(/[^-a-zA-Z0-9.]/g, "")
           .substr(0, 15) + ".core";
 
-      const link = document.createElement("a");
       const url =
         "/api/export-core?" +
         "id=" +
-        encodeURIComponent(sels[0]) +
+        encodeURIComponent(sel) +  // Fixed: was using sels[0] instead of sel
         "&user=" +
         encodeURIComponent("trustgraph");
 
-      link.href = url;
-
-      link.download = fname;
-      link.click();
+      try {
+        // Use authenticated fetch to download the file
+        const response = await authenticatedFetch(url);
+        
+        if (!response.ok) {
+          throw new Error(`Download failed: ${response.status} ${response.statusText}`);
+        }
+        
+        // Convert response to blob and download
+        const blob = await response.blob();
+        const downloadUrl = window.URL.createObjectURL(blob);
+        
+        const link = document.createElement("a");
+        link.href = downloadUrl;
+        link.download = fname;
+        link.click();
+        
+        // Clean up the blob URL
+        window.URL.revokeObjectURL(downloadUrl);
+        
+      } catch (error) {
+        console.error("Download failed for", sel, error);
+        // TODO: Show error notification to user
+      }
     }
   };
 

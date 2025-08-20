@@ -3,8 +3,6 @@ import { useEffect } from "react";
 import { Box } from "@chakra-ui/react";
 import { BrowserRouter as Router, Routes, Route } from "react-router";
 
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-
 import Layout from "./components/Layout";
 
 import ChatPage from "./pages/ChatPage";
@@ -12,7 +10,7 @@ import SearchPage from "./pages/SearchPage";
 import EntityPage from "./pages/EntityPage";
 import GraphPage from "./pages/GraphPage";
 import FlowsPage from "./pages/FlowsPage";
-//import FlowClassesPage from "./pages/FlowClassesPage";
+import FlowClassesPage from "./pages/FlowClassesPage";
 import LibraryPage from "./pages/LibraryPage";
 import KnowledgeCoresPage from "./pages/KnowledgeCoresPage";
 import ProcessingPage from "./pages/ProcessingPage";
@@ -31,8 +29,6 @@ import { Toaster } from "./components/ui/ToasterComponent";
 import { useSocket } from "./api/trustgraph/socket";
 import { useProgressStateStore } from "./state/progress";
 import { useSessionStore } from "./state/session";
-
-const queryClient = new QueryClient();
 
 const App = () => {
   const socket = useSocket();
@@ -82,38 +78,34 @@ const App = () => {
   }, [socket, addActivity, removeActivity, setFlow, setFlowId]);
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <Box width="100%" minHeight="100vh" bg="colors.background">
-        <Router>
-          <Layout>
-            <Routes>
-              <Route path="/" element={<ChatPage />} />
-              <Route path="/chat" element={<ChatPage />} />
-              <Route path="/search" element={<SearchPage />} />
-              <Route path="/entity" element={<EntityPage />} />
-              <Route path="/graph" element={<GraphPage />} />
-              <Route path="/flows" element={<FlowsPage />} />
-              {/*
+    <Box width="100%" minHeight="100vh" bg="colors.background">
+      <Router>
+        <Layout>
+          <Routes>
+            <Route path="/" element={<ChatPage />} />
+            <Route path="/chat" element={<ChatPage />} />
+            <Route path="/search" element={<SearchPage />} />
+            <Route path="/entity" element={<EntityPage />} />
+            <Route path="/graph" element={<GraphPage />} />
+            <Route path="/flows" element={<FlowsPage />} />
             <Route path="/flow-classes" element={<FlowClassesPage />} />
-*/}
-              <Route path="/library" element={<LibraryPage />} />
-              <Route path="/kc" element={<KnowledgeCoresPage />} />
-              <Route path="/procs" element={<ProcessingPage />} />
-              <Route path="/tokencost" element={<TokenCostPage />} />
-              <Route path="/prompts" element={<PromptsPage />} />
-              <Route path="/schemas" element={<SchemasPage />} />
-              <Route path="/taxonomies" element={<TaxonomiesPage />} />
-              <Route path="/agents" element={<ToolsPage />} />
-              <Route path="/mcp-tools" element={<McpToolsPage />} />
-              <Route path="/settings" element={<SettingsPage />} />
-            </Routes>
-          </Layout>
-        </Router>
-        <Progress />
-        <CenterSpinner />
-        <Toaster />
-      </Box>
-    </QueryClientProvider>
+            <Route path="/library" element={<LibraryPage />} />
+            <Route path="/kc" element={<KnowledgeCoresPage />} />
+            <Route path="/procs" element={<ProcessingPage />} />
+            <Route path="/tokencost" element={<TokenCostPage />} />
+            <Route path="/prompts" element={<PromptsPage />} />
+            <Route path="/schemas" element={<SchemasPage />} />
+            <Route path="/taxonomies" element={<TaxonomiesPage />} />
+            <Route path="/agents" element={<ToolsPage />} />
+            <Route path="/mcp-tools" element={<McpToolsPage />} />
+            <Route path="/settings" element={<SettingsPage />} />
+          </Routes>
+        </Layout>
+      </Router>
+      <Progress />
+      <CenterSpinner />
+      <Toaster />
+    </Box>
   );
 };
 
