@@ -122,7 +122,8 @@ describe("ServiceCall", () => {
 
     serviceCall.start();
 
-    expect(mockSocket.reopen).toHaveBeenCalled();
+    // Should NOT call reopen anymore - BaseApi handles reconnection
+    expect(mockSocket.reopen).not.toHaveBeenCalled();
 
     // With exponential backoff, the delay should be calculated as:
     // SOCKET_RECONNECTION_TIMEOUT * Math.pow(2, 3 - retries) + random
@@ -140,8 +141,8 @@ describe("ServiceCall", () => {
 
     serviceCall.start();
 
-    // Should trigger reopen and schedule with exponential backoff
-    expect(mockSocket.reopen).toHaveBeenCalled();
+    // Should NOT trigger reopen - just wait for BaseApi to reconnect
+    expect(mockSocket.reopen).not.toHaveBeenCalled();
 
     // Same calculation as above - base delay 4000ms + random up to 1000ms
     const callArgs = mockSetTimeout.mock.calls[0];
@@ -201,7 +202,8 @@ describe("ServiceCall", () => {
 
     // Should have decremented retries and scheduled a retry
     expect(serviceCall.retries).toBe(2);
-    expect(mockSocket.reopen).toHaveBeenCalledTimes(1);
+    // Should NOT call reopen - BaseApi handles reconnection
+    expect(mockSocket.reopen).not.toHaveBeenCalled();
   });
 
   it("should clean up properly on successful response", () => {

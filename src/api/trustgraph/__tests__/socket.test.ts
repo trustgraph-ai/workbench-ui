@@ -8,11 +8,11 @@ vi.mock("../../state/settings", () => ({
   useSettings: vi.fn(() => ({
     settings: {
       authentication: {
-        apiKey: "test-api-key"
-      }
+        apiKey: "test-api-key",
+      },
     },
-    isLoaded: true
-  }))
+    isLoaded: true,
+  })),
 }));
 
 // Mock socket instance
@@ -33,7 +33,7 @@ const mockSocket = {
 
 // Mock the trustgraph socket creation
 vi.mock("../trustgraph-socket", () => ({
-  createTrustGraphSocket: vi.fn(() => mockSocket)
+  createTrustGraphSocket: vi.fn(() => mockSocket),
 }));
 
 // Mock React with proper createContext support
@@ -42,11 +42,17 @@ vi.mock("react", async (importOriginal) => {
   return {
     ...actual,
     createContext: vi.fn(() => ({
-      Provider: ({ children }: { children: React.ReactNode }) => (
-        React.createElement('div', { 'data-testid': 'socket-provider' }, children)
-      ),
-      Consumer: ({ children }: { children: (value: unknown) => React.ReactNode }) => 
-        children(mockSocket)
+      Provider: ({ children }: { children: React.ReactNode }) =>
+        React.createElement(
+          "div",
+          { "data-testid": "socket-provider" },
+          children,
+        ),
+      Consumer: ({
+        children,
+      }: {
+        children: (value: unknown) => React.ReactNode;
+      }) => children(mockSocket),
     })),
     useContext: vi.fn(() => mockSocket),
   };

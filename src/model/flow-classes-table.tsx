@@ -5,7 +5,10 @@ import { Text } from "@chakra-ui/react";
  * Flow class data structure for the flow classes table
  * Represents a flow class as a tuple with name and metadata
  */
-export type FlowClassRow = [string, { description: string; [key: string]: unknown }];
+export type FlowClassRow = [
+  string,
+  { description: string; [key: string]: unknown },
+];
 
 // Create a column helper instance for type-safe column definitions
 export const columnHelper = createColumnHelper<FlowClassRow>();
@@ -24,7 +27,7 @@ export const flowClassColumns = [
 
   // Description column - displays the flow class description
   columnHelper.accessor((row) => row[1]?.description || "", {
-    id: "description", 
+    id: "description",
     header: "Description",
     cell: (info) => <Text>{info.getValue()}</Text>,
   }),
