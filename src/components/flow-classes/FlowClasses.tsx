@@ -5,7 +5,10 @@ import {
   getSortedRowModel,
 } from "@tanstack/react-table";
 import { useFlows } from "../../state/flows";
-import { FlowClassRow, flowClassColumns } from "../../model/flow-classes-table";
+import {
+  FlowClassRow,
+  flowClassColumns,
+} from "../../model/flow-classes-table";
 import TableWithStates from "../common/TableWithStates";
 
 const FlowClasses: React.FC = () => {

@@ -1,13 +1,18 @@
 import React, { useEffect, useState, createContext, useContext } from "react";
 import { Box, Text } from "@chakra-ui/react";
-import { createTrustGraphSocket, type ConnectionState } from "./trustgraph-socket";
+import {
+  createTrustGraphSocket,
+  type ConnectionState,
+} from "./trustgraph-socket";
 import { useSettings } from "../../state/settings";
 import CenterSpinner from "../../components/common/CenterSpinner";
 import type { Socket } from "./trustgraph-socket";
 
 // Create contexts for socket and connection state
 export const SocketContext = createContext<Socket | null>(null);
-export const ConnectionStateContext = createContext<ConnectionState | null>(null);
+export const ConnectionStateContext = createContext<ConnectionState | null>(
+  null,
+);
 
 // Hook to use the socket context
 export const useSocket = () => {
@@ -23,11 +28,13 @@ export const useSocket = () => {
 // Hook to use the connection state context
 export const useConnectionState = () => {
   const state = useContext(ConnectionStateContext);
-  
+
   if (!state) {
-    throw new Error("useConnectionState must be used within a SocketProvider");
+    throw new Error(
+      "useConnectionState must be used within a SocketProvider",
+    );
   }
-  
+
   return state;
 };
 
@@ -49,7 +56,8 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
   const { settings, isLoaded } = useSettings();
   const [socket, setSocket] = useState<Socket | null>(null);
   const [isSocketReady, setIsSocketReady] = useState(false);
-  const [connectionState, setConnectionState] = useState<ConnectionState | null>(null);
+  const [connectionState, setConnectionState] =
+    useState<ConnectionState | null>(null);
 
   useEffect(() => {
     // CRITICAL: Wait for settings to load before creating socket

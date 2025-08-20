@@ -1,13 +1,6 @@
 import React from "react";
 import { Box, HStack, Text, Tooltip } from "@chakra-ui/react";
-import { 
-  Info,
-  Clock,
-  Wifi,
-  WifiOff,
-  Shield,
-  ShieldOff
-} from "lucide-react";
+import { Info, Clock, Wifi, WifiOff, Shield, ShieldOff } from "lucide-react";
 import { useConnectionState } from "../../api/trustgraph/SocketProvider";
 import type { ConnectionState } from "../../api/trustgraph/trustgraph-socket";
 
@@ -18,76 +11,82 @@ interface ConnectionStatusProps {
 
 const getStatusDisplay = (state: ConnectionState) => {
   switch (state.status) {
-    case 'connecting':
+    case "connecting":
       return {
         icon: Clock,
         color: "yellow.500",
         text: "Connecting...",
-        tooltip: "Establishing connection to server"
+        tooltip: "Establishing connection to server",
       };
-    
-    case 'connected':
+
+    case "connected":
       return {
         icon: Wifi,
-        color: "green.500", 
+        color: "green.500",
         text: "Connected",
-        tooltip: "Connected to server"
+        tooltip: "Connected to server",
       };
-    
-    case 'authenticated':
+
+    case "authenticated":
       return {
         icon: Shield,
         color: "green.500",
-        text: "Authenticated", 
-        tooltip: "Connected with API key authentication"
+        text: "Authenticated",
+        tooltip: "Connected with API key authentication",
       };
-    
-    case 'unauthenticated':
+
+    case "unauthenticated":
       return {
         icon: ShieldOff,
         color: "blue.500",
         text: "Unauthenticated",
-        tooltip: "Connected but no API key provided (limited functionality)"
+        tooltip: "Connected but no API key provided (limited functionality)",
       };
-    
-    case 'reconnecting':
+
+    case "reconnecting":
       return {
         icon: Clock,
         color: "orange.500",
         text: `Reconnecting... (${state.reconnectAttempt}/${state.maxAttempts})`,
-        tooltip: `Attempting to reconnect. Try ${state.reconnectAttempt} of ${state.maxAttempts}`
+        tooltip: `Attempting to reconnect. Try ${state.reconnectAttempt} of ${state.maxAttempts}`,
       };
-    
-    case 'failed':
+
+    case "failed":
       return {
         icon: WifiOff,
-        color: "red.500", 
+        color: "red.500",
         text: "Connection Failed",
-        tooltip: state.lastError || "Connection failed after maximum retry attempts"
+        tooltip:
+          state.lastError || "Connection failed after maximum retry attempts",
       };
-    
+
     default:
       return {
         icon: Info,
         color: "gray.500",
         text: "Unknown",
-        tooltip: "Unknown connection state"
+        tooltip: "Unknown connection state",
       };
   }
 };
 
-export const ConnectionStatus: React.FC<ConnectionStatusProps> = ({ 
+export const ConnectionStatus: React.FC<ConnectionStatusProps> = ({
   showDetails = false,
-  size = "md" 
+  size = "md",
 }) => {
   const connectionState = useConnectionState();
-  
+
   if (!connectionState) {
     return null;
   }
 
-  const { icon: StatusIcon, color, text, tooltip } = getStatusDisplay(connectionState);
-  
+  const {
+    icon: StatusIcon,
+    color,
+    text,
+    tooltip,
+  } = getStatusDisplay(connectionState);
+
   const iconSize = size === "sm" ? 16 : size === "lg" ? 24 : 20;
   const fontSize = size === "sm" ? "xs" : size === "lg" ? "md" : "sm";
 

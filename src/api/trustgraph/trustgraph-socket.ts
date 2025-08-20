@@ -132,7 +132,13 @@ function makeid(length: number) {
  */
 // Connection state interface for UI consumption
 export interface ConnectionState {
-  status: 'connecting' | 'connected' | 'reconnecting' | 'failed' | 'authenticated' | 'unauthenticated';
+  status:
+    | "connecting"
+    | "connected"
+    | "reconnecting"
+    | "failed"
+    | "authenticated"
+    | "unauthenticated";
   hasApiKey: boolean;
   reconnectAttempt?: number;
   maxAttempts?: number;
@@ -150,8 +156,8 @@ export class BaseApi {
   reconnectAttempts: number = 0; // Track reconnection attempts
   maxReconnectAttempts: number = 10; // Maximum reconnection attempts
   reconnectTimer?: number; // Timer for reconnection attempts
-  reconnectionState: 'idle' | 'reconnecting' | 'failed' = 'idle'; // Connection state
-  
+  reconnectionState: "idle" | "reconnecting" | "failed" = "idle"; // Connection state
+
   // Connection state tracking for UI
   private connectionStateListeners: ((state: ConnectionState) => void)[] = [];
   private lastError?: string;
@@ -176,7 +182,7 @@ export class BaseApi {
     this.connectionStateListeners.push(listener);
     // Immediately send current state
     listener(this.getConnectionState());
-    
+
     // Return unsubscribe function
     return () => {
       const index = this.connectionStateListeners.indexOf(listener);
@@ -191,24 +197,24 @@ export class BaseApi {
    */
   private getConnectionState(): ConnectionState {
     const hasApiKey = !!this.token;
-    
+
     // Determine status based on WebSocket state and reconnection state
-    let status: ConnectionState['status'];
-    
+    let status: ConnectionState["status"];
+
     if (!this.ws || this.ws.readyState === WebSocket.CLOSED) {
-      if (this.reconnectionState === 'failed') {
-        status = 'failed';
-      } else if (this.reconnectionState === 'reconnecting') {
-        status = 'reconnecting';
+      if (this.reconnectionState === "failed") {
+        status = "failed";
+      } else if (this.reconnectionState === "reconnecting") {
+        status = "reconnecting";
       } else {
-        status = 'connecting';
+        status = "connecting";
       }
     } else if (this.ws.readyState === WebSocket.CONNECTING) {
-      status = 'connecting';
+      status = "connecting";
     } else if (this.ws.readyState === WebSocket.OPEN) {
-      status = hasApiKey ? 'authenticated' : 'unauthenticated';
+      status = hasApiKey ? "authenticated" : "unauthenticated";
     } else {
-      status = 'connecting';
+      status = "connecting";
     }
 
     const state: ConnectionState = {
@@ -218,7 +224,7 @@ export class BaseApi {
     };
 
     // Add reconnection details if applicable
-    if (status === 'reconnecting') {
+    if (status === "reconnecting") {
       state.reconnectAttempt = this.reconnectAttempts;
       state.maxAttempts = this.maxReconnectAttempts;
     }
@@ -231,11 +237,11 @@ export class BaseApi {
    */
   private notifyStateChange() {
     const state = this.getConnectionState();
-    this.connectionStateListeners.forEach(listener => {
+    this.connectionStateListeners.forEach((listener) => {
       try {
         listener(state);
       } catch (error) {
-        console.error('Error in connection state listener:', error);
+        console.error("Error in connection state listener:", error);
       }
     });
   }
@@ -313,7 +319,7 @@ export class BaseApi {
   // Handle connection closure - automatically attempt reconnection
   onClose(event: CloseEvent) {
     console.log("[socket close]", event.code, event.reason);
-    this.lastError = `Connection closed: ${event.reason || 'Unknown reason'}`;
+    this.lastError = `Connection closed: ${event.reason || "Unknown reason"}`;
     this.ws = undefined;
     this.notifyStateChange();
     this.scheduleReconnect();
@@ -323,7 +329,7 @@ export class BaseApi {
   onOpen() {
     console.log("[socket open]");
     this.reconnectAttempts = 0; // Reset reconnection attempts on success
-    this.reconnectionState = 'idle'; // Reset connection state
+    this.reconnectionState = "idle"; // Reset connection state
     this.lastError = undefined; // Clear any previous errors
 
     // Clear any pending reconnect timer
@@ -331,7 +337,7 @@ export class BaseApi {
       clearTimeout(this.reconnectTimer);
       this.reconnectTimer = undefined;
     }
-    
+
     // Notify UI of successful connection
     this.notifyStateChange();
   }
@@ -339,7 +345,7 @@ export class BaseApi {
   // Handle socket errors
   onError(event: Event) {
     console.error("[socket error]", event);
-    this.lastError = 'Connection error occurred';
+    this.lastError = "Connection error occurred";
     this.notifyStateChange();
   }
 
@@ -348,22 +354,22 @@ export class BaseApi {
    */
   scheduleReconnect() {
     // Prevent concurrent reconnection attempts
-    if (this.reconnectionState === 'reconnecting') {
+    if (this.reconnectionState === "reconnecting") {
       console.log("[socket] Reconnection already in progress, skipping");
       return;
     }
-    
+
     // Don't schedule if already scheduled
     if (this.reconnectTimer) return;
 
-    this.reconnectionState = 'reconnecting';
+    this.reconnectionState = "reconnecting";
     this.reconnectAttempts++;
     this.notifyStateChange(); // Notify UI of reconnection attempt
 
     if (this.reconnectAttempts > this.maxReconnectAttempts) {
       console.error("[socket] Max reconnection attempts reached");
-      this.reconnectionState = 'failed';
-      this.lastError = 'Max reconnection attempts exceeded';
+      this.reconnectionState = "failed";
+      this.lastError = "Max reconnection attempts exceeded";
       this.notifyStateChange();
       // Notify all pending requests of the failure
       for (const mid in this.inflight) {

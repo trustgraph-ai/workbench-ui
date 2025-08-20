@@ -154,16 +154,21 @@ export class ServiceCall {
       } catch (e) {
         // Handle send failure - wait for BaseApi to handle reconnection
         console.log("Error:", e);
-        console.log("Message send failure, waiting for socket reconnection...");
+        console.log(
+          "Message send failure, waiting for socket reconnection...",
+        );
 
         // Schedule retry with backoff - let BaseApi handle the reconnection
-        this.timeoutId = setTimeout(this.attempt.bind(this), this.calculateBackoff());
+        this.timeoutId = setTimeout(
+          this.attempt.bind(this),
+          this.calculateBackoff(),
+        );
       }
     } else {
       // No WebSocket connection available or not ready
       // Let BaseApi handle reconnection, just wait and retry
       console.log("Request", this.mid, "waiting for socket reconnection...");
-      
+
       // Use consistent backoff for all waiting scenarios
       setTimeout(this.attempt.bind(this), this.calculateBackoff());
     }
