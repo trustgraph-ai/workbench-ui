@@ -1,6 +1,6 @@
 import { useQueryClient, useQuery, useMutation } from "@tanstack/react-query";
 
-import { useSocket } from "../api/trustgraph/socket";
+import { useSocket, useConnectionState } from "../api/trustgraph/socket";
 import { useNotification } from "./notify";
 import { useActivity } from "./activity";
 
@@ -42,11 +42,17 @@ export interface Taxonomy {
 
 export const useTaxonomies = () => {
   const socket = useSocket();
+  const connectionState = useConnectionState();
   const queryClient = useQueryClient();
   const notify = useNotification();
 
+  // Only enable queries when socket is connected and ready
+  const isSocketReady = connectionState?.status === "authenticated" || 
+                       connectionState?.status === "unauthenticated";
+
   const taxonomiesQuery = useQuery({
     queryKey: ["taxonomies"],
+    enabled: isSocketReady,
     queryFn: () => {
       return socket
         .config()

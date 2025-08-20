@@ -2,7 +2,7 @@ import { useQueryClient, useQuery, useMutation } from "@tanstack/react-query";
 
 import { v4 as uuidv4 } from "uuid";
 
-import { useSocket } from "../api/trustgraph/socket";
+import { useSocket, useConnectionState } from "../api/trustgraph/socket";
 import { useNotification } from "./notify";
 import { useActivity } from "./activity";
 import { fileToBase64, textToBase64 } from "../utils/document-encoding";
@@ -16,6 +16,7 @@ import { prepareMetadata, createDocId } from "../model/document-metadata";
 export const useLibrary = () => {
   // WebSocket connection for communicating with the librarian service
   const socket = useSocket();
+  const connectionState = useConnectionState();
 
   // React Query client for cache management and invalidation
   const queryClient = useQueryClient();
@@ -23,12 +24,17 @@ export const useLibrary = () => {
   // Hook for displaying user notifications
   const notify = useNotification();
 
+  // Only enable queries when socket is connected and ready
+  const isSocketReady = connectionState?.status === "authenticated" || 
+                       connectionState?.status === "unauthenticated";
+
   /**
    * Query for fetching all documents from the library
    * Uses React Query for caching and background refetching
    */
   const documentsQuery = useQuery({
     queryKey: ["documents"],
+    enabled: isSocketReady,
     queryFn: () => {
       return socket.librarian().getDocuments();
     },

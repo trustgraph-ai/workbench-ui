@@ -2,7 +2,7 @@
 import { useQueryClient, useQuery, useMutation } from "@tanstack/react-query";
 
 // TrustGraph socket connection for API communication
-import { useSocket } from "../api/trustgraph/socket";
+import { useSocket, useConnectionState } from "../api/trustgraph/socket";
 // Notification system for user feedback
 import { useNotification } from "./notify";
 // Activity tracking for loading states
@@ -15,15 +15,21 @@ import { useActivity } from "./activity";
 export const usePrompts = () => {
   // Socket connection for API calls
   const socket = useSocket();
+  const connectionState = useConnectionState();
   // Query client for cache management
   const queryClient = useQueryClient();
   // Notification system for user feedback
   const notify = useNotification();
 
+  // Only enable queries when socket is connected and ready
+  const isSocketReady = connectionState?.status === "authenticated" || 
+                       connectionState?.status === "unauthenticated";
+
   // Query to fetch the system prompt configuration
   // System prompt defines the AI assistant's behavior and instructions
   const systemPromptQuery = useQuery({
     queryKey: ["system-prompt"],
+    enabled: isSocketReady,
     queryFn: () => {
       return socket
         .config()
@@ -42,6 +48,7 @@ export const usePrompts = () => {
   // First gets the template index (list of template IDs), then fetches each template's configuration
   const promptsQuery = useQuery({
     queryKey: ["prompts"],
+    enabled: isSocketReady,
     queryFn: () => {
       // Step 1: Get the template index (array of template IDs)
       return socket

@@ -1,6 +1,6 @@
 import { useQueryClient, useQuery, useMutation } from "@tanstack/react-query";
 
-import { useSocket } from "../api/trustgraph/socket";
+import { useSocket, useConnectionState } from "../api/trustgraph/socket";
 import { useNotification } from "./notify";
 import { useActivity } from "./activity";
 
@@ -12,6 +12,7 @@ import { useActivity } from "./activity";
 export const useKnowledgeCores = () => {
   // WebSocket connection for communicating with the knowledge service
   const socket = useSocket();
+  const connectionState = useConnectionState();
 
   // React Query client for cache management and invalidation
   const queryClient = useQueryClient();
@@ -19,12 +20,17 @@ export const useKnowledgeCores = () => {
   // Hook for displaying user notifications
   const notify = useNotification();
 
+  // Only enable queries when socket is connected and ready
+  const isSocketReady = connectionState?.status === "authenticated" || 
+                       connectionState?.status === "unauthenticated";
+
   /**
    * Query for fetching all knowledge cores
    * Uses React Query for caching and background refetching
    */
   const query = useQuery({
     queryKey: ["knowledge-cores"],
+    enabled: isSocketReady,
     queryFn: () => {
       return socket
         .knowledge()

@@ -2,7 +2,7 @@
 import { useQueryClient, useQuery, useMutation } from "@tanstack/react-query";
 
 // TrustGraph socket connection for API communication
-import { useSocket } from "../api/trustgraph/socket";
+import { useSocket, useConnectionState } from "../api/trustgraph/socket";
 // Notification system for user feedback
 import { useNotification } from "./notify";
 // Activity tracking for loading states
@@ -15,15 +15,21 @@ import { useActivity } from "./activity";
 export const useAgentTools = () => {
   // Socket connection for API calls
   const socket = useSocket();
+  const connectionState = useConnectionState();
   // Query client for cache management
   const queryClient = useQueryClient();
   // Notification system for user feedback
   const notify = useNotification();
 
+  // Only enable queries when socket is connected and ready
+  const isSocketReady = connectionState?.status === "authenticated" || 
+                       connectionState?.status === "unauthenticated";
+
   // Query to fetch all agent tools
   // Gets all tools directly from the 'tool' configuration type
   const toolsQuery = useQuery({
     queryKey: ["agent-tools"],
+    enabled: isSocketReady,
     queryFn: () => {
       // Get all tools using the getValues operation
       return socket
