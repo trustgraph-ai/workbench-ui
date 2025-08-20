@@ -46,12 +46,14 @@ const FeatureSwitchesSection: React.FC<FeatureSwitchesSectionProps> = ({
         <HStack justify="space-between" align="center">
           <VStack gap={1} align="start">
             <Text fontWeight="medium">Taxonomy Editor</Text>
-            <Text fontSize="sm" color="fg.muted">
-              Enable the taxonomy management interface for SKOS concepts{" "}
-              <Tag.Root colorPalette="accent">
+            <HStack gap={2} align="center">
+              <Text fontSize="sm" color="fg.muted">
+                Enable the taxonomy management interface for SKOS concepts
+              </Text>
+              <Tag.Root colorPalette="accent" size="sm">
                 <Tag.Label>preview</Tag.Label>
               </Tag.Root>
-            </Text>
+            </HStack>
           </VStack>
           <Switch.Root
             checked={taxonomyEditor}
