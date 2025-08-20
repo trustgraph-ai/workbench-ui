@@ -1,2 +1,2 @@
-// Re-export the socket hook from the new SocketProvider
-export { useSocket } from "./SocketProvider";
+// Re-export the socket hook and connection state hook from SocketProvider
+export { useSocket, useConnectionState } from "./SocketProvider";

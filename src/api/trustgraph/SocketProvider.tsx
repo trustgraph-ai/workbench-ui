@@ -1,12 +1,13 @@
 import React, { useEffect, useState, createContext, useContext } from "react";
 import { Box, Text } from "@chakra-ui/react";
-import { createTrustGraphSocket } from "./trustgraph-socket";
+import { createTrustGraphSocket, type ConnectionState } from "./trustgraph-socket";
 import { useSettings } from "../../state/settings";
 import CenterSpinner from "../../components/common/CenterSpinner";
 import type { Socket } from "./trustgraph-socket";
 
-// Create the socket context
+// Create contexts for socket and connection state
 export const SocketContext = createContext<Socket | null>(null);
+export const ConnectionStateContext = createContext<ConnectionState | null>(null);
 
 // Hook to use the socket context
 export const useSocket = () => {
@@ -17,6 +18,17 @@ export const useSocket = () => {
   }
 
   return socket;
+};
+
+// Hook to use the connection state context
+export const useConnectionState = () => {
+  const state = useContext(ConnectionStateContext);
+  
+  if (!state) {
+    throw new Error("useConnectionState must be used within a SocketProvider");
+  }
+  
+  return state;
 };
 
 interface SocketProviderProps {
@@ -37,6 +49,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
   const { settings, isLoaded } = useSettings();
   const [socket, setSocket] = useState<Socket | null>(null);
   const [isSocketReady, setIsSocketReady] = useState(false);
+  const [connectionState, setConnectionState] = useState<ConnectionState | null>(null);
 
   useEffect(() => {
     // CRITICAL: Wait for settings to load before creating socket
@@ -63,6 +76,9 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
     const apiKey = settings.authentication.apiKey;
     const newSocket = createTrustGraphSocket(apiKey || undefined);
 
+    // Subscribe to connection state changes
+    const unsubscribe = newSocket.onConnectionStateChange(setConnectionState);
+
     setSocket(newSocket);
 
     // Mark socket as ready (we don't wait for connection since the socket
@@ -72,9 +88,11 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
     return () => {
       if (newSocket) {
         console.log("SocketProvider: Cleaning up socket on unmount");
+        unsubscribe(); // Unsubscribe from state changes
         newSocket.close();
       }
       setIsSocketReady(false);
+      setConnectionState(null);
     };
   }, [isLoaded, settings.authentication.apiKey]); // Reconnects when API key changes
 
@@ -99,6 +117,10 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
   }
 
   return (
-    <SocketContext.Provider value={socket}>{children}</SocketContext.Provider>
+    <SocketContext.Provider value={socket}>
+      <ConnectionStateContext.Provider value={connectionState}>
+        {children}
+      </ConnectionStateContext.Provider>
+    </SocketContext.Provider>
   );
 };
