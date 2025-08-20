@@ -131,7 +131,6 @@ export const useSettings = () => {
     onSuccess: () => {
       // Refresh the settings data after successful update
       queryClient.invalidateQueries({ queryKey: ["settings"] });
-      notify.success("Settings updated");
     },
   });
 
@@ -177,7 +176,6 @@ export const useSettings = () => {
     updateLocalStorage(newSettings);
     // Then invalidate the query to refetch
     queryClient.invalidateQueries({ queryKey: ["settings"] });
-    notify.success("Settings updated");
   };
 
   // Helper function to reset settings
