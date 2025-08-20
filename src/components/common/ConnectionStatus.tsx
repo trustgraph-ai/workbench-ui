@@ -1,12 +1,16 @@
 import React from "react";
-import { Box, HStack, Icon, Text, Tooltip } from "@chakra-ui/react";
+import { Box, HStack, Text, Tooltip } from "@chakra-ui/react";
 import { 
-  CheckCircleIcon, 
-  WarningIcon, 
-  InfoIcon,
-  TimeIcon,
-  CloseIcon 
-} from "@chakra-ui/icons";
+  CheckCircle, 
+  AlertCircle, 
+  Info,
+  Clock,
+  XCircle,
+  Wifi,
+  WifiOff,
+  Shield,
+  ShieldOff
+} from "lucide-react";
 import { useConnectionState } from "../../api/trustgraph/SocketProvider";
 import type { ConnectionState } from "../../api/trustgraph/trustgraph-socket";
 
@@ -19,7 +23,7 @@ const getStatusDisplay = (state: ConnectionState) => {
   switch (state.status) {
     case 'connecting':
       return {
-        icon: TimeIcon,
+        icon: Clock,
         color: "yellow.500",
         text: "Connecting...",
         tooltip: "Establishing connection to server"
@@ -27,7 +31,7 @@ const getStatusDisplay = (state: ConnectionState) => {
     
     case 'connected':
       return {
-        icon: CheckCircleIcon,
+        icon: Wifi,
         color: "green.500", 
         text: "Connected",
         tooltip: "Connected to server"
@@ -35,7 +39,7 @@ const getStatusDisplay = (state: ConnectionState) => {
     
     case 'authenticated':
       return {
-        icon: CheckCircleIcon,
+        icon: Shield,
         color: "green.500",
         text: "Authenticated", 
         tooltip: "Connected with API key authentication"
@@ -43,7 +47,7 @@ const getStatusDisplay = (state: ConnectionState) => {
     
     case 'unauthenticated':
       return {
-        icon: InfoIcon,
+        icon: ShieldOff,
         color: "blue.500",
         text: "Unauthenticated",
         tooltip: "Connected but no API key provided (limited functionality)"
@@ -51,7 +55,7 @@ const getStatusDisplay = (state: ConnectionState) => {
     
     case 'reconnecting':
       return {
-        icon: TimeIcon,
+        icon: Clock,
         color: "orange.500",
         text: `Reconnecting... (${state.reconnectAttempt}/${state.maxAttempts})`,
         tooltip: `Attempting to reconnect. Try ${state.reconnectAttempt} of ${state.maxAttempts}`
@@ -59,7 +63,7 @@ const getStatusDisplay = (state: ConnectionState) => {
     
     case 'failed':
       return {
-        icon: CloseIcon,
+        icon: WifiOff,
         color: "red.500", 
         text: "Connection Failed",
         tooltip: state.lastError || "Connection failed after maximum retry attempts"
@@ -67,7 +71,7 @@ const getStatusDisplay = (state: ConnectionState) => {
     
     default:
       return {
-        icon: InfoIcon,
+        icon: Info,
         color: "gray.500",
         text: "Unknown",
         tooltip: "Unknown connection state"
@@ -87,23 +91,30 @@ export const ConnectionStatus: React.FC<ConnectionStatusProps> = ({
 
   const { icon: StatusIcon, color, text, tooltip } = getStatusDisplay(connectionState);
   
-  const iconSize = size === "sm" ? 3 : size === "lg" ? 5 : 4;
+  const iconSize = size === "sm" ? 16 : size === "lg" ? 24 : 20;
   const fontSize = size === "sm" ? "xs" : size === "lg" ? "md" : "sm";
 
   return (
-    <Tooltip label={tooltip} placement="top">
-      <HStack spacing={2} cursor="pointer">
-        <Icon as={StatusIcon} color={color} boxSize={iconSize} />
-        <Text fontSize={fontSize} color="fg.default">
-          {showDetails ? text : connectionState.status}
-        </Text>
-        {showDetails && connectionState.hasApiKey && (
-          <Text fontSize="xs" color="fg.muted">
-            (API Key)
+    <Tooltip.Root>
+      <Tooltip.Trigger asChild>
+        <HStack spacing={2} cursor="pointer">
+          <Box color={color}>
+            <StatusIcon size={iconSize} />
+          </Box>
+          <Text fontSize={fontSize} color="fg.default">
+            {showDetails ? text : connectionState.status}
           </Text>
-        )}
-      </HStack>
-    </Tooltip>
+          {showDetails && connectionState.hasApiKey && (
+            <Text fontSize="xs" color="fg.muted">
+              (API Key)
+            </Text>
+          )}
+        </HStack>
+      </Tooltip.Trigger>
+      <Tooltip.Positioner>
+        <Tooltip.Content>{tooltip}</Tooltip.Content>
+      </Tooltip.Positioner>
+    </Tooltip.Root>
   );
 };
 
