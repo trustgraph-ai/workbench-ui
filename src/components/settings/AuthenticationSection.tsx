@@ -1,23 +1,41 @@
-import React, { useState } from "react";
-import { VStack, HStack, IconButton, Text } from "@chakra-ui/react";
-import { Eye, EyeOff, Key } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { VStack, HStack, IconButton, Text, Button } from "@chakra-ui/react";
+import { Eye, EyeOff, Key, Save, RotateCcw } from "lucide-react";
 import Card from "../common/Card";
 import TextField from "../common/TextField";
 
 interface AuthenticationSectionProps {
   apiKey: string;
   onApiKeyChange: (value: string) => void;
+  isSaving?: boolean;
 }
 
 const AuthenticationSection: React.FC<AuthenticationSectionProps> = ({
   apiKey,
   onApiKeyChange,
+  isSaving = false,
 }) => {
   const [showApiKey, setShowApiKey] = useState(false);
+  const [stagedApiKey, setStagedApiKey] = useState(apiKey);
+
+  // Keep staged value in sync with saved value
+  useEffect(() => {
+    setStagedApiKey(apiKey);
+  }, [apiKey]);
 
   const toggleApiKeyVisibility = () => {
     setShowApiKey(!showApiKey);
   };
+
+  const handleSave = () => {
+    onApiKeyChange(stagedApiKey);
+  };
+
+  const handleReset = () => {
+    setStagedApiKey(apiKey);
+  };
+
+  const hasChanges = stagedApiKey !== apiKey;
 
   return (
     <Card
@@ -40,14 +58,45 @@ const AuthenticationSection: React.FC<AuthenticationSectionProps> = ({
           </HStack>
           <TextField
             placeholder="Enter API key (leave empty for no authentication)"
-            value={apiKey}
-            onValueChange={onApiKeyChange}
+            value={stagedApiKey}
+            onValueChange={setStagedApiKey}
             type={showApiKey ? "text" : "password"}
           />
-          <Text fontSize="sm" color="fg.muted">
-            {apiKey
-              ? "API key will be used for socket authentication"
-              : "No API key set - authentication disabled"}
+          
+          {hasChanges && (
+            <HStack gap={2} justify="flex-end">
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={handleReset}
+                disabled={isSaving}
+              >
+                <RotateCcw />
+                Reset
+              </Button>
+              <Button
+                size="sm"
+                colorPalette="primary"
+                onClick={handleSave}
+                disabled={isSaving}
+                loading={isSaving}
+              >
+                <Save />
+                Apply Key
+              </Button>
+            </HStack>
+          )}
+
+          <Text 
+            fontSize="sm" 
+            color={hasChanges ? "accent.fg" : "fg.muted"}
+          >
+            {hasChanges 
+              ? "API key changes require applying to reconnect websocket"
+              : apiKey 
+                ? "API key active - socket authentication enabled"
+                : "No API key set - authentication disabled"
+            }
           </Text>
         </VStack>
       </VStack>
