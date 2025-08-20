@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback } from "react";
+import React, { useMemo, useCallback, useRef, useEffect } from "react";
 import {
   Table,
   Editable,
@@ -36,19 +36,28 @@ export const EditableArgumentsTable: React.FC<EditableArgumentsTableProps> = ({
   setEditArgIx,
   setArgAttr,
 }) => {
-  // Create stable callback functions to avoid column recreation
+  // Store latest function references to avoid stale closures
+  const setArgAttrRef = useRef(setArgAttr);
+  const setEditArgIxRef = useRef(setEditArgIx);
+  
+  useEffect(() => {
+    setArgAttrRef.current = setArgAttr;
+    setEditArgIxRef.current = setEditArgIx;
+  });
+
+  // Create truly stable callback functions that never change reference
   const handleNameChange = useCallback((index: number, value: string) => {
-    setArgAttr(index, "name", value);
-  }, [setArgAttr]);
+    setArgAttrRef.current(index, "name", value);
+  }, []);
 
   const handleDescriptionChange = useCallback((index: number, value: string) => {
-    setArgAttr(index, "description", value);
-  }, [setArgAttr]);
+    setArgAttrRef.current(index, "description", value);
+  }, []);
 
   const handleTypeChange = useCallback((index: number, value: string) => {
-    setArgAttr(index, "type", value);
-    setEditArgIx(-1); // Close popover after selection
-  }, [setArgAttr, setEditArgIx]);
+    setArgAttrRef.current(index, "type", value);
+    setEditArgIxRef.current(-1); // Close popover after selection
+  }, []);
 
   const columns = useMemo(
     () => [
@@ -133,7 +142,7 @@ export const EditableArgumentsTable: React.FC<EditableArgumentsTableProps> = ({
         ),
       }),
     ],
-    [editArgIx, handleNameChange, handleDescriptionChange, handleTypeChange]
+    [editArgIx] // Only editArgIx changes, callbacks are stable
   );
 
   const table = useReactTable({
