@@ -10,12 +10,14 @@ interface FeatureSwitchesSectionProps {
   mcpTools: boolean;
   schemas: boolean;
   tokenCost: boolean;
+  flowClasses: boolean;
   onTaxonomyEditorChange: (enabled: boolean) => void;
   onSubmissionsChange: (enabled: boolean) => void;
   onAgentToolsChange: (enabled: boolean) => void;
   onMcpToolsChange: (enabled: boolean) => void;
   onSchemasChange: (enabled: boolean) => void;
   onTokenCostChange: (enabled: boolean) => void;
+  onFlowClassesChange: (enabled: boolean) => void;
 }
 
 const FeatureSwitchesSection: React.FC<FeatureSwitchesSectionProps> = ({
@@ -25,12 +27,14 @@ const FeatureSwitchesSection: React.FC<FeatureSwitchesSectionProps> = ({
   mcpTools,
   schemas,
   tokenCost,
+  flowClasses,
   onTaxonomyEditorChange,
   onSubmissionsChange,
   onAgentToolsChange,
   onMcpToolsChange,
   onSchemasChange,
   onTokenCostChange,
+  onFlowClassesChange,
 }) => {
   return (
     <Card
@@ -146,6 +150,24 @@ const FeatureSwitchesSection: React.FC<FeatureSwitchesSectionProps> = ({
           <Switch.Root
             checked={tokenCost}
             onCheckedChange={(details) => onTokenCostChange(details.checked)}
+          >
+            <Switch.HiddenInput />
+            <Switch.Control>
+              <Switch.Thumb />
+            </Switch.Control>
+          </Switch.Root>
+        </HStack>
+
+        <HStack justify="space-between" align="center">
+          <VStack gap={1} align="start">
+            <Text fontWeight="medium">Flow Classes</Text>
+            <Text fontSize="sm" color="fg.muted">
+              Enable the flow classes management interface for dataflow definitions
+            </Text>
+          </VStack>
+          <Switch.Root
+            checked={flowClasses}
+            onCheckedChange={(details) => onFlowClassesChange(details.checked)}
           >
             <Switch.HiddenInput />
             <Switch.Control>

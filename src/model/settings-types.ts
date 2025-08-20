@@ -15,6 +15,7 @@ export interface Settings {
     mcpTools: boolean;
     schemas: boolean;
     tokenCost: boolean;
+    flowClasses: boolean;
   };
 }
 
@@ -35,6 +36,7 @@ export const DEFAULT_SETTINGS: Settings = {
     mcpTools: false, // Off by default
     schemas: false, // Off by default
     tokenCost: false, // Off by default
+    flowClasses: false, // Off by default
   },
 };
 

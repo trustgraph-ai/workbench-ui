@@ -131,6 +131,7 @@ const Settings: React.FC = () => {
         mcpTools={settings.featureSwitches.mcpTools}
         schemas={settings.featureSwitches.schemas}
         tokenCost={settings.featureSwitches.tokenCost}
+        flowClasses={settings.featureSwitches.flowClasses}
         onTaxonomyEditorChange={(value) =>
           updateSetting("featureSwitches.taxonomyEditor", value)
         }
@@ -148,6 +149,9 @@ const Settings: React.FC = () => {
         }
         onTokenCostChange={(value) =>
           updateSetting("featureSwitches.tokenCost", value)
+        }
+        onFlowClassesChange={(value) =>
+          updateSetting("featureSwitches.flowClasses", value)
         }
       />
     </VStack>
