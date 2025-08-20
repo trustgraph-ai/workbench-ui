@@ -75,8 +75,8 @@ export const useSettings = () => {
   const settingsQuery = useQuery({
     queryKey: ["settings"],
     queryFn: async () => {
-      // Simulate async operation for consistency with future backend integration
-      await new Promise((resolve) => setTimeout(resolve, 50));
+      // Minimal delay for async consistency
+      await new Promise((resolve) => setTimeout(resolve, 1));
       const settings = loadFromLocalStorage();
       console.log("Settings loaded from localStorage");
       return settings;
@@ -97,8 +97,8 @@ export const useSettings = () => {
       value: unknown;
       onSuccess?: () => void;
     }) => {
-      // Simulate async operation for consistency with future backend integration
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      // Minimal delay for async consistency
+      await new Promise((resolve) => setTimeout(resolve, 1));
 
       // Get fresh settings from localStorage to avoid race conditions
       const currentSettings = loadFromLocalStorage();
@@ -137,8 +137,8 @@ export const useSettings = () => {
   // Mutation for resetting settings to defaults
   const resetSettingsMutation = useMutation({
     mutationFn: async ({ onSuccess }: { onSuccess?: () => void } = {}) => {
-      // Simulate async operation for consistency with future backend integration
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      // Minimal delay for async consistency
+      await new Promise((resolve) => setTimeout(resolve, 1));
 
       // Clear localStorage
       localStorage.removeItem(SETTINGS_STORAGE_KEY);
