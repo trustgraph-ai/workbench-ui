@@ -133,6 +133,10 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
     ]);
   };
 
+  const deleteArgument = (index) => {
+    setArgs((x) => x.filter((_, i) => i !== index));
+  };
+
   const setArgAttr = (id, key, value) => {
     const newArgs = args.map((arg, ix) => {
       if (id == ix) {
@@ -239,13 +243,14 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
                 />
               )}
 
-              {type === "prompt" && (
+              {(type === "prompt" || type === "mcp-tool") && (
                 <>
                   <EditableArgumentsTable
                     args={args}
                     editArgIx={editArgIx}
                     setEditArgIx={setEditArgIx}
                     setArgAttr={setArgAttr}
+                    deleteArg={deleteArgument}
                   />
 
                   <Box mt={5}>

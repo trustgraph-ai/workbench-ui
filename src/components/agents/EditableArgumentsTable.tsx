@@ -7,7 +7,9 @@ import {
   RadioGroup,
   Stack,
   Box,
+  IconButton,
 } from "@chakra-ui/react";
+import { Trash } from "lucide-react";
 import {
   createColumnHelper,
   useReactTable,
@@ -26,20 +28,23 @@ interface EditableArgumentsTableProps {
   editArgIx: number;
   setEditArgIx: (ix: number) => void;
   setArgAttr: (ix: number, attr: keyof Argument, value: string) => void;
+  deleteArg: (ix: number) => void;
 }
 
 const columnHelper = createColumnHelper<Argument>();
 
 export const EditableArgumentsTable: React.FC<
   EditableArgumentsTableProps
-> = ({ args, editArgIx, setEditArgIx, setArgAttr }) => {
+> = ({ args, editArgIx, setEditArgIx, setArgAttr, deleteArg }) => {
   // Store latest function references to avoid stale closures
   const setArgAttrRef = useRef(setArgAttr);
   const setEditArgIxRef = useRef(setEditArgIx);
+  const deleteArgRef = useRef(deleteArg);
 
   useEffect(() => {
     setArgAttrRef.current = setArgAttr;
     setEditArgIxRef.current = setEditArgIx;
+    deleteArgRef.current = deleteArg;
   });
 
   // Create truly stable callback functions that never change reference
@@ -57,6 +62,10 @@ export const EditableArgumentsTable: React.FC<
   const handleTypeChange = useCallback((index: number, value: string) => {
     setArgAttrRef.current(index, "type", value);
     setEditArgIxRef.current(-1); // Close popover after selection
+  }, []);
+
+  const handleDelete = useCallback((index: number) => {
+    deleteArgRef.current(index);
   }, []);
 
   const columns = useMemo(
@@ -139,6 +148,22 @@ export const EditableArgumentsTable: React.FC<
               <Text cursor="pointer">{row.original.type}</Text>
             )}
           </div>
+        ),
+      }),
+      columnHelper.display({
+        id: "delete",
+        header: "",
+        size: 10,
+        cell: ({ row }) => (
+          <IconButton
+            aria-label="Delete argument"
+            size="xs"
+            variant="ghost"
+            colorPalette="red"
+            onClick={() => handleDelete(row.index)}
+          >
+            <Trash />
+          </IconButton>
         ),
       }),
     ],
