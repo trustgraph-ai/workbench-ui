@@ -285,7 +285,7 @@ describe("Message Types", () => {
     it("should have correct structure", () => {
       const metadata: ProcessingMetadata = {
         id: "proc-123",
-        document_id: "doc-123",
+        "document-id": "doc-123",
         time: 1640995200000,
         flow: "default-flow",
         user: "test-user",
@@ -294,7 +294,7 @@ describe("Message Types", () => {
       };
 
       expect(metadata.id).toBe("proc-123");
-      expect(metadata.document_id).toBe("doc-123");
+      expect(metadata["document-id"]).toBe("doc-123");
       expect(metadata.time).toBe(1640995200000);
       expect(metadata.flow).toBe("default-flow");
       expect(metadata.user).toBe("test-user");
@@ -321,7 +321,7 @@ describe("Message Types", () => {
     it("should have correct structure", () => {
       const response: LibraryResponse = {
         error: null,
-        document_metadatas: [
+        "document-metadatas": [
           {
             id: "doc-1",
             title: "Document 1",
@@ -331,8 +331,8 @@ describe("Message Types", () => {
       };
 
       expect(response.error).toBeNull();
-      expect(response.document_metadatas).toHaveLength(1);
-      expect(response.document_metadatas![0].id).toBe("doc-1");
+      expect(response["document-metadatas"]).toHaveLength(1);
+      expect(response["document-metadatas"]![0].id).toBe("doc-1");
     });
   });
 

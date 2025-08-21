@@ -121,7 +121,7 @@ export interface DocumentMetadata {
 
 export interface ProcessingMetadata {
   id?: string;
-  document_id?: string;
+  "document-id"?: string;
   time?: number;
   flow?: string;
   user?: string;
@@ -131,10 +131,10 @@ export interface ProcessingMetadata {
 
 export interface LibraryRequest {
   operation: string;
-  document_id?: string;
-  processing_id?: string;
-  document_metadata?: DocumentMetadata;
-  processing_metadata?: ProcessingMetadata;
+  "document-id"?: string;
+  "processing-id"?: string;
+  "document-metadata"?: DocumentMetadata;
+  "processing-metadata"?: ProcessingMetadata;
   content?: string;
   user?: string;
   collection?: string;
@@ -143,10 +143,10 @@ export interface LibraryRequest {
 
 export interface LibraryResponse {
   error: Error;
-  document_metadata?: DocumentMetadata;
+  "document-metadata"?: DocumentMetadata;
   content?: string;
-  document_metadatas?: DocumentMetadata[];
-  processing_metadata?: ProcessingMetadata;
+  "document-metadatas"?: DocumentMetadata[];
+  "processing-metadata"?: ProcessingMetadata;
 }
 
 export interface KnowledgeRequest {
@@ -156,7 +156,7 @@ export interface KnowledgeRequest {
   flow?: string;
   collection?: string;
   triples?: Triple[];
-  graphEmbeddings?: GraphEmbeddings;
+  "graph-embeddings"?: GraphEmbeddings;
 }
 
 export interface KnowledgeResponse {
@@ -164,7 +164,7 @@ export interface KnowledgeResponse {
   ids?: string[];
   eos?: boolean;
   triples?: Triple[];
-  graphEmbeddings?: GraphEmbeddings;
+  "graph-embeddings"?: GraphEmbeddings;
 }
 
 export interface FlowRequest {
