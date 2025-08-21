@@ -22,11 +22,21 @@ vi.mock("../../../state/flows", () => ({
 // Since SelectField is complex and we've documented its behavior,
 // we'll mock it to test the integration properly
 vi.mock("../../common/SelectField", () => ({
-  default: ({ label, items, value, onValueChange }: any) => {
+  default: ({
+    label,
+    items,
+    value,
+    onValueChange,
+  }: {
+    label: string;
+    items: Array<{ value: string; label: string }>;
+    value: string[];
+    onValueChange: (values: string[]) => void;
+  }) => {
     // Simulate SelectField behavior:
     // - Expects value to be an array
     // - Returns an array in onValueChange
-    const handleChange = (e: any) => {
+    const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
       const selectedValue = e.target.value;
       // SelectField returns an array
       onValueChange(selectedValue ? [selectedValue] : []);
@@ -41,7 +51,7 @@ vi.mock("../../common/SelectField", () => ({
           aria-label={label}
         >
           <option value="">Select...</option>
-          {items.map((item: any) => (
+          {items.map((item) => (
             <option key={item.value} value={item.value}>
               {item.label}
             </option>

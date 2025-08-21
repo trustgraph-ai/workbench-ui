@@ -1,9 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { FlowsApi } from "../trustgraph-socket";
-import { FlowRequest, FlowResponse } from "../messages";
+import { FlowResponse } from "../messages";
 
 describe("FlowsApi", () => {
-  let mockApi: any;
+  let mockApi: {
+    makeRequest: ReturnType<typeof vi.fn>;
+  };
   let flowsApi: FlowsApi;
 
   beforeEach(() => {

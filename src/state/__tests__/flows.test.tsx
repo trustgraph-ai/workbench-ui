@@ -36,7 +36,14 @@ vi.mock("../activity", () => ({
 
 describe("useFlows hook", () => {
   let queryClient: QueryClient;
-  let mockFlowsApi: any;
+  let mockFlowsApi: {
+    getFlows: ReturnType<typeof vi.fn>;
+    getFlow: ReturnType<typeof vi.fn>;
+    getFlowClasses: ReturnType<typeof vi.fn>;
+    getFlowClass: ReturnType<typeof vi.fn>;
+    startFlow: ReturnType<typeof vi.fn>;
+    stopFlow: ReturnType<typeof vi.fn>;
+  };
 
   beforeEach(() => {
     queryClient = new QueryClient({
@@ -309,7 +316,7 @@ describe("useFlows hook", () => {
       // Set connection state to not ready
       mockConnectionState.status = "connecting";
 
-      const { result } = renderHook(() => useFlows(), { wrapper });
+      renderHook(() => useFlows(), { wrapper });
 
       // Wait a bit to ensure no calls are made
       await new Promise((resolve) => setTimeout(resolve, 100));
@@ -323,7 +330,7 @@ describe("useFlows hook", () => {
       mockFlowsApi.getFlows.mockResolvedValue([]);
       mockFlowsApi.getFlowClasses.mockResolvedValue([]);
 
-      const { result, rerender } = renderHook(() => useFlows(), { wrapper });
+      const { rerender } = renderHook(() => useFlows(), { wrapper });
 
       // Initially no fetching
       expect(mockFlowsApi.getFlows).not.toHaveBeenCalled();
