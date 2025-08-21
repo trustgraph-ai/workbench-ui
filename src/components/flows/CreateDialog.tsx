@@ -67,9 +67,10 @@ const CreateDialog = ({ open, onOpenChange }) => {
                 <SelectField
                   label="Processing flow"
                   items={flowClassOptions}
-                  value={flowClass}
+                  value={flowClass ? [flowClass] : []}
                   onValueChange={(x) => {
-                    setFlowClass(x);
+                    // SelectField returns an array, extract the first element
+                    setFlowClass(Array.isArray(x) ? x[0] : x);
                   }}
                   contentRef={contentRef}
                 />

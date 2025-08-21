@@ -745,7 +745,7 @@ export class FlowsApi {
         },
         60000,
       )
-      .then((r) => r["flow-ids"]);
+      .then((r) => r["flow-ids"] || []);
   }
 
   /**
@@ -889,7 +889,7 @@ export class FlowsApi {
    * Starts a new flow instance
    */
   startFlow(id: string, class_name: string, description: string) {
-    return this.api.makeRequest<LibraryRequest, LibraryResponse>(
+    return this.api.makeRequest<FlowRequest, FlowResponse>(
       "flow",
       {
         operation: "start-flow",
@@ -905,7 +905,7 @@ export class FlowsApi {
    * Stops a running flow instance
    */
   stopFlow(id: string) {
-    return this.api.makeRequest<LibraryRequest, LibraryResponse>(
+    return this.api.makeRequest<FlowRequest, FlowResponse>(
       "flow",
       {
         operation: "stop-flow",

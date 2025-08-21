@@ -169,16 +169,16 @@ export interface KnowledgeResponse {
 
 export interface FlowRequest {
   operation: string;
-  class_name?: string;
-  class_definition?: string;
+  "class-name"?: string;
+  "class-definition"?: string;
   description?: string;
-  flow_id?: string;
+  "flow-id"?: string;
 }
 
 export interface FlowResponse {
-  class_names?: string[];
-  flow_ids?: string[];
-  class_definition?: string;
+  "class-names"?: string[];
+  "flow-ids"?: string[];
+  "class-definition"?: string;
   flow?: string;
   description?: string;
   error?: Error;

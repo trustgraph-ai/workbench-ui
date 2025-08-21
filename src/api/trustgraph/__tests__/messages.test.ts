@@ -340,24 +340,24 @@ describe("Message Types", () => {
     it("should have correct structure", () => {
       const request: FlowRequest = {
         operation: "get_flow",
-        flow_id: "default-flow",
+        "flow-id": "default-flow",
       };
 
       expect(request.operation).toBe("get_flow");
-      expect(request.flow_id).toBe("default-flow");
+      expect(request["flow-id"]).toBe("default-flow");
     });
   });
 
   describe("FlowResponse", () => {
     it("should have correct structure", () => {
       const response: FlowResponse = {
-        flow_ids: ["flow-1", "flow-2"],
+        "flow-ids": ["flow-1", "flow-2"],
         flow: "flow-definition",
         description: "A test flow",
         error: null,
       };
 
-      expect(response.flow_ids).toEqual(["flow-1", "flow-2"]);
+      expect(response["flow-ids"]).toEqual(["flow-1", "flow-2"]);
       expect(response.flow).toBe("flow-definition");
       expect(response.description).toBe("A test flow");
       expect(response.error).toBeNull();
