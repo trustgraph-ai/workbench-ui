@@ -239,7 +239,7 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
                 />
               )}
 
-              {type === "prompt" && (
+              {(type === "prompt" || type === "mcp-tool") && (
                 <>
                   <EditableArgumentsTable
                     args={args}
