@@ -745,7 +745,7 @@ export class FlowsApi {
         },
         60000,
       )
-      .then((r) => r["flow-ids"]);
+      .then((r) => r["flow-ids"] || []);
   }
 
   /**
@@ -889,7 +889,7 @@ export class FlowsApi {
    * Starts a new flow instance
    */
   startFlow(id: string, class_name: string, description: string) {
-    return this.api.makeRequest<LibraryRequest, LibraryResponse>(
+    return this.api.makeRequest<FlowRequest, FlowResponse>(
       "flow",
       {
         operation: "start-flow",
@@ -905,7 +905,7 @@ export class FlowsApi {
    * Stops a running flow instance
    */
   stopFlow(id: string) {
-    return this.api.makeRequest<LibraryRequest, LibraryResponse>(
+    return this.api.makeRequest<FlowRequest, FlowResponse>(
       "flow",
       {
         operation: "stop-flow",
@@ -953,10 +953,10 @@ export class FlowApi {
         "graph-rag",
         {
           query: text,
-          entityLimit: options?.entityLimit,
-          tripleLimit: options?.tripleLimit,
-          maxSubgraphSize: options?.maxSubgraphSize,
-          pathLength: options?.pathLength,
+          "entity-limit": options?.entityLimit,
+          "triple-limit": options?.tripleLimit,
+          "max-subgraph-size": options?.maxSubgraphSize,
+          "max-path-length": options?.pathLength,
         },
         60000, // Longer timeout for complex graph operations
         null,

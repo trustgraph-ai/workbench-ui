@@ -84,17 +84,17 @@ describe("Message Types", () => {
     it("should have correct structure with optional parameters", () => {
       const request: GraphRagRequest = {
         query: "What is the capital of France?",
-        entityLimit: 100,
-        tripleLimit: 50,
-        maxSubgraphSize: 2000,
-        pathLength: 3,
+        "entity-limit": 100,
+        "triple-limit": 50,
+        "max-subgraph-size": 2000,
+        "max-path-length": 3,
       };
 
       expect(request.query).toBe("What is the capital of France?");
-      expect(request.entityLimit).toBe(100);
-      expect(request.tripleLimit).toBe(50);
-      expect(request.maxSubgraphSize).toBe(2000);
-      expect(request.pathLength).toBe(3);
+      expect(request["entity-limit"]).toBe(100);
+      expect(request["triple-limit"]).toBe(50);
+      expect(request["max-subgraph-size"]).toBe(2000);
+      expect(request["max-path-length"]).toBe(3);
     });
   });
 
@@ -285,7 +285,7 @@ describe("Message Types", () => {
     it("should have correct structure", () => {
       const metadata: ProcessingMetadata = {
         id: "proc-123",
-        document_id: "doc-123",
+        "document-id": "doc-123",
         time: 1640995200000,
         flow: "default-flow",
         user: "test-user",
@@ -294,7 +294,7 @@ describe("Message Types", () => {
       };
 
       expect(metadata.id).toBe("proc-123");
-      expect(metadata.document_id).toBe("doc-123");
+      expect(metadata["document-id"]).toBe("doc-123");
       expect(metadata.time).toBe(1640995200000);
       expect(metadata.flow).toBe("default-flow");
       expect(metadata.user).toBe("test-user");
@@ -321,7 +321,7 @@ describe("Message Types", () => {
     it("should have correct structure", () => {
       const response: LibraryResponse = {
         error: null,
-        document_metadatas: [
+        "document-metadatas": [
           {
             id: "doc-1",
             title: "Document 1",
@@ -331,8 +331,8 @@ describe("Message Types", () => {
       };
 
       expect(response.error).toBeNull();
-      expect(response.document_metadatas).toHaveLength(1);
-      expect(response.document_metadatas![0].id).toBe("doc-1");
+      expect(response["document-metadatas"]).toHaveLength(1);
+      expect(response["document-metadatas"]![0].id).toBe("doc-1");
     });
   });
 
@@ -340,24 +340,24 @@ describe("Message Types", () => {
     it("should have correct structure", () => {
       const request: FlowRequest = {
         operation: "get_flow",
-        flow_id: "default-flow",
+        "flow-id": "default-flow",
       };
 
       expect(request.operation).toBe("get_flow");
-      expect(request.flow_id).toBe("default-flow");
+      expect(request["flow-id"]).toBe("default-flow");
     });
   });
 
   describe("FlowResponse", () => {
     it("should have correct structure", () => {
       const response: FlowResponse = {
-        flow_ids: ["flow-1", "flow-2"],
+        "flow-ids": ["flow-1", "flow-2"],
         flow: "flow-definition",
         description: "A test flow",
         error: null,
       };
 
-      expect(response.flow_ids).toEqual(["flow-1", "flow-2"]);
+      expect(response["flow-ids"]).toEqual(["flow-1", "flow-2"]);
       expect(response.flow).toBe("flow-definition");
       expect(response.description).toBe("A test flow");
       expect(response.error).toBeNull();
