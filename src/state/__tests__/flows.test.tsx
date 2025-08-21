@@ -132,7 +132,7 @@ describe("useFlows hook", () => {
 
       mockFlowsApi.getFlowClasses.mockResolvedValue(mockClassNames);
       mockFlowsApi.getFlowClass.mockImplementation((name) =>
-        Promise.resolve(mockClassDetails[name])
+        Promise.resolve(mockClassDetails[name]),
       );
 
       const { result } = renderHook(() => useFlows(), { wrapper });
@@ -169,7 +169,7 @@ describe("useFlows hook", () => {
         expect(mockFlowsApi.startFlow).toHaveBeenCalledWith(
           "test-flow",
           "test-class",
-          "Test description"
+          "Test description",
         );
       });
 
@@ -219,7 +219,7 @@ describe("useFlows hook", () => {
       // Verify flows are refetched after successful start
       await waitFor(() => {
         expect(mockFlowsApi.getFlows.mock.calls.length).toBeGreaterThan(
-          initialCallCount
+          initialCallCount,
         );
       });
     });
@@ -249,7 +249,9 @@ describe("useFlows hook", () => {
 
       await waitFor(() => {
         expect(onSuccess).toHaveBeenCalled();
-        expect(mockNotify.success).toHaveBeenCalledWith("Successful deletion");
+        expect(mockNotify.success).toHaveBeenCalledWith(
+          "Successful deletion",
+        );
       });
     });
 
@@ -288,13 +290,15 @@ describe("useFlows hook", () => {
       });
 
       await waitFor(() => {
-        expect(mockNotify.success).toHaveBeenCalledWith("Successful deletion");
+        expect(mockNotify.success).toHaveBeenCalledWith(
+          "Successful deletion",
+        );
       });
 
       // Verify flows are refetched after successful stop
       await waitFor(() => {
         expect(mockFlowsApi.getFlows.mock.calls.length).toBeGreaterThan(
-          initialCallCount
+          initialCallCount,
         );
       });
     });

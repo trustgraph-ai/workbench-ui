@@ -953,10 +953,10 @@ export class FlowApi {
         "graph-rag",
         {
           query: text,
-          entityLimit: options?.entityLimit,
-          tripleLimit: options?.tripleLimit,
-          maxSubgraphSize: options?.maxSubgraphSize,
-          pathLength: options?.pathLength,
+          "entity-limit": options?.entityLimit,
+          "triple-limit": options?.tripleLimit,
+          "max-subgraph-size": options?.maxSubgraphSize,
+          "max-path-length": options?.pathLength,
         },
         60000, // Longer timeout for complex graph operations
         null,

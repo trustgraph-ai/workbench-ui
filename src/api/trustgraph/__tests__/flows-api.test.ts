@@ -24,7 +24,7 @@ describe("FlowsApi", () => {
       const result = await flowsApi.startFlow(
         "test-flow-id",
         "test-class",
-        "Test description"
+        "Test description",
       );
 
       expect(mockApi.makeRequest).toHaveBeenCalledWith(
@@ -35,7 +35,7 @@ describe("FlowsApi", () => {
           "class-name": "test-class",
           description: "Test description",
         },
-        30000
+        30000,
       );
       expect(result).toEqual(mockResponse);
     });
@@ -49,7 +49,7 @@ describe("FlowsApi", () => {
       // Verify the call signature matches FlowRequest/FlowResponse types
       const callArgs = mockApi.makeRequest.mock.calls[0];
       const request = callArgs[1];
-      
+
       // These properties should match FlowRequest interface
       expect(request).toHaveProperty("operation");
       expect(request).toHaveProperty("flow-id");
@@ -74,7 +74,7 @@ describe("FlowsApi", () => {
           operation: "stop-flow",
           "flow-id": "test-flow-id",
         },
-        30000
+        30000,
       );
       expect(result).toEqual(mockResponse);
     });
@@ -88,7 +88,7 @@ describe("FlowsApi", () => {
       // Verify the call signature matches FlowRequest/FlowResponse types
       const callArgs = mockApi.makeRequest.mock.calls[0];
       const request = callArgs[1];
-      
+
       // These properties should match FlowRequest interface
       expect(request).toHaveProperty("operation");
       expect(request).toHaveProperty("flow-id");
@@ -109,7 +109,7 @@ describe("FlowsApi", () => {
         {
           operation: "list-flows",
         },
-        60000
+        60000,
       );
       expect(result).toEqual(["flow1", "flow2", "flow3"]);
     });
@@ -151,7 +151,7 @@ describe("FlowsApi", () => {
         {
           operation: "list-classes",
         },
-        60000
+        60000,
       );
       expect(result).toEqual(["class1", "class2"]);
     });
@@ -187,7 +187,7 @@ describe("FlowsApi", () => {
           operation: "get-flow",
           "flow-id": "test-flow-id",
         },
-        60000
+        60000,
       );
       expect(result).toEqual(flowDefinition); // Result should be parsed JSON
     });
@@ -210,7 +210,7 @@ describe("FlowsApi", () => {
           operation: "get-class",
           "class-name": "test-class",
         },
-        60000
+        60000,
       );
       expect(result).toEqual(classDefinition); // Result should be parsed JSON
     });

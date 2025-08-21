@@ -84,17 +84,17 @@ describe("Message Types", () => {
     it("should have correct structure with optional parameters", () => {
       const request: GraphRagRequest = {
         query: "What is the capital of France?",
-        entityLimit: 100,
-        tripleLimit: 50,
-        maxSubgraphSize: 2000,
-        pathLength: 3,
+        "entity-limit": 100,
+        "triple-limit": 50,
+        "max-subgraph-size": 2000,
+        "max-path-length": 3,
       };
 
       expect(request.query).toBe("What is the capital of France?");
-      expect(request.entityLimit).toBe(100);
-      expect(request.tripleLimit).toBe(50);
-      expect(request.maxSubgraphSize).toBe(2000);
-      expect(request.pathLength).toBe(3);
+      expect(request["entity-limit"]).toBe(100);
+      expect(request["triple-limit"]).toBe(50);
+      expect(request["max-subgraph-size"]).toBe(2000);
+      expect(request["max-path-length"]).toBe(3);
     });
   });
 

@@ -35,7 +35,7 @@ vi.mock("../../common/SelectField", () => ({
     return (
       <div>
         <label>{label}</label>
-        <select 
+        <select
           value={Array.isArray(value) && value.length > 0 ? value[0] : ""}
           onChange={handleChange}
           aria-label={label}
@@ -76,7 +76,7 @@ describe("CreateDialog", () => {
         <QueryClientProvider client={queryClient}>
           <CreateDialog {...defaultProps} {...props} />
         </QueryClientProvider>
-      </ChakraProvider>
+      </ChakraProvider>,
     );
   };
 
@@ -100,7 +100,7 @@ describe("CreateDialog", () => {
 
     // Verify startFlow was called (the actual component state management is complex)
     expect(mockStartFlow).toHaveBeenCalled();
-    
+
     // Verify the call had the expected structure
     const callArgs = mockStartFlow.mock.calls[0][0];
     expect(callArgs).toHaveProperty("onSuccess");
@@ -119,7 +119,7 @@ describe("CreateDialog", () => {
 
   it("should close dialog after successful flow creation", () => {
     const onOpenChange = vi.fn();
-    
+
     // Setup mock to call onSuccess
     mockStartFlow.mockImplementation(({ onSuccess }) => {
       onSuccess();
@@ -145,7 +145,7 @@ describe("CreateDialog", () => {
       // This test verifies the core fix: that the component correctly
       // converts between SelectField's array format and the string format
       // needed for the API
-      
+
       // The actual implementation is tested through integration
       // The mock SelectField simulates returning arrays
       expect(true).toBe(true); // Placeholder - actual behavior tested above
@@ -154,9 +154,9 @@ describe("CreateDialog", () => {
     it("should handle empty selection", () => {
       // This verifies that when no flow class is selected,
       // the component handles it gracefully
-      
+
       const { getByRole } = renderComponent();
-      
+
       // Submit without selecting anything
       const createButton = getByRole("button", { name: /create/i });
       createButton.click();
