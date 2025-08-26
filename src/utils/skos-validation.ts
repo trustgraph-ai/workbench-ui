@@ -1,11 +1,11 @@
 /**
  * SKOS Validation Utilities
  *
- * This module provides validation functions to ensure taxonomies
+ * This module provides validation functions to ensure ontologies
  * comply with SKOS standards and best practices.
  */
 
-import { Taxonomy } from "../state/taxonomies";
+import { Ontology } from "../state/ontologies";
 
 export interface ValidationError {
   type: "error" | "warning" | "info";
@@ -26,22 +26,22 @@ export class SKOSValidator {
   /**
    * Comprehensive SKOS validation
    */
-  validate(taxonomy: Taxonomy): ValidationResult {
+  validate(ontology: Ontology): ValidationResult {
     const errors: ValidationError[] = [];
     const warnings: ValidationError[] = [];
     const info: ValidationError[] = [];
 
     // Validate scheme
-    this.validateScheme(taxonomy, errors, warnings, info);
+    this.validateScheme(ontology, errors, warnings, info);
 
     // Validate concepts
-    this.validateConcepts(taxonomy, errors, warnings, info);
+    this.validateConcepts(ontology, errors, warnings, info);
 
     // Validate relationships
-    this.validateRelationships(taxonomy, errors, warnings, info);
+    this.validateRelationships(ontology, errors, warnings, info);
 
     // Validate hierarchy
-    this.validateHierarchy(taxonomy, errors, warnings, info);
+    this.validateHierarchy(ontology, errors, warnings, info);
 
     return {
       isValid: errors.length === 0,
@@ -52,11 +52,11 @@ export class SKOSValidator {
   }
 
   private validateScheme(
-    taxonomy: Taxonomy,
+    ontology: Ontology,
     errors: ValidationError[],
     warnings: ValidationError[],
   ) {
-    const { scheme, metadata } = taxonomy;
+    const { scheme, metadata } = ontology;
 
     // Required scheme properties
     if (!scheme.uri) {
@@ -95,7 +95,7 @@ export class SKOSValidator {
 
     // Validate that all hasTopConcept references exist
     scheme.hasTopConcept.forEach((conceptId) => {
-      if (!taxonomy.concepts[conceptId]) {
+      if (!ontology.concepts[conceptId]) {
         errors.push({
           type: "error",
           code: "SCHEME_INVALID_TOP_CONCEPT",
@@ -110,18 +110,18 @@ export class SKOSValidator {
       warnings.push({
         type: "warning",
         code: "METADATA_NO_NAME",
-        message: "Taxonomy should have a name",
+        message: "Ontology should have a name",
       });
     }
   }
 
   private validateConcepts(
-    taxonomy: Taxonomy,
+    ontology: Ontology,
     errors: ValidationError[],
     warnings: ValidationError[],
     info: ValidationError[],
   ) {
-    const concepts = taxonomy.concepts;
+    const concepts = ontology.concepts;
 
     Object.values(concepts).forEach((concept) => {
       // Required properties
@@ -182,11 +182,11 @@ export class SKOSValidator {
   }
 
   private validateRelationships(
-    taxonomy: Taxonomy,
+    ontology: Ontology,
     errors: ValidationError[],
     warnings: ValidationError[],
   ) {
-    const concepts = taxonomy.concepts;
+    const concepts = ontology.concepts;
 
     Object.values(concepts).forEach((concept) => {
       // Validate broader concept exists
@@ -304,12 +304,12 @@ export class SKOSValidator {
   }
 
   private validateHierarchy(
-    taxonomy: Taxonomy,
+    ontology: Ontology,
     errors: ValidationError[],
     warnings: ValidationError[],
     info: ValidationError[],
   ) {
-    const concepts = taxonomy.concepts;
+    const concepts = ontology.concepts;
 
     // Check for circular references in broader/narrower relationships
     Object.values(concepts).forEach((concept) => {
@@ -335,7 +335,7 @@ export class SKOSValidator {
     });
 
     // Check for orphaned concepts (no broader and not a top concept)
-    const topConceptIds = new Set(taxonomy.scheme.hasTopConcept);
+    const topConceptIds = new Set(ontology.scheme.hasTopConcept);
     const explicitTopConcepts = new Set(
       Object.values(concepts)
         .filter((c) => c.topConcept)
@@ -359,7 +359,7 @@ export class SKOSValidator {
     });
 
     // Check for disconnected subhierarchies
-    const connectedConcepts = this.findConnectedConcepts(taxonomy);
+    const connectedConcepts = this.findConnectedConcepts(ontology);
     const allConceptIds = new Set(Object.keys(concepts));
     const disconnected = new Set(
       [...allConceptIds].filter((id) => !connectedConcepts.has(id)),
@@ -375,10 +375,10 @@ export class SKOSValidator {
     }
   }
 
-  private findConnectedConcepts(taxonomy: Taxonomy): Set<string> {
+  private findConnectedConcepts(ontology: Ontology): Set<string> {
     const connected = new Set<string>();
-    const concepts = taxonomy.concepts;
-    const topConcepts = taxonomy.scheme.hasTopConcept;
+    const concepts = ontology.concepts;
+    const topConcepts = ontology.scheme.hasTopConcept;
 
     // Start from top concepts and traverse down
     const toVisit = [...topConcepts];
@@ -416,8 +416,8 @@ export class SKOSValidator {
 // Convenience functions
 export const skosValidator = new SKOSValidator();
 
-export function validateTaxonomy(taxonomy: Taxonomy): ValidationResult {
-  return skosValidator.validate(taxonomy);
+export function validateOntology(ontology: Ontology): ValidationResult {
+  return skosValidator.validate(ontology);
 }
 
 // Format detection utilities

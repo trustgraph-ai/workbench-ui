@@ -1,15 +1,15 @@
 /**
  * SKOS (Simple Knowledge Organization System) Parser and Serializer
  *
- * This module handles conversion between our internal taxonomy format
+ * This module handles conversion between our internal ontology format
  * and standard SKOS RDF/XML and Turtle formats for interoperability.
  */
 
 import {
-  Taxonomy,
-  TaxonomyConcept,
-  TaxonomyScheme,
-} from "../state/taxonomies";
+  Ontology,
+  OntologyConcept,
+  OntologyScheme,
+} from "../state/ontologies";
 
 // SKOS namespace constants
 export const SKOS_NAMESPACES = {
@@ -24,15 +24,15 @@ export class SKOSSerializer {
   private baseURI: string;
 
   constructor(baseURI?: string) {
-    this.baseURI = baseURI || "http://example.org/taxonomy/";
+    this.baseURI = baseURI || "http://example.org/ontology/";
   }
 
   /**
-   * Convert internal taxonomy format to SKOS RDF/XML
+   * Convert internal ontology format to SKOS RDF/XML
    */
-  toRDF(taxonomy: Taxonomy): string {
-    const concepts = Object.values(taxonomy.concepts);
-    const scheme = taxonomy.scheme;
+  toRDF(ontology: Ontology): string {
+    const concepts = Object.values(ontology.concepts);
+    const scheme = ontology.scheme;
 
     const rdf = [];
 
@@ -50,19 +50,19 @@ export class SKOSSerializer {
     rdf.push(
       `    <skos:prefLabel xml:lang="en">${this.escapeXML(scheme.prefLabel)}</skos:prefLabel>`,
     );
-    if (taxonomy.metadata.description) {
+    if (ontology.metadata.description) {
       rdf.push(
-        `    <dc:description xml:lang="en">${this.escapeXML(taxonomy.metadata.description)}</dc:description>`,
+        `    <dc:description xml:lang="en">${this.escapeXML(ontology.metadata.description)}</dc:description>`,
       );
     }
     rdf.push(
-      `    <dcterms:created>${taxonomy.metadata.created}</dcterms:created>`,
+      `    <dcterms:created>${ontology.metadata.created}</dcterms:created>`,
     );
     rdf.push(
-      `    <dcterms:modified>${taxonomy.metadata.modified}</dcterms:modified>`,
+      `    <dcterms:modified>${ontology.metadata.modified}</dcterms:modified>`,
     );
     rdf.push(
-      `    <dc:creator>${this.escapeXML(taxonomy.metadata.creator)}</dc:creator>`,
+      `    <dc:creator>${this.escapeXML(ontology.metadata.creator)}</dc:creator>`,
     );
 
     // Top concepts
@@ -163,11 +163,11 @@ export class SKOSSerializer {
   }
 
   /**
-   * Convert internal taxonomy format to SKOS Turtle
+   * Convert internal ontology format to SKOS Turtle
    */
-  toTurtle(taxonomy: Taxonomy): string {
-    const concepts = Object.values(taxonomy.concepts);
-    const scheme = taxonomy.scheme;
+  toTurtle(ontology: Ontology): string {
+    const concepts = Object.values(ontology.concepts);
+    const scheme = ontology.scheme;
 
     const ttl = [];
 
@@ -184,15 +184,15 @@ export class SKOSSerializer {
     ttl.push(
       `  skos:prefLabel "${this.escapeTurtle(scheme.prefLabel)}"@en ;`,
     );
-    if (taxonomy.metadata.description) {
+    if (ontology.metadata.description) {
       ttl.push(
-        `  dc:description "${this.escapeTurtle(taxonomy.metadata.description)}"@en ;`,
+        `  dc:description "${this.escapeTurtle(ontology.metadata.description)}"@en ;`,
       );
     }
-    ttl.push(`  dcterms:created "${taxonomy.metadata.created}" ;`);
-    ttl.push(`  dcterms:modified "${taxonomy.metadata.modified}" ;`);
+    ttl.push(`  dcterms:created "${ontology.metadata.created}" ;`);
+    ttl.push(`  dcterms:modified "${ontology.metadata.modified}" ;`);
     ttl.push(
-      `  dc:creator "${this.escapeTurtle(taxonomy.metadata.creator)}" ;`,
+      `  dc:creator "${this.escapeTurtle(ontology.metadata.creator)}" ;`,
     );
 
     // Top concepts
@@ -313,9 +313,9 @@ export class SKOSSerializer {
 // SKOS Parser for importing
 export class SKOSParser {
   /**
-   * Parse SKOS RDF/XML and convert to internal taxonomy format
+   * Parse SKOS RDF/XML and convert to internal ontology format
    */
-  async parseRDF(rdfXML: string, taxonomyId: string): Promise<Taxonomy> {
+  async parseRDF(rdfXML: string, ontologyId: string): Promise<Ontology> {
     // For a complete implementation, we'd use a proper RDF parser like rdflib.js
     // For now, we'll implement a simplified parser using DOM parsing
 
@@ -327,8 +327,8 @@ export class SKOSParser {
       throw new Error("Invalid XML format");
     }
 
-    const concepts: Record<string, TaxonomyConcept> = {};
-    let scheme: TaxonomyScheme | null = null;
+    const concepts: Record<string, OntologyConcept> = {};
+    let scheme: OntologyScheme | null = null;
     const metadata = {
       name: "",
       description: "",
@@ -352,7 +352,7 @@ export class SKOSParser {
         "";
       const prefLabel =
         this.getTextContent(schemeElement, "skos:prefLabel") ||
-        "Imported Taxonomy";
+        "Imported Ontology";
       const description =
         this.getTextContent(schemeElement, "dc:description") ||
         this.getTextContent(schemeElement, "dcterms:description") ||
@@ -470,7 +470,7 @@ export class SKOSParser {
       );
       const topConcept = topConceptOfElements.length > 0;
 
-      const concept: TaxonomyConcept = {
+      const concept: OntologyConcept = {
         id: conceptId,
         prefLabel,
         broader: broader || null,
@@ -492,8 +492,8 @@ export class SKOSParser {
     if (!scheme) {
       scheme = {
         uri:
-          metadata.namespace || `http://example.org/taxonomy/${taxonomyId}`,
-        prefLabel: metadata.name || "Imported Taxonomy",
+          metadata.namespace || `http://example.org/ontology/${ontologyId}`,
+        prefLabel: metadata.name || "Imported Ontology",
         hasTopConcept: Object.values(concepts)
           .filter((c) => c.topConcept)
           .map((c) => c.id),
@@ -508,9 +508,9 @@ export class SKOSParser {
   }
 
   /**
-   * Parse SKOS Turtle and convert to internal taxonomy format
+   * Parse SKOS Turtle and convert to internal ontology format
    */
-  async parseTurtle(): Promise<Taxonomy> {
+  async parseTurtle(): Promise<Ontology> {
     // For a complete implementation, we'd use a proper Turtle parser
     // This is a placeholder for the Turtle parsing functionality
     throw new Error(
@@ -600,22 +600,22 @@ export const skosParser = new SKOSParser();
 
 // Export functions
 export function serializeToSKOS(
-  taxonomy: Taxonomy,
+  ontology: Ontology,
   format: "rdf" | "turtle" = "rdf",
 ): string {
   if (format === "turtle") {
-    return skosSerializer.toTurtle(taxonomy);
+    return skosSerializer.toTurtle(ontology);
   }
-  return skosSerializer.toRDF(taxonomy);
+  return skosSerializer.toRDF(ontology);
 }
 
 export async function parseFromSKOS(
   content: string,
-  taxonomyId: string,
+  ontologyId: string,
   format: "rdf" | "turtle" = "rdf",
-): Promise<Taxonomy> {
+): Promise<Ontology> {
   if (format === "turtle") {
-    return skosParser.parseTurtle(content, taxonomyId);
+    return skosParser.parseTurtle(content, ontologyId);
   }
-  return skosParser.parseRDF(content, taxonomyId);
+  return skosParser.parseRDF(content, ontologyId);
 }

@@ -9,7 +9,7 @@ export interface Settings {
     pathLength: number;
   };
   featureSwitches: {
-    taxonomyEditor: boolean;
+    ontologyEditor: boolean;
     submissions: boolean;
     agentTools: boolean;
     mcpTools: boolean;
@@ -30,7 +30,7 @@ export const DEFAULT_SETTINGS: Settings = {
     pathLength: 2,
   },
   featureSwitches: {
-    taxonomyEditor: false,
+    ontologyEditor: false,
     submissions: false,
     agentTools: true, // On by default
     mcpTools: false, // Off by default

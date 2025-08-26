@@ -9,14 +9,14 @@ import {
   serializeToSKOS,
   parseFromSKOS,
 } from "../skos";
-import { validateTaxonomy } from "../skos-validation";
-import { Taxonomy } from "../../state/taxonomies";
+import { validateOntology } from "../skos-validation";
+import { Ontology } from "../../state/ontologies";
 
-// Sample taxonomy for testing
-const sampleTaxonomy: Taxonomy = {
+// Sample ontology for testing
+const sampleOntology: Ontology = {
   metadata: {
-    name: "Test Taxonomy",
-    description: "A sample taxonomy for testing",
+    name: "Test Ontology",
+    description: "A sample ontology for testing",
     version: "1.0",
     created: "2024-01-01T00:00:00Z",
     modified: "2024-01-02T00:00:00Z",
@@ -25,7 +25,7 @@ const sampleTaxonomy: Taxonomy = {
   },
   scheme: {
     uri: "http://example.org/test/scheme",
-    prefLabel: "Test Taxonomy",
+    prefLabel: "Test Ontology",
     hasTopConcept: ["concept-1", "concept-2"],
   },
   concepts: {
@@ -68,9 +68,9 @@ const sampleTaxonomy: Taxonomy = {
 };
 
 describe("SKOS Serializer", () => {
-  test("should serialize taxonomy to RDF/XML", () => {
+  test("should serialize ontology to RDF/XML", () => {
     const serializer = new SKOSSerializer("http://example.org/test/");
-    const rdf = serializer.toRDF(sampleTaxonomy);
+    const rdf = serializer.toRDF(sampleOntology);
 
     // Check basic structure
     expect(rdf).toContain('<?xml version="1.0" encoding="UTF-8"?>');
@@ -84,7 +84,7 @@ describe("SKOS Serializer", () => {
       '<skos:ConceptScheme rdf:about="http://example.org/test/scheme">',
     );
     expect(rdf).toContain(
-      '<skos:prefLabel xml:lang="en">Test Taxonomy</skos:prefLabel>',
+      '<skos:prefLabel xml:lang="en">Test Ontology</skos:prefLabel>',
     );
     expect(rdf).toContain(
       '<skos:hasTopConcept rdf:resource="http://example.org/test/concept-1"',
@@ -115,9 +115,9 @@ describe("SKOS Serializer", () => {
     );
   });
 
-  test("should serialize taxonomy to Turtle", () => {
+  test("should serialize ontology to Turtle", () => {
     const serializer = new SKOSSerializer("http://example.org/test/");
-    const turtle = serializer.toTurtle(sampleTaxonomy);
+    const turtle = serializer.toTurtle(sampleOntology);
 
     // Check prefixes
     expect(turtle).toContain(
@@ -128,7 +128,7 @@ describe("SKOS Serializer", () => {
     // Check scheme
     expect(turtle).toContain("<http://example.org/test/scheme>");
     expect(turtle).toContain("a skos:ConceptScheme");
-    expect(turtle).toContain('skos:prefLabel "Test Taxonomy"@en');
+    expect(turtle).toContain('skos:prefLabel "Test Ontology"@en');
 
     // Check concepts
     expect(turtle).toContain("<http://example.org/test/concept-1>");
@@ -139,8 +139,8 @@ describe("SKOS Serializer", () => {
   });
 
   test("should handle XML escaping correctly", () => {
-    const taxonomyWithSpecialChars: Taxonomy = {
-      ...sampleTaxonomy,
+    const ontologyWithSpecialChars: Ontology = {
+      ...sampleOntology,
       concepts: {
         "concept-1": {
           id: "concept-1",
@@ -153,7 +153,7 @@ describe("SKOS Serializer", () => {
     };
 
     const serializer = new SKOSSerializer();
-    const rdf = serializer.toRDF(taxonomyWithSpecialChars);
+    const rdf = serializer.toRDF(ontologyWithSpecialChars);
 
     expect(rdf).toContain("Test &amp; Example &lt;tag&gt;");
     expect(rdf).toContain(
@@ -187,27 +187,27 @@ describe("SKOS Parser", () => {
     </rdf:RDF>`;
 
     const parser = new SKOSParser();
-    const taxonomy = await parser.parseRDF(rdfXML, "test-taxonomy");
+    const ontology = await parser.parseRDF(rdfXML, "test-ontology");
 
     // Check metadata
-    expect(taxonomy.metadata.name).toBe("Test Scheme");
-    expect(taxonomy.metadata.description).toBe("A test concept scheme");
+    expect(ontology.metadata.name).toBe("Test Scheme");
+    expect(ontology.metadata.description).toBe("A test concept scheme");
 
     // Check scheme
-    expect(taxonomy.scheme.uri).toBe("http://example.org/test-scheme");
-    expect(taxonomy.scheme.prefLabel).toBe("Test Scheme");
-    expect(taxonomy.scheme.hasTopConcept).toContain("concept1");
+    expect(ontology.scheme.uri).toBe("http://example.org/test-scheme");
+    expect(ontology.scheme.prefLabel).toBe("Test Scheme");
+    expect(ontology.scheme.hasTopConcept).toContain("concept1");
 
     // Check concepts
-    expect(taxonomy.concepts["concept1"]).toBeDefined();
-    expect(taxonomy.concepts["concept1"].prefLabel).toBe("Test Concept");
-    expect(taxonomy.concepts["concept1"].definition).toBe(
+    expect(ontology.concepts["concept1"]).toBeDefined();
+    expect(ontology.concepts["concept1"].prefLabel).toBe("Test Concept");
+    expect(ontology.concepts["concept1"].definition).toBe(
       "A test concept definition",
     );
-    expect(taxonomy.concepts["concept1"].altLabel).toContain(
+    expect(ontology.concepts["concept1"].altLabel).toContain(
       "Alternative Label",
     );
-    expect(taxonomy.concepts["concept1"].topConcept).toBe(true);
+    expect(ontology.concepts["concept1"].topConcept).toBe(true);
   });
 
   test("should handle parsing errors gracefully", async () => {
@@ -221,16 +221,16 @@ describe("SKOS Parser", () => {
 });
 
 describe("SKOS Validation", () => {
-  test("should validate correct taxonomy", () => {
-    const result = validateTaxonomy(sampleTaxonomy);
+  test("should validate correct ontology", () => {
+    const result = validateOntology(sampleOntology);
 
     expect(result.isValid).toBe(true);
     expect(result.errors).toHaveLength(0);
   });
 
   test("should detect missing preferred labels", () => {
-    const invalidTaxonomy: Taxonomy = {
-      ...sampleTaxonomy,
+    const invalidOntology: Ontology = {
+      ...sampleOntology,
       concepts: {
         "concept-1": {
           id: "concept-1",
@@ -241,7 +241,7 @@ describe("SKOS Validation", () => {
       },
     };
 
-    const result = validateTaxonomy(invalidTaxonomy);
+    const result = validateOntology(invalidOntology);
 
     expect(result.isValid).toBe(false);
     expect(result.errors.some((e) => e.code === "CONCEPT_NO_PREFLABEL")).toBe(
@@ -250,8 +250,8 @@ describe("SKOS Validation", () => {
   });
 
   test("should detect circular references", () => {
-    const circularTaxonomy: Taxonomy = {
-      ...sampleTaxonomy,
+    const circularOntology: Ontology = {
+      ...sampleOntology,
       concepts: {
         "concept-1": {
           id: "concept-1",
@@ -270,7 +270,7 @@ describe("SKOS Validation", () => {
       },
     };
 
-    const result = validateTaxonomy(circularTaxonomy);
+    const result = validateOntology(circularOntology);
 
     expect(result.isValid).toBe(false);
     expect(
@@ -279,8 +279,8 @@ describe("SKOS Validation", () => {
   });
 
   test("should detect invalid concept references", () => {
-    const invalidRefTaxonomy: Taxonomy = {
-      ...sampleTaxonomy,
+    const invalidRefOntology: Ontology = {
+      ...sampleOntology,
       concepts: {
         "concept-1": {
           id: "concept-1",
@@ -292,7 +292,7 @@ describe("SKOS Validation", () => {
       },
     };
 
-    const result = validateTaxonomy(invalidRefTaxonomy);
+    const result = validateOntology(invalidRefOntology);
 
     expect(result.isValid).toBe(false);
     expect(
@@ -303,14 +303,14 @@ describe("SKOS Validation", () => {
 
 describe("Convenience Functions", () => {
   test("should serialize to SKOS RDF by default", () => {
-    const result = serializeToSKOS(sampleTaxonomy);
+    const result = serializeToSKOS(sampleOntology);
 
     expect(result).toContain('<?xml version="1.0" encoding="UTF-8"?>');
     expect(result).toContain("<rdf:RDF");
   });
 
   test("should serialize to SKOS Turtle when specified", () => {
-    const result = serializeToSKOS(sampleTaxonomy, "turtle");
+    const result = serializeToSKOS(sampleOntology, "turtle");
 
     expect(result).toContain("@prefix skos:");
     expect(result).toContain("a skos:ConceptScheme");

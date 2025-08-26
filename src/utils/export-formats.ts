@@ -1,17 +1,17 @@
 /**
- * Additional export formats for taxonomies
+ * Additional export formats for ontologies
  *
  * This module provides conversion utilities for various
- * taxonomy export formats beyond SKOS.
+ * ontology export formats beyond SKOS.
  */
 
-import { Taxonomy, TaxonomyConcept } from "../state/taxonomies";
+import { Ontology, OntologyConcept } from "../state/ontologies";
 
 /**
- * Export taxonomy as CSV
+ * Export ontology as CSV
  */
-export function exportToCSV(taxonomy: Taxonomy): string {
-  const concepts = Object.values(taxonomy.concepts);
+export function exportToCSV(ontology: Ontology): string {
+  const concepts = Object.values(ontology.concepts);
 
   // CSV headers
   const headers = [
@@ -34,7 +34,7 @@ export function exportToCSV(taxonomy: Taxonomy): string {
 
   concepts.forEach((concept) => {
     const broaderConcept = concept.broader
-      ? taxonomy.concepts[concept.broader]
+      ? ontology.concepts[concept.broader]
       : null;
 
     const row = [
@@ -59,38 +59,38 @@ export function exportToCSV(taxonomy: Taxonomy): string {
 }
 
 /**
- * Export taxonomy as JSON (formatted)
+ * Export ontology as JSON (formatted)
  */
-export function exportToJSON(taxonomy: Taxonomy): string {
-  return JSON.stringify(taxonomy, null, 2);
+export function exportToJSON(ontology: Ontology): string {
+  return JSON.stringify(ontology, null, 2);
 }
 
 /**
- * Export taxonomy as plain text outline
+ * Export ontology as plain text outline
  */
-export function exportToText(taxonomy: Taxonomy): string {
+export function exportToText(ontology: Ontology): string {
   const lines = [];
 
   // Header
-  lines.push(`Taxonomy: ${taxonomy.metadata.name}`);
+  lines.push(`Ontology: ${ontology.metadata.name}`);
   lines.push(
-    `Description: ${taxonomy.metadata.description || "No description"}`,
+    `Description: ${ontology.metadata.description || "No description"}`,
   );
-  lines.push(`Version: ${taxonomy.metadata.version}`);
-  lines.push(`Created: ${taxonomy.metadata.created}`);
-  lines.push(`Modified: ${taxonomy.metadata.modified}`);
-  lines.push(`Creator: ${taxonomy.metadata.creator}`);
+  lines.push(`Version: ${ontology.metadata.version}`);
+  lines.push(`Created: ${ontology.metadata.created}`);
+  lines.push(`Modified: ${ontology.metadata.modified}`);
+  lines.push(`Creator: ${ontology.metadata.creator}`);
   lines.push("");
 
   // Get hierarchy
-  const topConcepts = taxonomy.scheme.hasTopConcept
-    .map((id) => taxonomy.concepts[id])
+  const topConcepts = ontology.scheme.hasTopConcept
+    .map((id) => ontology.concepts[id])
     .filter(Boolean);
 
   if (topConcepts.length === 0) {
     // If no top concepts defined, find root concepts
-    const rootConcepts = Object.values(taxonomy.concepts).filter(
-      (c) => !c.broader || !taxonomy.concepts[c.broader],
+    const rootConcepts = Object.values(ontology.concepts).filter(
+      (c) => !c.broader || !ontology.concepts[c.broader],
     );
     topConcepts.push(...rootConcepts);
   }
@@ -101,7 +101,7 @@ export function exportToText(taxonomy: Taxonomy): string {
   lines.push("");
 
   const renderConcept = (
-    concept: TaxonomyConcept,
+    concept: OntologyConcept,
     indent: number = 0,
   ): void => {
     const prefix = "  ".repeat(indent);
@@ -132,7 +132,7 @@ export function exportToText(taxonomy: Taxonomy): string {
 
     if (concept.related && concept.related.length > 0) {
       const relatedLabels = concept.related
-        .map((id) => taxonomy.concepts[id]?.prefLabel || id)
+        .map((id) => ontology.concepts[id]?.prefLabel || id)
         .join(", ");
       lines.push(`${prefix}  Related: ${relatedLabels}`);
     }
@@ -142,7 +142,7 @@ export function exportToText(taxonomy: Taxonomy): string {
     // Render narrower concepts
     if (concept.narrower && concept.narrower.length > 0) {
       concept.narrower.forEach((narrowerId) => {
-        const narrowerConcept = taxonomy.concepts[narrowerId];
+        const narrowerConcept = ontology.concepts[narrowerId];
         if (narrowerConcept) {
           renderConcept(narrowerConcept, indent + 1);
         }
@@ -156,10 +156,10 @@ export function exportToText(taxonomy: Taxonomy): string {
 }
 
 /**
- * Export taxonomy as GraphML (for network visualization)
+ * Export ontology as GraphML (for network visualization)
  */
-export function exportToGraphML(taxonomy: Taxonomy): string {
-  const concepts = Object.values(taxonomy.concepts);
+export function exportToGraphML(ontology: Ontology): string {
+  const concepts = Object.values(ontology.concepts);
 
   const lines = [];
 
@@ -189,7 +189,7 @@ export function exportToGraphML(taxonomy: Taxonomy): string {
   lines.push("");
 
   // Graph
-  lines.push('  <graph id="taxonomy" edgedefault="directed">');
+  lines.push('  <graph id="ontology" edgedefault="directed">');
 
   // Nodes (concepts)
   concepts.forEach((concept) => {
@@ -208,7 +208,7 @@ export function exportToGraphML(taxonomy: Taxonomy): string {
   // Edges (relationships)
   concepts.forEach((concept) => {
     // Broader relationships
-    if (concept.broader && taxonomy.concepts[concept.broader]) {
+    if (concept.broader && ontology.concepts[concept.broader]) {
       lines.push(
         `    <edge source="${concept.id}" target="${concept.broader}">`,
       );
@@ -219,7 +219,7 @@ export function exportToGraphML(taxonomy: Taxonomy): string {
     // Related relationships
     if (concept.related) {
       concept.related.forEach((relatedId) => {
-        if (taxonomy.concepts[relatedId]) {
+        if (ontology.concepts[relatedId]) {
           lines.push(
             `    <edge source="${concept.id}" target="${relatedId}">`,
           );
@@ -237,14 +237,14 @@ export function exportToGraphML(taxonomy: Taxonomy): string {
 }
 
 /**
- * Export taxonomy as DOT format (for Graphviz)
+ * Export ontology as DOT format (for Graphviz)
  */
-export function exportToDOT(taxonomy: Taxonomy): string {
-  const concepts = Object.values(taxonomy.concepts);
+export function exportToDOT(ontology: Ontology): string {
+  const concepts = Object.values(ontology.concepts);
 
   const lines = [];
 
-  lines.push("digraph taxonomy {");
+  lines.push("digraph ontology {");
   lines.push("  rankdir=TB;");
   lines.push(
     '  node [shape=box, style="rounded,filled", fillcolor=lightblue];',
@@ -268,7 +268,7 @@ export function exportToDOT(taxonomy: Taxonomy): string {
   // Edges
   concepts.forEach((concept) => {
     // Broader relationships (hierarchical)
-    if (concept.broader && taxonomy.concepts[concept.broader]) {
+    if (concept.broader && ontology.concepts[concept.broader]) {
       lines.push(
         `  "${concept.broader}" -> "${concept.id}" [label="narrower", color=blue];`,
       );
@@ -277,7 +277,7 @@ export function exportToDOT(taxonomy: Taxonomy): string {
     // Related relationships
     if (concept.related) {
       concept.related.forEach((relatedId) => {
-        if (taxonomy.concepts[relatedId] && concept.id < relatedId) {
+        if (ontology.concepts[relatedId] && concept.id < relatedId) {
           // Only draw one direction to avoid duplicate edges
           lines.push(
             `  "${concept.id}" -> "${relatedId}" [label="related", color=red, dir=both];`,
@@ -343,23 +343,23 @@ export const EXPORT_FORMATS = {
 export type ExportFormat = keyof typeof EXPORT_FORMATS;
 
 /**
- * Export taxonomy in specified format
+ * Export ontology in specified format
  */
-export function exportTaxonomy(
-  taxonomy: Taxonomy,
+export function exportOntology(
+  ontology: Ontology,
   format: ExportFormat,
 ): string {
   switch (format) {
     case "csv":
-      return exportToCSV(taxonomy);
+      return exportToCSV(ontology);
     case "json":
-      return exportToJSON(taxonomy);
+      return exportToJSON(ontology);
     case "text":
-      return exportToText(taxonomy);
+      return exportToText(ontology);
     case "graphml":
-      return exportToGraphML(taxonomy);
+      return exportToGraphML(ontology);
     case "dot":
-      return exportToDOT(taxonomy);
+      return exportToDOT(ontology);
     default:
       throw new Error(`Unsupported export format: ${format}`);
   }
