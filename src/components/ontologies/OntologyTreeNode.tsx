@@ -18,11 +18,11 @@ import {
   Trash2,
   Move,
 } from "lucide-react";
-import { TaxonomyConcept, Taxonomy } from "../../state/taxonomies";
+import { OntologyConcept, Ontology } from "../../state/ontologies";
 
-interface TaxonomyTreeNodeProps {
-  concept: TaxonomyConcept;
-  taxonomy: Taxonomy;
+interface OntologyTreeNodeProps {
+  concept: OntologyConcept;
+  ontology: Ontology;
   level: number;
   isSelected: boolean;
   searchTerm: string;
@@ -34,9 +34,9 @@ interface TaxonomyTreeNodeProps {
   onMove: (conceptId: string) => void;
 }
 
-export const TaxonomyTreeNode: React.FC<TaxonomyTreeNodeProps> = ({
+export const OntologyTreeNode: React.FC<OntologyTreeNodeProps> = ({
   concept,
-  taxonomy,
+  ontology,
   level,
   isSelected,
   searchTerm,
@@ -56,7 +56,7 @@ export const TaxonomyTreeNode: React.FC<TaxonomyTreeNodeProps> = ({
   const filteredChildren = useMemo(() => {
     if (!searchTerm) return children;
     return children.filter((childId) => {
-      const childConcept = taxonomy.concepts[childId];
+      const childConcept = ontology.concepts[childId];
       return (
         childConcept?.prefLabel
           .toLowerCase()
@@ -66,7 +66,7 @@ export const TaxonomyTreeNode: React.FC<TaxonomyTreeNodeProps> = ({
           .includes(searchTerm.toLowerCase())
       );
     });
-  }, [children, searchTerm, taxonomy.concepts]);
+  }, [children, searchTerm, ontology.concepts]);
 
   const shouldShowNode =
     !searchTerm ||
@@ -169,14 +169,14 @@ export const TaxonomyTreeNode: React.FC<TaxonomyTreeNodeProps> = ({
       {hasChildren && isOpen && (
         <VStack gap={1} align="stretch">
           {filteredChildren.map((childId) => {
-            const childConcept = taxonomy.concepts[childId];
+            const childConcept = ontology.concepts[childId];
             if (!childConcept) return null;
 
             return (
-              <TaxonomyTreeNode
+              <OntologyTreeNode
                 key={childId}
                 concept={childConcept}
-                taxonomy={taxonomy}
+                ontology={ontology}
                 level={level + 1}
                 isSelected={selectedConceptId === childId}
                 searchTerm={searchTerm}

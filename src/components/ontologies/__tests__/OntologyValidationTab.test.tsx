@@ -1,19 +1,19 @@
 /**
- * Tests for TaxonomyValidationTab component
+ * Tests for OntologyValidationTab component
  * Tests SKOS validation, quality metrics calculation, and auto-fix functionality
  */
 
 import React from "react";
 import { render, screen, fireEvent, waitFor } from "../../../test/test-utils";
 import { describe, test, expect, vi } from "vitest";
-import { TaxonomyValidationTab } from "../TaxonomyValidationTab";
-import { Taxonomy } from "../../../state/taxonomies";
-import { validateTaxonomy } from "../../../utils/skos-validation";
-import { TaxonomyQA } from "../../../utils/taxonomy-qa";
+import { OntologyValidationTab } from "../OntologyValidationTab";
+import { Ontology } from "../../../state/ontologies";
+import { validateOntology } from "../../../utils/skos-validation";
+import { OntologyQA } from "../../../utils/ontology-qa";
 
 // Mock dependencies
 vi.mock("../../../utils/skos-validation", () => ({
-  validateTaxonomy: vi.fn(),
+  validateOntology: vi.fn(),
 }));
 
 interface QualitySuggestion {
@@ -23,12 +23,12 @@ interface QualitySuggestion {
   conceptId?: string;
 }
 
-vi.mock("../../../utils/taxonomy-qa", () => ({
-  TaxonomyQA: {
+vi.mock("../../../utils/ontology-qa", () => ({
+  OntologyQA: {
     generateSuggestions: vi.fn().mockReturnValue([]),
     autoFix: vi
       .fn()
-      .mockImplementation((taxonomy: Taxonomy) => ({ taxonomy })),
+      .mockImplementation((ontology: Ontology) => ({ ontology })),
   },
 }));
 
@@ -64,10 +64,10 @@ vi.mock("../ValidationResults", () => ({
 }));
 
 // Mock data
-const mockValidTaxonomy: Taxonomy = {
+const mockValidOntology: Ontology = {
   metadata: {
-    name: "Test Taxonomy",
-    description: "A sample taxonomy for testing",
+    name: "Test Ontology",
+    description: "A sample ontology for testing",
     version: "1.0",
     created: "2024-01-01T00:00:00Z",
     modified: "2024-01-02T00:00:00Z",
@@ -76,7 +76,7 @@ const mockValidTaxonomy: Taxonomy = {
   },
   scheme: {
     uri: "http://example.org/test/scheme",
-    prefLabel: "Test Taxonomy",
+    prefLabel: "Test Ontology",
     hasTopConcept: ["concept-1", "concept-2"],
   },
   concepts: {
@@ -115,8 +115,8 @@ const mockValidTaxonomy: Taxonomy = {
   },
 };
 
-const mockInvalidTaxonomy: Taxonomy = {
-  ...mockValidTaxonomy,
+const mockInvalidOntology: Ontology = {
+  ...mockValidOntology,
   concepts: {
     "concept-1": {
       id: "concept-1",
@@ -175,18 +175,18 @@ const mockInvalidValidationResult = {
   ],
 };
 
-describe("TaxonomyValidationTab", () => {
+describe("OntologyValidationTab", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  test("renders quality metrics for valid taxonomy", () => {
-    vi.mocked(validateTaxonomy).mockReturnValue(mockValidationResult);
+  test("renders quality metrics for valid ontology", () => {
+    vi.mocked(validateOntology).mockReturnValue(mockValidationResult);
 
-    render(<TaxonomyValidationTab taxonomy={mockValidTaxonomy} />);
+    render(<OntologyValidationTab ontology={mockValidOntology} />);
 
     // Check that quality score is displayed
-    expect(screen.getByText("Taxonomy Quality Score")).toBeInTheDocument();
+    expect(screen.getByText("Ontology Quality Score")).toBeInTheDocument();
 
     // Check individual metrics
     expect(screen.getByText("Completeness")).toBeInTheDocument();
@@ -200,10 +200,10 @@ describe("TaxonomyValidationTab", () => {
     expect(screen.getByText("Warnings")).toBeInTheDocument();
   });
 
-  test("calculates quality metrics correctly for complete taxonomy", () => {
-    vi.mocked(validateTaxonomy).mockReturnValue(mockValidationResult);
+  test("calculates quality metrics correctly for complete ontology", () => {
+    vi.mocked(validateOntology).mockReturnValue(mockValidationResult);
 
-    render(<TaxonomyValidationTab taxonomy={mockValidTaxonomy} />);
+    render(<OntologyValidationTab ontology={mockValidOntology} />);
 
     // Since all concepts have prefLabel, definition, and proper hierarchy,
     // completeness should be 100%
@@ -212,9 +212,9 @@ describe("TaxonomyValidationTab", () => {
   });
 
   test("displays validation errors and warnings", () => {
-    vi.mocked(validateTaxonomy).mockReturnValue(mockInvalidValidationResult);
+    vi.mocked(validateOntology).mockReturnValue(mockInvalidValidationResult);
 
-    render(<TaxonomyValidationTab taxonomy={mockInvalidTaxonomy} />);
+    render(<OntologyValidationTab ontology={mockInvalidOntology} />);
 
     // Check error count badge
     expect(screen.getByText("2")).toBeInTheDocument(); // 2 errors
@@ -225,8 +225,8 @@ describe("TaxonomyValidationTab", () => {
   });
 
   test("shows auto-fix suggestions when available", () => {
-    vi.mocked(validateTaxonomy).mockReturnValue(mockValidationResult);
-    vi.mocked(TaxonomyQA.generateSuggestions).mockReturnValue([
+    vi.mocked(validateOntology).mockReturnValue(mockValidationResult);
+    vi.mocked(OntologyQA.generateSuggestions).mockReturnValue([
       {
         type: "auto",
         field: "prefLabel",
@@ -235,7 +235,7 @@ describe("TaxonomyValidationTab", () => {
       } as QualitySuggestion,
     ]);
 
-    render(<TaxonomyValidationTab taxonomy={mockValidTaxonomy} />);
+    render(<OntologyValidationTab ontology={mockValidOntology} />);
 
     // Should show quick fixes section
     expect(screen.getByText("Quick Fixes")).toBeInTheDocument();
@@ -244,9 +244,9 @@ describe("TaxonomyValidationTab", () => {
   });
 
   test("handles auto-fix functionality", async () => {
-    const mockOnTaxonomyChange = vi.fn();
-    vi.mocked(validateTaxonomy).mockReturnValue(mockValidationResult);
-    vi.mocked(TaxonomyQA.generateSuggestions).mockReturnValue([
+    const mockOnOntologyChange = vi.fn();
+    vi.mocked(validateOntology).mockReturnValue(mockValidationResult);
+    vi.mocked(OntologyQA.generateSuggestions).mockReturnValue([
       {
         type: "auto",
         field: "consistency",
@@ -256,9 +256,9 @@ describe("TaxonomyValidationTab", () => {
     ]);
 
     render(
-      <TaxonomyValidationTab
-        taxonomy={mockValidTaxonomy}
-        onTaxonomyChange={mockOnTaxonomyChange}
+      <OntologyValidationTab
+        ontology={mockValidOntology}
+        onOntologyChange={mockOnOntologyChange}
       />,
     );
 
@@ -267,16 +267,16 @@ describe("TaxonomyValidationTab", () => {
     fireEvent.click(fixAllButton);
 
     await waitFor(() => {
-      expect(vi.mocked(TaxonomyQA.autoFix)).toHaveBeenCalledWith(
-        mockValidTaxonomy,
+      expect(vi.mocked(OntologyQA.autoFix)).toHaveBeenCalledWith(
+        mockValidOntology,
       );
-      expect(mockOnTaxonomyChange).toHaveBeenCalledWith(mockValidTaxonomy);
+      expect(mockOnOntologyChange).toHaveBeenCalledWith(mockValidOntology);
     });
   });
 
-  test("disables auto-fix when no onTaxonomyChange handler", () => {
-    vi.mocked(validateTaxonomy).mockReturnValue(mockValidationResult);
-    vi.mocked(TaxonomyQA.generateSuggestions).mockReturnValue([
+  test("disables auto-fix when no onOntologyChange handler", () => {
+    vi.mocked(validateOntology).mockReturnValue(mockValidationResult);
+    vi.mocked(OntologyQA.generateSuggestions).mockReturnValue([
       {
         type: "auto",
         field: "consistency",
@@ -285,23 +285,23 @@ describe("TaxonomyValidationTab", () => {
       } as QualitySuggestion,
     ]);
 
-    render(<TaxonomyValidationTab taxonomy={mockValidTaxonomy} />);
+    render(<OntologyValidationTab ontology={mockValidOntology} />);
 
     // Fix buttons should be disabled
     const fixAllButton = screen.getByText("Fix All");
     expect(fixAllButton).toBeDisabled();
   });
 
-  test("calculates correct quality metrics for empty taxonomy", () => {
-    vi.mocked(validateTaxonomy).mockReturnValue(mockValidationResult);
+  test("calculates correct quality metrics for empty ontology", () => {
+    vi.mocked(validateOntology).mockReturnValue(mockValidationResult);
 
-    const emptyTaxonomy: Taxonomy = {
-      ...mockValidTaxonomy,
+    const emptyOntology: Ontology = {
+      ...mockValidOntology,
       concepts: {},
-      scheme: { ...mockValidTaxonomy.scheme, hasTopConcept: [] },
+      scheme: { ...mockValidOntology.scheme, hasTopConcept: [] },
     };
 
-    render(<TaxonomyValidationTab taxonomy={emptyTaxonomy} />);
+    render(<OntologyValidationTab ontology={emptyOntology} />);
 
     // Should show 0% for all metrics when no concepts exist
     const zeroPercentElements = screen.getAllByText("0%");
@@ -309,11 +309,11 @@ describe("TaxonomyValidationTab", () => {
   });
 
   test("detects orphaned concepts", () => {
-    vi.mocked(validateTaxonomy).mockReturnValue(mockValidationResult);
+    vi.mocked(validateOntology).mockReturnValue(mockValidationResult);
 
-    const taxonomyWithOrphans: Taxonomy = {
-      ...mockValidTaxonomy,
-      scheme: { ...mockValidTaxonomy.scheme, hasTopConcept: [] },
+    const ontologyWithOrphans: Ontology = {
+      ...mockValidOntology,
+      scheme: { ...mockValidOntology.scheme, hasTopConcept: [] },
       concepts: {
         "orphan-1": {
           id: "orphan-1",
@@ -325,19 +325,19 @@ describe("TaxonomyValidationTab", () => {
       },
     };
 
-    render(<TaxonomyValidationTab taxonomy={taxonomyWithOrphans} />);
+    render(<OntologyValidationTab ontology={ontologyWithOrphans} />);
 
     // Component should internally identify orphaned concepts for quality suggestions
-    expect(validateTaxonomy).toHaveBeenCalledWith(taxonomyWithOrphans);
+    expect(validateOntology).toHaveBeenCalledWith(ontologyWithOrphans);
   });
 
   test("calculates hierarchy depth correctly", () => {
-    vi.mocked(validateTaxonomy).mockReturnValue(mockValidationResult);
+    vi.mocked(validateOntology).mockReturnValue(mockValidationResult);
 
-    // Create a deep hierarchy taxonomy
-    const deepTaxonomy: Taxonomy = {
-      ...mockValidTaxonomy,
-      scheme: { ...mockValidTaxonomy.scheme, hasTopConcept: ["level-1"] },
+    // Create a deep hierarchy ontology
+    const deepOntology: Ontology = {
+      ...mockValidOntology,
+      scheme: { ...mockValidOntology.scheme, hasTopConcept: ["level-1"] },
       concepts: {
         "level-1": {
           id: "level-1",
@@ -374,19 +374,19 @@ describe("TaxonomyValidationTab", () => {
       },
     };
 
-    render(<TaxonomyValidationTab taxonomy={deepTaxonomy} />);
+    render(<OntologyValidationTab ontology={deepOntology} />);
 
     // Should render without errors and calculate depth-based coverage
     expect(screen.getByText("Coverage")).toBeInTheDocument();
-    expect(validateTaxonomy).toHaveBeenCalledWith(deepTaxonomy);
+    expect(validateOntology).toHaveBeenCalledWith(deepOntology);
   });
 
   test("handles relationship consistency calculations", () => {
-    vi.mocked(validateTaxonomy).mockReturnValue(mockValidationResult);
+    vi.mocked(validateOntology).mockReturnValue(mockValidationResult);
 
-    // Create taxonomy with inconsistent relationships
-    const inconsistentTaxonomy: Taxonomy = {
-      ...mockValidTaxonomy,
+    // Create ontology with inconsistent relationships
+    const inconsistentOntology: Ontology = {
+      ...mockValidOntology,
       concepts: {
         "concept-1": {
           id: "concept-1",
@@ -407,38 +407,38 @@ describe("TaxonomyValidationTab", () => {
       },
     };
 
-    render(<TaxonomyValidationTab taxonomy={inconsistentTaxonomy} />);
+    render(<OntologyValidationTab ontology={inconsistentOntology} />);
 
     // Should detect relationship inconsistencies in quality metrics
     expect(screen.getByText("Consistency")).toBeInTheDocument();
-    expect(validateTaxonomy).toHaveBeenCalledWith(inconsistentTaxonomy);
+    expect(validateOntology).toHaveBeenCalledWith(inconsistentOntology);
   });
 
   test("displays success message when no issues found", () => {
-    vi.mocked(validateTaxonomy).mockReturnValue(mockValidationResult);
-    vi.mocked(TaxonomyQA.generateSuggestions).mockReturnValue([]);
+    vi.mocked(validateOntology).mockReturnValue(mockValidationResult);
+    vi.mocked(OntologyQA.generateSuggestions).mockReturnValue([]);
 
-    render(<TaxonomyValidationTab taxonomy={mockValidTaxonomy} />);
+    render(<OntologyValidationTab ontology={mockValidOntology} />);
 
     expect(
-      screen.getByText("No issues found. Your taxonomy looks great!"),
+      screen.getByText("No issues found. Your ontology looks great!"),
     ).toBeInTheDocument();
   });
 
   test("revalidation button triggers validation", () => {
-    vi.mocked(validateTaxonomy).mockReturnValue(mockValidationResult);
+    vi.mocked(validateOntology).mockReturnValue(mockValidationResult);
 
-    render(<TaxonomyValidationTab taxonomy={mockValidTaxonomy} />);
+    render(<OntologyValidationTab ontology={mockValidOntology} />);
 
     const revalidateButton = screen.getByText("Revalidate");
 
     // Clear previous calls
-    vi.mocked(validateTaxonomy).mockClear();
+    vi.mocked(validateOntology).mockClear();
 
     fireEvent.click(revalidateButton);
 
     // Note: The component uses useMemo for validation, so clicking revalidate
-    // won't actually trigger re-validation unless taxonomy changes.
+    // won't actually trigger re-validation unless ontology changes.
     // This test verifies the button exists and is clickable.
     expect(revalidateButton).toBeInTheDocument();
   });

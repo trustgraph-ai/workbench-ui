@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { Box, Button, HStack, VStack, Tabs } from "@chakra-ui/react";
 import { Plus, List, Edit } from "lucide-react";
-import { TaxonomiesTable } from "./TaxonomiesTable";
-import { EditTaxonomyDialog } from "./EditTaxonomyDialog";
-import { TaxonomyManager } from "./TaxonomyManager";
+import { OntologiesTable } from "./OntologiesTable";
+import { EditOntologyDialog } from "./EditOntologyDialog";
+import { OntologyManager } from "./OntologyManager";
 
-export const Taxonomies: React.FC = () => {
+export const Ontologies: React.FC = () => {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
-  const [selectedTaxonomyId, setSelectedTaxonomyId] = useState<string | null>(
+  const [selectedOntologyId, setSelectedOntologyId] = useState<string | null>(
     null,
   );
 
@@ -15,7 +15,7 @@ export const Taxonomies: React.FC = () => {
     <VStack gap={6} align="stretch" h="calc(100vh - 200px)">
       <HStack justify="flex-end">
         <Button colorPalette="primary" onClick={() => setIsCreateOpen(true)}>
-          <Plus /> Create Taxonomy
+          <Plus /> Create Ontology
         </Button>
       </HStack>
 
@@ -24,7 +24,7 @@ export const Taxonomies: React.FC = () => {
           <Tabs.List>
             <Tabs.Trigger value="list">
               <List style={{ marginRight: "8px" }} />
-              All Taxonomies
+              All Ontologies
             </Tabs.Trigger>
             <Tabs.Trigger value="editor">
               <Edit style={{ marginRight: "8px" }} />
@@ -33,18 +33,18 @@ export const Taxonomies: React.FC = () => {
           </Tabs.List>
 
           <Tabs.Content value="list" height="calc(100% - 40px)">
-            <TaxonomiesTable />
+            <OntologiesTable />
           </Tabs.Content>
           <Tabs.Content value="editor" height="100%" p={0}>
-            <TaxonomyManager
-              selectedTaxonomyId={selectedTaxonomyId || undefined}
-              onTaxonomySelect={setSelectedTaxonomyId}
+            <OntologyManager
+              selectedOntologyId={selectedOntologyId || undefined}
+              onOntologySelect={setSelectedOntologyId}
             />
           </Tabs.Content>
         </Tabs.Root>
       </Box>
 
-      <EditTaxonomyDialog
+      <EditOntologyDialog
         open={isCreateOpen}
         onOpenChange={setIsCreateOpen}
         mode="create"

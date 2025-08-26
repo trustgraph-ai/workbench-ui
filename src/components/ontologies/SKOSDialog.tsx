@@ -15,14 +15,14 @@ import {
 } from "@chakra-ui/react";
 import { Download, Upload, Copy, Check } from "lucide-react";
 import { useNotification } from "../../state/notify";
-import { Taxonomy } from "../../state/taxonomies";
+import { Ontology } from "../../state/ontologies";
 import { serializeToSKOS, parseFromSKOS } from "../../utils/skos";
 import {
-  validateTaxonomy,
+  validateOntology,
   ValidationResult,
 } from "../../utils/skos-validation";
 import {
-  exportTaxonomy,
+  exportOntology,
   EXPORT_FORMATS,
   ExportFormat,
 } from "../../utils/export-formats";
@@ -32,15 +32,15 @@ import { ValidationResults } from "./ValidationResults";
 interface SKOSDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  taxonomy?: Taxonomy;
+  ontology?: Ontology;
   mode: "export" | "import";
-  onImport?: (taxonomy: Taxonomy, taxonomyId: string) => void;
+  onImport?: (ontology: Ontology, ontologyId: string) => void;
 }
 
 export const SKOSDialog: React.FC<SKOSDialogProps> = ({
   open,
   onOpenChange,
-  taxonomy,
+  ontology,
   mode,
   onImport,
 }) => {
@@ -54,7 +54,7 @@ export const SKOSDialog: React.FC<SKOSDialogProps> = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleExport = React.useCallback(() => {
-    if (!taxonomy) return;
+    if (!ontology) return;
 
     try {
       let exported: string;
@@ -62,17 +62,17 @@ export const SKOSDialog: React.FC<SKOSDialogProps> = ({
       if (format === "skos-rdf" || format === "skos-turtle") {
         // Use SKOS serializer for SKOS formats
         const skosFormat = format === "skos-rdf" ? "rdf" : "turtle";
-        exported = serializeToSKOS(taxonomy, skosFormat as "rdf" | "turtle");
+        exported = serializeToSKOS(ontology, skosFormat as "rdf" | "turtle");
       } else {
         // Use additional export formats
-        exported = exportTaxonomy(taxonomy, format);
+        exported = exportOntology(ontology, format);
       }
 
       setContent(exported);
 
-      // Also validate the taxonomy (only for SKOS formats)
+      // Also validate the ontology (only for SKOS formats)
       if (format === "skos-rdf" || format === "skos-turtle") {
-        const validationResult = validateTaxonomy(taxonomy);
+        const validationResult = validateOntology(ontology);
         setValidation(validationResult);
       } else {
         setValidation(null); // No SKOS validation for non-SKOS formats
@@ -82,17 +82,17 @@ export const SKOSDialog: React.FC<SKOSDialogProps> = ({
         `Export failed: ${error instanceof Error ? error.message : "Unknown error"}`,
       );
     }
-  }, [taxonomy, format, notify]);
+  }, [ontology, format, notify]);
 
   const handleImport = async () => {
     if (!content.trim() || !importId.trim()) {
-      notify.error("Please provide both content and taxonomy ID");
+      notify.error("Please provide both content and ontology ID");
       return;
     }
 
     setIsProcessing(true);
     try {
-      let imported: Taxonomy;
+      let imported: Ontology;
 
       if (format === "skos-rdf" || format === "skos-turtle") {
         // Use SKOS parser for SKOS formats
@@ -103,8 +103,8 @@ export const SKOSDialog: React.FC<SKOSDialogProps> = ({
           skosFormat as "rdf" | "turtle",
         );
 
-        // Validate SKOS taxonomy
-        const validationResult = validateTaxonomy(imported);
+        // Validate SKOS ontology
+        const validationResult = validateOntology(imported);
         setValidation(validationResult);
 
         if (validationResult.errors.length > 0) {
@@ -123,7 +123,7 @@ export const SKOSDialog: React.FC<SKOSDialogProps> = ({
 
       if (onImport) {
         onImport(imported, importId);
-        notify.success("Taxonomy imported successfully");
+        notify.success("Ontology imported successfully");
         onOpenChange(false);
       }
     } catch (error) {
@@ -147,7 +147,7 @@ export const SKOSDialog: React.FC<SKOSDialogProps> = ({
   };
 
   const handleDownload = () => {
-    if (!content || !taxonomy) return;
+    if (!content || !ontology) return;
 
     const formatInfo = EXPORT_FORMATS[format];
     const extension = formatInfo.extension;
@@ -157,7 +157,7 @@ export const SKOSDialog: React.FC<SKOSDialogProps> = ({
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `${taxonomy.metadata.name.replace(/\s+/g, "-")}.${extension}`;
+    a.download = `${ontology.metadata.name.replace(/\s+/g, "-")}.${extension}`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -192,10 +192,10 @@ export const SKOSDialog: React.FC<SKOSDialogProps> = ({
   };
 
   React.useEffect(() => {
-    if (open && mode === "export" && taxonomy) {
+    if (open && mode === "export" && ontology) {
       handleExport();
     }
-  }, [open, mode, taxonomy, handleExport]);
+  }, [open, mode, ontology, handleExport]);
 
   React.useEffect(() => {
     // Reset state when dialog opens
@@ -219,7 +219,7 @@ export const SKOSDialog: React.FC<SKOSDialogProps> = ({
           <Dialog.Content maxW="6xl" maxH="90vh">
             <Dialog.Header>
               <Dialog.Title>
-                {mode === "export" ? "Export Taxonomy" : "Import Taxonomy"}
+                {mode === "export" ? "Export Ontology" : "Import Ontology"}
               </Dialog.Title>
             </Dialog.Header>
 
@@ -247,7 +247,7 @@ export const SKOSDialog: React.FC<SKOSDialogProps> = ({
                   onValueChange={(value) => {
                     setFormat(value as ExportFormat);
                     // Re-export with new format if dialog is in export mode
-                    if (mode === "export" && taxonomy) {
+                    if (mode === "export" && ontology) {
                       setTimeout(() => handleExport(), 0);
                     }
                   }}
@@ -270,7 +270,7 @@ export const SKOSDialog: React.FC<SKOSDialogProps> = ({
                         </Button>
                         <Text fontSize="sm" color="fg.muted">
                           Or paste{" "}
-                          {format.includes("skos") ? "SKOS" : "taxonomy"}{" "}
+                          {format.includes("skos") ? "SKOS" : "ontology"}{" "}
                           content below
                         </Text>
                       </HStack>
@@ -285,12 +285,12 @@ export const SKOSDialog: React.FC<SKOSDialogProps> = ({
 
                     <Box>
                       <Text fontSize="sm" fontWeight="bold" mb={2}>
-                        Taxonomy ID
+                        Ontology ID
                       </Text>
                       <Textarea
                         value={importId}
                         onChange={(e) => setImportId(e.target.value)}
-                        placeholder="Enter unique taxonomy ID (e.g., 'risk-categories')"
+                        placeholder="Enter unique ontology ID (e.g., 'risk-categories')"
                         rows={1}
                         resize="none"
                       />
@@ -364,7 +364,7 @@ export const SKOSDialog: React.FC<SKOSDialogProps> = ({
                         onChange={(e) => setContent(e.target.value)}
                         placeholder={
                           mode === "import"
-                            ? `Paste ${format.includes("skos") ? "SKOS" : "taxonomy"} content here...`
+                            ? `Paste ${format.includes("skos") ? "SKOS" : "ontology"} content here...`
                             : `${EXPORT_FORMATS[format].name} content will appear here`
                         }
                         rows={20}
@@ -403,7 +403,7 @@ export const SKOSDialog: React.FC<SKOSDialogProps> = ({
                     }
                     loading={isProcessing}
                   >
-                    Import Taxonomy
+                    Import Ontology
                   </Button>
                 )}
               </HStack>

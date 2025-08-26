@@ -9,12 +9,12 @@ import {
   WrapItem,
   Field,
 } from "@chakra-ui/react";
-import { TaxonomyConcept } from "../../state/taxonomies";
+import { OntologyConcept } from "../../state/ontologies";
 
 interface ConceptMetadataTabProps {
-  concept?: TaxonomyConcept;
-  editedConcept: TaxonomyConcept;
-  onUpdateField: (field: keyof TaxonomyConcept, value: unknown) => void;
+  concept?: OntologyConcept;
+  editedConcept: OntologyConcept;
+  onUpdateField: (field: keyof OntologyConcept, value: unknown) => void;
 }
 
 export const ConceptMetadataTab: React.FC<ConceptMetadataTabProps> = ({

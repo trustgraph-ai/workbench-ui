@@ -1,14 +1,14 @@
 import React from "react";
 import { Box } from "@chakra-ui/react";
-import { Taxonomy } from "../../state/taxonomies";
+import { Ontology } from "../../state/ontologies";
 
-interface TaxonomyJsonPreviewTabProps {
-  taxonomy: Taxonomy;
+interface OntologyJsonPreviewTabProps {
+  ontology: Ontology;
 }
 
-export const TaxonomyJsonPreviewTab: React.FC<
-  TaxonomyJsonPreviewTabProps
-> = ({ taxonomy }) => {
+export const OntologyJsonPreviewTab: React.FC<
+  OntologyJsonPreviewTabProps
+> = ({ ontology }) => {
   return (
     <Box
       as="pre"
@@ -19,7 +19,7 @@ export const TaxonomyJsonPreviewTab: React.FC<
       maxH="400px"
       fontSize="sm"
     >
-      {JSON.stringify(taxonomy, null, 2)}
+      {JSON.stringify(ontology, null, 2)}
     </Box>
   );
 };

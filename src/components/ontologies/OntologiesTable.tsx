@@ -4,53 +4,53 @@ import {
   getCoreRowModel,
   getSortedRowModel,
 } from "@tanstack/react-table";
-import { useTaxonomies } from "../../state/taxonomies";
+import { useOntologies } from "../../state/ontologies";
 import {
-  TaxonomyTableRow,
-  taxonomyColumns,
-} from "../../model/taxonomies-table";
-import { EditTaxonomyDialog } from "./EditTaxonomyDialog";
+  OntologyTableRow,
+  ontologyColumns,
+} from "../../model/ontologies-table";
+import { EditOntologyDialog } from "./EditOntologyDialog";
 import TableWithStates from "../common/TableWithStates";
 
-export const TaxonomiesTable: React.FC = () => {
-  const { taxonomies, taxonomiesError } = useTaxonomies();
+export const OntologiesTable: React.FC = () => {
+  const { ontologies, ontologiesError } = useOntologies();
   const [isOpen, setIsOpen] = React.useState(false);
-  const [selectedTaxonomy, setSelectedTaxonomy] =
-    React.useState<TaxonomyTableRow | null>(null);
+  const [selectedOntology, setSelectedOntology] =
+    React.useState<OntologyTableRow | null>(null);
 
   const table = useReactTable({
-    data: taxonomies as TaxonomyTableRow[],
-    columns: taxonomyColumns,
+    data: ontologies as OntologyTableRow[],
+    columns: ontologyColumns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
   });
 
-  const handleRowClick = (row: TaxonomyTableRow) => {
-    setSelectedTaxonomy(row);
+  const handleRowClick = (row: OntologyTableRow) => {
+    setSelectedOntology(row);
     setIsOpen(true);
   };
 
-  // Loading state is handled by useActivity in the taxonomies hook
+  // Loading state is handled by useActivity in the ontologies hook
   // CenterSpinner component automatically shows when activities are active
 
   return (
     <>
       <TableWithStates
         table={table}
-        data={taxonomies}
-        error={taxonomiesError}
+        data={ontologies}
+        error={ontologiesError}
         onClick={handleRowClick}
-        emptyMessage="No taxonomies found. Create one to get started."
-        errorTitle="Error loading taxonomies"
+        emptyMessage="No ontologies found. Create one to get started."
+        errorTitle="Error loading ontologies"
       />
 
-      {selectedTaxonomy && (
-        <EditTaxonomyDialog
+      {selectedOntology && (
+        <EditOntologyDialog
           open={isOpen}
           onOpenChange={(open) => setIsOpen(open)}
           mode="edit"
-          taxonomyId={selectedTaxonomy[0]}
-          initialTaxonomy={selectedTaxonomy[1]}
+          ontologyId={selectedOntology[0]}
+          initialOntology={selectedOntology[1]}
         />
       )}
     </>

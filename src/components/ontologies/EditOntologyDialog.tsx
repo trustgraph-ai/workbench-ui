@@ -2,45 +2,45 @@ import React, { useState, useEffect } from "react";
 import { Portal, Button, Dialog, CloseButton, Tabs } from "@chakra-ui/react";
 import { useNotification } from "../../state/notify";
 import {
-  useTaxonomies,
-  Taxonomy,
-  TaxonomyConcept,
-} from "../../state/taxonomies";
-import { validateTaxonomy } from "../../utils/skos-validation";
-import { TaxonomyMetadataTab } from "./TaxonomyMetadataTab";
-import { TaxonomyConceptsTab } from "./TaxonomyConceptsTab";
-import { TaxonomySchemeTab } from "./TaxonomySchemeTab";
-import { TaxonomyJsonPreviewTab } from "./TaxonomyJsonPreviewTab";
-import { TaxonomyValidationTab } from "./TaxonomyValidationTab";
+  useOntologies,
+  Ontology,
+  OntologyConcept,
+} from "../../state/ontologies";
+import { validateOntology } from "../../utils/skos-validation";
+import { OntologyMetadataTab } from "./OntologyMetadataTab";
+import { OntologyConceptsTab } from "./OntologyConceptsTab";
+import { OntologySchemeTab } from "./OntologySchemeTab";
+import { OntologyJsonPreviewTab } from "./OntologyJsonPreviewTab";
+import { OntologyValidationTab } from "./OntologyValidationTab";
 
-interface EditTaxonomyDialogProps {
+interface EditOntologyDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   mode: "create" | "edit";
-  taxonomyId?: string;
-  initialTaxonomy?: Taxonomy;
+  ontologyId?: string;
+  initialOntology?: Ontology;
 }
 
-export const EditTaxonomyDialog: React.FC<EditTaxonomyDialogProps> = ({
+export const EditOntologyDialog: React.FC<EditOntologyDialogProps> = ({
   open,
   onOpenChange,
   mode,
-  taxonomyId: initialTaxonomyId,
-  initialTaxonomy,
+  ontologyId: initialOntologyId,
+  initialOntology,
 }) => {
   const {
-    createTaxonomy,
-    updateTaxonomy,
-    deleteTaxonomy,
-    isCreatingTaxonomy,
-    isUpdatingTaxonomy,
-    isDeletingTaxonomy,
-  } = useTaxonomies();
+    createOntology,
+    updateOntology,
+    deleteOntology,
+    isCreatingOntology,
+    isUpdatingOntology,
+    isDeletingOntology,
+  } = useOntologies();
   const notify = useNotification();
 
-  const [taxonomyId, setTaxonomyId] = useState(initialTaxonomyId || "");
-  const [taxonomy, setTaxonomy] = useState<Taxonomy>(
-    initialTaxonomy || {
+  const [ontologyId, setOntologyId] = useState(initialOntologyId || "");
+  const [ontology, setOntology] = useState<Ontology>(
+    initialOntology || {
       metadata: {
         name: "",
         description: "",
@@ -48,7 +48,7 @@ export const EditTaxonomyDialog: React.FC<EditTaxonomyDialogProps> = ({
         created: new Date().toISOString(),
         modified: new Date().toISOString(),
         creator: "user",
-        namespace: "http://example.org/taxonomies/",
+        namespace: "http://example.org/ontologies/",
       },
       concepts: {},
       scheme: {
@@ -60,59 +60,59 @@ export const EditTaxonomyDialog: React.FC<EditTaxonomyDialogProps> = ({
   );
 
   useEffect(() => {
-    if (initialTaxonomy) {
-      setTaxonomy(initialTaxonomy);
+    if (initialOntology) {
+      setOntology(initialOntology);
     }
-    if (initialTaxonomyId) {
-      setTaxonomyId(initialTaxonomyId);
+    if (initialOntologyId) {
+      setOntologyId(initialOntologyId);
     }
-  }, [initialTaxonomy, initialTaxonomyId]);
+  }, [initialOntology, initialOntologyId]);
 
   const handleSave = () => {
-    if (!taxonomyId.trim()) {
-      notify.error("Taxonomy ID is required");
+    if (!ontologyId.trim()) {
+      notify.error("Ontology ID is required");
       return;
     }
 
-    if (!taxonomy.metadata.name.trim()) {
-      notify.error("Taxonomy name is required");
+    if (!ontology.metadata.name.trim()) {
+      notify.error("Ontology name is required");
       return;
     }
 
-    const updatedTaxonomy = {
-      ...taxonomy,
+    const updatedOntology = {
+      ...ontology,
       metadata: {
-        ...taxonomy.metadata,
+        ...ontology.metadata,
         modified: new Date().toISOString(),
       },
       scheme: {
-        ...taxonomy.scheme,
+        ...ontology.scheme,
         uri:
-          taxonomy.scheme.uri ||
-          `${taxonomy.metadata.namespace}${taxonomyId}`,
-        prefLabel: taxonomy.scheme.prefLabel || taxonomy.metadata.name,
+          ontology.scheme.uri ||
+          `${ontology.metadata.namespace}${ontologyId}`,
+        prefLabel: ontology.scheme.prefLabel || ontology.metadata.name,
       },
     };
 
     // Run validation and warn about issues
-    const validation = validateTaxonomy(updatedTaxonomy);
+    const validation = validateOntology(updatedOntology);
 
     if (validation.errors.length > 0) {
       const shouldContinue = window.confirm(
-        `This taxonomy has ${validation.errors.length} validation error${validation.errors.length !== 1 ? "s" : ""}. ` +
-          "Saving may result in an invalid SKOS taxonomy. Do you want to continue?",
+        `This ontology has ${validation.errors.length} validation error${validation.errors.length !== 1 ? "s" : ""}. ` +
+          "Saving may result in an invalid SKOS ontology. Do you want to continue?",
       );
       if (!shouldContinue) return;
     } else if (validation.warnings.length > 0) {
       notify.warning(
-        `Taxonomy saved with ${validation.warnings.length} validation warning${validation.warnings.length !== 1 ? "s" : ""}`,
+        `Ontology saved with ${validation.warnings.length} validation warning${validation.warnings.length !== 1 ? "s" : ""}`,
       );
     }
 
-    const mutation = mode === "create" ? createTaxonomy : updateTaxonomy;
+    const mutation = mode === "create" ? createOntology : updateOntology;
     mutation({
-      id: taxonomyId,
-      taxonomy: updatedTaxonomy,
+      id: ontologyId,
+      ontology: updatedOntology,
       onSuccess: () => {
         onOpenChange(false);
       },
@@ -122,11 +122,11 @@ export const EditTaxonomyDialog: React.FC<EditTaxonomyDialogProps> = ({
   const handleDelete = () => {
     if (
       window.confirm(
-        `Are you sure you want to delete the taxonomy "${taxonomy.metadata.name}"?`,
+        `Are you sure you want to delete the ontology "${ontology.metadata.name}"?`,
       )
     ) {
-      deleteTaxonomy({
-        id: taxonomyId,
+      deleteOntology({
+        id: ontologyId,
         onSuccess: () => {
           onOpenChange(false);
         },
@@ -135,20 +135,20 @@ export const EditTaxonomyDialog: React.FC<EditTaxonomyDialogProps> = ({
   };
 
   const handleMetadataChange = (field: string, value: string) => {
-    setTaxonomy({
-      ...taxonomy,
+    setOntology({
+      ...ontology,
       metadata: {
-        ...taxonomy.metadata,
+        ...ontology.metadata,
         [field]: value,
       },
     });
   };
 
   const handleSchemeChange = (field: string, value: string) => {
-    setTaxonomy({
-      ...taxonomy,
+    setOntology({
+      ...ontology,
       scheme: {
-        ...taxonomy.scheme,
+        ...ontology.scheme,
         [field]: value,
       },
     });
@@ -156,17 +156,17 @@ export const EditTaxonomyDialog: React.FC<EditTaxonomyDialogProps> = ({
 
   const addConcept = () => {
     const newId = `concept-${Date.now()}`;
-    const newConcept: TaxonomyConcept = {
+    const newConcept: OntologyConcept = {
       id: newId,
       prefLabel: "New Concept",
       narrower: [],
       related: [],
     };
 
-    setTaxonomy({
-      ...taxonomy,
+    setOntology({
+      ...ontology,
       concepts: {
-        ...taxonomy.concepts,
+        ...ontology.concepts,
         [newId]: newConcept,
       },
     });
@@ -177,12 +177,12 @@ export const EditTaxonomyDialog: React.FC<EditTaxonomyDialogProps> = ({
     field: string,
     value: unknown,
   ) => {
-    setTaxonomy({
-      ...taxonomy,
+    setOntology({
+      ...ontology,
       concepts: {
-        ...taxonomy.concepts,
+        ...ontology.concepts,
         [conceptId]: {
-          ...taxonomy.concepts[conceptId],
+          ...ontology.concepts[conceptId],
           [field]: value,
         },
       },
@@ -191,15 +191,15 @@ export const EditTaxonomyDialog: React.FC<EditTaxonomyDialogProps> = ({
 
   const deleteConcept = (conceptId: string) => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { [conceptId]: _, ...remainingConcepts } = taxonomy.concepts;
-    setTaxonomy({
-      ...taxonomy,
+    const { [conceptId]: _, ...remainingConcepts } = ontology.concepts;
+    setOntology({
+      ...ontology,
       concepts: remainingConcepts,
     });
   };
 
   const isLoading =
-    isCreatingTaxonomy || isUpdatingTaxonomy || isDeletingTaxonomy;
+    isCreatingOntology || isUpdatingOntology || isDeletingOntology;
 
   return (
     <Dialog.Root
@@ -216,7 +216,7 @@ export const EditTaxonomyDialog: React.FC<EditTaxonomyDialogProps> = ({
           <Dialog.Content maxW="4xl">
             <Dialog.Header>
               <Dialog.Title>
-                {mode === "create" ? "Create New Taxonomy" : "Edit Taxonomy"}
+                {mode === "create" ? "Create New Ontology" : "Edit Ontology"}
               </Dialog.Title>
             </Dialog.Header>
             <Dialog.Body>
@@ -224,7 +224,7 @@ export const EditTaxonomyDialog: React.FC<EditTaxonomyDialogProps> = ({
                 <Tabs.List>
                   <Tabs.Trigger value="metadata">Metadata</Tabs.Trigger>
                   <Tabs.Trigger value="concepts">
-                    Concepts ({Object.keys(taxonomy.concepts).length})
+                    Concepts ({Object.keys(ontology.concepts).length})
                   </Tabs.Trigger>
                   <Tabs.Trigger value="scheme">Scheme</Tabs.Trigger>
                   <Tabs.Trigger value="validation">Validation</Tabs.Trigger>
@@ -232,18 +232,18 @@ export const EditTaxonomyDialog: React.FC<EditTaxonomyDialogProps> = ({
                 </Tabs.List>
 
                 <Tabs.Content value="metadata">
-                  <TaxonomyMetadataTab
-                    taxonomyId={taxonomyId}
-                    taxonomy={taxonomy}
+                  <OntologyMetadataTab
+                    ontologyId={ontologyId}
+                    ontology={ontology}
                     mode={mode}
-                    onTaxonomyIdChange={setTaxonomyId}
+                    onOntologyIdChange={setOntologyId}
                     onMetadataChange={handleMetadataChange}
                   />
                 </Tabs.Content>
 
                 <Tabs.Content value="concepts">
-                  <TaxonomyConceptsTab
-                    taxonomy={taxonomy}
+                  <OntologyConceptsTab
+                    ontology={ontology}
                     onAddConcept={addConcept}
                     onDeleteConcept={deleteConcept}
                     onUpdateConcept={updateConcept}
@@ -251,21 +251,21 @@ export const EditTaxonomyDialog: React.FC<EditTaxonomyDialogProps> = ({
                 </Tabs.Content>
 
                 <Tabs.Content value="scheme">
-                  <TaxonomySchemeTab
-                    taxonomy={taxonomy}
+                  <OntologySchemeTab
+                    ontology={ontology}
                     onSchemeChange={handleSchemeChange}
                   />
                 </Tabs.Content>
 
                 <Tabs.Content value="validation">
-                  <TaxonomyValidationTab
-                    taxonomy={taxonomy}
-                    onTaxonomyChange={setTaxonomy}
+                  <OntologyValidationTab
+                    ontology={ontology}
+                    onOntologyChange={setOntology}
                   />
                 </Tabs.Content>
 
                 <Tabs.Content value="json">
-                  <TaxonomyJsonPreviewTab taxonomy={taxonomy} />
+                  <OntologyJsonPreviewTab ontology={ontology} />
                 </Tabs.Content>
               </Tabs.Root>
             </Dialog.Body>
@@ -283,7 +283,7 @@ export const EditTaxonomyDialog: React.FC<EditTaxonomyDialogProps> = ({
                   colorPalette="red"
                   variant="solid"
                   onClick={handleDelete}
-                  loading={isDeletingTaxonomy}
+                  loading={isDeletingOntology}
                 >
                   Delete
                 </Button>

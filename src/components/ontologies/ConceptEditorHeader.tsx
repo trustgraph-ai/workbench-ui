@@ -1,10 +1,10 @@
 import React from "react";
 import { HStack, Text, Button } from "@chakra-ui/react";
 import { Save } from "lucide-react";
-import { TaxonomyConcept } from "../../state/taxonomies";
+import { OntologyConcept } from "../../state/ontologies";
 
 interface ConceptEditorHeaderProps {
-  concept?: TaxonomyConcept;
+  concept?: OntologyConcept;
   onSave: () => void;
   onCancel: () => void;
 }

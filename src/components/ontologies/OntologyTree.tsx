@@ -1,13 +1,13 @@
 import React, { useState, useMemo } from "react";
 import { Box, VStack } from "@chakra-ui/react";
-import { Taxonomy } from "../../state/taxonomies";
-import { TaxonomyTreeNode } from "./TaxonomyTreeNode";
-import { TaxonomyTreeSearch } from "./TaxonomyTreeSearch";
-import { TaxonomyTreeHeader } from "./TaxonomyTreeHeader";
-import { TaxonomyTreeEmpty } from "./TaxonomyTreeEmpty";
+import { Ontology } from "../../state/ontologies";
+import { OntologyTreeNode } from "./OntologyTreeNode";
+import { OntologyTreeSearch } from "./OntologyTreeSearch";
+import { OntologyTreeHeader } from "./OntologyTreeHeader";
+import { OntologyTreeEmpty } from "./OntologyTreeEmpty";
 
-interface TaxonomyTreeProps {
-  taxonomy: Taxonomy;
+interface OntologyTreeProps {
+  ontology: Ontology;
   selectedConceptId?: string;
   onConceptSelect: (conceptId: string) => void;
   onConceptAdd: (parentId?: string) => void;
@@ -16,8 +16,8 @@ interface TaxonomyTreeProps {
   onConceptMove: (conceptId: string, newParentId?: string) => void;
 }
 
-export const TaxonomyTree: React.FC<TaxonomyTreeProps> = ({
-  taxonomy,
+export const OntologyTree: React.FC<OntologyTreeProps> = ({
+  ontology,
   selectedConceptId,
   onConceptSelect,
   onConceptAdd,
@@ -29,8 +29,8 @@ export const TaxonomyTree: React.FC<TaxonomyTreeProps> = ({
 
   // Get top-level concepts (those marked as topConcept or in hasTopConcept)
   const topConcepts = useMemo(() => {
-    const topConceptIds = taxonomy.scheme?.hasTopConcept || [];
-    const conceptsWithTopFlag = Object.values(taxonomy.concepts)
+    const topConceptIds = ontology.scheme?.hasTopConcept || [];
+    const conceptsWithTopFlag = Object.values(ontology.concepts)
       .filter((c) => c.topConcept)
       .map((c) => c.id);
 
@@ -39,32 +39,32 @@ export const TaxonomyTree: React.FC<TaxonomyTreeProps> = ({
       ...new Set([...topConceptIds, ...conceptsWithTopFlag]),
     ];
 
-    return allTopIds.map((id) => taxonomy.concepts[id]).filter(Boolean);
-  }, [taxonomy.concepts, taxonomy.scheme?.hasTopConcept]);
+    return allTopIds.map((id) => ontology.concepts[id]).filter(Boolean);
+  }, [ontology.concepts, ontology.scheme?.hasTopConcept]);
 
   // Get orphaned concepts (no broader relation and not in top concepts)
   const orphanedConcepts = useMemo(() => {
     const topConceptIds = new Set(topConcepts.map((c) => c.id));
-    return Object.values(taxonomy.concepts)
+    return Object.values(ontology.concepts)
       .filter((concept) => !concept.broader && !topConceptIds.has(concept.id))
       .filter((concept) => !concept.topConcept);
-  }, [taxonomy.concepts, topConcepts]);
+  }, [ontology.concepts, topConcepts]);
 
   const allRootConcepts = [...topConcepts, ...orphanedConcepts];
 
-  if (Object.keys(taxonomy.concepts).length === 0) {
-    return <TaxonomyTreeEmpty onAddConcept={() => onConceptAdd()} />;
+  if (Object.keys(ontology.concepts).length === 0) {
+    return <OntologyTreeEmpty onAddConcept={() => onConceptAdd()} />;
   }
 
   return (
     <VStack gap={4} align="stretch" h="100%">
-      <TaxonomyTreeSearch
+      <OntologyTreeSearch
         searchTerm={searchTerm}
         onSearchChange={setSearchTerm}
       />
 
-      <TaxonomyTreeHeader
-        conceptCount={Object.keys(taxonomy.concepts).length}
+      <OntologyTreeHeader
+        conceptCount={Object.keys(ontology.concepts).length}
         onAddRootConcept={() => onConceptAdd()}
       />
 
@@ -72,10 +72,10 @@ export const TaxonomyTree: React.FC<TaxonomyTreeProps> = ({
       <Box flex="1" overflowY="auto">
         <VStack gap={1} align="stretch">
           {allRootConcepts.map((concept) => (
-            <TaxonomyTreeNode
+            <OntologyTreeNode
               key={concept.id}
               concept={concept}
-              taxonomy={taxonomy}
+              ontology={ontology}
               level={0}
               isSelected={selectedConceptId === concept.id}
               searchTerm={searchTerm}

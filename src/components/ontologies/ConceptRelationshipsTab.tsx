@@ -2,16 +2,16 @@ import React from "react";
 import { VStack } from "@chakra-ui/react";
 import SelectField from "../common/SelectField";
 import { ArrayFieldEditor } from "./ArrayFieldEditor";
-import { TaxonomyConcept } from "../../state/taxonomies";
+import { OntologyConcept } from "../../state/ontologies";
 
 interface ConceptRelationshipsTabProps {
-  editedConcept: TaxonomyConcept;
+  editedConcept: OntologyConcept;
   availableConcepts: Array<{ id: string; prefLabel: string }>;
-  onUpdateField: (field: keyof TaxonomyConcept, value: unknown) => void;
-  onAddItem: (field: keyof TaxonomyConcept, value: string) => void;
-  onRemoveItem: (field: keyof TaxonomyConcept, index: number) => void;
+  onUpdateField: (field: keyof OntologyConcept, value: unknown) => void;
+  onAddItem: (field: keyof OntologyConcept, value: string) => void;
+  onRemoveItem: (field: keyof OntologyConcept, index: number) => void;
   onUpdateItem: (
-    field: keyof TaxonomyConcept,
+    field: keyof OntologyConcept,
     index: number,
     value: string,
   ) => void;

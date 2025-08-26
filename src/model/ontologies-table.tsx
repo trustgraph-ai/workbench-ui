@@ -1,11 +1,11 @@
 import { createColumnHelper } from "@tanstack/react-table";
-import { Taxonomy } from "../state/taxonomies";
+import { Ontology } from "../state/ontologies";
 
-export type TaxonomyTableRow = [string, Taxonomy];
+export type OntologyTableRow = [string, Ontology];
 
-const columnHelper = createColumnHelper<TaxonomyTableRow>();
+const columnHelper = createColumnHelper<OntologyTableRow>();
 
-export const taxonomyColumns = [
+export const ontologyColumns = [
   columnHelper.accessor((row) => row[0], {
     id: "id",
     header: "ID",

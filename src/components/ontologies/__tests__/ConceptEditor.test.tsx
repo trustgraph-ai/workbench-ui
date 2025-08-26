@@ -8,7 +8,7 @@ import { render, screen, fireEvent } from "../../../test/test-utils";
 import userEvent from "@testing-library/user-event";
 import { describe, test, expect, vi, beforeEach } from "vitest";
 import { ConceptEditor } from "../ConceptEditor";
-import { TaxonomyConcept, Taxonomy } from "../../../state/taxonomies";
+import { OntologyConcept, Ontology } from "../../../state/ontologies";
 import { useNotification } from "../../../state/notify";
 
 // Mock dependencies
@@ -21,7 +21,7 @@ vi.mock("../../../state/notify", () => ({
 }));
 
 interface ConceptEditorHeaderProps {
-  concept: TaxonomyConcept | null;
+  concept: OntologyConcept | null;
   onSave: () => void;
   onCancel: () => void;
 }
@@ -49,7 +49,7 @@ vi.mock("../ConceptMetadataTab", () => ({
     editedConcept,
     onUpdateField,
   }: {
-    editedConcept: TaxonomyConcept;
+    editedConcept: OntologyConcept;
     onUpdateField: (field: string, value: string) => void;
   }) => (
     <div data-testid="concept-metadata-tab">
@@ -64,7 +64,7 @@ vi.mock("../ConceptMetadataTab", () => ({
 }));
 
 interface ConceptBasicTabProps {
-  editedConcept: TaxonomyConcept;
+  editedConcept: OntologyConcept;
   onUpdateField: (field: string, value: string) => void;
   onAddItem: (field: string, value: string) => void;
   onRemoveItem: (field: string, index: number) => void;
@@ -114,8 +114,8 @@ vi.mock("../ConceptBasicTab", () => ({
 }));
 
 interface ConceptRelationshipsTabProps {
-  editedConcept: TaxonomyConcept;
-  availableConcepts: TaxonomyConcept[];
+  editedConcept: OntologyConcept;
+  availableConcepts: OntologyConcept[];
   onUpdateField: (field: string, value: string | undefined) => void;
   onAddItem: (field: string, value: string) => void;
 }
@@ -136,7 +136,7 @@ vi.mock("../ConceptRelationshipsTab", () => ({
         }
       >
         <option value="">No broader concept</option>
-        {availableConcepts.map((c: TaxonomyConcept) => (
+        {availableConcepts.map((c: OntologyConcept) => (
           <option key={c.id} value={c.id}>
             {c.prefLabel}
           </option>
@@ -227,10 +227,10 @@ vi.mock("../common/TextAreaField", () => ({
 }));
 
 // Mock data
-const mockTaxonomy: Taxonomy = {
+const mockOntology: Ontology = {
   metadata: {
-    name: "Test Taxonomy",
-    description: "A sample taxonomy for testing",
+    name: "Test Ontology",
+    description: "A sample ontology for testing",
     version: "1.0",
     created: "2024-01-01T00:00:00Z",
     modified: "2024-01-02T00:00:00Z",
@@ -239,7 +239,7 @@ const mockTaxonomy: Taxonomy = {
   },
   scheme: {
     uri: "http://example.org/test/scheme",
-    prefLabel: "Test Taxonomy",
+    prefLabel: "Test Ontology",
     hasTopConcept: ["concept-1"],
   },
   concepts: {
@@ -271,8 +271,8 @@ const mockTaxonomy: Taxonomy = {
   },
 };
 
-const mockExistingConcept: TaxonomyConcept =
-  mockTaxonomy.concepts["concept-2"];
+const mockExistingConcept: OntologyConcept =
+  mockOntology.concepts["concept-2"];
 
 describe("ConceptEditor", () => {
   const mockOnSave = vi.fn();
@@ -297,7 +297,7 @@ describe("ConceptEditor", () => {
   test("renders in create mode when no concept provided", () => {
     render(
       <ConceptEditor
-        taxonomy={mockTaxonomy}
+        ontology={mockOntology}
         onSave={mockOnSave}
         onCancel={mockOnCancel}
       />,
@@ -311,7 +311,7 @@ describe("ConceptEditor", () => {
     render(
       <ConceptEditor
         concept={mockExistingConcept}
-        taxonomy={mockTaxonomy}
+        ontology={mockOntology}
         onSave={mockOnSave}
         onCancel={mockOnCancel}
       />,
@@ -327,7 +327,7 @@ describe("ConceptEditor", () => {
     render(
       <ConceptEditor
         concept={mockExistingConcept}
-        taxonomy={mockTaxonomy}
+        ontology={mockOntology}
         onSave={mockOnSave}
         onCancel={mockOnCancel}
       />,
@@ -351,7 +351,7 @@ describe("ConceptEditor", () => {
 
     render(
       <ConceptEditor
-        taxonomy={mockTaxonomy}
+        ontology={mockOntology}
         onSave={mockOnSave}
         onCancel={mockOnCancel}
       />,
@@ -368,7 +368,7 @@ describe("ConceptEditor", () => {
   test("validates required preferred label on save", () => {
     render(
       <ConceptEditor
-        taxonomy={mockTaxonomy}
+        ontology={mockOntology}
         onSave={mockOnSave}
         onCancel={mockOnCancel}
       />,
@@ -388,7 +388,7 @@ describe("ConceptEditor", () => {
 
     render(
       <ConceptEditor
-        taxonomy={mockTaxonomy}
+        ontology={mockOntology}
         onSave={mockOnSave}
         onCancel={mockOnCancel}
       />,
@@ -413,7 +413,7 @@ describe("ConceptEditor", () => {
     render(
       <ConceptEditor
         concept={mockExistingConcept}
-        taxonomy={mockTaxonomy}
+        ontology={mockOntology}
         onSave={mockOnSave}
         onCancel={mockOnCancel}
       />,
@@ -431,7 +431,7 @@ describe("ConceptEditor", () => {
     render(
       <ConceptEditor
         concept={mockExistingConcept}
-        taxonomy={mockTaxonomy}
+        ontology={mockOntology}
         onSave={mockOnSave}
         onCancel={mockOnCancel}
       />,
@@ -470,7 +470,7 @@ describe("ConceptEditor", () => {
     render(
       <ConceptEditor
         concept={mockExistingConcept}
-        taxonomy={mockTaxonomy}
+        ontology={mockOntology}
         onSave={mockOnSave}
         onCancel={mockOnCancel}
       />,
@@ -513,7 +513,7 @@ describe("ConceptEditor", () => {
     render(
       <ConceptEditor
         concept={mockExistingConcept}
-        taxonomy={mockTaxonomy}
+        ontology={mockOntology}
         onSave={mockOnSave}
         onCancel={mockOnCancel}
       />,
@@ -542,7 +542,7 @@ describe("ConceptEditor", () => {
     render(
       <ConceptEditor
         concept={mockExistingConcept}
-        taxonomy={mockTaxonomy}
+        ontology={mockOntology}
         onSave={mockOnSave}
         onCancel={mockOnCancel}
       />,
@@ -571,7 +571,7 @@ describe("ConceptEditor", () => {
     render(
       <ConceptEditor
         concept={mockExistingConcept}
-        taxonomy={mockTaxonomy}
+        ontology={mockOntology}
         onSave={mockOnSave}
         onCancel={mockOnCancel}
       />,
@@ -601,7 +601,7 @@ describe("ConceptEditor", () => {
     render(
       <ConceptEditor
         concept={mockExistingConcept}
-        taxonomy={mockTaxonomy}
+        ontology={mockOntology}
         onSave={mockOnSave}
         onCancel={mockOnCancel}
       />,
@@ -620,7 +620,7 @@ describe("ConceptEditor", () => {
     render(
       <ConceptEditor
         concept={mockExistingConcept}
-        taxonomy={mockTaxonomy}
+        ontology={mockOntology}
         onSave={mockOnSave}
         onCancel={mockOnCancel}
       />,
@@ -637,7 +637,7 @@ describe("ConceptEditor", () => {
     const { rerender } = render(
       <ConceptEditor
         concept={mockExistingConcept}
-        taxonomy={mockTaxonomy}
+        ontology={mockOntology}
         onSave={mockOnSave}
         onCancel={mockOnCancel}
       />,
@@ -648,11 +648,11 @@ describe("ConceptEditor", () => {
     );
 
     // Change to a different concept
-    const differentConcept = mockTaxonomy.concepts["concept-3"];
+    const differentConcept = mockOntology.concepts["concept-3"];
     rerender(
       <ConceptEditor
         concept={differentConcept}
-        taxonomy={mockTaxonomy}
+        ontology={mockOntology}
         onSave={mockOnSave}
         onCancel={mockOnCancel}
       />,
@@ -670,7 +670,7 @@ describe("ConceptEditor", () => {
 
     render(
       <ConceptEditor
-        taxonomy={mockTaxonomy}
+        ontology={mockOntology}
         onSave={mockOnSave}
         onCancel={mockOnCancel}
       />,
@@ -699,7 +699,7 @@ describe("ConceptEditor", () => {
     render(
       <ConceptEditor
         concept={mockExistingConcept}
-        taxonomy={mockTaxonomy}
+        ontology={mockOntology}
         onSave={mockOnSave}
         onCancel={mockOnCancel}
       />,

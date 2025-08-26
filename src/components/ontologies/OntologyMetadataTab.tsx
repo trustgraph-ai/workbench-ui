@@ -2,32 +2,32 @@ import React from "react";
 import { VStack } from "@chakra-ui/react";
 import TextField from "../common/TextField";
 import TextAreaField from "../common/TextAreaField";
-import { Taxonomy } from "../../state/taxonomies";
+import { Ontology } from "../../state/ontologies";
 
-interface TaxonomyMetadataTabProps {
-  taxonomyId: string;
-  taxonomy: Taxonomy;
+interface OntologyMetadataTabProps {
+  ontologyId: string;
+  ontology: Ontology;
   mode: "create" | "edit";
-  onTaxonomyIdChange: (value: string) => void;
+  onOntologyIdChange: (value: string) => void;
   onMetadataChange: (
-    field: keyof Taxonomy["metadata"],
+    field: keyof Ontology["metadata"],
     value: string,
   ) => void;
 }
 
-export const TaxonomyMetadataTab: React.FC<TaxonomyMetadataTabProps> = ({
-  taxonomyId,
-  taxonomy,
+export const OntologyMetadataTab: React.FC<OntologyMetadataTabProps> = ({
+  ontologyId,
+  ontology,
   mode,
-  onTaxonomyIdChange,
+  onOntologyIdChange,
   onMetadataChange,
 }) => {
   return (
     <VStack gap={4} align="stretch">
       <TextField
-        label="Taxonomy ID"
-        value={taxonomyId}
-        onValueChange={onTaxonomyIdChange}
+        label="Ontology ID"
+        value={ontologyId}
+        onValueChange={onOntologyIdChange}
         placeholder="e.g., risk-categories"
         required
         disabled={mode === "edit"}
@@ -35,7 +35,7 @@ export const TaxonomyMetadataTab: React.FC<TaxonomyMetadataTabProps> = ({
 
       <TextField
         label="Name"
-        value={taxonomy.metadata.name}
+        value={ontology.metadata.name}
         onValueChange={(value) => onMetadataChange("name", value)}
         placeholder="e.g., Risk Categories"
         required
@@ -43,22 +43,22 @@ export const TaxonomyMetadataTab: React.FC<TaxonomyMetadataTabProps> = ({
 
       <TextAreaField
         label="Description"
-        value={taxonomy.metadata.description}
+        value={ontology.metadata.description}
         onValueChange={(value) => onMetadataChange("description", value)}
-        placeholder="Describe the purpose of this taxonomy"
+        placeholder="Describe the purpose of this ontology"
       />
 
       <TextField
         label="Version"
-        value={taxonomy.metadata.version}
+        value={ontology.metadata.version}
         onValueChange={(value) => onMetadataChange("version", value)}
       />
 
       <TextField
         label="Namespace"
-        value={taxonomy.metadata.namespace}
+        value={ontology.metadata.namespace}
         onValueChange={(value) => onMetadataChange("namespace", value)}
-        placeholder="http://example.org/taxonomies/"
+        placeholder="http://example.org/ontologies/"
       />
     </VStack>
   );

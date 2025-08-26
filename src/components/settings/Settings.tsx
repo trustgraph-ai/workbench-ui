@@ -127,15 +127,15 @@ const Settings: React.FC = () => {
       />
 
       <FeatureSwitchesSection
-        taxonomyEditor={settings.featureSwitches.taxonomyEditor}
+        ontologyEditor={settings.featureSwitches.ontologyEditor}
         submissions={settings.featureSwitches.submissions}
         agentTools={settings.featureSwitches.agentTools}
         mcpTools={settings.featureSwitches.mcpTools}
         schemas={settings.featureSwitches.schemas}
         tokenCost={settings.featureSwitches.tokenCost}
         flowClasses={settings.featureSwitches.flowClasses}
-        onTaxonomyEditorChange={(value) =>
-          updateSetting("featureSwitches.taxonomyEditor", value)
+        onOntologyEditorChange={(value) =>
+          updateSetting("featureSwitches.ontologyEditor", value)
         }
         onSubmissionsChange={(value) =>
           updateSetting("featureSwitches.submissions", value)

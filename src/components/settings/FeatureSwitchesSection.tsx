@@ -4,14 +4,14 @@ import { ToggleLeft } from "lucide-react";
 import Card from "../common/Card";
 
 interface FeatureSwitchesSectionProps {
-  taxonomyEditor: boolean;
+  ontologyEditor: boolean;
   submissions: boolean;
   agentTools: boolean;
   mcpTools: boolean;
   schemas: boolean;
   tokenCost: boolean;
   flowClasses: boolean;
-  onTaxonomyEditorChange: (enabled: boolean) => void;
+  onOntologyEditorChange: (enabled: boolean) => void;
   onSubmissionsChange: (enabled: boolean) => void;
   onAgentToolsChange: (enabled: boolean) => void;
   onMcpToolsChange: (enabled: boolean) => void;
@@ -21,14 +21,14 @@ interface FeatureSwitchesSectionProps {
 }
 
 const FeatureSwitchesSection: React.FC<FeatureSwitchesSectionProps> = ({
-  taxonomyEditor,
+  ontologyEditor,
   submissions,
   agentTools,
   mcpTools,
   schemas,
   tokenCost,
   flowClasses,
-  onTaxonomyEditorChange,
+  onOntologyEditorChange,
   onSubmissionsChange,
   onAgentToolsChange,
   onMcpToolsChange,
@@ -45,10 +45,10 @@ const FeatureSwitchesSection: React.FC<FeatureSwitchesSectionProps> = ({
       <VStack gap={4} align="stretch">
         <HStack justify="space-between" align="center">
           <VStack gap={1} align="start">
-            <Text fontWeight="medium">Taxonomy Editor</Text>
+            <Text fontWeight="medium">Ontology Editor</Text>
             <HStack gap={2} align="center">
               <Text fontSize="sm" color="fg.muted">
-                Enable the taxonomy management interface for SKOS concepts
+                Enable the ontology management interface for SKOS concepts
               </Text>
               <Tag.Root colorPalette="accent" size="sm">
                 <Tag.Label>preview</Tag.Label>
@@ -56,9 +56,9 @@ const FeatureSwitchesSection: React.FC<FeatureSwitchesSectionProps> = ({
             </HStack>
           </VStack>
           <Switch.Root
-            checked={taxonomyEditor}
+            checked={ontologyEditor}
             onCheckedChange={(details) =>
-              onTaxonomyEditorChange(details.checked)
+              onOntologyEditorChange(details.checked)
             }
           >
             <Switch.HiddenInput />

@@ -2,16 +2,16 @@ import React from "react";
 import { Box, Text, IconButton } from "@chakra-ui/react";
 import { Plus } from "lucide-react";
 
-interface TaxonomyTreeEmptyProps {
+interface OntologyTreeEmptyProps {
   onAddConcept: () => void;
 }
 
-export const TaxonomyTreeEmpty: React.FC<TaxonomyTreeEmptyProps> = ({
+export const OntologyTreeEmpty: React.FC<OntologyTreeEmptyProps> = ({
   onAddConcept,
 }) => {
   return (
     <Box p={4} textAlign="center" color="fg.muted">
-      <Text mb={4}>No concepts in this taxonomy yet.</Text>
+      <Text mb={4}>No concepts in this ontology yet.</Text>
       <IconButton
         aria-label="Add first concept"
         colorPalette="primary"

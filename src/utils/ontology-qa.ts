@@ -1,12 +1,12 @@
 /**
- * Taxonomy Quality Assurance Utilities
+ * Ontology Quality Assurance Utilities
  *
- * This module provides tools for automatically fixing common taxonomy issues
- * and enhancing taxonomy quality.
+ * This module provides tools for automatically fixing common ontology issues
+ * and enhancing ontology quality.
  */
 
-import { Taxonomy } from "../state/taxonomies";
-import { validateTaxonomy, ValidationError } from "./skos-validation";
+import { Ontology } from "../state/ontologies";
+import { validateOntology, ValidationError } from "./skos-validation";
 
 export interface QAFix {
   type: "auto" | "manual";
@@ -18,26 +18,26 @@ export interface QAFix {
 }
 
 export interface QAResult {
-  taxonomy: Taxonomy;
+  ontology: Ontology;
   fixes: QAFix[];
   remainingIssues: ValidationError[];
 }
 
-export class TaxonomyQA {
+export class OntologyQA {
   /**
-   * Auto-fix common taxonomy issues
+   * Auto-fix common ontology issues
    */
-  static autoFix(taxonomy: Taxonomy): QAResult {
-    let updatedTaxonomy = { ...taxonomy };
+  static autoFix(ontology: Ontology): QAResult {
+    let updatedOntology = { ...ontology };
     const fixes: QAFix[] = [];
 
     // Fix missing scheme URI
-    if (!updatedTaxonomy.scheme.uri && updatedTaxonomy.metadata.namespace) {
-      const newUri = `${updatedTaxonomy.metadata.namespace}${updatedTaxonomy.metadata.name.replace(/\s+/g, "-").toLowerCase()}`;
-      updatedTaxonomy = {
-        ...updatedTaxonomy,
+    if (!updatedOntology.scheme.uri && updatedOntology.metadata.namespace) {
+      const newUri = `${updatedOntology.metadata.namespace}${updatedOntology.metadata.name.replace(/\s+/g, "-").toLowerCase()}`;
+      updatedOntology = {
+        ...updatedOntology,
         scheme: {
-          ...updatedTaxonomy.scheme,
+          ...updatedOntology.scheme,
           uri: newUri,
         },
       };
@@ -50,48 +50,48 @@ export class TaxonomyQA {
     }
 
     // Fix missing scheme prefLabel
-    if (!updatedTaxonomy.scheme.prefLabel && updatedTaxonomy.metadata.name) {
-      updatedTaxonomy = {
-        ...updatedTaxonomy,
+    if (!updatedOntology.scheme.prefLabel && updatedOntology.metadata.name) {
+      updatedOntology = {
+        ...updatedOntology,
         scheme: {
-          ...updatedTaxonomy.scheme,
-          prefLabel: updatedTaxonomy.metadata.name,
+          ...updatedOntology.scheme,
+          prefLabel: updatedOntology.metadata.name,
         },
       };
       fixes.push({
         type: "auto",
-        description: "Set scheme prefLabel from taxonomy name",
+        description: "Set scheme prefLabel from ontology name",
         field: "scheme.prefLabel",
-        newValue: updatedTaxonomy.metadata.name,
+        newValue: updatedOntology.metadata.name,
       });
     }
 
     // Fix relationship inconsistencies
     const relationshipFixes =
-      this.fixRelationshipInconsistencies(updatedTaxonomy);
-    updatedTaxonomy = relationshipFixes.taxonomy;
+      this.fixRelationshipInconsistencies(updatedOntology);
+    updatedOntology = relationshipFixes.ontology;
     fixes.push(...relationshipFixes.fixes);
 
     // Remove duplicate relationships
-    const duplicateFixes = this.removeDuplicateRelationships(updatedTaxonomy);
-    updatedTaxonomy = duplicateFixes.taxonomy;
+    const duplicateFixes = this.removeDuplicateRelationships(updatedOntology);
+    updatedOntology = duplicateFixes.ontology;
     fixes.push(...duplicateFixes.fixes);
 
     // Fix orphaned concepts by connecting them to existing hierarchy
-    const orphanFixes = this.fixOrphanedConcepts(updatedTaxonomy);
-    updatedTaxonomy = orphanFixes.taxonomy;
+    const orphanFixes = this.fixOrphanedConcepts(updatedOntology);
+    updatedOntology = orphanFixes.ontology;
     fixes.push(...orphanFixes.fixes);
 
     // Clean up empty relationships
-    const cleanupFixes = this.cleanupEmptyRelationships(updatedTaxonomy);
-    updatedTaxonomy = cleanupFixes.taxonomy;
+    const cleanupFixes = this.cleanupEmptyRelationships(updatedOntology);
+    updatedOntology = cleanupFixes.ontology;
     fixes.push(...cleanupFixes.fixes);
 
-    // Validate the fixed taxonomy
-    const validation = validateTaxonomy(updatedTaxonomy);
+    // Validate the fixed ontology
+    const validation = validateOntology(updatedOntology);
 
     return {
-      taxonomy: updatedTaxonomy,
+      ontology: updatedOntology,
       fixes,
       remainingIssues: [...validation.errors, ...validation.warnings],
     };
@@ -100,11 +100,11 @@ export class TaxonomyQA {
   /**
    * Fix relationship inconsistencies (ensure broader/narrower relationships are reciprocated)
    */
-  private static fixRelationshipInconsistencies(taxonomy: Taxonomy): {
-    taxonomy: Taxonomy;
+  private static fixRelationshipInconsistencies(ontology: Ontology): {
+    ontology: Ontology;
     fixes: QAFix[];
   } {
-    const updatedConcepts = { ...taxonomy.concepts };
+    const updatedConcepts = { ...ontology.concepts };
     const fixes: QAFix[] = [];
 
     Object.values(updatedConcepts).forEach((concept) => {
@@ -168,8 +168,8 @@ export class TaxonomyQA {
     });
 
     return {
-      taxonomy: {
-        ...taxonomy,
+      ontology: {
+        ...ontology,
         concepts: updatedConcepts,
       },
       fixes,
@@ -179,11 +179,11 @@ export class TaxonomyQA {
   /**
    * Remove duplicate relationships within concepts
    */
-  private static removeDuplicateRelationships(taxonomy: Taxonomy): {
-    taxonomy: Taxonomy;
+  private static removeDuplicateRelationships(ontology: Ontology): {
+    ontology: Ontology;
     fixes: QAFix[];
   } {
-    const updatedConcepts = { ...taxonomy.concepts };
+    const updatedConcepts = { ...ontology.concepts };
     const fixes: QAFix[] = [];
 
     Object.values(updatedConcepts).forEach((concept) => {
@@ -235,8 +235,8 @@ export class TaxonomyQA {
     });
 
     return {
-      taxonomy: {
-        ...taxonomy,
+      ontology: {
+        ...ontology,
         concepts: updatedConcepts,
       },
       fixes,
@@ -246,14 +246,14 @@ export class TaxonomyQA {
   /**
    * Fix orphaned concepts by suggesting connections or promoting to top concepts
    */
-  private static fixOrphanedConcepts(taxonomy: Taxonomy): {
-    taxonomy: Taxonomy;
+  private static fixOrphanedConcepts(ontology: Ontology): {
+    ontology: Ontology;
     fixes: QAFix[];
   } {
-    const updatedTaxonomy = { ...taxonomy };
+    const updatedOntology = { ...ontology };
     const fixes: QAFix[] = [];
-    const concepts = Object.values(taxonomy.concepts);
-    const topConceptIds = new Set(taxonomy.scheme.hasTopConcept);
+    const concepts = Object.values(ontology.concepts);
+    const topConceptIds = new Set(ontology.scheme.hasTopConcept);
 
     // Find orphaned concepts (no broader and not a top concept)
     const orphanedConcepts = concepts.filter(
@@ -261,12 +261,12 @@ export class TaxonomyQA {
     );
 
     if (orphanedConcepts.length > 0) {
-      // If there are few orphaned concepts and the taxonomy is small, promote them to top concepts
+      // If there are few orphaned concepts and the ontology is small, promote them to top concepts
       if (orphanedConcepts.length <= 3 && concepts.length <= 20) {
-        updatedTaxonomy.scheme = {
-          ...updatedTaxonomy.scheme,
+        updatedOntology.scheme = {
+          ...updatedOntology.scheme,
           hasTopConcept: [
-            ...updatedTaxonomy.scheme.hasTopConcept,
+            ...updatedOntology.scheme.hasTopConcept,
             ...orphanedConcepts.map((c) => c.id),
           ],
         };
@@ -279,7 +279,7 @@ export class TaxonomyQA {
           });
         });
       } else {
-        // For larger taxonomies, suggest manual review
+        // For larger ontologies, suggest manual review
         orphanedConcepts.forEach((concept) => {
           fixes.push({
             type: "manual",
@@ -291,7 +291,7 @@ export class TaxonomyQA {
     }
 
     return {
-      taxonomy: updatedTaxonomy,
+      ontology: updatedOntology,
       fixes,
     };
   }
@@ -299,11 +299,11 @@ export class TaxonomyQA {
   /**
    * Clean up empty or invalid relationships
    */
-  private static cleanupEmptyRelationships(taxonomy: Taxonomy): {
-    taxonomy: Taxonomy;
+  private static cleanupEmptyRelationships(ontology: Ontology): {
+    ontology: Ontology;
     fixes: QAFix[];
   } {
-    const updatedConcepts = { ...taxonomy.concepts };
+    const updatedConcepts = { ...ontology.concepts };
     const fixes: QAFix[] = [];
 
     Object.values(updatedConcepts).forEach((concept) => {
@@ -356,12 +356,12 @@ export class TaxonomyQA {
     });
 
     // Clean up invalid top concepts
-    const validTopConcepts = taxonomy.scheme.hasTopConcept.filter(
+    const validTopConcepts = ontology.scheme.hasTopConcept.filter(
       (id) => updatedConcepts[id],
     );
-    if (validTopConcepts.length !== taxonomy.scheme.hasTopConcept.length) {
+    if (validTopConcepts.length !== ontology.scheme.hasTopConcept.length) {
       const updatedScheme = {
-        ...taxonomy.scheme,
+        ...ontology.scheme,
         hasTopConcept: validTopConcepts,
       };
 
@@ -372,8 +372,8 @@ export class TaxonomyQA {
       });
 
       return {
-        taxonomy: {
-          ...taxonomy,
+        ontology: {
+          ...ontology,
           concepts: updatedConcepts,
           scheme: updatedScheme,
         },
@@ -382,8 +382,8 @@ export class TaxonomyQA {
     }
 
     return {
-      taxonomy: {
-        ...taxonomy,
+      ontology: {
+        ...ontology,
         concepts: updatedConcepts,
       },
       fixes,
@@ -393,9 +393,9 @@ export class TaxonomyQA {
   /**
    * Generate quality improvement suggestions
    */
-  static generateSuggestions(taxonomy: Taxonomy): QAFix[] {
+  static generateSuggestions(ontology: Ontology): QAFix[] {
     const suggestions: QAFix[] = [];
-    const concepts = Object.values(taxonomy.concepts);
+    const concepts = Object.values(ontology.concepts);
 
     // Suggest adding definitions for concepts without them
     concepts
@@ -421,7 +421,7 @@ export class TaxonomyQA {
         });
       });
 
-    // Suggest notation for concepts in larger taxonomies
+    // Suggest notation for concepts in larger ontologies
     if (concepts.length > 20) {
       concepts
         .filter((c) => !c.notation)
@@ -436,11 +436,11 @@ export class TaxonomyQA {
     }
 
     // Suggest improving hierarchy depth if too shallow
-    const maxDepth = this.calculateMaxDepth(taxonomy);
+    const maxDepth = this.calculateMaxDepth(ontology);
     if (maxDepth < 3 && concepts.length > 10) {
       suggestions.push({
         type: "manual",
-        description: `Taxonomy hierarchy is shallow (max depth: ${maxDepth}). Consider adding more specific subconcepts.`,
+        description: `Ontology hierarchy is shallow (max depth: ${maxDepth}). Consider adding more specific subconcepts.`,
       });
     }
 
@@ -450,9 +450,9 @@ export class TaxonomyQA {
   /**
    * Calculate maximum hierarchy depth
    */
-  private static calculateMaxDepth(taxonomy: Taxonomy): number {
-    const concepts = taxonomy.concepts;
-    const topConcepts = taxonomy.scheme.hasTopConcept;
+  private static calculateMaxDepth(ontology: Ontology): number {
+    const concepts = ontology.concepts;
+    const topConcepts = ontology.scheme.hasTopConcept;
 
     if (topConcepts.length === 0) return 0;
 

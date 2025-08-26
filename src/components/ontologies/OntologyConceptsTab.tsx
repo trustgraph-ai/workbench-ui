@@ -10,21 +10,21 @@ import {
 import { Plus, Trash2 } from "lucide-react";
 import TextField from "../common/TextField";
 import TextAreaField from "../common/TextAreaField";
-import { Taxonomy, TaxonomyConcept } from "../../state/taxonomies";
+import { Ontology, OntologyConcept } from "../../state/ontologies";
 
-interface TaxonomyConceptsTabProps {
-  taxonomy: Taxonomy;
+interface OntologyConceptsTabProps {
+  ontology: Ontology;
   onAddConcept: () => void;
   onDeleteConcept: (id: string) => void;
   onUpdateConcept: (
     id: string,
-    field: keyof TaxonomyConcept,
+    field: keyof OntologyConcept,
     value: string,
   ) => void;
 }
 
-export const TaxonomyConceptsTab: React.FC<TaxonomyConceptsTabProps> = ({
-  taxonomy,
+export const OntologyConceptsTab: React.FC<OntologyConceptsTabProps> = ({
+  ontology,
   onAddConcept,
   onDeleteConcept,
   onUpdateConcept,
@@ -40,7 +40,7 @@ export const TaxonomyConceptsTab: React.FC<TaxonomyConceptsTabProps> = ({
         </Button>
       </HStack>
 
-      {Object.entries(taxonomy.concepts).length === 0 ? (
+      {Object.entries(ontology.concepts).length === 0 ? (
         <Box p={4} borderWidth="1px" borderRadius="md" bg="bg.muted">
           <Text color="fg.muted">
             No concepts yet. Click "Add Concept" to create one.
@@ -48,7 +48,7 @@ export const TaxonomyConceptsTab: React.FC<TaxonomyConceptsTabProps> = ({
         </Box>
       ) : (
         <VStack gap={4} align="stretch">
-          {Object.entries(taxonomy.concepts).map(([id, concept]) => (
+          {Object.entries(ontology.concepts).map(([id, concept]) => (
             <Box key={id} p={4} borderWidth="1px" borderRadius="md">
               <HStack justify="space-between" mb={3}>
                 <Text fontWeight="bold">{concept.prefLabel}</Text>

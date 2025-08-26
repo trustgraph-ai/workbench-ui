@@ -1,9 +1,9 @@
 import React from "react";
 import { Box, VStack, HStack, Text, Button, Heading } from "@chakra-ui/react";
-import { TaxonomyConcept } from "../../state/taxonomies";
+import { OntologyConcept } from "../../state/ontologies";
 
 interface ConceptDetailViewProps {
-  concept: TaxonomyConcept;
+  concept: OntologyConcept;
   onEdit: () => void;
 }
 

@@ -4,7 +4,7 @@ import { useSocket, useConnectionState } from "../api/trustgraph/socket";
 import { useNotification } from "./notify";
 import { useActivity } from "./activity";
 
-export interface TaxonomyMetadata {
+export interface OntologyMetadata {
   name: string;
   description: string;
   version: string;
@@ -14,7 +14,7 @@ export interface TaxonomyMetadata {
   namespace: string;
 }
 
-export interface TaxonomyConcept {
+export interface OntologyConcept {
   id: string;
   prefLabel: string;
   altLabel?: string[];
@@ -28,19 +28,19 @@ export interface TaxonomyConcept {
   topConcept?: boolean;
 }
 
-export interface TaxonomyScheme {
+export interface OntologyScheme {
   uri: string;
   prefLabel: string;
   hasTopConcept: string[];
 }
 
-export interface Taxonomy {
-  metadata: TaxonomyMetadata;
-  concepts: Record<string, TaxonomyConcept>;
-  scheme: TaxonomyScheme;
+export interface Ontology {
+  metadata: OntologyMetadata;
+  concepts: Record<string, OntologyConcept>;
+  scheme: OntologyScheme;
 }
 
-export const useTaxonomies = () => {
+export const useOntologies = () => {
   const socket = useSocket();
   const connectionState = useConnectionState();
   const queryClient = useQueryClient();
@@ -51,13 +51,13 @@ export const useTaxonomies = () => {
     connectionState?.status === "authenticated" ||
     connectionState?.status === "unauthenticated";
 
-  const taxonomiesQuery = useQuery({
-    queryKey: ["taxonomies"],
+  const ontologiesQuery = useQuery({
+    queryKey: ["ontologies"],
     enabled: isSocketReady,
     queryFn: () => {
       return socket
         .config()
-        .getValues("taxonomy")
+        .getValues("ontology")
         .then((values) => {
           return values.map((item) => [item.key, JSON.parse(item.value)]);
         })
@@ -68,23 +68,23 @@ export const useTaxonomies = () => {
     },
   });
 
-  const updateTaxonomyMutation = useMutation({
+  const updateOntologyMutation = useMutation({
     mutationFn: ({
       id,
-      taxonomy,
+      ontology,
       onSuccess,
     }: {
       id: string;
-      taxonomy: Taxonomy;
+      ontology: Ontology;
       onSuccess?: () => void;
     }) => {
       return socket
         .config()
         .putConfig([
           {
-            type: "taxonomy",
+            type: "ontology",
             key: id,
-            value: JSON.stringify(taxonomy),
+            value: JSON.stringify(ontology),
           },
         ])
         .then((x) => {
@@ -100,28 +100,28 @@ export const useTaxonomies = () => {
       notify.error(err.toString());
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["taxonomies"] });
-      notify.success("Taxonomy updated");
+      queryClient.invalidateQueries({ queryKey: ["ontologies"] });
+      notify.success("Ontology updated");
     },
   });
 
-  const createTaxonomyMutation = useMutation({
+  const createOntologyMutation = useMutation({
     mutationFn: ({
       id,
-      taxonomy,
+      ontology,
       onSuccess,
     }: {
       id: string;
-      taxonomy: Taxonomy;
+      ontology: Ontology;
       onSuccess?: () => void;
     }) => {
       return socket
         .config()
         .putConfig([
           {
-            type: "taxonomy",
+            type: "ontology",
             key: id,
-            value: JSON.stringify(taxonomy),
+            value: JSON.stringify(ontology),
           },
         ])
         .then((x) => {
@@ -137,12 +137,12 @@ export const useTaxonomies = () => {
       notify.error(err.toString());
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["taxonomies"] });
-      notify.success("Taxonomy created");
+      queryClient.invalidateQueries({ queryKey: ["ontologies"] });
+      notify.success("Ontology created");
     },
   });
 
-  const deleteTaxonomyMutation = useMutation({
+  const deleteOntologyMutation = useMutation({
     mutationFn: ({
       id,
       onSuccess,
@@ -154,7 +154,7 @@ export const useTaxonomies = () => {
         .config()
         .deleteConfig([
           {
-            type: "taxonomy",
+            type: "ontology",
             key: id,
           },
         ])
@@ -171,32 +171,32 @@ export const useTaxonomies = () => {
       notify.error(err.toString());
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["taxonomies"] });
-      notify.success("Taxonomy deleted");
+      queryClient.invalidateQueries({ queryKey: ["ontologies"] });
+      notify.success("Ontology deleted");
     },
   });
 
-  useActivity(taxonomiesQuery.isLoading, "Loading taxonomies");
-  useActivity(updateTaxonomyMutation.isPending, "Updating taxonomy");
-  useActivity(createTaxonomyMutation.isPending, "Creating taxonomy");
-  useActivity(deleteTaxonomyMutation.isPending, "Deleting taxonomy");
+  useActivity(ontologiesQuery.isLoading, "Loading ontologies");
+  useActivity(updateOntologyMutation.isPending, "Updating ontology");
+  useActivity(createOntologyMutation.isPending, "Creating ontology");
+  useActivity(deleteOntologyMutation.isPending, "Deleting ontology");
 
   return {
-    taxonomies: taxonomiesQuery.data || [],
-    taxonomiesLoading: taxonomiesQuery.isLoading,
-    taxonomiesError: taxonomiesQuery.error,
+    ontologies: ontologiesQuery.data || [],
+    ontologiesLoading: ontologiesQuery.isLoading,
+    ontologiesError: ontologiesQuery.error,
 
-    updateTaxonomy: updateTaxonomyMutation.mutate,
-    isUpdatingTaxonomy: updateTaxonomyMutation.isPending,
+    updateOntology: updateOntologyMutation.mutate,
+    isUpdatingOntology: updateOntologyMutation.isPending,
 
-    createTaxonomy: createTaxonomyMutation.mutate,
-    isCreatingTaxonomy: createTaxonomyMutation.isPending,
+    createOntology: createOntologyMutation.mutate,
+    isCreatingOntology: createOntologyMutation.isPending,
 
-    deleteTaxonomy: deleteTaxonomyMutation.mutate,
-    isDeletingTaxonomy: deleteTaxonomyMutation.isPending,
+    deleteOntology: deleteOntologyMutation.mutate,
+    isDeletingOntology: deleteOntologyMutation.isPending,
 
     refetch: () => {
-      taxonomiesQuery.refetch();
+      ontologiesQuery.refetch();
     },
   };
 };

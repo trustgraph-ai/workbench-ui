@@ -1,19 +1,19 @@
 import React from "react";
 import { Tags } from "lucide-react";
 import PageHeader from "../components/common/PageHeader";
-import { Taxonomies } from "../components/taxonomies/Taxonomies";
+import { Ontologies } from "../components/ontologies/Ontologies";
 
-const TaxonomiesPage: React.FC = () => {
+const OntologiesPage: React.FC = () => {
   return (
     <>
       <PageHeader
         icon={<Tags />}
-        title="Taxonomy Management"
-        description="Create and manage taxonomies for knowledge management"
+        title="Ontology Management"
+        description="Create and manage ontologies for knowledge management"
       />
-      <Taxonomies />
+      <Ontologies />
     </>
   );
 };
 
-export default TaxonomiesPage;
+export default OntologiesPage;

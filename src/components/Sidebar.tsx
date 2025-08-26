@@ -136,8 +136,8 @@ const Sidebar = () => {
         {settings.featureSwitches.schemas && (
           <NavItem to="/schemas" icon={Database} label="Schemas" />
         )}
-        {settings.featureSwitches.taxonomyEditor && (
-          <NavItem to="/taxonomies" icon={Network} label="Taxonomies" />
+        {settings.featureSwitches.ontologyEditor && (
+          <NavItem to="/ontologies" icon={Network} label="Ontologies" />
         )}
         {settings.featureSwitches.agentTools && (
           <NavItem to="/agents" icon={Hammer} label="Agent Tools" />

@@ -1,12 +1,12 @@
 import React from "react";
 import { HStack, Input } from "@chakra-ui/react";
 
-interface TaxonomyTreeSearchProps {
+interface OntologyTreeSearchProps {
   searchTerm: string;
   onSearchChange: (searchTerm: string) => void;
 }
 
-export const TaxonomyTreeSearch: React.FC<TaxonomyTreeSearchProps> = ({
+export const OntologyTreeSearch: React.FC<OntologyTreeSearchProps> = ({
   searchTerm,
   onSearchChange,
 }) => {

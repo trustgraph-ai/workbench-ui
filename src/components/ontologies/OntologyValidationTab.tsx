@@ -21,14 +21,14 @@ import {
   Target,
   Zap,
 } from "lucide-react";
-import { validateTaxonomy } from "../../utils/skos-validation";
-import { Taxonomy } from "../../state/taxonomies";
+import { validateOntology } from "../../utils/skos-validation";
+import { Ontology } from "../../state/ontologies";
 import { ValidationResults } from "./ValidationResults";
-import { TaxonomyQA } from "../../utils/taxonomy-qa";
+import { OntologyQA } from "../../utils/ontology-qa";
 
-interface TaxonomyValidationTabProps {
-  taxonomy: Taxonomy;
-  onTaxonomyChange?: (taxonomy: Taxonomy) => void;
+interface OntologyValidationTabProps {
+  ontology: Ontology;
+  onOntologyChange?: (ontology: Ontology) => void;
 }
 
 interface ValidationIssue {
@@ -48,16 +48,16 @@ interface QualityMetrics {
   overall: number;
 }
 
-export const TaxonomyValidationTab: React.FC<TaxonomyValidationTabProps> = ({
-  taxonomy,
-  onTaxonomyChange,
+export const OntologyValidationTab: React.FC<OntologyValidationTabProps> = ({
+  ontology,
+  onOntologyChange,
 }) => {
   // Run validation
-  const validation = useMemo(() => validateTaxonomy(taxonomy), [taxonomy]);
+  const validation = useMemo(() => validateOntology(ontology), [ontology]);
 
   // Calculate quality metrics
   const qualityMetrics = useMemo((): QualityMetrics => {
-    const concepts = Object.values(taxonomy.concepts);
+    const concepts = Object.values(ontology.concepts);
     const totalConcepts = concepts.length;
 
     if (totalConcepts === 0) {
@@ -75,7 +75,7 @@ export const TaxonomyValidationTab: React.FC<TaxonomyValidationTabProps> = ({
       (c) =>
         c.prefLabel &&
         c.definition &&
-        (c.broader || taxonomy.scheme.hasTopConcept.includes(c.id)),
+        (c.broader || ontology.scheme.hasTopConcept.includes(c.id)),
     ).length;
     const completeness = (completeConceptsCount / totalConcepts) * 100;
 
@@ -84,9 +84,9 @@ export const TaxonomyValidationTab: React.FC<TaxonomyValidationTabProps> = ({
     let totalRelationships = 0;
 
     concepts.forEach((concept) => {
-      if (concept.broader && taxonomy.concepts[concept.broader]) {
+      if (concept.broader && ontology.concepts[concept.broader]) {
         totalRelationships++;
-        const broaderConcept = taxonomy.concepts[concept.broader];
+        const broaderConcept = ontology.concepts[concept.broader];
         if (broaderConcept.narrower?.includes(concept.id)) {
           consistentRelationships++;
         }
@@ -94,9 +94,9 @@ export const TaxonomyValidationTab: React.FC<TaxonomyValidationTabProps> = ({
 
       if (concept.narrower) {
         concept.narrower.forEach((narrowerId) => {
-          if (taxonomy.concepts[narrowerId]) {
+          if (ontology.concepts[narrowerId]) {
             totalRelationships++;
-            const narrowerConcept = taxonomy.concepts[narrowerId];
+            const narrowerConcept = ontology.concepts[narrowerId];
             if (narrowerConcept.broader === concept.id) {
               consistentRelationships++;
             }
@@ -106,9 +106,9 @@ export const TaxonomyValidationTab: React.FC<TaxonomyValidationTabProps> = ({
 
       if (concept.related) {
         concept.related.forEach((relatedId) => {
-          if (taxonomy.concepts[relatedId]) {
+          if (ontology.concepts[relatedId]) {
             totalRelationships++;
-            const relatedConcept = taxonomy.concepts[relatedId];
+            const relatedConcept = ontology.concepts[relatedId];
             if (relatedConcept.related?.includes(concept.id)) {
               consistentRelationships++;
             }
@@ -122,9 +122,9 @@ export const TaxonomyValidationTab: React.FC<TaxonomyValidationTabProps> = ({
         ? (consistentRelationships / totalRelationships) * 100
         : 100;
 
-    // Coverage: How well the taxonomy covers its domain (based on hierarchy depth and breadth)
-    const topConceptsCount = taxonomy.scheme.hasTopConcept.length;
-    const maxDepth = calculateMaxDepth(taxonomy);
+    // Coverage: How well the ontology covers its domain (based on hierarchy depth and breadth)
+    const topConceptsCount = ontology.scheme.hasTopConcept.length;
+    const maxDepth = calculateMaxDepth(ontology);
     const avgBranchingFactor =
       totalConcepts > 1 ? totalConcepts / Math.max(topConceptsCount, 1) : 0;
 
@@ -143,12 +143,12 @@ export const TaxonomyValidationTab: React.FC<TaxonomyValidationTabProps> = ({
     const overall = (completeness + consistency + coverage + compliance) / 4;
 
     return { completeness, consistency, coverage, compliance, overall };
-  }, [taxonomy, validation]);
+  }, [ontology, validation]);
 
-  // Generate quality suggestions using TaxonomyQA
+  // Generate quality suggestions using OntologyQA
   const qualitySuggestions = useMemo((): ValidationIssue[] => {
-    const qaSuggestions = TaxonomyQA.generateSuggestions(taxonomy);
-    const concepts = Object.values(taxonomy.concepts);
+    const qaSuggestions = OntologyQA.generateSuggestions(ontology);
+    const concepts = Object.values(ontology.concepts);
 
     // Convert QA suggestions to validation issues
     const suggestions: ValidationIssue[] = qaSuggestions.map((qa) => ({
@@ -172,9 +172,9 @@ export const TaxonomyValidationTab: React.FC<TaxonomyValidationTabProps> = ({
       });
     }
 
-    // Add auto-fixable orphaned concepts suggestion for small taxonomies
+    // Add auto-fixable orphaned concepts suggestion for small ontologies
     const orphanedConcepts = concepts.filter(
-      (c) => !c.broader && !taxonomy.scheme.hasTopConcept.includes(c.id),
+      (c) => !c.broader && !ontology.scheme.hasTopConcept.includes(c.id),
     ).length;
 
     if (
@@ -193,7 +193,7 @@ export const TaxonomyValidationTab: React.FC<TaxonomyValidationTabProps> = ({
     }
 
     return suggestions;
-  }, [taxonomy, qualityMetrics]);
+  }, [ontology, qualityMetrics]);
 
   const allIssues = [
     ...validation.errors.map((e) => ({ ...e, autoFixable: false })),
@@ -203,17 +203,17 @@ export const TaxonomyValidationTab: React.FC<TaxonomyValidationTabProps> = ({
   ];
 
   const handleAutoFix = (issue: ValidationIssue) => {
-    if (!onTaxonomyChange || !issue.autoFixable) return;
+    if (!onOntologyChange || !issue.autoFixable) return;
 
-    const qaResult = TaxonomyQA.autoFix(taxonomy);
-    onTaxonomyChange(qaResult.taxonomy);
+    const qaResult = OntologyQA.autoFix(ontology);
+    onOntologyChange(qaResult.ontology);
   };
 
   const handleFixAll = () => {
-    if (!onTaxonomyChange) return;
+    if (!onOntologyChange) return;
 
-    const qaResult = TaxonomyQA.autoFix(taxonomy);
-    onTaxonomyChange(qaResult.taxonomy);
+    const qaResult = OntologyQA.autoFix(ontology);
+    onOntologyChange(qaResult.ontology);
   };
 
   return (
@@ -225,7 +225,7 @@ export const TaxonomyValidationTab: React.FC<TaxonomyValidationTabProps> = ({
             <HStack>
               <Target size={20} />
               <Text fontSize="lg" fontWeight="bold">
-                Taxonomy Quality Score
+                Ontology Quality Score
               </Text>
             </HStack>
             <Badge
@@ -348,7 +348,7 @@ export const TaxonomyValidationTab: React.FC<TaxonomyValidationTabProps> = ({
                   size="sm"
                   colorPalette="blue"
                   onClick={handleFixAll}
-                  disabled={!onTaxonomyChange}
+                  disabled={!onOntologyChange}
                 >
                   <Zap size={14} />
                   Fix All
@@ -484,7 +484,7 @@ export const TaxonomyValidationTab: React.FC<TaxonomyValidationTabProps> = ({
               <Alert.Indicator />
               <Alert.Content>
                 <Alert.Description>
-                  No issues found. Your taxonomy looks great!
+                  No issues found. Your ontology looks great!
                 </Alert.Description>
               </Alert.Content>
             </Alert.Root>
@@ -496,9 +496,9 @@ export const TaxonomyValidationTab: React.FC<TaxonomyValidationTabProps> = ({
 };
 
 // Helper function to calculate maximum hierarchy depth
-function calculateMaxDepth(taxonomy: Taxonomy): number {
-  const concepts = taxonomy.concepts;
-  const topConcepts = taxonomy.scheme.hasTopConcept;
+function calculateMaxDepth(ontology: Ontology): number {
+  const concepts = ontology.concepts;
+  const topConcepts = ontology.scheme.hasTopConcept;
 
   if (topConcepts.length === 0) return 0;
 

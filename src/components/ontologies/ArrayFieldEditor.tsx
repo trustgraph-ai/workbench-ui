@@ -10,19 +10,19 @@ import {
 } from "@chakra-ui/react";
 import { Plus, X } from "lucide-react";
 import SelectField from "../common/SelectField";
-import { TaxonomyConcept } from "../../state/taxonomies";
+import { OntologyConcept } from "../../state/ontologies";
 
 interface ArrayFieldEditorProps {
   label: string;
-  field: keyof TaxonomyConcept;
+  field: keyof OntologyConcept;
   placeholder: string;
   isConceptSelect?: boolean;
   items: string[];
   availableConcepts: Array<{ id: string; prefLabel: string }>;
-  onAddItem: (field: keyof TaxonomyConcept, value: string) => void;
-  onRemoveItem: (field: keyof TaxonomyConcept, index: number) => void;
+  onAddItem: (field: keyof OntologyConcept, value: string) => void;
+  onRemoveItem: (field: keyof OntologyConcept, index: number) => void;
   onUpdateItem: (
-    field: keyof TaxonomyConcept,
+    field: keyof OntologyConcept,
     index: number,
     value: string,
   ) => void;
@@ -55,7 +55,7 @@ export const ArrayFieldEditor: React.FC<ArrayFieldEditorProps> = ({
       <Field.Root>
         <Field.Label>{label}</Field.Label>
         <Text fontSize="sm" color="fg.muted">
-          No other concepts available. Create more concepts in this taxonomy
+          No other concepts available. Create more concepts in this ontology
           to establish relationships.
         </Text>
       </Field.Root>

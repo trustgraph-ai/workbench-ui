@@ -1,57 +1,57 @@
 import React, { useState } from "react";
 import { Box, Grid, GridItem, VStack } from "@chakra-ui/react";
-import { TaxonomyManagerHeader } from "./TaxonomyManagerHeader";
+import { OntologyManagerHeader } from "./OntologyManagerHeader";
 import { ConceptDetailView } from "./ConceptDetailView";
-import { TaxonomyEmptyStates } from "./TaxonomyEmptyStates";
+import { OntologyEmptyStates } from "./OntologyEmptyStates";
 import { SKOSDialog } from "./SKOSDialog";
 import { useNotification } from "../../state/notify";
 import {
-  useTaxonomies,
-  Taxonomy,
-  TaxonomyConcept,
-} from "../../state/taxonomies";
-import { TaxonomyTree } from "./TaxonomyTree";
+  useOntologies,
+  Ontology,
+  OntologyConcept,
+} from "../../state/ontologies";
+import { OntologyTree } from "./OntologyTree";
 import { ConceptEditor } from "./ConceptEditor";
 
-interface TaxonomyManagerProps {
-  selectedTaxonomyId?: string;
-  onTaxonomySelect?: (taxonomyId: string) => void;
+interface OntologyManagerProps {
+  selectedOntologyId?: string;
+  onOntologySelect?: (ontologyId: string) => void;
 }
 
-export const TaxonomyManager: React.FC<TaxonomyManagerProps> = ({
-  selectedTaxonomyId,
-  onTaxonomySelect,
+export const OntologyManager: React.FC<OntologyManagerProps> = ({
+  selectedOntologyId,
+  onOntologySelect,
 }) => {
-  const { taxonomies, updateTaxonomy, createTaxonomy } = useTaxonomies();
+  const { ontologies, updateOntology, createOntology } = useOntologies();
   const notify = useNotification();
 
-  const [currentTaxonomyId, setCurrentTaxonomyId] = useState<string | null>(
-    selectedTaxonomyId || null,
+  const [currentOntologyId, setCurrentOntologyId] = useState<string | null>(
+    selectedOntologyId || null,
   );
   const [selectedConceptId, setSelectedConceptId] = useState<string | null>(
     null,
   );
   const [editingConcept, setEditingConcept] =
-    useState<TaxonomyConcept | null>(null);
+    useState<OntologyConcept | null>(null);
   const [isCreatingConcept, setIsCreatingConcept] = useState(false);
   const [exportDialogOpen, setExportDialogOpen] = useState(false);
   const [importDialogOpen, setImportDialogOpen] = useState(false);
 
-  const currentTaxonomy = currentTaxonomyId
-    ? taxonomies.find(([id]) => id === currentTaxonomyId)?.[1]
+  const currentOntology = currentOntologyId
+    ? ontologies.find(([id]) => id === currentOntologyId)?.[1]
     : null;
 
   const selectedConcept =
-    selectedConceptId && currentTaxonomy
-      ? currentTaxonomy.concepts[selectedConceptId]
+    selectedConceptId && currentOntology
+      ? currentOntology.concepts[selectedConceptId]
       : null;
 
-  const handleTaxonomyChange = (taxonomyId: string) => {
-    setCurrentTaxonomyId(taxonomyId);
+  const handleOntologyChange = (ontologyId: string) => {
+    setCurrentOntologyId(ontologyId);
     setSelectedConceptId(null);
     setEditingConcept(null);
     setIsCreatingConcept(false);
-    onTaxonomySelect?.(taxonomyId);
+    onOntologySelect?.(ontologyId);
   };
 
   const handleConceptSelect = (conceptId: string) => {
@@ -61,9 +61,9 @@ export const TaxonomyManager: React.FC<TaxonomyManagerProps> = ({
   };
 
   const handleConceptAdd = (parentId?: string) => {
-    if (!currentTaxonomy || !currentTaxonomyId) return;
+    if (!currentOntology || !currentOntologyId) return;
 
-    const newConcept: TaxonomyConcept = {
+    const newConcept: OntologyConcept = {
       id: `concept-${Date.now()}`,
       prefLabel: "New Concept",
       broader: parentId || null,
@@ -78,8 +78,8 @@ export const TaxonomyManager: React.FC<TaxonomyManagerProps> = ({
   };
 
   const handleConceptEdit = (conceptId: string) => {
-    if (!currentTaxonomy) return;
-    const concept = currentTaxonomy.concepts[conceptId];
+    if (!currentOntology) return;
+    const concept = currentOntology.concepts[conceptId];
     if (concept) {
       setEditingConcept({ ...concept });
       setIsCreatingConcept(false);
@@ -87,12 +87,12 @@ export const TaxonomyManager: React.FC<TaxonomyManagerProps> = ({
     }
   };
 
-  const handleConceptSave = (concept: TaxonomyConcept) => {
-    if (!currentTaxonomy || !currentTaxonomyId) return;
+  const handleConceptSave = (concept: OntologyConcept) => {
+    if (!currentOntology || !currentOntologyId) return;
 
-    // Update the taxonomy with the new/modified concept
+    // Update the ontology with the new/modified concept
     const updatedConcepts = {
-      ...currentTaxonomy.concepts,
+      ...currentOntology.concepts,
       [concept.id]: concept,
     };
 
@@ -105,7 +105,7 @@ export const TaxonomyManager: React.FC<TaxonomyManagerProps> = ({
     }
 
     // Update scheme's hasTopConcept if this is a top concept
-    const updatedScheme = { ...currentTaxonomy.scheme };
+    const updatedScheme = { ...currentOntology.scheme };
     if (
       concept.topConcept &&
       !updatedScheme.hasTopConcept.includes(concept.id)
@@ -123,19 +123,19 @@ export const TaxonomyManager: React.FC<TaxonomyManagerProps> = ({
       );
     }
 
-    const updatedTaxonomy: Taxonomy = {
-      ...currentTaxonomy,
+    const updatedOntology: Ontology = {
+      ...currentOntology,
       concepts: updatedConcepts,
       scheme: updatedScheme,
       metadata: {
-        ...currentTaxonomy.metadata,
+        ...currentOntology.metadata,
         modified: new Date().toISOString(),
       },
     };
 
-    updateTaxonomy({
-      id: currentTaxonomyId,
-      taxonomy: updatedTaxonomy,
+    updateOntology({
+      id: currentOntologyId,
+      ontology: updatedOntology,
       onSuccess: () => {
         setEditingConcept(null);
         setIsCreatingConcept(false);
@@ -148,7 +148,7 @@ export const TaxonomyManager: React.FC<TaxonomyManagerProps> = ({
   };
 
   const handleConceptDelete = (conceptId: string) => {
-    if (!currentTaxonomy || !currentTaxonomyId) return;
+    if (!currentOntology || !currentOntologyId) return;
 
     if (
       window.confirm(
@@ -157,7 +157,7 @@ export const TaxonomyManager: React.FC<TaxonomyManagerProps> = ({
     ) {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { [conceptId]: deleted, ...remainingConcepts } =
-        currentTaxonomy.concepts;
+        currentOntology.concepts;
 
       // Remove from parent's narrower list
       Object.values(remainingConcepts).forEach((concept) => {
@@ -173,25 +173,25 @@ export const TaxonomyManager: React.FC<TaxonomyManagerProps> = ({
 
       // Remove from scheme's hasTopConcept
       const updatedScheme = {
-        ...currentTaxonomy.scheme,
-        hasTopConcept: currentTaxonomy.scheme.hasTopConcept.filter(
+        ...currentOntology.scheme,
+        hasTopConcept: currentOntology.scheme.hasTopConcept.filter(
           (id) => id !== conceptId,
         ),
       };
 
-      const updatedTaxonomy: Taxonomy = {
-        ...currentTaxonomy,
+      const updatedOntology: Ontology = {
+        ...currentOntology,
         concepts: remainingConcepts,
         scheme: updatedScheme,
         metadata: {
-          ...currentTaxonomy.metadata,
+          ...currentOntology.metadata,
           modified: new Date().toISOString(),
         },
       };
 
-      updateTaxonomy({
-        id: currentTaxonomyId,
-        taxonomy: updatedTaxonomy,
+      updateOntology({
+        id: currentOntologyId,
+        ontology: updatedOntology,
         onSuccess: () => {
           setSelectedConceptId(null);
           setEditingConcept(null);
@@ -209,13 +209,13 @@ export const TaxonomyManager: React.FC<TaxonomyManagerProps> = ({
   };
 
   const getConceptBreadcrumb = (conceptId: string): string[] => {
-    if (!currentTaxonomy || !conceptId) return [];
+    if (!currentOntology || !conceptId) return [];
 
     const path: string[] = [];
     let currentId: string | null = conceptId;
 
     while (currentId) {
-      const concept = currentTaxonomy.concepts[currentId];
+      const concept = currentOntology.concepts[currentId];
       if (!concept) break;
 
       path.unshift(concept.prefLabel);
@@ -225,28 +225,28 @@ export const TaxonomyManager: React.FC<TaxonomyManagerProps> = ({
     return path;
   };
 
-  const handleImportTaxonomy = (
-    importedTaxonomy: Taxonomy,
-    taxonomyId: string,
+  const handleImportOntology = (
+    importedOntology: Ontology,
+    ontologyId: string,
   ) => {
-    createTaxonomy({
-      id: taxonomyId,
-      taxonomy: importedTaxonomy,
+    createOntology({
+      id: ontologyId,
+      ontology: importedOntology,
       onSuccess: () => {
-        setCurrentTaxonomyId(taxonomyId);
+        setCurrentOntologyId(ontologyId);
         setSelectedConceptId(null);
         setEditingConcept(null);
         setIsCreatingConcept(false);
         notify.success(
-          `Taxonomy "${importedTaxonomy.metadata.name}" imported successfully`,
+          `Ontology "${importedOntology.metadata.name}" imported successfully`,
         );
       },
     });
   };
 
-  const handleExportTaxonomy = () => {
-    if (!currentTaxonomy) {
-      notify.error("No taxonomy selected for export");
+  const handleExportOntology = () => {
+    if (!currentOntology) {
+      notify.error("No ontology selected for export");
       return;
     }
     setExportDialogOpen(true);
@@ -256,16 +256,16 @@ export const TaxonomyManager: React.FC<TaxonomyManagerProps> = ({
     setImportDialogOpen(true);
   };
 
-  if (!taxonomies.length) {
-    return <TaxonomyEmptyStates type="no-taxonomies" />;
+  if (!ontologies.length) {
+    return <OntologyEmptyStates type="no-ontologies" />;
   }
 
-  if (!currentTaxonomy) {
+  if (!currentOntology) {
     return (
-      <TaxonomyEmptyStates
-        type="no-taxonomy-selected"
-        taxonomies={taxonomies}
-        onTaxonomyChange={handleTaxonomyChange}
+      <OntologyEmptyStates
+        type="no-ontology-selected"
+        ontologies={ontologies}
+        onOntologyChange={handleOntologyChange}
       />
     );
   }
@@ -273,18 +273,18 @@ export const TaxonomyManager: React.FC<TaxonomyManagerProps> = ({
   return (
     <VStack gap={4} align="stretch" h="100%">
       {/* Header */}
-      <TaxonomyManagerHeader
-        currentTaxonomy={currentTaxonomy}
-        currentTaxonomyId={currentTaxonomyId}
+      <OntologyManagerHeader
+        currentOntology={currentOntology}
+        currentOntologyId={currentOntologyId}
         selectedConcept={selectedConcept}
-        taxonomies={taxonomies}
+        ontologies={ontologies}
         conceptBreadcrumb={
           selectedConcept ? getConceptBreadcrumb(selectedConcept.id) : []
         }
-        onTaxonomyChange={handleTaxonomyChange}
+        onOntologyChange={handleOntologyChange}
         onConceptAdd={() => handleConceptAdd()}
         onImport={handleImportDialogOpen}
-        onExport={handleExportTaxonomy}
+        onExport={handleExportOntology}
         onSettings={() => notify.info("Settings feature coming soon")}
       />
 
@@ -293,8 +293,8 @@ export const TaxonomyManager: React.FC<TaxonomyManagerProps> = ({
         {/* Left Panel - Tree View */}
         <GridItem>
           <Box h="100%" p={4} overflowY="auto">
-            <TaxonomyTree
-              taxonomy={currentTaxonomy}
+            <OntologyTree
+              ontology={currentOntology}
               selectedConceptId={selectedConceptId}
               onConceptSelect={handleConceptSelect}
               onConceptAdd={handleConceptAdd}
@@ -316,7 +316,7 @@ export const TaxonomyManager: React.FC<TaxonomyManagerProps> = ({
             {editingConcept ? (
               <ConceptEditor
                 concept={editingConcept}
-                taxonomy={currentTaxonomy}
+                ontology={currentOntology}
                 onSave={handleConceptSave}
                 onCancel={() => {
                   setEditingConcept(null);
@@ -332,7 +332,7 @@ export const TaxonomyManager: React.FC<TaxonomyManagerProps> = ({
                 onEdit={() => handleConceptEdit(selectedConcept.id)}
               />
             ) : (
-              <TaxonomyEmptyStates type="no-concept-selected" />
+              <OntologyEmptyStates type="no-concept-selected" />
             )}
           </Box>
         </GridItem>
@@ -343,7 +343,7 @@ export const TaxonomyManager: React.FC<TaxonomyManagerProps> = ({
         open={exportDialogOpen}
         onOpenChange={setExportDialogOpen}
         mode="export"
-        taxonomy={currentTaxonomy || undefined}
+        ontology={currentOntology || undefined}
       />
 
       {/* SKOS Import Dialog */}
@@ -351,7 +351,7 @@ export const TaxonomyManager: React.FC<TaxonomyManagerProps> = ({
         open={importDialogOpen}
         onOpenChange={setImportDialogOpen}
         mode="import"
-        onImport={handleImportTaxonomy}
+        onImport={handleImportOntology}
       />
     </VStack>
   );

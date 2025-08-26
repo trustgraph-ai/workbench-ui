@@ -19,7 +19,7 @@ import PromptsPage from "./pages/PromptsPage";
 import ToolsPage from "./pages/ToolsPage";
 import McpToolsPage from "./pages/McpToolsPage";
 import { SchemasPage } from "./pages/SchemasPage";
-import TaxonomiesPage from "./pages/TaxonomiesPage";
+import OntologiesPage from "./pages/OntologiesPage";
 import SettingsPage from "./pages/SettingsPage";
 
 import CenterSpinner from "./components/common/CenterSpinner";
@@ -118,7 +118,7 @@ const App = () => {
             <Route path="/tokencost" element={<TokenCostPage />} />
             <Route path="/prompts" element={<PromptsPage />} />
             <Route path="/schemas" element={<SchemasPage />} />
-            <Route path="/taxonomies" element={<TaxonomiesPage />} />
+            <Route path="/ontologies" element={<OntologiesPage />} />
             <Route path="/agents" element={<ToolsPage />} />
             <Route path="/mcp-tools" element={<McpToolsPage />} />
             <Route path="/settings" element={<SettingsPage />} />

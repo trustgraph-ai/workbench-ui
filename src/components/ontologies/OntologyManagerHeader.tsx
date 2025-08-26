@@ -11,28 +11,28 @@ import {
 } from "@chakra-ui/react";
 import { Plus, Download, Upload, Settings } from "lucide-react";
 import SelectField from "../common/SelectField";
-import { Taxonomy, TaxonomyConcept } from "../../state/taxonomies";
+import { Ontology, OntologyConcept } from "../../state/ontologies";
 
-interface TaxonomyManagerHeaderProps {
-  currentTaxonomy: Taxonomy;
-  currentTaxonomyId: string | null;
-  selectedConcept?: TaxonomyConcept;
-  taxonomies: Array<[string, Taxonomy]>;
+interface OntologyManagerHeaderProps {
+  currentOntology: Ontology;
+  currentOntologyId: string | null;
+  selectedConcept?: OntologyConcept;
+  ontologies: Array<[string, Ontology]>;
   conceptBreadcrumb: string[];
-  onTaxonomyChange: (taxonomyId: string) => void;
+  onOntologyChange: (ontologyId: string) => void;
   onConceptAdd: () => void;
   onImport: () => void;
   onExport: () => void;
   onSettings: () => void;
 }
 
-export const TaxonomyManagerHeader: React.FC<TaxonomyManagerHeaderProps> = ({
-  currentTaxonomy,
-  currentTaxonomyId,
+export const OntologyManagerHeader: React.FC<OntologyManagerHeaderProps> = ({
+  currentOntology,
+  currentOntologyId,
   selectedConcept,
-  taxonomies,
+  ontologies,
   conceptBreadcrumb,
-  onTaxonomyChange,
+  onOntologyChange,
   onConceptAdd,
   onImport,
   onExport,
@@ -43,14 +43,14 @@ export const TaxonomyManagerHeader: React.FC<TaxonomyManagerHeaderProps> = ({
       <HStack justify="space-between" align="center">
         <VStack align="start" gap={1}>
           <HStack>
-            <Heading size="lg">{currentTaxonomy.metadata.name}</Heading>
+            <Heading size="lg">{currentOntology.metadata.name}</Heading>
             <Text color="fg.muted">
-              ({Object.keys(currentTaxonomy.concepts).length} concepts)
+              ({Object.keys(currentOntology.concepts).length} concepts)
             </Text>
           </HStack>
           {selectedConcept && (
             <Text fontSize="sm" color="fg.muted">
-              {currentTaxonomy.metadata.name} →{" "}
+              {currentOntology.metadata.name} →{" "}
               {conceptBreadcrumb.join(" → ")}
             </Text>
           )}
@@ -59,16 +59,16 @@ export const TaxonomyManagerHeader: React.FC<TaxonomyManagerHeaderProps> = ({
         <HStack>
           <Box w="250px">
             <SelectField
-              label="Current Taxonomy"
-              items={taxonomies.map(([id, taxonomy]) => ({
+              label="Current Ontology"
+              items={ontologies.map(([id, ontology]) => ({
                 value: id,
-                label: taxonomy.metadata.name,
-                description: taxonomy.metadata.name,
+                label: ontology.metadata.name,
+                description: ontology.metadata.name,
               }))}
-              value={currentTaxonomyId ? [currentTaxonomyId] : []}
+              value={currentOntologyId ? [currentOntologyId] : []}
               onValueChange={(values) => {
                 if (values.length > 0) {
-                  onTaxonomyChange(values[0]);
+                  onOntologyChange(values[0]);
                 }
               }}
             />

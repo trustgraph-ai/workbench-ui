@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Box, VStack, Tabs } from "@chakra-ui/react";
 import { useNotification } from "../../state/notify";
-import { TaxonomyConcept, Taxonomy } from "../../state/taxonomies";
+import { OntologyConcept, Ontology } from "../../state/ontologies";
 import TextAreaField from "../common/TextAreaField";
 import { ConceptEditorHeader } from "./ConceptEditorHeader";
 import { ConceptMetadataTab } from "./ConceptMetadataTab";
@@ -10,20 +10,20 @@ import { ConceptRelationshipsTab } from "./ConceptRelationshipsTab";
 import { ArrayFieldEditor } from "./ArrayFieldEditor";
 
 interface ConceptEditorProps {
-  concept?: TaxonomyConcept;
-  taxonomy: Taxonomy;
-  onSave: (concept: TaxonomyConcept) => void;
+  concept?: OntologyConcept;
+  ontology: Ontology;
+  onSave: (concept: OntologyConcept) => void;
   onCancel: () => void;
 }
 
 export const ConceptEditor: React.FC<ConceptEditorProps> = ({
   concept,
-  taxonomy,
+  ontology,
   onSave,
   onCancel,
 }) => {
   const notify = useNotification();
-  const [editedConcept, setEditedConcept] = useState<TaxonomyConcept>(
+  const [editedConcept, setEditedConcept] = useState<OntologyConcept>(
     concept || {
       id: `concept-${Date.now()}`,
       prefLabel: "",
@@ -47,20 +47,20 @@ export const ConceptEditor: React.FC<ConceptEditorProps> = ({
     onSave(editedConcept);
   };
 
-  const updateField = (field: keyof TaxonomyConcept, value: unknown) => {
+  const updateField = (field: keyof OntologyConcept, value: unknown) => {
     setEditedConcept((prev) => ({
       ...prev,
       [field]: value,
     }));
   };
 
-  const addToArrayField = (field: keyof TaxonomyConcept, value: string) => {
+  const addToArrayField = (field: keyof OntologyConcept, value: string) => {
     const currentArray = (editedConcept[field] as string[]) || [];
     updateField(field, [...currentArray, value]);
   };
 
   const removeFromArrayField = (
-    field: keyof TaxonomyConcept,
+    field: keyof OntologyConcept,
     index: number,
   ) => {
     const currentArray = (editedConcept[field] as string[]) || [];
@@ -71,7 +71,7 @@ export const ConceptEditor: React.FC<ConceptEditorProps> = ({
   };
 
   const updateArrayItem = (
-    field: keyof TaxonomyConcept,
+    field: keyof OntologyConcept,
     index: number,
     value: string,
   ) => {
@@ -81,7 +81,7 @@ export const ConceptEditor: React.FC<ConceptEditorProps> = ({
     updateField(field, newArray);
   };
 
-  const availableConcepts = Object.values(taxonomy.concepts)
+  const availableConcepts = Object.values(ontology.concepts)
     .filter((c) => c.id !== editedConcept.id)
     .sort((a, b) => a.prefLabel.localeCompare(b.prefLabel));
 

@@ -1,5 +1,5 @@
 /**
- * Tests for TaxonomyManager component
+ * Tests for OntologyManager component
  * Tests hierarchy management, concept CRUD operations, import/export, and UI state management
  */
 
@@ -7,12 +7,12 @@ import React from "react";
 import { render, screen, fireEvent, waitFor } from "../../../test/test-utils";
 import userEvent from "@testing-library/user-event";
 import { describe, test, expect, vi, beforeEach } from "vitest";
-import { TaxonomyManager } from "../TaxonomyManager";
+import { OntologyManager } from "../OntologyManager";
 import {
-  Taxonomy,
-  TaxonomyConcept,
-  useTaxonomies,
-} from "../../../state/taxonomies";
+  Ontology,
+  OntologyConcept,
+  useOntologies,
+} from "../../../state/ontologies";
 import { useNotification } from "../../../state/notify";
 
 // Mock dependencies
@@ -24,49 +24,49 @@ vi.mock("../../../state/notify", () => ({
   })),
 }));
 
-vi.mock("../../../state/taxonomies", () => ({
-  useTaxonomies: vi.fn(),
+vi.mock("../../../state/ontologies", () => ({
+  useOntologies: vi.fn(),
   // Re-export types for type checking
-  Taxonomy: null,
-  TaxonomyConcept: null,
+  Ontology: null,
+  OntologyConcept: null,
 }));
 
-interface TaxonomyManagerHeaderProps {
-  currentTaxonomy: Taxonomy | null;
-  selectedConcept?: TaxonomyConcept;
-  taxonomies: Array<[string, Taxonomy]>;
+interface OntologyManagerHeaderProps {
+  currentOntology: Ontology | null;
+  selectedConcept?: OntologyConcept;
+  ontologies: Array<[string, Ontology]>;
   conceptBreadcrumb: string[];
-  onTaxonomyChange: (taxonomyId: string) => void;
+  onOntologyChange: (ontologyId: string) => void;
   onConceptAdd: () => void;
   onImport: () => void;
   onExport: () => void;
 }
 
-vi.mock("../TaxonomyManagerHeader", () => ({
-  TaxonomyManagerHeader: ({
-    currentTaxonomy,
+vi.mock("../OntologyManagerHeader", () => ({
+  OntologyManagerHeader: ({
+    currentOntology,
     selectedConcept,
-    taxonomies,
+    ontologies,
     conceptBreadcrumb,
-    onTaxonomyChange,
+    onOntologyChange,
     onConceptAdd,
     onImport,
     onExport,
-  }: TaxonomyManagerHeaderProps) => (
-    <div data-testid="taxonomy-manager-header">
-      <span data-testid="current-taxonomy">
-        {currentTaxonomy?.metadata?.name || "None"}
+  }: OntologyManagerHeaderProps) => (
+    <div data-testid="ontology-manager-header">
+      <span data-testid="current-ontology">
+        {currentOntology?.metadata?.name || "None"}
       </span>
       <span data-testid="selected-concept">
         {selectedConcept?.prefLabel || "None"}
       </span>
       <span data-testid="breadcrumb">{conceptBreadcrumb.join(" > ")}</span>
       <select
-        data-testid="taxonomy-select"
-        onChange={(e) => onTaxonomyChange(e.target.value)}
+        data-testid="ontology-select"
+        onChange={(e) => onOntologyChange(e.target.value)}
       >
-        <option value="">Select taxonomy</option>
-        {taxonomies.map(([id, tax]: [string, Taxonomy]) => (
+        <option value="">Select ontology</option>
+        {ontologies.map(([id, tax]: [string, Ontology]) => (
           <option key={id} value={id}>
             {tax.metadata.name}
           </option>
@@ -85,8 +85,8 @@ vi.mock("../TaxonomyManagerHeader", () => ({
   ),
 }));
 
-interface TaxonomyTreeProps {
-  taxonomy: Taxonomy;
+interface OntologyTreeProps {
+  ontology: Ontology;
   selectedConceptId?: string;
   onConceptSelect: (conceptId: string) => void;
   onConceptAdd: (parentId?: string) => void;
@@ -94,20 +94,20 @@ interface TaxonomyTreeProps {
   onConceptDelete: (conceptId: string) => void;
 }
 
-vi.mock("../TaxonomyTree", () => ({
-  TaxonomyTree: ({
-    taxonomy,
+vi.mock("../OntologyTree", () => ({
+  OntologyTree: ({
+    ontology,
     selectedConceptId,
     onConceptSelect,
     onConceptAdd,
     onConceptEdit,
     onConceptDelete,
-  }: TaxonomyTreeProps) => (
-    <div data-testid="taxonomy-tree">
+  }: OntologyTreeProps) => (
+    <div data-testid="ontology-tree">
       <div data-testid="selected-concept-id">
         {selectedConceptId || "None"}
       </div>
-      {Object.values(taxonomy.concepts).map((concept) => (
+      {Object.values(ontology.concepts).map((concept) => (
         <div key={concept.id} data-testid={`concept-${concept.id}`}>
           <span>{concept.prefLabel}</span>
           <button
@@ -141,9 +141,9 @@ vi.mock("../TaxonomyTree", () => ({
 }));
 
 interface ConceptEditorProps {
-  concept?: TaxonomyConcept;
-  taxonomy?: Taxonomy;
-  onSave: (concept: TaxonomyConcept) => void;
+  concept?: OntologyConcept;
+  ontology?: Ontology;
+  onSave: (concept: OntologyConcept) => void;
   onCancel: () => void;
 }
 
@@ -172,7 +172,7 @@ vi.mock("../ConceptEditor", () => ({
 }));
 
 interface ConceptDetailViewProps {
-  concept: TaxonomyConcept;
+  concept: OntologyConcept;
   onEdit: () => void;
 }
 
@@ -188,23 +188,23 @@ vi.mock("../ConceptDetailView", () => ({
   ),
 }));
 
-interface TaxonomyEmptyStatesProps {
+interface OntologyEmptyStatesProps {
   type: string;
-  taxonomies?: Array<[string, Taxonomy]>;
-  onTaxonomyChange?: (taxonomyId: string) => void;
+  ontologies?: Array<[string, Ontology]>;
+  onOntologyChange?: (ontologyId: string) => void;
 }
 
-vi.mock("../TaxonomyEmptyStates", () => ({
-  TaxonomyEmptyStates: ({
+vi.mock("../OntologyEmptyStates", () => ({
+  OntologyEmptyStates: ({
     type,
-    taxonomies,
-    onTaxonomyChange,
-  }: TaxonomyEmptyStatesProps) => (
+    ontologies,
+    onOntologyChange,
+  }: OntologyEmptyStatesProps) => (
     <div data-testid={`empty-state-${type}`}>
-      {type === "no-taxonomy-selected" && taxonomies && (
-        <select onChange={(e) => onTaxonomyChange(e.target.value)}>
-          <option value="">Choose taxonomy</option>
-          {taxonomies.map(([id, tax]: [string, Taxonomy]) => (
+      {type === "no-ontology-selected" && ontologies && (
+        <select onChange={(e) => onOntologyChange(e.target.value)}>
+          <option value="">Choose ontology</option>
+          {ontologies.map(([id, tax]: [string, Ontology]) => (
             <option key={id} value={id}>
               {tax.metadata.name}
             </option>
@@ -219,7 +219,7 @@ interface SKOSDialogProps {
   open: boolean;
   mode: string;
   onOpenChange: (open: boolean) => void;
-  onImport?: (taxonomy: Taxonomy, taxonomyId: string) => void;
+  onImport?: (ontology: Ontology, ontologyId: string) => void;
 }
 
 vi.mock("../SKOSDialog", () => ({
@@ -235,10 +235,10 @@ vi.mock("../SKOSDialog", () => ({
         </button>
         {mode === "import" && (
           <button
-            onClick={() => onImport(mockImportedTaxonomy, "imported-tax")}
-            data-testid="import-taxonomy"
+            onClick={() => onImport(mockImportedOntology, "imported-tax")}
+            data-testid="import-ontology"
           >
-            Import Taxonomy
+            Import Ontology
           </button>
         )}
       </div>
@@ -246,10 +246,10 @@ vi.mock("../SKOSDialog", () => ({
 }));
 
 // Mock data
-const mockTaxonomy: Taxonomy = {
+const mockOntology: Ontology = {
   metadata: {
-    name: "Test Taxonomy",
-    description: "A sample taxonomy for testing",
+    name: "Test Ontology",
+    description: "A sample ontology for testing",
     version: "1.0",
     created: "2024-01-01T00:00:00Z",
     modified: "2024-01-02T00:00:00Z",
@@ -258,7 +258,7 @@ const mockTaxonomy: Taxonomy = {
   },
   scheme: {
     uri: "http://example.org/test/scheme",
-    prefLabel: "Test Taxonomy",
+    prefLabel: "Test Ontology",
     hasTopConcept: ["concept-1", "concept-2"],
   },
   concepts: {
@@ -289,30 +289,30 @@ const mockTaxonomy: Taxonomy = {
   },
 };
 
-const mockTaxonomy2: Taxonomy = {
-  ...mockTaxonomy,
-  metadata: { ...mockTaxonomy.metadata, name: "Second Taxonomy" },
+const mockOntology2: Ontology = {
+  ...mockOntology,
+  metadata: { ...mockOntology.metadata, name: "Second Ontology" },
 };
 
-const mockImportedTaxonomy: Taxonomy = {
-  ...mockTaxonomy,
-  metadata: { ...mockTaxonomy.metadata, name: "Imported Taxonomy" },
+const mockImportedOntology: Ontology = {
+  ...mockOntology,
+  metadata: { ...mockOntology.metadata, name: "Imported Ontology" },
 };
 
-const mockTaxonomies: [string, Taxonomy][] = [
-  ["tax-1", mockTaxonomy],
-  ["tax-2", mockTaxonomy2],
+const mockOntologies: [string, Ontology][] = [
+  ["tax-1", mockOntology],
+  ["tax-2", mockOntology2],
 ];
 
 // Mock window.confirm
 global.confirm = vi.fn();
 
-describe("TaxonomyManager", () => {
-  const mockUseTaxonomies = {
-    taxonomies: mockTaxonomies,
-    updateTaxonomy: vi.fn(),
-    createTaxonomy: vi.fn(),
-    isUpdatingTaxonomy: false,
+describe("OntologyManager", () => {
+  const mockUseOntologies = {
+    ontologies: mockOntologies,
+    updateOntology: vi.fn(),
+    createOntology: vi.fn(),
+    isUpdatingOntology: false,
   };
 
   let mockNotify: {
@@ -330,7 +330,7 @@ describe("TaxonomyManager", () => {
     };
 
     vi.mocked(useNotification).mockReturnValue(mockNotify);
-    vi.mocked(useTaxonomies).mockReturnValue(mockUseTaxonomies);
+    vi.mocked(useOntologies).mockReturnValue(mockUseOntologies);
 
     global.confirm = vi.fn().mockReturnValue(true);
 
@@ -342,57 +342,57 @@ describe("TaxonomyManager", () => {
     vi.restoreAllMocks();
   });
 
-  test("shows empty state when no taxonomies exist", () => {
-    vi.mocked(useTaxonomies).mockReturnValue({
-      ...mockUseTaxonomies,
-      taxonomies: [],
+  test("shows empty state when no ontologies exist", () => {
+    vi.mocked(useOntologies).mockReturnValue({
+      ...mockUseOntologies,
+      ontologies: [],
     });
 
-    render(<TaxonomyManager />);
+    render(<OntologyManager />);
 
     expect(
-      screen.getByTestId("empty-state-no-taxonomies"),
+      screen.getByTestId("empty-state-no-ontologies"),
     ).toBeInTheDocument();
   });
 
-  test("shows taxonomy selection when no taxonomy is selected", () => {
-    render(<TaxonomyManager />);
+  test("shows ontology selection when no ontology is selected", () => {
+    render(<OntologyManager />);
 
     expect(
-      screen.getByTestId("empty-state-no-taxonomy-selected"),
+      screen.getByTestId("empty-state-no-ontology-selected"),
     ).toBeInTheDocument();
   });
 
-  test("displays selected taxonomy and its concepts", () => {
-    render(<TaxonomyManager selectedTaxonomyId="tax-1" />);
+  test("displays selected ontology and its concepts", () => {
+    render(<OntologyManager selectedOntologyId="tax-1" />);
 
-    expect(screen.getByTestId("current-taxonomy")).toHaveTextContent(
-      "Test Taxonomy",
+    expect(screen.getByTestId("current-ontology")).toHaveTextContent(
+      "Test Ontology",
     );
-    expect(screen.getByTestId("taxonomy-tree")).toBeInTheDocument();
+    expect(screen.getByTestId("ontology-tree")).toBeInTheDocument();
     expect(screen.getByTestId("concept-concept-1")).toBeInTheDocument();
     expect(screen.getByText("Animals")).toBeInTheDocument();
   });
 
-  test("handles taxonomy selection", async () => {
+  test("handles ontology selection", async () => {
     const user = userEvent.setup();
-    const mockOnTaxonomySelect = vi.fn();
+    const mockOnOntologySelect = vi.fn();
 
-    render(<TaxonomyManager onTaxonomySelect={mockOnTaxonomySelect} />);
+    render(<OntologyManager onOntologySelect={mockOnOntologySelect} />);
 
-    const taxonomySelect = screen.getByRole("combobox");
-    await user.selectOptions(taxonomySelect, "tax-1");
+    const ontologySelect = screen.getByRole("combobox");
+    await user.selectOptions(ontologySelect, "tax-1");
 
-    expect(mockOnTaxonomySelect).toHaveBeenCalledWith("tax-1");
-    expect(screen.getByTestId("current-taxonomy")).toHaveTextContent(
-      "Test Taxonomy",
+    expect(mockOnOntologySelect).toHaveBeenCalledWith("tax-1");
+    expect(screen.getByTestId("current-ontology")).toHaveTextContent(
+      "Test Ontology",
     );
   });
 
   test("selects and displays concept details", async () => {
     const user = userEvent.setup();
 
-    render(<TaxonomyManager selectedTaxonomyId="tax-1" />);
+    render(<OntologyManager selectedOntologyId="tax-1" />);
 
     const selectButton = screen.getByTestId("select-concept-1");
     await user.click(selectButton);
@@ -407,7 +407,7 @@ describe("TaxonomyManager", () => {
   test("creates new concept at root level", async () => {
     const user = userEvent.setup();
 
-    render(<TaxonomyManager selectedTaxonomyId="tax-1" />);
+    render(<OntologyManager selectedOntologyId="tax-1" />);
 
     const addConceptBtn = screen.getByTestId("add-concept-btn");
     await user.click(addConceptBtn);
@@ -421,7 +421,7 @@ describe("TaxonomyManager", () => {
   test("creates new child concept", async () => {
     const user = userEvent.setup();
 
-    render(<TaxonomyManager selectedTaxonomyId="tax-1" />);
+    render(<OntologyManager selectedOntologyId="tax-1" />);
 
     const addChildBtn = screen.getByTestId("add-child-concept-1");
     await user.click(addChildBtn);
@@ -435,7 +435,7 @@ describe("TaxonomyManager", () => {
   test("edits existing concept", async () => {
     const user = userEvent.setup();
 
-    render(<TaxonomyManager selectedTaxonomyId="tax-1" />);
+    render(<OntologyManager selectedOntologyId="tax-1" />);
 
     const editBtn = screen.getByTestId("edit-concept-1");
     await user.click(editBtn);
@@ -449,7 +449,7 @@ describe("TaxonomyManager", () => {
   test("saves concept updates", async () => {
     const user = userEvent.setup();
 
-    render(<TaxonomyManager selectedTaxonomyId="tax-1" />);
+    render(<OntologyManager selectedOntologyId="tax-1" />);
 
     // Edit a concept
     const editBtn = screen.getByTestId("edit-concept-1");
@@ -460,10 +460,10 @@ describe("TaxonomyManager", () => {
     await user.click(saveBtn);
 
     await waitFor(() => {
-      expect(mockUseTaxonomies.updateTaxonomy).toHaveBeenCalledWith(
+      expect(mockUseOntologies.updateOntology).toHaveBeenCalledWith(
         expect.objectContaining({
           id: "tax-1",
-          taxonomy: expect.objectContaining({
+          ontology: expect.objectContaining({
             concepts: expect.objectContaining({
               "concept-1": expect.objectContaining({
                 prefLabel: "Animals",
@@ -481,7 +481,7 @@ describe("TaxonomyManager", () => {
   test("handles concept save with relationship updates", async () => {
     const user = userEvent.setup();
 
-    render(<TaxonomyManager selectedTaxonomyId="tax-1" />);
+    render(<OntologyManager selectedOntologyId="tax-1" />);
 
     // Add a new concept with a parent
     const addChildBtn = screen.getByTestId("add-child-concept-1");
@@ -491,11 +491,11 @@ describe("TaxonomyManager", () => {
     await user.click(saveBtn);
 
     await waitFor(() => {
-      const updateCall = mockUseTaxonomies.updateTaxonomy.mock.calls[0][0];
-      const updatedTaxonomy = updateCall.taxonomy;
+      const updateCall = mockUseOntologies.updateOntology.mock.calls[0][0];
+      const updatedOntology = updateCall.ontology;
 
       // Check that the parent concept has the new concept in its narrower list
-      const parentConcept = updatedTaxonomy.concepts["concept-1"];
+      const parentConcept = updatedOntology.concepts["concept-1"];
       expect(parentConcept.narrower).toContain("concept-1234567890");
     });
   });
@@ -503,7 +503,7 @@ describe("TaxonomyManager", () => {
   test("deletes concept with confirmation", async () => {
     const user = userEvent.setup();
 
-    render(<TaxonomyManager selectedTaxonomyId="tax-1" />);
+    render(<OntologyManager selectedOntologyId="tax-1" />);
 
     const deleteBtn = screen.getByTestId("delete-concept-3");
     await user.click(deleteBtn);
@@ -513,10 +513,10 @@ describe("TaxonomyManager", () => {
     );
 
     await waitFor(() => {
-      expect(mockUseTaxonomies.updateTaxonomy).toHaveBeenCalledWith(
+      expect(mockUseOntologies.updateOntology).toHaveBeenCalledWith(
         expect.objectContaining({
           id: "tax-1",
-          taxonomy: expect.objectContaining({
+          ontology: expect.objectContaining({
             concepts: expect.not.objectContaining({
               "concept-3": expect.anything(),
             }),
@@ -530,18 +530,18 @@ describe("TaxonomyManager", () => {
     const user = userEvent.setup();
     global.confirm = vi.fn().mockReturnValue(false);
 
-    render(<TaxonomyManager selectedTaxonomyId="tax-1" />);
+    render(<OntologyManager selectedOntologyId="tax-1" />);
 
     const deleteBtn = screen.getByTestId("delete-concept-3");
     await user.click(deleteBtn);
 
-    expect(mockUseTaxonomies.updateTaxonomy).not.toHaveBeenCalled();
+    expect(mockUseOntologies.updateOntology).not.toHaveBeenCalled();
   });
 
   test("cancels concept editing", async () => {
     const user = userEvent.setup();
 
-    render(<TaxonomyManager selectedTaxonomyId="tax-1" />);
+    render(<OntologyManager selectedOntologyId="tax-1" />);
 
     // Start editing
     const editBtn = screen.getByTestId("edit-concept-1");
@@ -559,7 +559,7 @@ describe("TaxonomyManager", () => {
   test("shows concept breadcrumb for selected concept", async () => {
     const user = userEvent.setup();
 
-    render(<TaxonomyManager selectedTaxonomyId="tax-1" />);
+    render(<OntologyManager selectedOntologyId="tax-1" />);
 
     // Select a nested concept
     const selectBtn = screen.getByTestId("select-concept-3");
@@ -573,7 +573,7 @@ describe("TaxonomyManager", () => {
   test("opens export dialog", async () => {
     const user = userEvent.setup();
 
-    render(<TaxonomyManager selectedTaxonomyId="tax-1" />);
+    render(<OntologyManager selectedOntologyId="tax-1" />);
 
     const exportBtn = screen.getByTestId("export-btn");
     await user.click(exportBtn);
@@ -581,11 +581,11 @@ describe("TaxonomyManager", () => {
     expect(screen.getByTestId("skos-dialog-export")).toBeInTheDocument();
   });
 
-  test("handles export when no taxonomy selected", async () => {
-    render(<TaxonomyManager />);
+  test("handles export when no ontology selected", async () => {
+    render(<OntologyManager />);
 
     // Manually trigger export (normally button would be disabled)
-    screen.getByTestId("empty-state-no-taxonomy-selected");
+    screen.getByTestId("empty-state-no-ontology-selected");
     // Simulate calling the export handler directly
 
     expect(mockNotify.error).not.toHaveBeenCalled(); // No export attempted yet
@@ -594,7 +594,7 @@ describe("TaxonomyManager", () => {
   test("opens import dialog", async () => {
     const user = userEvent.setup();
 
-    render(<TaxonomyManager selectedTaxonomyId="tax-1" />);
+    render(<OntologyManager selectedOntologyId="tax-1" />);
 
     const importBtn = screen.getByTestId("import-btn");
     await user.click(importBtn);
@@ -602,24 +602,24 @@ describe("TaxonomyManager", () => {
     expect(screen.getByTestId("skos-dialog-import")).toBeInTheDocument();
   });
 
-  test("handles taxonomy import", async () => {
+  test("handles ontology import", async () => {
     const user = userEvent.setup();
 
-    render(<TaxonomyManager selectedTaxonomyId="tax-1" />);
+    render(<OntologyManager selectedOntologyId="tax-1" />);
 
     // Open import dialog
     const importBtn = screen.getByTestId("import-btn");
     await user.click(importBtn);
 
     // Trigger import
-    const importTaxonomyBtn = screen.getByTestId("import-taxonomy");
-    await user.click(importTaxonomyBtn);
+    const importOntologyBtn = screen.getByTestId("import-ontology");
+    await user.click(importOntologyBtn);
 
     await waitFor(() => {
-      expect(mockUseTaxonomies.createTaxonomy).toHaveBeenCalledWith(
+      expect(mockUseOntologies.createOntology).toHaveBeenCalledWith(
         expect.objectContaining({
           id: "imported-tax",
-          taxonomy: mockImportedTaxonomy,
+          ontology: mockImportedOntology,
         }),
       );
     });
@@ -628,7 +628,7 @@ describe("TaxonomyManager", () => {
   test("closes dialogs", async () => {
     const user = userEvent.setup();
 
-    render(<TaxonomyManager selectedTaxonomyId="tax-1" />);
+    render(<OntologyManager selectedOntologyId="tax-1" />);
 
     // Open and close export dialog
     const exportBtn = screen.getByTestId("export-btn");
@@ -645,7 +645,7 @@ describe("TaxonomyManager", () => {
   });
 
   test("handles concept move notification", async () => {
-    render(<TaxonomyManager selectedTaxonomyId="tax-1" />);
+    render(<OntologyManager selectedOntologyId="tax-1" />);
 
     // This would normally be triggered by drag-and-drop
     // For now it just shows a notification
@@ -655,7 +655,7 @@ describe("TaxonomyManager", () => {
   test("updates top concept status correctly", async () => {
     const user = userEvent.setup();
 
-    render(<TaxonomyManager selectedTaxonomyId="tax-1" />);
+    render(<OntologyManager selectedOntologyId="tax-1" />);
 
     // Create a new top-level concept
     const addConceptBtn = screen.getByTestId("add-concept-btn");
@@ -665,11 +665,11 @@ describe("TaxonomyManager", () => {
     await user.click(saveBtn);
 
     await waitFor(() => {
-      const updateCall = mockUseTaxonomies.updateTaxonomy.mock.calls[0][0];
-      const updatedTaxonomy = updateCall.taxonomy;
+      const updateCall = mockUseOntologies.updateOntology.mock.calls[0][0];
+      const updatedOntology = updateCall.ontology;
 
       // New concept should be in hasTopConcept
-      expect(updatedTaxonomy.scheme.hasTopConcept).toContain(
+      expect(updatedOntology.scheme.hasTopConcept).toContain(
         "concept-1234567890",
       );
     });
@@ -678,7 +678,7 @@ describe("TaxonomyManager", () => {
   test("removes concept from top concepts when given a parent", async () => {
     const user = userEvent.setup();
 
-    render(<TaxonomyManager selectedTaxonomyId="tax-1" />);
+    render(<OntologyManager selectedOntologyId="tax-1" />);
 
     // Edit a top concept to give it a parent
     const editBtn = screen.getByTestId("edit-concept-1");
@@ -692,36 +692,36 @@ describe("TaxonomyManager", () => {
 
     // The component should handle updating relationships
     await waitFor(() => {
-      expect(mockUseTaxonomies.updateTaxonomy).toHaveBeenCalled();
+      expect(mockUseOntologies.updateOntology).toHaveBeenCalled();
     });
   });
 
   test("cleans up relationships when deleting concept", async () => {
     const user = userEvent.setup();
 
-    render(<TaxonomyManager selectedTaxonomyId="tax-1" />);
+    render(<OntologyManager selectedOntologyId="tax-1" />);
 
     // Delete a concept that has relationships
     const deleteBtn = screen.getByTestId("delete-concept-1");
     await user.click(deleteBtn);
 
     await waitFor(() => {
-      expect(mockUseTaxonomies.updateTaxonomy).toHaveBeenCalled();
-      const updateCall = mockUseTaxonomies.updateTaxonomy.mock.calls[0][0];
-      const updatedTaxonomy = updateCall.taxonomy;
+      expect(mockUseOntologies.updateOntology).toHaveBeenCalled();
+      const updateCall = mockUseOntologies.updateOntology.mock.calls[0][0];
+      const updatedOntology = updateCall.ontology;
 
       // Concept should be removed
-      expect(updatedTaxonomy.concepts["concept-1"]).toBeUndefined();
+      expect(updatedOntology.concepts["concept-1"]).toBeUndefined();
 
       // Should be removed from scheme's hasTopConcept
-      expect(updatedTaxonomy.scheme.hasTopConcept).not.toContain("concept-1");
+      expect(updatedOntology.scheme.hasTopConcept).not.toContain("concept-1");
 
       // The component cleans up narrower and related relationships,
       // but currently doesn't clean up broader relationships
       // This reflects the actual component behavior
-      if (updatedTaxonomy.concepts["concept-3"]) {
+      if (updatedOntology.concepts["concept-3"]) {
         // Current implementation doesn't clean up broader - this is the actual behavior
-        expect(updatedTaxonomy.concepts["concept-3"].broader).toBe(
+        expect(updatedOntology.concepts["concept-3"].broader).toBe(
           "concept-1",
         );
       }
@@ -729,7 +729,7 @@ describe("TaxonomyManager", () => {
   });
 
   test("shows empty concept state when no concept selected", () => {
-    render(<TaxonomyManager selectedTaxonomyId="tax-1" />);
+    render(<OntologyManager selectedOntologyId="tax-1" />);
 
     // Right panel should show empty state
     expect(
@@ -737,10 +737,10 @@ describe("TaxonomyManager", () => {
     ).toBeInTheDocument();
   });
 
-  test("maintains state when switching taxonomies", async () => {
+  test("maintains state when switching ontologies", async () => {
     const user = userEvent.setup();
 
-    render(<TaxonomyManager selectedTaxonomyId="tax-1" />);
+    render(<OntologyManager selectedOntologyId="tax-1" />);
 
     // Select a concept
     const selectBtn = screen.getByTestId("select-concept-1");
@@ -750,9 +750,9 @@ describe("TaxonomyManager", () => {
       "Animals",
     );
 
-    // Switch taxonomy
-    const taxonomySelect = screen.getByTestId("taxonomy-select");
-    await user.selectOptions(taxonomySelect, "tax-2");
+    // Switch ontology
+    const ontologySelect = screen.getByTestId("ontology-select");
+    await user.selectOptions(ontologySelect, "tax-2");
 
     // Selection should be cleared
     expect(screen.getByTestId("selected-concept")).toHaveTextContent("None");

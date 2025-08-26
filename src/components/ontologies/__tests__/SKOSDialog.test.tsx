@@ -7,11 +7,11 @@ import React from "react";
 import { render, screen, waitFor } from "../../../test/test-utils";
 import { describe, test, expect, vi, beforeEach } from "vitest";
 import { SKOSDialog } from "../SKOSDialog";
-import { Taxonomy } from "../../../state/taxonomies";
+import { Ontology } from "../../../state/ontologies";
 import { useNotification } from "../../../state/notify";
 import { serializeToSKOS, parseFromSKOS } from "../../../utils/skos";
-import { validateTaxonomy } from "../../../utils/skos-validation";
-import { exportTaxonomy } from "../../../utils/export-formats";
+import { validateOntology } from "../../../utils/skos-validation";
+import { exportOntology } from "../../../utils/export-formats";
 
 // Mock dependencies
 vi.mock("../../../state/notify", () => ({
@@ -28,11 +28,11 @@ vi.mock("../../../utils/skos", () => ({
 }));
 
 vi.mock("../../../utils/skos-validation", () => ({
-  validateTaxonomy: vi.fn(),
+  validateOntology: vi.fn(),
 }));
 
 vi.mock("../../../utils/export-formats", () => ({
-  exportTaxonomy: vi.fn(),
+  exportOntology: vi.fn(),
   EXPORT_FORMATS: {
     "skos-rdf": {
       name: "SKOS RDF/XML",
@@ -50,7 +50,7 @@ vi.mock("../../../utils/export-formats", () => ({
       name: "JSON",
       extension: "json",
       mimeType: "application/json",
-      description: "Native taxonomy JSON format",
+      description: "Native ontology JSON format",
     },
     csv: {
       name: "CSV",
@@ -150,10 +150,10 @@ global.FileReader = vi.fn(
 ) as unknown as typeof FileReader;
 
 // Mock data
-const mockTaxonomy: Taxonomy = {
+const mockOntology: Ontology = {
   metadata: {
-    name: "Test Taxonomy",
-    description: "A sample taxonomy for testing",
+    name: "Test Ontology",
+    description: "A sample ontology for testing",
     version: "1.0",
     created: "2024-01-01T00:00:00Z",
     modified: "2024-01-02T00:00:00Z",
@@ -162,7 +162,7 @@ const mockTaxonomy: Taxonomy = {
   },
   scheme: {
     uri: "http://example.org/test/scheme",
-    prefLabel: "Test Taxonomy",
+    prefLabel: "Test Ontology",
     hasTopConcept: ["concept-1"],
   },
   concepts: {
@@ -181,7 +181,7 @@ const mockSKOSContent = `<?xml version="1.0" encoding="UTF-8"?>
 <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
          xmlns:skos="http://www.w3.org/2004/02/skos/core#">
   <skos:ConceptScheme rdf:about="http://example.org/test/scheme">
-    <skos:prefLabel xml:lang="en">Test Taxonomy</skos:prefLabel>
+    <skos:prefLabel xml:lang="en">Test Ontology</skos:prefLabel>
   </skos:ConceptScheme>
 </rdf:RDF>`;
 
@@ -212,10 +212,10 @@ describe("SKOSDialog", () => {
     vi.mocked(useNotification).mockReturnValue(mockNotify);
 
     vi.mocked(serializeToSKOS).mockReturnValue(mockSKOSContent);
-    vi.mocked(parseFromSKOS).mockResolvedValue(mockTaxonomy);
-    vi.mocked(validateTaxonomy).mockReturnValue(mockValidationResult);
-    vi.mocked(exportTaxonomy).mockReturnValue(
-      JSON.stringify(mockTaxonomy, null, 2),
+    vi.mocked(parseFromSKOS).mockResolvedValue(mockOntology);
+    vi.mocked(validateOntology).mockReturnValue(mockValidationResult);
+    vi.mocked(exportOntology).mockReturnValue(
+      JSON.stringify(mockOntology, null, 2),
     );
 
     // Reset clipboard mock
@@ -232,12 +232,12 @@ describe("SKOSDialog", () => {
         <SKOSDialog
           open={true}
           onOpenChange={mockOnOpenChange}
-          taxonomy={mockTaxonomy}
+          ontology={mockOntology}
           mode="export"
         />,
       );
 
-      expect(screen.getByText("Export Taxonomy")).toBeInTheDocument();
+      expect(screen.getByText("Export Ontology")).toBeInTheDocument();
 
       // Check for the presence of format selection - use more flexible approach
       const formatElements = screen.getAllByText(/Export Format/);
@@ -249,7 +249,7 @@ describe("SKOSDialog", () => {
         <SKOSDialog
           open={true}
           onOpenChange={mockOnOpenChange}
-          taxonomy={mockTaxonomy}
+          ontology={mockOntology}
           mode="export"
         />,
       );
@@ -257,13 +257,13 @@ describe("SKOSDialog", () => {
       // Simply verify the export function was called
       await waitFor(() => {
         expect(vi.mocked(serializeToSKOS)).toHaveBeenCalledWith(
-          mockTaxonomy,
+          mockOntology,
           "rdf",
         );
       });
 
       // Verify dialog title is rendered
-      expect(screen.getByText("Export Taxonomy")).toBeInTheDocument();
+      expect(screen.getByText("Export Ontology")).toBeInTheDocument();
     });
 
     // Note: format change test removed due to DOM interaction issues with Portal components
@@ -275,13 +275,13 @@ describe("SKOSDialog", () => {
         <SKOSDialog
           open={true}
           onOpenChange={mockOnOpenChange}
-          taxonomy={mockTaxonomy}
+          ontology={mockOntology}
           mode="export"
         />,
       );
 
       // Simply verify validation was called
-      expect(vi.mocked(validateTaxonomy)).toHaveBeenCalledWith(mockTaxonomy);
+      expect(vi.mocked(validateOntology)).toHaveBeenCalledWith(mockOntology);
     });
 
     // Note: clipboard test removed due to UX changes coming
