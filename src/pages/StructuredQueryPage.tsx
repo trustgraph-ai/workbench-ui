@@ -3,6 +3,7 @@ import { FileSearch, Search, Code, Play } from "lucide-react";
 import PageHeader from "../components/common/PageHeader";
 import { Box, Text } from "@chakra-ui/react";
 import { Tabs } from "@chakra-ui/react";
+import GenerateGraphQLTab from "../components/structured-query/GenerateGraphQLTab";
 
 const StructuredQueryPage: React.FC = () => {
   return (
@@ -38,11 +39,7 @@ const StructuredQueryPage: React.FC = () => {
           </Tabs.Content>
 
           <Tabs.Content value="generate-graphql">
-            <Box p={6} bg="bg.subtle" borderRadius="md" mt={4}>
-              <Text color="fg.muted">
-                GraphQL generation interface coming soon...
-              </Text>
-            </Box>
+            <GenerateGraphQLTab />
           </Tabs.Content>
 
           <Tabs.Content value="run-graphql">
