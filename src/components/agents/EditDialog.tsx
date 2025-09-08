@@ -116,7 +116,7 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
       arguments: args,
       ...(type === "prompt" && templateId && { template: templateId }),
       ...(type === "mcp-tool" && mcpToolId && { "mcp-tool": mcpToolId }),
-      ...(type === "knowledge-query" &&
+      ...((type === "knowledge-query" || type === "structured-query") &&
         collection && { collection: collection }),
     };
 
@@ -238,7 +238,7 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
                 />
               )}
 
-              {type === "knowledge-query" && (
+              {(type === "knowledge-query" || type === "structured-query") && (
                 <TextField
                   label="Collection"
                   placeholder="Enter the knowledge collection (optional)"
