@@ -74,6 +74,11 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
       description: "Uses the GraphRAG service for knowledge",
     },
     {
+      value: "structured-query",
+      label: "Structured Query",
+      description: "Execute natural language questions against records in a structured data / object store",
+    },
+    {
       value: "mcp-tool",
       label: "MCP Tool",
       description: "Uses the mcp-tool service to access a remote MCP tool",
