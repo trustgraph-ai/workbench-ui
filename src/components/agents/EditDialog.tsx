@@ -28,6 +28,9 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
   const [templateId, setTemplateId] = useState("");
   const [mcpToolId, setMcpToolId] = useState("");
   const [collection, setCollection] = useState("");
+  const [group, setGroup] = useState([]);
+  const [state, setState] = useState("");
+  const [applicableStates, setApplicableStates] = useState([]);
 
   const [editArgIx, setEditArgIx] = useState(-1);
 
@@ -52,6 +55,10 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
         setMcpToolId(x.mcp_tool_id || x["mcp-tool"] || "");
         // Handle collection attribute for knowledge-query tools
         setCollection(x.collection || "");
+        // Handle new optional fields
+        setGroup(x.group || []);
+        setState(x.state || "");
+        setApplicableStates(x["applicable-states"] || []);
       })
       .catch((e) => {
         console.log("Error:", e);
@@ -118,6 +125,9 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
       ...(type === "mcp-tool" && mcpToolId && { "mcp-tool": mcpToolId }),
       ...((type === "knowledge-query" || type === "structured-query") &&
         collection && { collection: collection }),
+      ...(group && group.length > 0 && { group: group }),
+      ...(state && { state: state }),
+      ...(applicableStates && applicableStates.length > 0 && { "applicable-states": applicableStates }),
     };
 
     if (create) {
@@ -247,6 +257,30 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
                   required={false}
                 />
               )}
+
+              <TextField
+                label="Groups"
+                placeholder="Select which groups can access this tool. Leave empty to disable the tool entirely. If no groups are selected, the tool will be available to all requests (default group)."
+                value={group.join(", ")}
+                onValueChange={(v) => setGroup(v ? v.split(",").map(s => s.trim()).filter(s => s) : [])}
+                required={false}
+              />
+
+              <TextField
+                label="Next State"
+                placeholder="Optional: Specify which state the agent should move to after successfully using this tool. Used to create multi-step workflows."
+                value={state}
+                onValueChange={(v) => setState(v)}
+                required={false}
+              />
+
+              <TextField
+                label="Applicable States"
+                placeholder="Select which workflow states this tool should be available in. Leave empty to make the tool available in all states."
+                value={applicableStates.join(", ")}
+                onValueChange={(v) => setApplicableStates(v ? v.split(",").map(s => s.trim()).filter(s => s) : [])}
+                required={false}
+              />
 
               {(type === "prompt" || type === "mcp-tool") && (
                 <>
