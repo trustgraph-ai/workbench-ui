@@ -79,9 +79,7 @@ export const useSettings = () => {
     queryFn: async () => {
       // Minimal delay for async consistency
       await new Promise((resolve) => setTimeout(resolve, 1));
-      const settings = loadFromLocalStorage();
-      console.log("Settings loaded from localStorage");
-      return settings;
+      return loadFromLocalStorage();
     },
     // Enable background refetching
     staleTime: 5 * 60 * 1000, // 5 minutes
@@ -133,7 +131,6 @@ export const useSettings = () => {
       if (onSuccess) onSuccess();
     },
     onError: (err) => {
-      console.log("Settings update error:", err);
       notify.error(`Failed to save settings: ${err.toString()}`);
     },
     onSuccess: () => {

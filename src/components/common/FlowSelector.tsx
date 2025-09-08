@@ -30,10 +30,6 @@ const FlowSelector = () => {
 
   const { settings, updateSetting, refetch } = useSettings();
   
-  // Debug: log settings object changes
-  useEffect(() => {
-    console.log("Full settings object:", settings);
-  }, [settings]);
 
   const [open, setOpen] = useState(false);
   const [editingCollection, setEditingCollection] = useState(false);
@@ -41,20 +37,14 @@ const FlowSelector = () => {
 
   // Keep staged value in sync with saved value
   useEffect(() => {
-    console.log("Settings collection changed to:", settings.collection);
     setCollectionValue(settings.collection);
   }, [settings.collection]);
 
   const handleCollectionSave = () => {
     const trimmedValue = collectionValue.trim();
-    console.log("Saving collection:", trimmedValue);
-    console.log("Current settings.collection:", settings.collection);
     if (trimmedValue) {
-      // Update the setting and immediately exit edit mode
       updateSetting("collection", trimmedValue);
-      // Exit edit mode immediately - the useEffect will update the display when settings change
       setEditingCollection(false);
-      console.log("Exited edit mode, waiting for settings update...");
     }
   };
 
