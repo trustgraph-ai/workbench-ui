@@ -157,6 +157,7 @@ export class BaseApi {
   tag: string; // Unique client identifier
   id: number; // Counter for generating unique message IDs
   token?: string; // Optional authentication token
+  user: string; // User identifier for API requests
   inflight: { [key: string]: ServiceCall } = {}; // Track active requests by
   // message ID
   reconnectAttempts: number = 0; // Track reconnection attempts
@@ -168,14 +169,17 @@ export class BaseApi {
   private connectionStateListeners: ((state: ConnectionState) => void)[] = [];
   private lastError?: string;
 
-  constructor(token?: string) {
+  constructor(user: string, token?: string) {
     this.tag = makeid(16); // Generate unique client tag
     this.id = 1; // Start message ID counter
     this.token = token; // Store authentication token
+    this.user = user; // Store user identifier
 
     console.log(
       "SOCKET: opening socket...",
       token ? "with auth" : "without auth",
+      "user:",
+      user,
     );
     this.openSocket(); // Establish WebSocket connection
     console.log("SOCKET: socket opened");
@@ -1128,7 +1132,6 @@ export class FlowApi {
    */
   objectsQuery(
     query: string,
-    user?: string,
     collection?: string,
     variables?: any,
     operationName?: string,
@@ -1138,7 +1141,7 @@ export class FlowApi {
         "objects",
         {
           query: query,
-          user: user || "trustgraph",
+          user: this.api.user,
           collection: collection || "default",
           variables: variables,
           operation_name: operationName,
@@ -1160,12 +1163,14 @@ export class FlowApi {
   /**
    * Converts a natural language question to a GraphQL query
    */
-  nlpQuery(question: string, maxResults?: number) {
+  nlpQuery(question: string, collection?: string, maxResults?: number) {
     return this.api
       .makeRequest<NlpQueryRequest, NlpQueryResponse>(
         "nlp-query",
         {
           question: question,
+          user: this.api.user,
+          collection: collection || "default",
           max_results: maxResults || 100,
         },
         30000,
@@ -1179,12 +1184,14 @@ export class FlowApi {
    * Executes a natural language question against structured data
    * Combines NLP query conversion and GraphQL execution
    */
-  structuredQuery(question: string) {
+  structuredQuery(question: string, collection?: string) {
     return this.api
       .makeRequest<StructuredQueryRequest, StructuredQueryResponse>(
         "structured-query",
         {
           question: question,
+          user: this.api.user,
+          collection: collection || "default",
         },
         30000,
         null,
@@ -1450,8 +1457,9 @@ export class KnowledgeApi {
 /**
  * Factory function to create a new TrustGraph WebSocket connection
  * This is the main entry point for using the TrustGraph API
+ * @param user - User identifier for API requests
  * @param token - Optional authentication token for secure connections
  */
-export const createTrustGraphSocket = (token?: string): Socket => {
-  return new BaseApi(token);
+export const createTrustGraphSocket = (user: string, token?: string): Socket => {
+  return new BaseApi(user, token);
 };
