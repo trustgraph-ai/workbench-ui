@@ -5,12 +5,14 @@ import {
   Box,
   Stack,
   HStack,
+  Button,
+  Input,
   Popover,
   Portal,
   RadioGroup,
 } from "@chakra-ui/react";
 
-import { Database, Workflow } from "lucide-react";
+import { Database, Workflow, Save, X } from "lucide-react";
 
 import { useSessionStore } from "../../state/session";
 import { useFlows } from "../../state/flows";
@@ -26,9 +28,28 @@ const FlowSelector = () => {
   const setFlowId = useSessionStore((state) => state.setFlowId);
   const setFlow = useSessionStore((state) => state.setFlow);
 
-  const { settings } = useSettings();
+  const { settings, updateSetting } = useSettings();
 
   const [open, setOpen] = useState(false);
+  const [editingCollection, setEditingCollection] = useState(false);
+  const [collectionValue, setCollectionValue] = useState(settings.collection);
+
+  const handleCollectionSave = () => {
+    if (collectionValue.trim()) {
+      updateSetting("collection", collectionValue.trim());
+      setEditingCollection(false);
+    }
+  };
+
+  const handleCollectionCancel = () => {
+    setCollectionValue(settings.collection);
+    setEditingCollection(false);
+  };
+
+  const handleCollectionEdit = () => {
+    setCollectionValue(settings.collection);
+    setEditingCollection(true);
+  };
 
   return (
     <Popover.Root
@@ -81,7 +102,49 @@ const FlowSelector = () => {
                     <Database size={16} color="currentColor" />
                     <Box flex="1">
                       <Text fontSize="sm" fontWeight="medium">Collection</Text>
-                      <Text fontSize="xs" color="fg.muted">{settings.collection}</Text>
+                      {editingCollection ? (
+                        <HStack gap={2} mt={1}>
+                          <Input
+                            size="xs"
+                            value={collectionValue}
+                            onChange={(e) => setCollectionValue(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") handleCollectionSave();
+                              if (e.key === "Escape") handleCollectionCancel();
+                            }}
+                            placeholder="Enter collection name"
+                            autoFocus
+                          />
+                          <Button
+                            size="xs"
+                            colorPalette="primary"
+                            onClick={handleCollectionSave}
+                            disabled={!collectionValue.trim()}
+                          >
+                            <Save size={12} />
+                          </Button>
+                          <Button
+                            size="xs"
+                            variant="outline"
+                            onClick={handleCollectionCancel}
+                          >
+                            <X size={12} />
+                          </Button>
+                        </HStack>
+                      ) : (
+                        <HStack gap={2} mt={1}>
+                          <Text fontSize="xs" color="fg.muted" flex="1">
+                            {settings.collection}
+                          </Text>
+                          <Button
+                            size="xs"
+                            variant="ghost"
+                            onClick={handleCollectionEdit}
+                          >
+                            Edit
+                          </Button>
+                        </HStack>
+                      )}
                     </Box>
                   </HStack>
                 </Stack>
