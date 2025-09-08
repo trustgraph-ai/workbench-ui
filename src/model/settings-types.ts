@@ -16,6 +16,7 @@ export interface Settings {
     schemas: boolean;
     tokenCost: boolean;
     flowClasses: boolean;
+    structuredQuery: boolean;
   };
 }
 
@@ -37,6 +38,7 @@ export const DEFAULT_SETTINGS: Settings = {
     schemas: false, // Off by default
     tokenCost: false, // Off by default
     flowClasses: false, // Off by default
+    structuredQuery: false, // Off by default
   },
 };
 

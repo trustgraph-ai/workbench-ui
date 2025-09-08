@@ -91,6 +91,41 @@ export interface TriplesQueryResponse {
   response: Triple[];
 }
 
+export interface ObjectsQueryRequest {
+  query: string;
+  user?: string;
+  collection?: string;
+  variables?: any;
+  operation_name?: string;
+}
+
+export interface ObjectsQueryResponse {
+  data?: any;
+  errors?: any[];
+  extensions?: any;
+}
+
+export interface NlpQueryRequest {
+  question: string;
+  max_results?: number;
+}
+
+export interface NlpQueryResponse {
+  graphql_query?: string;
+  variables?: any;
+  detected_schemas?: any[];
+  confidence?: number;
+}
+
+export interface StructuredQueryRequest {
+  question: string;
+}
+
+export interface StructuredQueryResponse {
+  data?: any;
+  errors?: any[];
+}
+
 export interface LoadDocumentRequest {
   id?: string;
   data: string;

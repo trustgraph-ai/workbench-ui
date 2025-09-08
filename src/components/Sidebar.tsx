@@ -34,6 +34,7 @@ import {
   MessageCircleCode,
   Database,
   Network,
+  FileSearch,
   Settings,
 } from "lucide-react";
 
@@ -135,6 +136,13 @@ const Sidebar = () => {
         <NavItem to="/prompts" icon={MessageCircleCode} label="Prompts" />
         {settings.featureSwitches.schemas && (
           <NavItem to="/schemas" icon={Database} label="Schemas" />
+        )}
+        {settings.featureSwitches.structuredQuery && (
+          <NavItem
+            to="/structured-query"
+            icon={FileSearch}
+            label="Structured Query"
+          />
         )}
         {settings.featureSwitches.ontologyEditor && (
           <NavItem to="/ontologies" icon={Network} label="Ontologies" />

@@ -11,6 +11,7 @@ interface FeatureSwitchesSectionProps {
   schemas: boolean;
   tokenCost: boolean;
   flowClasses: boolean;
+  structuredQuery: boolean;
   onOntologyEditorChange: (enabled: boolean) => void;
   onSubmissionsChange: (enabled: boolean) => void;
   onAgentToolsChange: (enabled: boolean) => void;
@@ -18,6 +19,7 @@ interface FeatureSwitchesSectionProps {
   onSchemasChange: (enabled: boolean) => void;
   onTokenCostChange: (enabled: boolean) => void;
   onFlowClassesChange: (enabled: boolean) => void;
+  onStructuredQueryChange: (enabled: boolean) => void;
 }
 
 const FeatureSwitchesSection: React.FC<FeatureSwitchesSectionProps> = ({
@@ -28,6 +30,7 @@ const FeatureSwitchesSection: React.FC<FeatureSwitchesSectionProps> = ({
   schemas,
   tokenCost,
   flowClasses,
+  structuredQuery,
   onOntologyEditorChange,
   onSubmissionsChange,
   onAgentToolsChange,
@@ -35,6 +38,7 @@ const FeatureSwitchesSection: React.FC<FeatureSwitchesSectionProps> = ({
   onSchemasChange,
   onTokenCostChange,
   onFlowClassesChange,
+  onStructuredQueryChange,
 }) => {
   return (
     <Card
@@ -172,6 +176,27 @@ const FeatureSwitchesSection: React.FC<FeatureSwitchesSectionProps> = ({
             checked={flowClasses}
             onCheckedChange={(details) =>
               onFlowClassesChange(details.checked)
+            }
+          >
+            <Switch.HiddenInput />
+            <Switch.Control>
+              <Switch.Thumb />
+            </Switch.Control>
+          </Switch.Root>
+        </HStack>
+
+        <HStack justify="space-between" align="center">
+          <VStack gap={1} align="start">
+            <Text fontWeight="medium">Structured Query</Text>
+            <Text fontSize="sm" color="fg.muted">
+              Enable the structured query interface for building and executing
+              complex queries
+            </Text>
+          </VStack>
+          <Switch.Root
+            checked={structuredQuery}
+            onCheckedChange={(details) =>
+              onStructuredQueryChange(details.checked)
             }
           >
             <Switch.HiddenInput />

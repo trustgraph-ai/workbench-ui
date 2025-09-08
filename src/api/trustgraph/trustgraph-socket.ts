@@ -25,8 +25,14 @@ import {
   LoadDocumentResponse,
   LoadTextRequest,
   //  LoadTextResponse,
+  NlpQueryRequest,
+  NlpQueryResponse,
+  ObjectsQueryRequest,
+  ObjectsQueryResponse,
   //  ProcessingMetadata,
   RequestMessage,
+  StructuredQueryRequest,
+  StructuredQueryResponse,
   TextCompletionRequest,
   TextCompletionResponse,
   TriplesQueryRequest,
@@ -1115,6 +1121,82 @@ export class FlowApi {
       null,
       this.flowId,
     );
+  }
+
+  /**
+   * Executes a GraphQL query against structured data objects
+   */
+  objectsQuery(
+    query: string,
+    user?: string,
+    collection?: string,
+    variables?: any,
+    operationName?: string,
+  ) {
+    return this.api
+      .makeRequest<ObjectsQueryRequest, ObjectsQueryResponse>(
+        "objects",
+        {
+          query: query,
+          user: user || "trustgraph",
+          collection: collection || "default",
+          variables: variables,
+          operation_name: operationName,
+        },
+        30000,
+        null,
+        this.flowId,
+      )
+      .then((r) => {
+        // Return the GraphQL response structure directly
+        const result: any = {};
+        if (r.data !== undefined) result.data = r.data;
+        if (r.errors) result.errors = r.errors;
+        if (r.extensions) result.extensions = r.extensions;
+        return result;
+      });
+  }
+
+  /**
+   * Converts a natural language question to a GraphQL query
+   */
+  nlpQuery(question: string, maxResults?: number) {
+    return this.api
+      .makeRequest<NlpQueryRequest, NlpQueryResponse>(
+        "nlp-query",
+        {
+          question: question,
+          max_results: maxResults || 100,
+        },
+        30000,
+        null,
+        this.flowId,
+      )
+      .then((r) => r);
+  }
+
+  /**
+   * Executes a natural language question against structured data
+   * Combines NLP query conversion and GraphQL execution
+   */
+  structuredQuery(question: string) {
+    return this.api
+      .makeRequest<StructuredQueryRequest, StructuredQueryResponse>(
+        "structured-query",
+        {
+          question: question,
+        },
+        30000,
+        null,
+        this.flowId,
+      )
+      .then((r) => {
+        // Return the response structure directly
+        const result: any = {};
+        if (r.data !== undefined) result.data = r.data;
+        if (r.errors) result.errors = r.errors;
+        return result;
+      });
   }
 }
 
