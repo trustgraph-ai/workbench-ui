@@ -76,7 +76,7 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
     {
       value: "structured-query",
       label: "Structured Query",
-      description: "Execute natural language questions against structured data using combined NLP and GraphQL processing",
+      description: "Execute natural language questions against records in a structured data / object store",
     },
     {
       value: "mcp-tool",
