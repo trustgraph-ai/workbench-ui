@@ -67,6 +67,7 @@ export interface DocumentRagResponse {
 
 export interface AgentRequest {
   question: string;
+  user?: string;
 }
 
 export interface AgentResponse {

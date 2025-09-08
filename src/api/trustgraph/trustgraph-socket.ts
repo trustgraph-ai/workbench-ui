@@ -1036,7 +1036,10 @@ export class FlowApi {
     return this.api
       .makeRequestMulti(
         "agent",
-        { question: question },
+        { 
+          question: question,
+          user: this.api.user,
+        },
         receiver,
         120000, // 120 second timeout
         2, // 2 retries
