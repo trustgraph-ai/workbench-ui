@@ -181,8 +181,10 @@ const RunGraphQLTab: React.FC = () => {
           </Text>
           <Textarea
             value={objectsQuery.data.errors
-              .map((error: Record<string, unknown>) => 
-                (error.message as string) || JSON.stringify(error))
+              .map(
+                (error: Record<string, unknown>) =>
+                  (error.message as string) || JSON.stringify(error),
+              )
               .join("\n\n")}
             readOnly
             rows={6}

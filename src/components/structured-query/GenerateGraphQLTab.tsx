@@ -92,7 +92,8 @@ const GenerateGraphQLTab: React.FC = () => {
                     .map((schema: Record<string, unknown> | string) =>
                       typeof schema === "string"
                         ? schema
-                        : (schema as Record<string, unknown>).name || JSON.stringify(schema),
+                        : (schema as Record<string, unknown>).name ||
+                          JSON.stringify(schema),
                     )
                     .join(", ")}
                 </Text>

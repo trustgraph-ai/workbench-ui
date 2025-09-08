@@ -166,8 +166,10 @@ const StructuredQueryTab: React.FC = () => {
             </Text>
             <Textarea
               value={structuredQuery.queryErrors
-                .map((error: Record<string, unknown>) => 
-                  (error.message as string) || JSON.stringify(error))
+                .map(
+                  (error: Record<string, unknown>) =>
+                    (error.message as string) || JSON.stringify(error),
+                )
                 .join("\n\n")}
               readOnly
               rows={6}
