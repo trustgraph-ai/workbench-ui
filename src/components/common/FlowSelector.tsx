@@ -40,7 +40,7 @@ const FlowSelector = () => {
       <Popover.Trigger asChild>
         <Stack
           p={3}
-          gap={1}
+          gap={2}
           borderWidth="1px"
           borderRadius="8px"
           borderColor="border.inverted/20"
@@ -52,13 +52,22 @@ const FlowSelector = () => {
             color: "fg",
           }}
           onClick={() => setOpen(true)}
+          cursor="pointer"
         >
-          <Box>
-            <Text fontWeight="bold">{flowId ? flowId : "<none>"}</Text>
-          </Box>
-          <Box>
-            <Text textStyle="xs">{flow ? flow.description : "<none>"}</Text>
-          </Box>
+          <HStack gap={2} align="center">
+            <User size={14} />
+            <Text fontSize="xs" fontWeight="medium">{settings.user}</Text>
+          </HStack>
+          
+          <HStack gap={2} align="center">
+            <Database size={14} />
+            <Text fontSize="xs" fontWeight="medium">{settings.collection}</Text>
+          </HStack>
+          
+          <HStack gap={2} align="center">
+            <Workflow size={14} />
+            <Text fontSize="xs" fontWeight="medium">{flowId || "<none>"}</Text>
+          </HStack>
         </Stack>
       </Popover.Trigger>
       <Portal>
