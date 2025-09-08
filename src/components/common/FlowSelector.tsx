@@ -158,36 +158,68 @@ const FlowSelector = () => {
 
                 {/* Flow Selection */}
                 <Box borderTopWidth="1px" borderColor="border.subtle" pt={4}>
-                  <RadioGroup.Root
-                    value={flowId}
-                    onValueChange={(x) => {
-                      setFlowId(x.value);
-                      const fl = flows.filter((fl) => fl.id == x.value);
-                      if (fl) setFlow(fl[0]);
-                    }}
-                  >
-                    <RadioGroup.Label>Select Flow</RadioGroup.Label>
-                    <Stack gap="2" mt={2}>
-                      {flows.map((flow) => {
-                        return (
-                          <RadioGroup.Item key={flow.id} value={flow.id}>
-                            <RadioGroup.ItemHiddenInput />
-                            <RadioGroup.ItemIndicator />
-                            <RadioGroup.ItemText>
-                              <Stack gap={1}>
-                                <Box>
-                                  <Text fontWeight="semibold" fontSize="sm">{flow.id}</Text>
-                                </Box>
-                                <Box>
-                                  <Text fontSize="xs" color="fg.muted">{flow.description}</Text>
-                                </Box>
-                              </Stack>
-                            </RadioGroup.ItemText>
-                          </RadioGroup.Item>
-                        );
-                      })}
-                    </Stack>
-                  </RadioGroup.Root>
+                  <Text fontSize="sm" fontWeight="semibold" color="fg.muted" mb={3}>
+                    Select Flow
+                  </Text>
+                  <Stack gap="1">
+                    {flows.map((flow) => {
+                      const isSelected = flowId === flow.id;
+                      return (
+                        <Box
+                          key={flow.id}
+                          p={3}
+                          borderRadius="md"
+                          borderWidth="1px"
+                          borderColor={isSelected ? "primary.500" : "border.subtle"}
+                          backgroundColor={isSelected ? "primary.50" : "transparent"}
+                          _hover={{
+                            borderColor: "primary.300",
+                            backgroundColor: isSelected ? "primary.100" : "bg.subtle",
+                          }}
+                          cursor="pointer"
+                          onClick={() => {
+                            setFlowId(flow.id);
+                            setFlow(flow);
+                          }}
+                        >
+                          <HStack gap={3} align="start">
+                            <Box
+                              w={4}
+                              h={4}
+                              borderRadius="full"
+                              borderWidth="2px"
+                              borderColor={isSelected ? "colorPalette.500" : "border.emphasized"}
+                              backgroundColor={isSelected ? "colorPalette.500" : "transparent"}
+                              mt={0.5}
+                              flexShrink={0}
+                              position="relative"
+                            >
+                              {isSelected && (
+                                <Box
+                                  w="6px"
+                                  h="6px"
+                                  borderRadius="full"
+                                  backgroundColor="bg"
+                                  position="absolute"
+                                  top="50%"
+                                  left="50%"
+                                  transform="translate(-50%, -50%)"
+                                />
+                              )}
+                            </Box>
+                            <Box flex="1">
+                              <Text fontWeight="semibold" fontSize="sm" mb={1}>
+                                {flow.id}
+                              </Text>
+                              <Text fontSize="xs" color="fg.muted" lineHeight="1.4">
+                                {flow.description}
+                              </Text>
+                            </Box>
+                          </HStack>
+                        </Box>
+                      );
+                    })}
+                  </Stack>
                 </Box>
               </Stack>
             </Popover.Body>

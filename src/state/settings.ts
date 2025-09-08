@@ -152,7 +152,6 @@ export const useSettings = () => {
       if (onSuccess) onSuccess();
     },
     onError: (err) => {
-      console.log("Settings reset error:", err);
       notify.error(`Failed to reset settings: ${err.toString()}`);
     },
     onSuccess: () => {
