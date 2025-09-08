@@ -4,13 +4,17 @@ import {
   Text,
   Box,
   Stack,
+  HStack,
   Popover,
   Portal,
   RadioGroup,
 } from "@chakra-ui/react";
 
+import { User, Database, Workflow } from "lucide-react";
+
 import { useSessionStore } from "../../state/session";
 import { useFlows } from "../../state/flows";
+import { useSettings } from "../../state/settings";
 
 const FlowSelector = () => {
   const flowState = useFlows();
@@ -21,6 +25,8 @@ const FlowSelector = () => {
 
   const setFlowId = useSessionStore((state) => state.setFlowId);
   const setFlow = useSessionStore((state) => state.setFlow);
+
+  const { settings } = useSettings();
 
   const [open, setOpen] = useState(false);
 
@@ -60,39 +66,72 @@ const FlowSelector = () => {
           <Popover.Content>
             <Popover.Arrow />
             <Popover.Body>
-              <Box>
-                <RadioGroup.Root
-                  p={5}
-                  value={flowId}
-                  onValueChange={(x) => {
-                    setFlowId(x.value);
-                    const fl = flows.filter((fl) => fl.id == x.value);
-                    if (fl) setFlow(fl[0]);
-                  }}
-                >
-                  <RadioGroup.Label>Select flow</RadioGroup.Label>
-                  <Stack gap="1">
-                    {flows.map((flow) => {
-                      return (
-                        <RadioGroup.Item key={flow.id} value={flow.id}>
-                          <RadioGroup.ItemHiddenInput />
-                          <RadioGroup.ItemIndicator />
-                          <RadioGroup.ItemText>
-                            <Stack mt={3} gap={1}>
-                              <Box>
-                                <Text fontWeight="semibold">{flow.id}</Text>
-                              </Box>
-                              <Box>
-                                <Text textStyle="xs">{flow.description}</Text>
-                              </Box>
-                            </Stack>
-                          </RadioGroup.ItemText>
-                        </RadioGroup.Item>
-                      );
-                    })}
-                  </Stack>
-                </RadioGroup.Root>
-              </Box>
+              <Stack gap={4} p={4}>
+                {/* Current Information Display */}
+                <Stack gap={3}>
+                  <Text fontWeight="semibold" fontSize="sm" color="fg.muted">
+                    Current Settings
+                  </Text>
+                  
+                  <HStack gap={3} align="center">
+                    <User size={16} color="currentColor" />
+                    <Box flex="1">
+                      <Text fontSize="sm" fontWeight="medium">User</Text>
+                      <Text fontSize="xs" color="fg.muted">{settings.user}</Text>
+                    </Box>
+                  </HStack>
+
+                  <HStack gap={3} align="center">
+                    <Database size={16} color="currentColor" />
+                    <Box flex="1">
+                      <Text fontSize="sm" fontWeight="medium">Collection</Text>
+                      <Text fontSize="xs" color="fg.muted">{settings.collection}</Text>
+                    </Box>
+                  </HStack>
+
+                  <HStack gap={3} align="center">
+                    <Workflow size={16} color="currentColor" />
+                    <Box flex="1">
+                      <Text fontSize="sm" fontWeight="medium">Flow</Text>
+                      <Text fontSize="xs" color="fg.muted">{flowId || "<none>"}</Text>
+                    </Box>
+                  </HStack>
+                </Stack>
+
+                {/* Flow Selection */}
+                <Box borderTopWidth="1px" borderColor="border.subtle" pt={4}>
+                  <RadioGroup.Root
+                    value={flowId}
+                    onValueChange={(x) => {
+                      setFlowId(x.value);
+                      const fl = flows.filter((fl) => fl.id == x.value);
+                      if (fl) setFlow(fl[0]);
+                    }}
+                  >
+                    <RadioGroup.Label>Select Flow</RadioGroup.Label>
+                    <Stack gap="2" mt={2}>
+                      {flows.map((flow) => {
+                        return (
+                          <RadioGroup.Item key={flow.id} value={flow.id}>
+                            <RadioGroup.ItemHiddenInput />
+                            <RadioGroup.ItemIndicator />
+                            <RadioGroup.ItemText>
+                              <Stack gap={1}>
+                                <Box>
+                                  <Text fontWeight="semibold" fontSize="sm">{flow.id}</Text>
+                                </Box>
+                                <Box>
+                                  <Text fontSize="xs" color="fg.muted">{flow.description}</Text>
+                                </Box>
+                              </Stack>
+                            </RadioGroup.ItemText>
+                          </RadioGroup.Item>
+                        );
+                      })}
+                    </Stack>
+                  </RadioGroup.Root>
+                </Box>
+              </Stack>
             </Popover.Body>
           </Popover.Content>
         </Popover.Positioner>
