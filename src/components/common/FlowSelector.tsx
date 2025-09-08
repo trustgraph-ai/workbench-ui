@@ -84,14 +84,6 @@ const FlowSelector = () => {
                       <Text fontSize="xs" color="fg.muted">{settings.collection}</Text>
                     </Box>
                   </HStack>
-
-                  <HStack gap={3} align="center">
-                    <Workflow size={16} color="currentColor" />
-                    <Box flex="1">
-                      <Text fontSize="sm" fontWeight="medium">Flow</Text>
-                      <Text fontSize="xs" color="fg.muted">{flowId || "<none>"}</Text>
-                    </Box>
-                  </HStack>
                 </Stack>
 
                 {/* Flow Selection */}
