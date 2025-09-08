@@ -9,6 +9,8 @@ import {
   ConfigRequest,
   ConfigResponse,
   //  DocumentMetadata,
+  DocumentRagRequest,
+  DocumentRagResponse,
   EmbeddingsRequest,
   EmbeddingsResponse,
   FlowRequest,
@@ -157,6 +159,7 @@ export class BaseApi {
   tag: string; // Unique client identifier
   id: number; // Counter for generating unique message IDs
   token?: string; // Optional authentication token
+  user: string; // User identifier for API requests
   inflight: { [key: string]: ServiceCall } = {}; // Track active requests by
   // message ID
   reconnectAttempts: number = 0; // Track reconnection attempts
@@ -168,14 +171,17 @@ export class BaseApi {
   private connectionStateListeners: ((state: ConnectionState) => void)[] = [];
   private lastError?: string;
 
-  constructor(token?: string) {
+  constructor(user: string, token?: string) {
     this.tag = makeid(16); // Generate unique client tag
     this.id = 1; // Start message ID counter
     this.token = token; // Store authentication token
+    this.user = user; // Store user identifier
 
     console.log(
       "SOCKET: opening socket...",
       token ? "with auth" : "without auth",
+      "user:",
+      user,
     );
     this.openSocket(); // Establish WebSocket connection
     console.log("SOCKET: socket opened");
@@ -682,13 +688,14 @@ export class LibrarianApi {
   /**
    * Removes a document from the library
    */
-  removeDocument(id: string, user: string) {
+  removeDocument(id: string, collection?: string) {
     return this.api.makeRequest<LibraryRequest, LibraryResponse>(
       "librarian",
       {
         operation: "remove-document",
         "document-id": id,
-        user: user ? user : "trustgraph",
+        user: this.api.user,
+        collection: collection || "default",
       },
       30000,
     );
@@ -953,18 +960,40 @@ export class FlowApi {
   /**
    * Performs Graph RAG (Retrieval Augmented Generation) query
    */
-  graphRag(text: string, options?: GraphRagOptions) {
+  graphRag(text: string, options?: GraphRagOptions, collection?: string) {
     return this.api
       .makeRequest<GraphRagRequest, GraphRagResponse>(
         "graph-rag",
         {
           query: text,
+          user: this.api.user,
+          collection: collection || "default",
           "entity-limit": options?.entityLimit,
           "triple-limit": options?.tripleLimit,
           "max-subgraph-size": options?.maxSubgraphSize,
           "max-path-length": options?.pathLength,
         },
         60000, // Longer timeout for complex graph operations
+        null,
+        this.flowId,
+      )
+      .then((r) => r.response);
+  }
+
+  /**
+   * Performs Document RAG (Retrieval Augmented Generation) query
+   */
+  documentRag(text: string, docLimit?: number, collection?: string) {
+    return this.api
+      .makeRequest<DocumentRagRequest, DocumentRagResponse>(
+        "document-rag",
+        {
+          query: text,
+          user: this.api.user,
+          collection: collection || "default",
+          "doc-limit": docLimit || 20,
+        },
+        60000, // Longer timeout for document operations
         null,
         this.flowId,
       )
@@ -1007,7 +1036,10 @@ export class FlowApi {
     return this.api
       .makeRequestMulti(
         "agent",
-        { question: question },
+        { 
+          question: question,
+          user: this.api.user,
+        },
         receiver,
         120000, // 120 second timeout
         2, // 2 retries
@@ -1043,13 +1075,15 @@ export class FlowApi {
   /**
    * Queries the knowledge graph using embedding vectors
    */
-  graphEmbeddingsQuery(vecs: number[][], limit: number | undefined) {
+  graphEmbeddingsQuery(vecs: number[][], limit: number | undefined, collection?: string) {
     return this.api
       .makeRequest<GraphEmbeddingsQueryRequest, GraphEmbeddingsQueryResponse>(
         "graph-embeddings",
         {
           vectors: vecs,
           limit: limit ? limit : 20, // Default to 20 results
+          user: this.api.user,
+          collection: collection || "default",
         },
         30000,
         null,
@@ -1062,7 +1096,7 @@ export class FlowApi {
    * Queries knowledge graph triples (subject-predicate-object relationships)
    * All parameters are optional - omitted parameters act as wildcards
    */
-  triplesQuery(s?: Value, p?: Value, o?: Value, limit?: number) {
+  triplesQuery(s?: Value, p?: Value, o?: Value, limit?: number, collection?: string) {
     return this.api
       .makeRequest<TriplesQueryRequest, TriplesQueryResponse>(
         "triples",
@@ -1071,6 +1105,8 @@ export class FlowApi {
           p: p, // Predicate
           o: o, // Object
           limit: limit ? limit : 20,
+          user: this.api.user,
+          collection: collection || "default",
         },
         30000,
         null,
@@ -1128,7 +1164,6 @@ export class FlowApi {
    */
   objectsQuery(
     query: string,
-    user?: string,
     collection?: string,
     variables?: any,
     operationName?: string,
@@ -1138,7 +1173,7 @@ export class FlowApi {
         "objects",
         {
           query: query,
-          user: user || "trustgraph",
+          user: this.api.user,
           collection: collection || "default",
           variables: variables,
           operation_name: operationName,
@@ -1179,12 +1214,14 @@ export class FlowApi {
    * Executes a natural language question against structured data
    * Combines NLP query conversion and GraphQL execution
    */
-  structuredQuery(question: string) {
+  structuredQuery(question: string, collection?: string) {
     return this.api
       .makeRequest<StructuredQueryRequest, StructuredQueryResponse>(
         "structured-query",
         {
           question: question,
+          user: this.api.user,
+          collection: collection || "default",
         },
         30000,
         null,
@@ -1386,13 +1423,14 @@ export class KnowledgeApi {
   /**
    * Deletes a knowledge graph core
    */
-  deleteKgCore(id: string, user?: string) {
+  deleteKgCore(id: string, collection?: string) {
     return this.api.makeRequest<LibraryRequest, LibraryResponse>(
       "knowledge",
       {
         operation: "delete-kg-core",
         id: id,
-        user: user ? user : "trustgraph",
+        user: this.api.user,
+        collection: collection || "default",
       },
       30000,
     );
@@ -1401,15 +1439,15 @@ export class KnowledgeApi {
   /**
    * Deletes a knowledge graph core
    */
-  loadKgCore(id: string, flow: string, user?: string, collection?: string) {
+  loadKgCore(id: string, flow: string, collection?: string) {
     return this.api.makeRequest<LibraryRequest, LibraryResponse>(
       "knowledge",
       {
         operation: "load-kg-core",
         id: id,
         flow: flow,
-        user: user ? user : "trustgraph",
-        collection: collection ? collection : "default",
+        user: this.api.user,
+        collection: collection || "default",
       },
       30000,
     );
@@ -1420,7 +1458,7 @@ export class KnowledgeApi {
    * Uses multi-request pattern for large datasets
    * @param receiver - Callback function to handle streaming data chunks
    */
-  getKgCore(id: string, user?: string, receiver) {
+  getKgCore(id: string, collection: string | undefined, receiver) {
     // Wrapper to handle end-of-stream detection
     const recv = (msg) => {
       if (msg.eos) {
@@ -1439,7 +1477,8 @@ export class KnowledgeApi {
       {
         operation: "get-kg-core",
         id: id,
-        user: user ? user : "trustgraph",
+        user: this.api.user,
+        collection: collection || "default",
       },
       recv, // Stream handler
       30000,
@@ -1450,8 +1489,9 @@ export class KnowledgeApi {
 /**
  * Factory function to create a new TrustGraph WebSocket connection
  * This is the main entry point for using the TrustGraph API
+ * @param user - User identifier for API requests
  * @param token - Optional authentication token for secure connections
  */
-export const createTrustGraphSocket = (token?: string): Socket => {
-  return new BaseApi(token);
+export const createTrustGraphSocket = (user: string, token?: string): Socket => {
+  return new BaseApi(user, token);
 };

@@ -9,6 +9,8 @@ import { useNotification } from "./notify";
 import { useActivity } from "./activity";
 // Session state for flow ID
 import { useSessionStore } from "./session";
+// Settings for user and collection
+import { useSettings } from "./settings";
 
 /**
  * Custom hook for managing structured query operations
@@ -23,6 +25,8 @@ export const useStructuredQuery = () => {
   const notify = useNotification();
   // Session state for current flow ID
   const flowId = useSessionStore((state) => state.flowId);
+  // Settings for default collection
+  const { settings } = useSettings();
 
   // Only enable operations when socket is connected and ready
   const isSocketReady =
@@ -31,12 +35,12 @@ export const useStructuredQuery = () => {
 
   // Mutation for executing structured queries from natural language
   const structuredQueryMutation = useMutation({
-    mutationFn: async ({ question }: { question: string }) => {
+    mutationFn: async ({ question, collection }: { question: string; collection?: string }) => {
       if (!isSocketReady) {
         throw new Error("Socket connection not ready");
       }
 
-      return socket.flow(flowId).structuredQuery(question);
+      return socket.flow(flowId).structuredQuery(question, collection || settings.collection);
     },
     onError: (err) => {
       console.log("Structured query error:", err);

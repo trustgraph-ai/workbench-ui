@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { useSocket } from "../api/trustgraph/socket";
 import { useNotification } from "./notify";
 import { useActivity } from "./activity";
+import { useSettings } from "./settings";
 import { Value } from "../api/trustgraph/Triple";
 import { RDFS_LABEL } from "../utils/knowledge-graph";
 
@@ -48,6 +49,9 @@ export const useNodeDetails = (
 ) => {
   // WebSocket connection for communicating with the graph service
   const socket = useSocket();
+  
+  // Settings for default collection
+  const { settings } = useSettings();
 
   // Hook for displaying user notifications
   const notify = useNotification();
@@ -67,7 +71,7 @@ export const useNodeDetails = (
 
       return socket
         .flow(flowId)
-        .triplesQuery(subjectValue, undefined, undefined, 20)
+        .triplesQuery(subjectValue, undefined, undefined, 20, settings.collection)
         .then((triples) => {
           if (!Array.isArray(triples)) {
             console.error("Expected triples array, got:", triples);
@@ -99,7 +103,7 @@ export const useNodeDetails = (
 
       return socket
         .flow(flowId)
-        .triplesQuery(undefined, undefined, objectValue, 20)
+        .triplesQuery(undefined, undefined, objectValue, 20, settings.collection)
         .then((triples) => {
           if (!Array.isArray(triples)) {
             console.error("Expected triples array, got:", triples);
@@ -131,7 +135,7 @@ export const useNodeDetails = (
 
       return socket
         .flow(flowId)
-        .triplesQuery(subjectValue, undefined, undefined, 50) // More limit for properties
+        .triplesQuery(subjectValue, undefined, undefined, 50, settings.collection) // More limit for properties
         .then((triples) => {
           if (!Array.isArray(triples)) {
             console.error("Expected triples array, got:", triples);
@@ -242,7 +246,7 @@ export const useNodeDetails = (
 
             const labelTriples = await socket
               .flow(flowId)
-              .triplesQuery(subjectValue, predicateValue, undefined, 1);
+              .triplesQuery(subjectValue, predicateValue, undefined, 1, settings.collection);
 
             // Extract label from the first result, or use URI as fallback
             if (
@@ -300,7 +304,7 @@ export const useNodeDetails = (
 
             const labelTriples = await socket
               .flow(flowId)
-              .triplesQuery(subjectValue, predicateValue, undefined, 1);
+              .triplesQuery(subjectValue, predicateValue, undefined, 1, settings.collection);
 
             // Extract label from the first result, or use URI as fallback
             if (
@@ -358,7 +362,7 @@ export const useNodeDetails = (
 
             const labelTriples = await socket
               .flow(flowId)
-              .triplesQuery(subjectValue, predicateValue, undefined, 1);
+              .triplesQuery(subjectValue, predicateValue, undefined, 1, settings.collection);
 
             // Extract label from the first result, or use URI as fallback
             if (

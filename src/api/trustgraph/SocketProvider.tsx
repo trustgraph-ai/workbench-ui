@@ -47,8 +47,8 @@ interface SocketProviderProps {
  *
  * Critical requirements:
  * 1. Wait for settings to load before creating socket
- * 2. Create socket with token if apiKey is present
- * 3. Reconnect when authentication settings change
+ * 2. Create socket with user and token if apiKey is present
+ * 3. Reconnect when user or authentication settings change
  */
 export const SocketProvider: React.FC<SocketProviderProps> = ({
   children,
@@ -69,20 +69,23 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
     console.log(
       "SocketProvider: Settings loaded, creating socket with auth:",
       settings.authentication.apiKey ? "enabled" : "disabled",
+      "user:",
+      settings.user,
     );
 
     // Clean up existing socket before creating new one (for reconnection)
     if (socket) {
       console.log(
-        "SocketProvider: API key changed, closing existing socket...",
+        "SocketProvider: User or API key changed, closing existing socket...",
       );
       socket.close();
       setIsSocketReady(false);
     }
 
-    // Create socket with current auth settings
+    // Create socket with current auth settings and user
     const apiKey = settings.authentication.apiKey;
-    const newSocket = createTrustGraphSocket(apiKey || undefined);
+    const user = settings.user;
+    const newSocket = createTrustGraphSocket(user, apiKey || undefined);
 
     // Subscribe to connection state changes
     const unsubscribe = newSocket.onConnectionStateChange(setConnectionState);
@@ -102,7 +105,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
       setIsSocketReady(false);
       setConnectionState(null);
     };
-  }, [isLoaded, settings.authentication.apiKey]); // Reconnects when API key changes
+  }, [isLoaded, settings.user, settings.authentication.apiKey]); // Reconnects when user or API key changes
 
   // Show loading state until both settings and socket are ready
   if (!isSocketReady) {

@@ -1,10 +1,11 @@
 import React from "react";
 
-import { Flex, Text, Box, HStack, Heading } from "@chakra-ui/react";
+import { Flex, Text, Box, HStack, VStack, Heading } from "@chakra-ui/react";
 
 import ColorModeToggle from "../color-mode-toggle";
 import FlowSelector from "./FlowSelector";
 import ConnectionStatus from "./ConnectionStatus";
+import UserDisplay from "./UserDisplay";
 
 interface PageHeaderProps {
   title: string;
@@ -47,8 +48,11 @@ const PageHeader: React.FC<PageHeaderProps> = ({
         </Box>
       </Flex>
       <Box>
-        <HStack gap={10}>
-          <ConnectionStatus showDetails={true} size="sm" />
+        <HStack gap={6} align="center">
+          <VStack gap={1} align="end">
+            <ConnectionStatus showDetails={true} size="sm" />
+            <UserDisplay />
+          </VStack>
           <FlowSelector />
           <ColorModeToggle />
         </HStack>

@@ -1,4 +1,6 @@
 export interface Settings {
+  user: string;
+  collection: string;
   authentication: {
     apiKey: string;
   };
@@ -21,6 +23,8 @@ export interface Settings {
 }
 
 export const DEFAULT_SETTINGS: Settings = {
+  user: "trustgraph", // Default user ID
+  collection: "default", // Default collection ID
   authentication: {
     apiKey: "",
   },

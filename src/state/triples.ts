@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useSocket } from "../api/trustgraph/socket";
 import { useNotification } from "./notify";
 import { useActivity } from "./activity";
+import { useSettings } from "./settings";
 
 /**
  * Custom hook for managing token cost operations
@@ -10,12 +11,15 @@ import { useActivity } from "./activity";
  * for AI models
  * @returns {Object} Token cost state and operations
  */
-export const useTriples = ({ flow, s, p, o, limit }) => {
+export const useTriples = ({ flow, s, p, o, limit, collection }) => {
   // WebSocket connection for communicating with the configuration service
   const socket = useSocket();
 
   // Hook for displaying user notifications
   const notify = useNotification();
+  
+  // Settings for default collection
+  const { settings } = useSettings();
 
   if (!flow) flow = "default";
 
@@ -28,7 +32,7 @@ export const useTriples = ({ flow, s, p, o, limit }) => {
     queryFn: () => {
       return socket
         .flow(flow)
-        .triplesQuery(s, p, o, limit)
+        .triplesQuery(s, p, o, limit, collection || settings.collection)
         .then((x) => {
           if (x["error"]) {
             console.log("Error:", x);

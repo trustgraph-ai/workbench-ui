@@ -42,6 +42,8 @@ export interface TextCompletionResponse {
 
 export interface GraphRagRequest {
   query: string;
+  user?: string;
+  collection?: string;
   "entity-limit"?: number; // Default: 50
   "triple-limit"?: number; // Default: 30
   "max-subgraph-size"?: number; // Default: 1000
@@ -52,8 +54,20 @@ export interface GraphRagResponse {
   response: string;
 }
 
+export interface DocumentRagRequest {
+  query: string;
+  user?: string;
+  collection?: string;
+  "doc-limit"?: number; // Default: 20
+}
+
+export interface DocumentRagResponse {
+  response: string;
+}
+
 export interface AgentRequest {
   question: string;
+  user?: string;
 }
 
 export interface AgentResponse {
@@ -74,6 +88,8 @@ export interface EmbeddingsResponse {
 export interface GraphEmbeddingsQueryRequest {
   vectors: number[][];
   limit: number;
+  user?: string;
+  collection?: string;
 }
 
 export interface GraphEmbeddingsQueryResponse {
@@ -85,6 +101,8 @@ export interface TriplesQueryRequest {
   p?: Value;
   o?: Value;
   limit: number;
+  user?: string;
+  collection?: string;
 }
 
 export interface TriplesQueryResponse {
@@ -119,6 +137,8 @@ export interface NlpQueryResponse {
 
 export interface StructuredQueryRequest {
   question: string;
+  user?: string;
+  collection?: string;
 }
 
 export interface StructuredQueryResponse {

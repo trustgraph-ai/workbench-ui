@@ -18,6 +18,8 @@ import {
  */
 const mergeWithDefaults = (settings: Partial<Settings>): Settings => {
   return {
+    user: settings.user ?? DEFAULT_SETTINGS.user,
+    collection: settings.collection ?? DEFAULT_SETTINGS.collection,
     authentication: {
       ...DEFAULT_SETTINGS.authentication,
       ...settings.authentication,
@@ -77,9 +79,7 @@ export const useSettings = () => {
     queryFn: async () => {
       // Minimal delay for async consistency
       await new Promise((resolve) => setTimeout(resolve, 1));
-      const settings = loadFromLocalStorage();
-      console.log("Settings loaded from localStorage");
-      return settings;
+      return loadFromLocalStorage();
     },
     // Enable background refetching
     staleTime: 5 * 60 * 1000, // 5 minutes
@@ -105,7 +105,13 @@ export const useSettings = () => {
       const newSettings = { ...currentSettings };
       const keys = path.split(".");
 
-      if (keys.length === 2) {
+      if (keys.length === 1) {
+        // Handle top-level properties like 'user' and 'collection'
+        const [key] = keys;
+        if (key in newSettings) {
+          (newSettings as any)[key] = value;
+        }
+      } else if (keys.length === 2) {
         const [section, key] = keys;
         if (section in newSettings) {
           (newSettings as Record<string, Record<string, unknown>>)[section] =
@@ -125,7 +131,6 @@ export const useSettings = () => {
       if (onSuccess) onSuccess();
     },
     onError: (err) => {
-      console.log("Settings update error:", err);
       notify.error(`Failed to save settings: ${err.toString()}`);
     },
     onSuccess: () => {
@@ -147,7 +152,6 @@ export const useSettings = () => {
       if (onSuccess) onSuccess();
     },
     onError: (err) => {
-      console.log("Settings reset error:", err);
       notify.error(`Failed to reset settings: ${err.toString()}`);
     },
     onSuccess: () => {

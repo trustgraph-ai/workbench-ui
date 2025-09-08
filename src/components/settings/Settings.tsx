@@ -3,6 +3,7 @@ import { VStack, HStack, Button } from "@chakra-ui/react";
 import { RotateCcw, Download, Upload } from "lucide-react";
 import { useSettings } from "../../state/settings";
 import { useNotification } from "../../state/notify";
+import UserSection from "./UserSection";
 import AuthenticationSection from "./AuthenticationSection";
 import GraphRagSection from "./GraphRagSection";
 import FeatureSwitchesSection from "./FeatureSwitchesSection";
@@ -98,6 +99,12 @@ const Settings: React.FC = () => {
           Reset to Defaults
         </Button>
       </HStack>
+
+      <UserSection
+        user={settings.user}
+        onUserChange={(value) => updateSetting("user", value)}
+        isSaving={isSaving}
+      />
 
       <AuthenticationSection
         apiKey={settings.authentication.apiKey}
