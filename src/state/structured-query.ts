@@ -35,17 +35,27 @@ export const useStructuredQuery = () => {
 
   // Mutation for executing structured queries from natural language
   const structuredQueryMutation = useMutation({
-    mutationFn: async ({ question, collection }: { question: string; collection?: string }) => {
+    mutationFn: async ({
+      question,
+      collection,
+    }: {
+      question: string;
+      collection?: string;
+    }) => {
       if (!isSocketReady) {
         throw new Error("Socket connection not ready");
       }
 
-      return socket.flow(flowId).structuredQuery(question, collection || settings.collection);
+      return socket
+        .flow(flowId)
+        .structuredQuery(question, collection || settings.collection);
     },
     onError: (err) => {
       console.log("Structured query error:", err);
       const errorMessage =
-        err instanceof Error ? err.message : err?.toString() || "Unknown error";
+        err instanceof Error
+          ? err.message
+          : err?.toString() || "Unknown error";
       notify.error(`Structured query failed: ${errorMessage}`);
     },
     onSuccess: (data) => {
@@ -60,27 +70,32 @@ export const useStructuredQuery = () => {
   });
 
   // Show loading indicator for structured query operations
-  useActivity(structuredQueryMutation.isPending, "Executing structured query");
+  useActivity(
+    structuredQueryMutation.isPending,
+    "Executing structured query",
+  );
 
   // Return the public API for the hook
   return {
     // Query execution
     executeQuery: structuredQueryMutation.mutate,
     executeQueryAsync: structuredQueryMutation.mutateAsync,
-    
+
     // Query state
     isExecuting: structuredQueryMutation.isPending,
     error: structuredQueryMutation.error,
     data: structuredQueryMutation.data,
-    
+
     // Extracted data for easier access
     queryData: structuredQueryMutation.data?.data,
     queryErrors: structuredQueryMutation.data?.errors,
-    hasErrors: structuredQueryMutation.data?.errors && structuredQueryMutation.data.errors.length > 0,
-    
+    hasErrors:
+      structuredQueryMutation.data?.errors &&
+      structuredQueryMutation.data.errors.length > 0,
+
     // Reset function to clear previous results
     reset: structuredQueryMutation.reset,
-    
+
     // Socket readiness
     isReady: isSocketReady,
   };

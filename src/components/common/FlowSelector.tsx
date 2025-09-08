@@ -9,7 +9,6 @@ import {
   Input,
   Popover,
   Portal,
-  RadioGroup,
 } from "@chakra-ui/react";
 
 import { Database, Workflow, Save, X } from "lucide-react";
@@ -23,13 +22,11 @@ const FlowSelector = () => {
   const flows = flowState.flows ? flowState.flows : [];
 
   const flowId = useSessionStore((state) => state.flowId);
-  const flow = useSessionStore((state) => state.flow);
 
   const setFlowId = useSessionStore((state) => state.setFlowId);
   const setFlow = useSessionStore((state) => state.setFlow);
 
-  const { settings, updateSetting, refetch } = useSettings();
-  
+  const { settings, updateSetting } = useSettings();
 
   const [open, setOpen] = useState(false);
   const [editingCollection, setEditingCollection] = useState(false);
@@ -84,12 +81,16 @@ const FlowSelector = () => {
         >
           <HStack gap={2} align="center">
             <Database size={14} />
-            <Text fontSize="xs" fontWeight="medium">{settings.collection}</Text>
+            <Text fontSize="xs" fontWeight="medium">
+              {settings.collection}
+            </Text>
           </HStack>
-          
+
           <HStack gap={2} align="center">
             <Workflow size={14} />
-            <Text fontSize="xs" fontWeight="medium">{flowId || "<none>"}</Text>
+            <Text fontSize="xs" fontWeight="medium">
+              {flowId || "<none>"}
+            </Text>
           </HStack>
         </Stack>
       </Popover.Trigger>
@@ -104,20 +105,25 @@ const FlowSelector = () => {
                   <Text fontWeight="semibold" fontSize="sm" color="fg.muted">
                     Current Settings
                   </Text>
-                  
+
                   <HStack gap={3} align="center">
                     <Database size={16} color="currentColor" />
                     <Box flex="1">
-                      <Text fontSize="sm" fontWeight="medium">Collection</Text>
+                      <Text fontSize="sm" fontWeight="medium">
+                        Collection
+                      </Text>
                       {editingCollection ? (
                         <HStack gap={2} mt={1}>
                           <Input
                             size="xs"
                             value={collectionValue}
-                            onChange={(e) => setCollectionValue(e.target.value)}
+                            onChange={(e) =>
+                              setCollectionValue(e.target.value)
+                            }
                             onKeyDown={(e) => {
                               if (e.key === "Enter") handleCollectionSave();
-                              if (e.key === "Escape") handleCollectionCancel();
+                              if (e.key === "Escape")
+                                handleCollectionCancel();
                             }}
                             placeholder="Enter collection name"
                             autoFocus
@@ -158,7 +164,12 @@ const FlowSelector = () => {
 
                 {/* Flow Selection */}
                 <Box borderTopWidth="1px" borderColor="border.subtle" pt={4}>
-                  <Text fontSize="sm" fontWeight="semibold" color="fg.muted" mb={3}>
+                  <Text
+                    fontSize="sm"
+                    fontWeight="semibold"
+                    color="fg.muted"
+                    mb={3}
+                  >
                     Select Flow
                   </Text>
                   <Stack gap="1">
@@ -170,11 +181,17 @@ const FlowSelector = () => {
                           p={3}
                           borderRadius="md"
                           borderWidth="1px"
-                          borderColor={isSelected ? "primary.500" : "border.subtle"}
-                          backgroundColor={isSelected ? "primary.50" : "transparent"}
+                          borderColor={
+                            isSelected ? "primary.500" : "border.subtle"
+                          }
+                          backgroundColor={
+                            isSelected ? "primary.50" : "transparent"
+                          }
                           _hover={{
                             borderColor: "primary.300",
-                            backgroundColor: isSelected ? "primary.100" : "bg.subtle",
+                            backgroundColor: isSelected
+                              ? "primary.100"
+                              : "bg.subtle",
                           }}
                           cursor="pointer"
                           onClick={() => {
@@ -188,8 +205,16 @@ const FlowSelector = () => {
                               h={4}
                               borderRadius="full"
                               borderWidth="2px"
-                              borderColor={isSelected ? "colorPalette.500" : "border.emphasized"}
-                              backgroundColor={isSelected ? "colorPalette.500" : "transparent"}
+                              borderColor={
+                                isSelected
+                                  ? "colorPalette.500"
+                                  : "border.emphasized"
+                              }
+                              backgroundColor={
+                                isSelected
+                                  ? "colorPalette.500"
+                                  : "transparent"
+                              }
                               mt={0.5}
                               flexShrink={0}
                               position="relative"
@@ -208,10 +233,18 @@ const FlowSelector = () => {
                               )}
                             </Box>
                             <Box flex="1">
-                              <Text fontWeight="semibold" fontSize="sm" mb={1}>
+                              <Text
+                                fontWeight="semibold"
+                                fontSize="sm"
+                                mb={1}
+                              >
                                 {flow.id}
                               </Text>
-                              <Text fontSize="xs" color="fg.muted" lineHeight="1.4">
+                              <Text
+                                fontSize="xs"
+                                color="fg.muted"
+                                lineHeight="1.4"
+                              >
                                 {flow.description}
                               </Text>
                             </Box>

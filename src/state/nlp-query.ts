@@ -46,7 +46,9 @@ export const useNlpQuery = () => {
     onError: (err) => {
       console.log("NLP query error:", err);
       const errorMessage =
-        err instanceof Error ? err.message : err?.toString() || "Unknown error";
+        err instanceof Error
+          ? err.message
+          : err?.toString() || "Unknown error";
       notify.error(`NLP query conversion failed: ${errorMessage}`);
     },
     onSuccess: (data) => {
@@ -59,28 +61,31 @@ export const useNlpQuery = () => {
   });
 
   // Show loading indicator for conversion operations
-  useActivity(nlpQueryMutation.isPending, "Converting natural language to GraphQL");
+  useActivity(
+    nlpQueryMutation.isPending,
+    "Converting natural language to GraphQL",
+  );
 
   // Return the public API for the hook
   return {
     // Query conversion
     convertQuery: nlpQueryMutation.mutate,
     convertQueryAsync: nlpQueryMutation.mutateAsync,
-    
+
     // Query state
     isConverting: nlpQueryMutation.isPending,
     error: nlpQueryMutation.error,
     data: nlpQueryMutation.data,
-    
+
     // Extracted data for easier access
     graphqlQuery: nlpQueryMutation.data?.graphql_query,
     variables: nlpQueryMutation.data?.variables,
     detectedSchemas: nlpQueryMutation.data?.detected_schemas,
     confidence: nlpQueryMutation.data?.confidence,
-    
+
     // Reset function to clear previous results
     reset: nlpQueryMutation.reset,
-    
+
     // Socket readiness
     isReady: isSocketReady,
   };

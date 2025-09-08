@@ -42,7 +42,7 @@ export const useObjectsQuery = () => {
     }: {
       query: string;
       collection?: string;
-      variables?: any;
+      variables?: Record<string, unknown>;
       operationName?: string;
     }) => {
       if (!isSocketReady) {
@@ -51,12 +51,19 @@ export const useObjectsQuery = () => {
 
       return socket
         .flow(flowId)
-        .objectsQuery(query, collection || settings.collection, variables, operationName);
+        .objectsQuery(
+          query,
+          collection || settings.collection,
+          variables,
+          operationName,
+        );
     },
     onError: (err) => {
       console.log("Objects query error:", err);
       const errorMessage =
-        err instanceof Error ? err.message : err?.toString() || "Unknown error";
+        err instanceof Error
+          ? err.message
+          : err?.toString() || "Unknown error";
       notify.error(`GraphQL query failed: ${errorMessage}`);
     },
     onSuccess: () => {
@@ -72,15 +79,15 @@ export const useObjectsQuery = () => {
     // Query execution
     executeQuery: objectsQueryMutation.mutate,
     executeQueryAsync: objectsQueryMutation.mutateAsync,
-    
+
     // Query state
     isExecuting: objectsQueryMutation.isPending,
     error: objectsQueryMutation.error,
     data: objectsQueryMutation.data,
-    
+
     // Reset function to clear previous results
     reset: objectsQueryMutation.reset,
-    
+
     // Socket readiness
     isReady: isSocketReady,
   };

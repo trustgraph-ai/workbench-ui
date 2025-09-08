@@ -1036,7 +1036,7 @@ export class FlowApi {
     return this.api
       .makeRequestMulti(
         "agent",
-        { 
+        {
           question: question,
           user: this.api.user,
         },
@@ -1075,7 +1075,11 @@ export class FlowApi {
   /**
    * Queries the knowledge graph using embedding vectors
    */
-  graphEmbeddingsQuery(vecs: number[][], limit: number | undefined, collection?: string) {
+  graphEmbeddingsQuery(
+    vecs: number[][],
+    limit: number | undefined,
+    collection?: string,
+  ) {
     return this.api
       .makeRequest<GraphEmbeddingsQueryRequest, GraphEmbeddingsQueryResponse>(
         "graph-embeddings",
@@ -1096,7 +1100,13 @@ export class FlowApi {
    * Queries knowledge graph triples (subject-predicate-object relationships)
    * All parameters are optional - omitted parameters act as wildcards
    */
-  triplesQuery(s?: Value, p?: Value, o?: Value, limit?: number, collection?: string) {
+  triplesQuery(
+    s?: Value,
+    p?: Value,
+    o?: Value,
+    limit?: number,
+    collection?: string,
+  ) {
     return this.api
       .makeRequest<TriplesQueryRequest, TriplesQueryResponse>(
         "triples",
@@ -1165,7 +1175,7 @@ export class FlowApi {
   objectsQuery(
     query: string,
     collection?: string,
-    variables?: any,
+    variables?: Record<string, unknown>,
     operationName?: string,
   ) {
     return this.api
@@ -1184,7 +1194,7 @@ export class FlowApi {
       )
       .then((r) => {
         // Return the GraphQL response structure directly
-        const result: any = {};
+        const result: Record<string, unknown> = {};
         if (r.data !== undefined) result.data = r.data;
         if (r.errors) result.errors = r.errors;
         if (r.extensions) result.extensions = r.extensions;
@@ -1229,7 +1239,7 @@ export class FlowApi {
       )
       .then((r) => {
         // Return the response structure directly
-        const result: any = {};
+        const result: Record<string, unknown> = {};
         if (r.data !== undefined) result.data = r.data;
         if (r.errors) result.errors = r.errors;
         return result;
@@ -1492,6 +1502,9 @@ export class KnowledgeApi {
  * @param user - User identifier for API requests
  * @param token - Optional authentication token for secure connections
  */
-export const createTrustGraphSocket = (user: string, token?: string): Socket => {
+export const createTrustGraphSocket = (
+  user: string,
+  token?: string,
+): Socket => {
   return new BaseApi(user, token);
 };

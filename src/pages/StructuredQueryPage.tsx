@@ -1,7 +1,7 @@
 import React from "react";
 import { FileSearch, Search, Code, Play } from "lucide-react";
 import PageHeader from "../components/common/PageHeader";
-import { Box, Text } from "@chakra-ui/react";
+import { Box } from "@chakra-ui/react";
 import { Tabs } from "@chakra-ui/react";
 import GenerateGraphQLTab from "../components/structured-query/GenerateGraphQLTab";
 import RunGraphQLTab from "../components/structured-query/RunGraphQLTab";

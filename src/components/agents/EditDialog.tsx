@@ -11,6 +11,7 @@ import { usePrompts } from "../../state/prompts";
 import SelectField from "../common/SelectField";
 import TextAreaField from "../common/TextAreaField";
 import TextField from "../common/TextField";
+import ChipInputField from "../common/ChipInputField";
 import { toaster } from "../ui/toaster";
 import EditableArgumentsTable from "./EditableArgumentsTable";
 
@@ -28,6 +29,9 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
   const [templateId, setTemplateId] = useState("");
   const [mcpToolId, setMcpToolId] = useState("");
   const [collection, setCollection] = useState("");
+  const [group, setGroup] = useState([]);
+  const [state, setState] = useState("");
+  const [applicableStates, setApplicableStates] = useState([]);
 
   const [editArgIx, setEditArgIx] = useState(-1);
 
@@ -52,6 +56,10 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
         setMcpToolId(x.mcp_tool_id || x["mcp-tool"] || "");
         // Handle collection attribute for knowledge-query tools
         setCollection(x.collection || "");
+        // Handle new optional fields
+        setGroup(x.group || []);
+        setState(x.state || "");
+        setApplicableStates(x["applicable-states"] || []);
       })
       .catch((e) => {
         console.log("Error:", e);
@@ -76,7 +84,8 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
     {
       value: "structured-query",
       label: "Structured Query",
-      description: "Execute natural language questions against records in a structured data / object store",
+      description:
+        "Execute natural language questions against records in a structured data / object store",
     },
     {
       value: "mcp-tool",
@@ -118,6 +127,12 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
       ...(type === "mcp-tool" && mcpToolId && { "mcp-tool": mcpToolId }),
       ...((type === "knowledge-query" || type === "structured-query") &&
         collection && { collection: collection }),
+      ...(group && group.length > 0 && { group: group }),
+      ...(state && { state: state }),
+      ...(applicableStates &&
+        applicableStates.length > 0 && {
+          "applicable-states": applicableStates,
+        }),
     };
 
     if (create) {
@@ -238,7 +253,8 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
                 />
               )}
 
-              {(type === "knowledge-query" || type === "structured-query") && (
+              {(type === "knowledge-query" ||
+                type === "structured-query") && (
                 <TextField
                   label="Collection"
                   placeholder="Enter the knowledge collection (optional)"
@@ -247,6 +263,26 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
                   required={false}
                 />
               )}
+
+              <ChipInputField
+                label="Groups"
+                values={group}
+                onValuesChange={setGroup}
+              />
+
+              <TextField
+                label="Next State"
+                placeholder="Optional: Specify which state the agent should move to after successfully using this tool. Used to create multi-step workflows."
+                value={state}
+                onValueChange={(v) => setState(v)}
+                required={false}
+              />
+
+              <ChipInputField
+                label="Applicable States"
+                values={applicableStates}
+                onValuesChange={setApplicableStates}
+              />
 
               {(type === "prompt" || type === "mcp-tool") && (
                 <>

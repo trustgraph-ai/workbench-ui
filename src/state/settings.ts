@@ -109,7 +109,7 @@ export const useSettings = () => {
         // Handle top-level properties like 'user' and 'collection'
         const [key] = keys;
         if (key in newSettings) {
-          (newSettings as any)[key] = value;
+          (newSettings as Record<string, unknown>)[key] = value;
         }
       } else if (keys.length === 2) {
         const [section, key] = keys;

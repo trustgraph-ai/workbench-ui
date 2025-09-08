@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { VStack, HStack, Button, Textarea, Text } from "@chakra-ui/react";
-import { Code, ArrowRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { useNlpQuery } from "../../state/nlp-query";
 import TextField from "../common/TextField";
 
@@ -10,7 +10,7 @@ const GenerateGraphQLTab: React.FC = () => {
 
   const handleSubmit = () => {
     if (!question.trim()) return;
-    
+
     nlpQuery.convertQuery({ question: question.trim() });
   };
 
@@ -37,7 +37,9 @@ const GenerateGraphQLTab: React.FC = () => {
         <HStack justify="flex-end">
           <Button
             onClick={handleSubmit}
-            disabled={!question.trim() || nlpQuery.isConverting || !nlpQuery.isReady}
+            disabled={
+              !question.trim() || nlpQuery.isConverting || !nlpQuery.isReady
+            }
             colorPalette="primary"
           >
             <ArrowRight size={16} />
@@ -51,7 +53,7 @@ const GenerateGraphQLTab: React.FC = () => {
           <Text fontWeight="medium" fontSize="lg">
             Generated GraphQL Query
           </Text>
-          
+
           {nlpQuery.error ? (
             <Textarea
               value={`Error: ${nlpQuery.error.message || nlpQuery.error}`}
@@ -79,34 +81,41 @@ const GenerateGraphQLTab: React.FC = () => {
             </Text>
           )}
 
-          {nlpQuery.detectedSchemas && nlpQuery.detectedSchemas.length > 0 && (
-            <VStack gap={2} align="start">
-              <Text fontSize="sm" fontWeight="medium" color="fg.muted">
-                Detected Schemas:
-              </Text>
-              <Text fontSize="sm" color="fg.muted">
-                {nlpQuery.detectedSchemas.map((schema: any) => 
-                  typeof schema === "string" ? schema : schema.name || JSON.stringify(schema)
-                ).join(", ")}
-              </Text>
-            </VStack>
-          )}
+          {nlpQuery.detectedSchemas &&
+            nlpQuery.detectedSchemas.length > 0 && (
+              <VStack gap={2} align="start">
+                <Text fontSize="sm" fontWeight="medium" color="fg.muted">
+                  Detected Schemas:
+                </Text>
+                <Text fontSize="sm" color="fg.muted">
+                  {nlpQuery.detectedSchemas
+                    .map((schema: Record<string, unknown> | string) =>
+                      typeof schema === "string"
+                        ? schema
+                        : (schema as Record<string, unknown>).name ||
+                          JSON.stringify(schema),
+                    )
+                    .join(", ")}
+                </Text>
+              </VStack>
+            )}
 
-          {nlpQuery.variables && Object.keys(nlpQuery.variables).length > 0 && (
-            <VStack gap={2} align="start">
-              <Text fontSize="sm" fontWeight="medium" color="fg.muted">
-                Variables:
-              </Text>
-              <Textarea
-                value={JSON.stringify(nlpQuery.variables, null, 2)}
-                readOnly
-                rows={4}
-                bg="bg.subtle"
-                fontFamily="mono"
-                fontSize="sm"
-              />
-            </VStack>
-          )}
+          {nlpQuery.variables &&
+            Object.keys(nlpQuery.variables).length > 0 && (
+              <VStack gap={2} align="start">
+                <Text fontSize="sm" fontWeight="medium" color="fg.muted">
+                  Variables:
+                </Text>
+                <Textarea
+                  value={JSON.stringify(nlpQuery.variables, null, 2)}
+                  readOnly
+                  rows={4}
+                  bg="bg.subtle"
+                  fontFamily="mono"
+                  fontSize="sm"
+                />
+              </VStack>
+            )}
         </VStack>
       )}
     </VStack>
