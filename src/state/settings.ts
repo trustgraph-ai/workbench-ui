@@ -19,6 +19,7 @@ import {
 const mergeWithDefaults = (settings: Partial<Settings>): Settings => {
   return {
     user: settings.user ?? DEFAULT_SETTINGS.user,
+    collection: settings.collection ?? DEFAULT_SETTINGS.collection,
     authentication: {
       ...DEFAULT_SETTINGS.authentication,
       ...settings.authentication,
