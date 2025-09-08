@@ -4,6 +4,7 @@ import PageHeader from "../components/common/PageHeader";
 import { Box, Text } from "@chakra-ui/react";
 import { Tabs } from "@chakra-ui/react";
 import GenerateGraphQLTab from "../components/structured-query/GenerateGraphQLTab";
+import RunGraphQLTab from "../components/structured-query/RunGraphQLTab";
 
 const StructuredQueryPage: React.FC = () => {
   return (
@@ -43,11 +44,7 @@ const StructuredQueryPage: React.FC = () => {
           </Tabs.Content>
 
           <Tabs.Content value="run-graphql">
-            <Box p={6} bg="bg.subtle" borderRadius="md" mt={4}>
-              <Text color="fg.muted">
-                GraphQL execution interface coming soon...
-              </Text>
-            </Box>
+            <RunGraphQLTab />
           </Tabs.Content>
         </Tabs.Root>
       </Box>
