@@ -93,7 +93,7 @@ export const ConnectionStatus: React.FC<ConnectionStatusProps> = ({
   return (
     <Tooltip.Root>
       <Tooltip.Trigger asChild>
-        <HStack spacing={2} cursor="pointer">
+        <HStack spacing={2}>
           <Box color={color}>
             <StatusIcon size={iconSize} />
           </Box>
