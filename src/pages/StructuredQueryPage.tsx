@@ -5,6 +5,7 @@ import { Box, Text } from "@chakra-ui/react";
 import { Tabs } from "@chakra-ui/react";
 import GenerateGraphQLTab from "../components/structured-query/GenerateGraphQLTab";
 import RunGraphQLTab from "../components/structured-query/RunGraphQLTab";
+import StructuredQueryTab from "../components/structured-query/StructuredQueryTab";
 
 const StructuredQueryPage: React.FC = () => {
   return (
@@ -32,11 +33,7 @@ const StructuredQueryPage: React.FC = () => {
           </Tabs.List>
 
           <Tabs.Content value="structured-query">
-            <Box p={6} bg="bg.subtle" borderRadius="md" mt={4}>
-              <Text color="fg.muted">
-                Structured Query builder interface coming soon...
-              </Text>
-            </Box>
+            <StructuredQueryTab />
           </Tabs.Content>
 
           <Tabs.Content value="generate-graphql">
