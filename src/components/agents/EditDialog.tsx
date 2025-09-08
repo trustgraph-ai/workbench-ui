@@ -84,7 +84,8 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
     {
       value: "structured-query",
       label: "Structured Query",
-      description: "Execute natural language questions against records in a structured data / object store",
+      description:
+        "Execute natural language questions against records in a structured data / object store",
     },
     {
       value: "mcp-tool",
@@ -128,7 +129,10 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
         collection && { collection: collection }),
       ...(group && group.length > 0 && { group: group }),
       ...(state && { state: state }),
-      ...(applicableStates && applicableStates.length > 0 && { "applicable-states": applicableStates }),
+      ...(applicableStates &&
+        applicableStates.length > 0 && {
+          "applicable-states": applicableStates,
+        }),
     };
 
     if (create) {
@@ -249,7 +253,8 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
                 />
               )}
 
-              {(type === "knowledge-query" || type === "structured-query") && (
+              {(type === "knowledge-query" ||
+                type === "structured-query") && (
                 <TextField
                   label="Collection"
                   placeholder="Enter the knowledge collection (optional)"

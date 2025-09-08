@@ -1,11 +1,18 @@
 import React, { useState, useMemo } from "react";
-import { VStack, HStack, Button, Text, Box, Textarea } from "@chakra-ui/react";
+import {
+  VStack,
+  HStack,
+  Button,
+  Text,
+  Box,
+  Textarea,
+} from "@chakra-ui/react";
 import { Search } from "lucide-react";
 import { useStructuredQuery } from "../../state/structured-query";
 import TextField from "../common/TextField";
-import { 
-  createColumnHelper, 
-  useReactTable, 
+import {
+  createColumnHelper,
+  useReactTable,
   getCoreRowModel,
   getSortedRowModel,
 } from "@tanstack/react-table";
@@ -22,7 +29,7 @@ const StructuredQueryTab: React.FC = () => {
 
   const handleSubmit = () => {
     if (!question.trim()) return;
-    
+
     structuredQuery.executeQuery({ question: question.trim() });
   };
 
@@ -49,7 +56,7 @@ const StructuredQueryTab: React.FC = () => {
     // Get the first data collection
     const firstKey = dataKeys[0];
     const results = structuredQuery.queryData[firstKey];
-    
+
     if (!Array.isArray(results) || results.length === 0) {
       return { columns: [], tableData: [] };
     }
@@ -61,27 +68,31 @@ const StructuredQueryTab: React.FC = () => {
         header: key.charAt(0).toUpperCase() + key.slice(1),
         cell: (info) => {
           const value = info.getValue();
-          
+
           // Handle different value types
           if (value === null || value === undefined) {
             return <Text color="fg.muted">—</Text>;
           }
-          
+
           if (typeof value === "object") {
-            return <Text fontSize="sm" fontFamily="mono">
-              {JSON.stringify(value, null, 2)}
-            </Text>;
+            return (
+              <Text fontSize="sm" fontFamily="mono">
+                {JSON.stringify(value, null, 2)}
+              </Text>
+            );
           }
-          
+
           if (typeof value === "boolean") {
-            return <Text color={value ? "green.500" : "red.500"}>
-              {value.toString()}
-            </Text>;
+            return (
+              <Text color={value ? "green.500" : "red.500"}>
+                {value.toString()}
+              </Text>
+            );
           }
-          
+
           return <Text>{value.toString()}</Text>;
         },
-      })
+      }),
     );
 
     return {
@@ -114,7 +125,11 @@ const StructuredQueryTab: React.FC = () => {
         <HStack justify="flex-end">
           <Button
             onClick={handleSubmit}
-            disabled={!question.trim() || structuredQuery.isExecuting || !structuredQuery.isReady}
+            disabled={
+              !question.trim() ||
+              structuredQuery.isExecuting ||
+              !structuredQuery.isReady
+            }
             colorPalette="primary"
           >
             <Search size={16} />
@@ -143,25 +158,26 @@ const StructuredQueryTab: React.FC = () => {
       )}
 
       {/* Query Errors Display */}
-      {structuredQuery.queryErrors && structuredQuery.queryErrors.length > 0 && (
-        <Box>
-          <Text fontWeight="medium" fontSize="lg" color="orange.500" mb={2}>
-            Query Errors
-          </Text>
-          <Textarea
-            value={structuredQuery.queryErrors.map((error: any) => 
-              error.message || JSON.stringify(error)
-            ).join('\n\n')}
-            readOnly
-            rows={6}
-            bg="orange.50"
-            borderColor="orange.200"
-            color="orange.600"
-            fontFamily="mono"
-            fontSize="sm"
-          />
-        </Box>
-      )}
+      {structuredQuery.queryErrors &&
+        structuredQuery.queryErrors.length > 0 && (
+          <Box>
+            <Text fontWeight="medium" fontSize="lg" color="orange.500" mb={2}>
+              Query Errors
+            </Text>
+            <Textarea
+              value={structuredQuery.queryErrors
+                .map((error: any) => error.message || JSON.stringify(error))
+                .join("\n\n")}
+              readOnly
+              rows={6}
+              bg="orange.50"
+              borderColor="orange.200"
+              color="orange.600"
+              fontFamily="mono"
+              fontSize="sm"
+            />
+          </Box>
+        )}
 
       {/* Results Table */}
       {structuredQuery.queryData && tableData.length > 0 && (
@@ -171,10 +187,10 @@ const StructuredQueryTab: React.FC = () => {
               Query Results
             </Text>
             <Text fontSize="sm" color="fg.muted">
-              {tableData.length} row{tableData.length !== 1 ? 's' : ''}
+              {tableData.length} row{tableData.length !== 1 ? "s" : ""}
             </Text>
           </HStack>
-          
+
           <Box overflowX="auto">
             <BasicTable table={table} />
           </Box>
@@ -182,16 +198,18 @@ const StructuredQueryTab: React.FC = () => {
       )}
 
       {/* No Results Message */}
-      {structuredQuery.queryData && tableData.length === 0 && !structuredQuery.error && (
-        <Box>
-          <Text fontWeight="medium" fontSize="lg" mb={2}>
-            Query Results
-          </Text>
-          <Text color="fg.muted">
-            Query executed successfully but returned no data.
-          </Text>
-        </Box>
-      )}
+      {structuredQuery.queryData &&
+        tableData.length === 0 &&
+        !structuredQuery.error && (
+          <Box>
+            <Text fontWeight="medium" fontSize="lg" mb={2}>
+              Query Results
+            </Text>
+            <Text color="fg.muted">
+              Query executed successfully but returned no data.
+            </Text>
+          </Box>
+        )}
     </VStack>
   );
 };

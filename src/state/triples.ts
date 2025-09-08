@@ -17,7 +17,7 @@ export const useTriples = ({ flow, s, p, o, limit, collection }) => {
 
   // Hook for displaying user notifications
   const notify = useNotification();
-  
+
   // Settings for default collection
   const { settings } = useSettings();
 

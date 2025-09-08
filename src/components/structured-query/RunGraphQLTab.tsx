@@ -1,10 +1,17 @@
 import React, { useState, useMemo } from "react";
-import { VStack, HStack, Button, Textarea, Text, Box } from "@chakra-ui/react";
+import {
+  VStack,
+  HStack,
+  Button,
+  Textarea,
+  Text,
+  Box,
+} from "@chakra-ui/react";
 import { Play } from "lucide-react";
 import { useObjectsQuery } from "../../state/objects-query";
-import { 
-  createColumnHelper, 
-  useReactTable, 
+import {
+  createColumnHelper,
+  useReactTable,
   getCoreRowModel,
   getSortedRowModel,
 } from "@tanstack/react-table";
@@ -21,7 +28,7 @@ const RunGraphQLTab: React.FC = () => {
 
   const handleSubmit = () => {
     if (!query.trim()) return;
-    
+
     objectsQuery.executeQuery({ query: query.trim() });
   };
 
@@ -48,7 +55,7 @@ const RunGraphQLTab: React.FC = () => {
     // Get the first data collection
     const firstKey = dataKeys[0];
     const results = objectsQuery.data.data[firstKey];
-    
+
     if (!Array.isArray(results) || results.length === 0) {
       return { columns: [], tableData: [] };
     }
@@ -60,27 +67,31 @@ const RunGraphQLTab: React.FC = () => {
         header: key.charAt(0).toUpperCase() + key.slice(1),
         cell: (info) => {
           const value = info.getValue();
-          
+
           // Handle different value types
           if (value === null || value === undefined) {
             return <Text color="fg.muted">—</Text>;
           }
-          
+
           if (typeof value === "object") {
-            return <Text fontSize="sm" fontFamily="mono">
-              {JSON.stringify(value, null, 2)}
-            </Text>;
+            return (
+              <Text fontSize="sm" fontFamily="mono">
+                {JSON.stringify(value, null, 2)}
+              </Text>
+            );
           }
-          
+
           if (typeof value === "boolean") {
-            return <Text color={value ? "green.500" : "red.500"}>
-              {value.toString()}
-            </Text>;
+            return (
+              <Text color={value ? "green.500" : "red.500"}>
+                {value.toString()}
+              </Text>
+            );
           }
-          
+
           return <Text>{value.toString()}</Text>;
         },
-      })
+      }),
     );
 
     return {
@@ -113,7 +124,7 @@ const RunGraphQLTab: React.FC = () => {
         <Text fontWeight="medium" fontSize="lg">
           GraphQL Query
         </Text>
-        
+
         <Textarea
           value={query}
           onChange={(e) => setQuery(e.target.value)}
@@ -123,14 +134,18 @@ const RunGraphQLTab: React.FC = () => {
           fontFamily="mono"
           fontSize="sm"
         />
-        
+
         <HStack justify="space-between" align="center">
           <Text fontSize="sm" color="fg.muted">
             Press Ctrl+Enter to execute
           </Text>
           <Button
             onClick={handleSubmit}
-            disabled={!query.trim() || objectsQuery.isExecuting || !objectsQuery.isReady}
+            disabled={
+              !query.trim() ||
+              objectsQuery.isExecuting ||
+              !objectsQuery.isReady
+            }
             colorPalette="primary"
           >
             <Play size={16} />
@@ -165,9 +180,9 @@ const RunGraphQLTab: React.FC = () => {
             GraphQL Errors
           </Text>
           <Textarea
-            value={objectsQuery.data.errors.map((error: any) => 
-              error.message || JSON.stringify(error)
-            ).join('\n\n')}
+            value={objectsQuery.data.errors
+              .map((error: any) => error.message || JSON.stringify(error))
+              .join("\n\n")}
             readOnly
             rows={6}
             bg="orange.50"
@@ -187,10 +202,10 @@ const RunGraphQLTab: React.FC = () => {
               Query Results
             </Text>
             <Text fontSize="sm" color="fg.muted">
-              {tableData.length} row{tableData.length !== 1 ? 's' : ''}
+              {tableData.length} row{tableData.length !== 1 ? "s" : ""}
             </Text>
           </HStack>
-          
+
           <Box overflowX="auto">
             <BasicTable table={table} />
           </Box>
@@ -198,16 +213,18 @@ const RunGraphQLTab: React.FC = () => {
       )}
 
       {/* No Results Message */}
-      {objectsQuery.data?.data && tableData.length === 0 && !objectsQuery.error && (
-        <Box>
-          <Text fontWeight="medium" fontSize="lg" mb={2}>
-            Query Results
-          </Text>
-          <Text color="fg.muted">
-            Query executed successfully but returned no data.
-          </Text>
-        </Box>
-      )}
+      {objectsQuery.data?.data &&
+        tableData.length === 0 &&
+        !objectsQuery.error && (
+          <Box>
+            <Text fontWeight="medium" fontSize="lg" mb={2}>
+              Query Results
+            </Text>
+            <Text color="fg.muted">
+              Query executed successfully but returned no data.
+            </Text>
+          </Box>
+        )}
     </VStack>
   );
 };

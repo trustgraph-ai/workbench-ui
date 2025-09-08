@@ -54,12 +54,16 @@ export const useChat = () => {
 
     try {
       // Execute Graph RAG request with settings
-      const ragResponse = await socket.flow(flowId).graphRag(input, {
-        entityLimit: settings.graphrag.entityLimit,
-        tripleLimit: settings.graphrag.tripleLimit,
-        maxSubgraphSize: settings.graphrag.maxSubgraphSize,
-        pathLength: settings.graphrag.pathLength,
-      }, settings.collection);
+      const ragResponse = await socket.flow(flowId).graphRag(
+        input,
+        {
+          entityLimit: settings.graphrag.entityLimit,
+          tripleLimit: settings.graphrag.tripleLimit,
+          maxSubgraphSize: settings.graphrag.maxSubgraphSize,
+          pathLength: settings.graphrag.pathLength,
+        },
+        settings.collection,
+      );
       addMessage("ai", ragResponse);
       removeActivity(ragActivity);
 
@@ -72,7 +76,11 @@ export const useChat = () => {
       // Query graph embeddings to find entities using settings
       const entities = await socket
         .flow(flowId)
-        .graphEmbeddingsQuery(embeddings, settings.graphrag.entityLimit, settings.collection);
+        .graphEmbeddingsQuery(
+          embeddings,
+          settings.graphrag.entityLimit,
+          settings.collection,
+        );
 
       // Get labels for each entity
       const labelPromises = entities.map(async (entity: Value) => {
@@ -82,7 +90,13 @@ export const useChat = () => {
         try {
           const triples = await socket
             .flow(flowId)
-            .triplesQuery(entity, { v: RDFS_LABEL, e: true }, undefined, 1, settings.collection);
+            .triplesQuery(
+              entity,
+              { v: RDFS_LABEL, e: true },
+              undefined,
+              1,
+              settings.collection,
+            );
           removeActivity(labelActivity);
           return triples;
         } catch (err) {

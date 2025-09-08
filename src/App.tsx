@@ -120,7 +120,10 @@ const App = () => {
             <Route path="/prompts" element={<PromptsPage />} />
             <Route path="/schemas" element={<SchemasPage />} />
             <Route path="/ontologies" element={<OntologiesPage />} />
-            <Route path="/structured-query" element={<StructuredQueryPage />} />
+            <Route
+              path="/structured-query"
+              element={<StructuredQueryPage />}
+            />
             <Route path="/agents" element={<ToolsPage />} />
             <Route path="/mcp-tools" element={<McpToolsPage />} />
             <Route path="/settings" element={<SettingsPage />} />
