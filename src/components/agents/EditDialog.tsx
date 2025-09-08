@@ -11,6 +11,7 @@ import { usePrompts } from "../../state/prompts";
 import SelectField from "../common/SelectField";
 import TextAreaField from "../common/TextAreaField";
 import TextField from "../common/TextField";
+import ChipInputField from "../common/ChipInputField";
 import { toaster } from "../ui/toaster";
 import EditableArgumentsTable from "./EditableArgumentsTable";
 
@@ -258,12 +259,10 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
                 />
               )}
 
-              <TextField
+              <ChipInputField
                 label="Groups"
-                placeholder="Select which groups can access this tool. Leave empty to disable the tool entirely. If no groups are selected, the tool will be available to all requests (default group)."
-                value={group.join(", ")}
-                onValueChange={(v) => setGroup(v ? v.split(",").map(s => s.trim()).filter(s => s) : [])}
-                required={false}
+                values={group}
+                onValuesChange={setGroup}
               />
 
               <TextField
@@ -274,12 +273,10 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
                 required={false}
               />
 
-              <TextField
+              <ChipInputField
                 label="Applicable States"
-                placeholder="Select which workflow states this tool should be available in. Leave empty to make the tool available in all states."
-                value={applicableStates.join(", ")}
-                onValueChange={(v) => setApplicableStates(v ? v.split(",").map(s => s.trim()).filter(s => s) : [])}
-                required={false}
+                values={applicableStates}
+                onValuesChange={setApplicableStates}
               />
 
               {(type === "prompt" || type === "mcp-tool") && (
