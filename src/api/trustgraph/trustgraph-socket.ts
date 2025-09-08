@@ -9,6 +9,8 @@ import {
   ConfigRequest,
   ConfigResponse,
   //  DocumentMetadata,
+  DocumentRagRequest,
+  DocumentRagResponse,
   EmbeddingsRequest,
   EmbeddingsResponse,
   FlowRequest,
@@ -686,13 +688,14 @@ export class LibrarianApi {
   /**
    * Removes a document from the library
    */
-  removeDocument(id: string, user: string) {
+  removeDocument(id: string, collection?: string) {
     return this.api.makeRequest<LibraryRequest, LibraryResponse>(
       "librarian",
       {
         operation: "remove-document",
         "document-id": id,
-        user: user ? user : "trustgraph",
+        user: this.api.user,
+        collection: collection || "default",
       },
       30000,
     );
@@ -957,18 +960,40 @@ export class FlowApi {
   /**
    * Performs Graph RAG (Retrieval Augmented Generation) query
    */
-  graphRag(text: string, options?: GraphRagOptions) {
+  graphRag(text: string, options?: GraphRagOptions, collection?: string) {
     return this.api
       .makeRequest<GraphRagRequest, GraphRagResponse>(
         "graph-rag",
         {
           query: text,
+          user: this.api.user,
+          collection: collection || "default",
           "entity-limit": options?.entityLimit,
           "triple-limit": options?.tripleLimit,
           "max-subgraph-size": options?.maxSubgraphSize,
           "max-path-length": options?.pathLength,
         },
         60000, // Longer timeout for complex graph operations
+        null,
+        this.flowId,
+      )
+      .then((r) => r.response);
+  }
+
+  /**
+   * Performs Document RAG (Retrieval Augmented Generation) query
+   */
+  documentRag(text: string, docLimit?: number, collection?: string) {
+    return this.api
+      .makeRequest<DocumentRagRequest, DocumentRagResponse>(
+        "document-rag",
+        {
+          query: text,
+          user: this.api.user,
+          collection: collection || "default",
+          "doc-limit": docLimit || 20,
+        },
+        60000, // Longer timeout for document operations
         null,
         this.flowId,
       )
@@ -1047,13 +1072,15 @@ export class FlowApi {
   /**
    * Queries the knowledge graph using embedding vectors
    */
-  graphEmbeddingsQuery(vecs: number[][], limit: number | undefined) {
+  graphEmbeddingsQuery(vecs: number[][], limit: number | undefined, collection?: string) {
     return this.api
       .makeRequest<GraphEmbeddingsQueryRequest, GraphEmbeddingsQueryResponse>(
         "graph-embeddings",
         {
           vectors: vecs,
           limit: limit ? limit : 20, // Default to 20 results
+          user: this.api.user,
+          collection: collection || "default",
         },
         30000,
         null,
@@ -1066,7 +1093,7 @@ export class FlowApi {
    * Queries knowledge graph triples (subject-predicate-object relationships)
    * All parameters are optional - omitted parameters act as wildcards
    */
-  triplesQuery(s?: Value, p?: Value, o?: Value, limit?: number) {
+  triplesQuery(s?: Value, p?: Value, o?: Value, limit?: number, collection?: string) {
     return this.api
       .makeRequest<TriplesQueryRequest, TriplesQueryResponse>(
         "triples",
@@ -1075,6 +1102,8 @@ export class FlowApi {
           p: p, // Predicate
           o: o, // Object
           limit: limit ? limit : 20,
+          user: this.api.user,
+          collection: collection || "default",
         },
         30000,
         null,
@@ -1163,14 +1192,12 @@ export class FlowApi {
   /**
    * Converts a natural language question to a GraphQL query
    */
-  nlpQuery(question: string, collection?: string, maxResults?: number) {
+  nlpQuery(question: string, maxResults?: number) {
     return this.api
       .makeRequest<NlpQueryRequest, NlpQueryResponse>(
         "nlp-query",
         {
           question: question,
-          user: this.api.user,
-          collection: collection || "default",
           max_results: maxResults || 100,
         },
         30000,
@@ -1393,13 +1420,14 @@ export class KnowledgeApi {
   /**
    * Deletes a knowledge graph core
    */
-  deleteKgCore(id: string, user?: string) {
+  deleteKgCore(id: string, collection?: string) {
     return this.api.makeRequest<LibraryRequest, LibraryResponse>(
       "knowledge",
       {
         operation: "delete-kg-core",
         id: id,
-        user: user ? user : "trustgraph",
+        user: this.api.user,
+        collection: collection || "default",
       },
       30000,
     );
@@ -1408,15 +1436,15 @@ export class KnowledgeApi {
   /**
    * Deletes a knowledge graph core
    */
-  loadKgCore(id: string, flow: string, user?: string, collection?: string) {
+  loadKgCore(id: string, flow: string, collection?: string) {
     return this.api.makeRequest<LibraryRequest, LibraryResponse>(
       "knowledge",
       {
         operation: "load-kg-core",
         id: id,
         flow: flow,
-        user: user ? user : "trustgraph",
-        collection: collection ? collection : "default",
+        user: this.api.user,
+        collection: collection || "default",
       },
       30000,
     );
@@ -1427,7 +1455,7 @@ export class KnowledgeApi {
    * Uses multi-request pattern for large datasets
    * @param receiver - Callback function to handle streaming data chunks
    */
-  getKgCore(id: string, user?: string, receiver) {
+  getKgCore(id: string, collection: string | undefined, receiver) {
     // Wrapper to handle end-of-stream detection
     const recv = (msg) => {
       if (msg.eos) {
@@ -1446,7 +1474,8 @@ export class KnowledgeApi {
       {
         operation: "get-kg-core",
         id: id,
-        user: user ? user : "trustgraph",
+        user: this.api.user,
+        collection: collection || "default",
       },
       recv, // Stream handler
       30000,

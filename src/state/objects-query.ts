@@ -9,6 +9,8 @@ import { useNotification } from "./notify";
 import { useActivity } from "./activity";
 // Session state for flow ID
 import { useSessionStore } from "./session";
+// Settings for user and collection
+import { useSettings } from "./settings";
 
 /**
  * Custom hook for managing GraphQL objects queries
@@ -22,6 +24,8 @@ export const useObjectsQuery = () => {
   const notify = useNotification();
   // Session state for current flow ID
   const flowId = useSessionStore((state) => state.flowId);
+  // Settings for default collection
+  const { settings } = useSettings();
 
   // Only enable operations when socket is connected and ready
   const isSocketReady =
@@ -32,13 +36,11 @@ export const useObjectsQuery = () => {
   const objectsQueryMutation = useMutation({
     mutationFn: async ({
       query,
-      user,
       collection,
       variables,
       operationName,
     }: {
       query: string;
-      user?: string;
       collection?: string;
       variables?: any;
       operationName?: string;
@@ -49,7 +51,7 @@ export const useObjectsQuery = () => {
 
       return socket
         .flow(flowId)
-        .objectsQuery(query, user, collection, variables, operationName);
+        .objectsQuery(query, collection || settings.collection, variables, operationName);
     },
     onError: (err) => {
       console.log("Objects query error:", err);
