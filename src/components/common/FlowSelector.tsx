@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import {
   Text,
@@ -28,16 +28,33 @@ const FlowSelector = () => {
   const setFlowId = useSessionStore((state) => state.setFlowId);
   const setFlow = useSessionStore((state) => state.setFlow);
 
-  const { settings, updateSetting } = useSettings();
+  const { settings, updateSetting, refetch } = useSettings();
+  
+  // Debug: log settings object changes
+  useEffect(() => {
+    console.log("Full settings object:", settings);
+  }, [settings]);
 
   const [open, setOpen] = useState(false);
   const [editingCollection, setEditingCollection] = useState(false);
   const [collectionValue, setCollectionValue] = useState(settings.collection);
 
+  // Keep staged value in sync with saved value
+  useEffect(() => {
+    console.log("Settings collection changed to:", settings.collection);
+    setCollectionValue(settings.collection);
+  }, [settings.collection]);
+
   const handleCollectionSave = () => {
-    if (collectionValue.trim()) {
-      updateSetting("collection", collectionValue.trim());
+    const trimmedValue = collectionValue.trim();
+    console.log("Saving collection:", trimmedValue);
+    console.log("Current settings.collection:", settings.collection);
+    if (trimmedValue) {
+      // Update the setting and immediately exit edit mode
+      updateSetting("collection", trimmedValue);
+      // Exit edit mode immediately - the useEffect will update the display when settings change
       setEditingCollection(false);
+      console.log("Exited edit mode, waiting for settings update...");
     }
   };
 

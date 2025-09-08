@@ -107,7 +107,13 @@ export const useSettings = () => {
       const newSettings = { ...currentSettings };
       const keys = path.split(".");
 
-      if (keys.length === 2) {
+      if (keys.length === 1) {
+        // Handle top-level properties like 'user' and 'collection'
+        const [key] = keys;
+        if (key in newSettings) {
+          (newSettings as any)[key] = value;
+        }
+      } else if (keys.length === 2) {
         const [section, key] = keys;
         if (section in newSettings) {
           (newSettings as Record<string, Record<string, unknown>>)[section] =
