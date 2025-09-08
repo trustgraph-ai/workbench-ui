@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { VStack, HStack, Button, Textarea, Text } from "@chakra-ui/react";
-import { Code, ArrowRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { useNlpQuery } from "../../state/nlp-query";
 import TextField from "../common/TextField";
 
@@ -89,10 +89,10 @@ const GenerateGraphQLTab: React.FC = () => {
                 </Text>
                 <Text fontSize="sm" color="fg.muted">
                   {nlpQuery.detectedSchemas
-                    .map((schema: any) =>
+                    .map((schema: Record<string, unknown> | string) =>
                       typeof schema === "string"
                         ? schema
-                        : schema.name || JSON.stringify(schema),
+                        : (schema as Record<string, unknown>).name || JSON.stringify(schema),
                     )
                     .join(", ")}
                 </Text>

@@ -113,14 +113,14 @@ export interface ObjectsQueryRequest {
   query: string;
   user?: string;
   collection?: string;
-  variables?: any;
+  variables?: Record<string, unknown>;
   operation_name?: string;
 }
 
 export interface ObjectsQueryResponse {
-  data?: any;
-  errors?: any[];
-  extensions?: any;
+  data?: Record<string, unknown>;
+  errors?: Record<string, unknown>[];
+  extensions?: Record<string, unknown>;
 }
 
 export interface NlpQueryRequest {
@@ -130,8 +130,8 @@ export interface NlpQueryRequest {
 
 export interface NlpQueryResponse {
   graphql_query?: string;
-  variables?: any;
-  detected_schemas?: any[];
+  variables?: Record<string, unknown>;
+  detected_schemas?: Record<string, unknown>[];
   confidence?: number;
 }
 
@@ -142,8 +142,8 @@ export interface StructuredQueryRequest {
 }
 
 export interface StructuredQueryResponse {
-  data?: any;
-  errors?: any[];
+  data?: Record<string, unknown>;
+  errors?: Record<string, unknown>[];
 }
 
 export interface LoadDocumentRequest {

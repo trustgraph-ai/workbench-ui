@@ -19,7 +19,7 @@ import {
 import BasicTable from "../common/BasicTable";
 
 // Dynamic table row type for structured query results
-type StructuredQueryResultRow = Record<string, any>;
+type StructuredQueryResultRow = Record<string, unknown>;
 
 const columnHelper = createColumnHelper<StructuredQueryResultRow>();
 
@@ -166,7 +166,8 @@ const StructuredQueryTab: React.FC = () => {
             </Text>
             <Textarea
               value={structuredQuery.queryErrors
-                .map((error: any) => error.message || JSON.stringify(error))
+                .map((error: Record<string, unknown>) => 
+                  (error.message as string) || JSON.stringify(error))
                 .join("\n\n")}
               readOnly
               rows={6}

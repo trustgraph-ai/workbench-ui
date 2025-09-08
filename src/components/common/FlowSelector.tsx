@@ -9,7 +9,6 @@ import {
   Input,
   Popover,
   Portal,
-  RadioGroup,
 } from "@chakra-ui/react";
 
 import { Database, Workflow, Save, X } from "lucide-react";
@@ -23,12 +22,11 @@ const FlowSelector = () => {
   const flows = flowState.flows ? flowState.flows : [];
 
   const flowId = useSessionStore((state) => state.flowId);
-  const flow = useSessionStore((state) => state.flow);
 
   const setFlowId = useSessionStore((state) => state.setFlowId);
   const setFlow = useSessionStore((state) => state.setFlow);
 
-  const { settings, updateSetting, refetch } = useSettings();
+  const { settings, updateSetting } = useSettings();
 
   const [open, setOpen] = useState(false);
   const [editingCollection, setEditingCollection] = useState(false);

@@ -1175,7 +1175,7 @@ export class FlowApi {
   objectsQuery(
     query: string,
     collection?: string,
-    variables?: any,
+    variables?: Record<string, unknown>,
     operationName?: string,
   ) {
     return this.api
@@ -1194,7 +1194,7 @@ export class FlowApi {
       )
       .then((r) => {
         // Return the GraphQL response structure directly
-        const result: any = {};
+        const result: Record<string, unknown> = {};
         if (r.data !== undefined) result.data = r.data;
         if (r.errors) result.errors = r.errors;
         if (r.extensions) result.extensions = r.extensions;
@@ -1239,7 +1239,7 @@ export class FlowApi {
       )
       .then((r) => {
         // Return the response structure directly
-        const result: any = {};
+        const result: Record<string, unknown> = {};
         if (r.data !== undefined) result.data = r.data;
         if (r.errors) result.errors = r.errors;
         return result;

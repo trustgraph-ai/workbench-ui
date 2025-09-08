@@ -42,7 +42,7 @@ export const useObjectsQuery = () => {
     }: {
       query: string;
       collection?: string;
-      variables?: any;
+      variables?: Record<string, unknown>;
       operationName?: string;
     }) => {
       if (!isSocketReady) {

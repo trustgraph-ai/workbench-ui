@@ -18,7 +18,7 @@ import {
 import BasicTable from "../common/BasicTable";
 
 // Dynamic table row type for GraphQL results
-type GraphQLResultRow = Record<string, any>;
+type GraphQLResultRow = Record<string, unknown>;
 
 const columnHelper = createColumnHelper<GraphQLResultRow>();
 
@@ -181,7 +181,8 @@ const RunGraphQLTab: React.FC = () => {
           </Text>
           <Textarea
             value={objectsQuery.data.errors
-              .map((error: any) => error.message || JSON.stringify(error))
+              .map((error: Record<string, unknown>) => 
+                (error.message as string) || JSON.stringify(error))
               .join("\n\n")}
             readOnly
             rows={6}
