@@ -10,7 +10,7 @@ import {
   RadioGroup,
 } from "@chakra-ui/react";
 
-import { User, Database, Workflow } from "lucide-react";
+import { Database, Workflow } from "lucide-react";
 
 import { useSessionStore } from "../../state/session";
 import { useFlows } from "../../state/flows";
@@ -55,11 +55,6 @@ const FlowSelector = () => {
           cursor="pointer"
         >
           <HStack gap={2} align="center">
-            <User size={14} />
-            <Text fontSize="xs" fontWeight="medium">{settings.user}</Text>
-          </HStack>
-          
-          <HStack gap={2} align="center">
             <Database size={14} />
             <Text fontSize="xs" fontWeight="medium">{settings.collection}</Text>
           </HStack>
@@ -82,14 +77,6 @@ const FlowSelector = () => {
                     Current Settings
                   </Text>
                   
-                  <HStack gap={3} align="center">
-                    <User size={16} color="currentColor" />
-                    <Box flex="1">
-                      <Text fontSize="sm" fontWeight="medium">User</Text>
-                      <Text fontSize="xs" color="fg.muted">{settings.user}</Text>
-                    </Box>
-                  </HStack>
-
                   <HStack gap={3} align="center">
                     <Database size={16} color="currentColor" />
                     <Box flex="1">
