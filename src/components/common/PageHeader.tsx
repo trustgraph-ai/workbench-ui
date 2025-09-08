@@ -48,8 +48,8 @@ const PageHeader: React.FC<PageHeaderProps> = ({
         </Box>
       </Flex>
       <Box>
-        <HStack gap={10} align="start">
-          <VStack gap={2} align="center">
+        <HStack gap={6} align="center">
+          <VStack gap={1} align="end">
             <ConnectionStatus showDetails={true} size="sm" />
             <UserDisplay />
           </VStack>
