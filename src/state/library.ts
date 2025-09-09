@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from "uuid";
 import { useSocket, useConnectionState } from "../api/trustgraph/socket";
 import { useNotification } from "./notify";
 import { useActivity } from "./activity";
+import { useSettings } from "./settings";
 import { fileToBase64, textToBase64 } from "../utils/document-encoding";
 import { prepareMetadata, createDocId } from "../model/document-metadata";
 
@@ -23,6 +24,9 @@ export const useLibrary = () => {
 
   // Hook for displaying user notifications
   const notify = useNotification();
+
+  // Hook for accessing user settings
+  const { settings } = useSettings();
 
   // Only enable queries when socket is connected and ready
   const isSocketReady =
@@ -74,10 +78,9 @@ export const useLibrary = () => {
    */
   const submitDocumentsMutation = useMutation({
     mutationFn: ({ ids, flow, tags, onSuccess }) => {
-      // FIXME: Needs to be properly implemented.
-      // Hardcoded values that should be configurable
-      const user = "trustgraph";
-      const collection = "default";
+      // Use settings for user and collection values
+      const user = settings.user;
+      const collection = settings.collection;
 
       // Create processing entries for each document
       return Promise.all(
