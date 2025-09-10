@@ -161,6 +161,7 @@ export const queryLabel = (
   uri: string,
   add: (s: string) => void,
   remove: (s: string) => void,
+  collection?: string,
 ): Promise<string> => {
   const act = "Label " + uri;
 
@@ -178,6 +179,7 @@ export const queryLabel = (
       { v: RDFS_LABEL, e: true },
       undefined,
       1,
+      collection,
     )
     .then((triples: Triple[]) => {
       // If got a result, return the label, otherwise the URI
@@ -202,10 +204,11 @@ export const labelS = (
   triples: Triple[],
   add: (s: string) => void,
   remove: (s: string) => void,
+  collection?: string,
 ) => {
   return Promise.all(
     triples.map((t) => {
-      return queryLabel(socket, t.s.v, add, remove).then((label: string) => {
+      return queryLabel(socket, t.s.v, add, remove, collection).then((label: string) => {
         return {
           ...t,
           s: {
@@ -225,10 +228,11 @@ export const labelP = (
   triples: Triple[],
   add: (s: string) => void,
   remove: (s: string) => void,
+  collection?: string,
 ) => {
   return Promise.all(
     triples.map((t) => {
-      return queryLabel(socket, t.p.v, add, remove).then((label: string) => {
+      return queryLabel(socket, t.p.v, add, remove, collection).then((label: string) => {
         return {
           ...t,
           p: {
@@ -248,13 +252,14 @@ export const labelO = (
   triples: Triple[],
   add: (s: string) => void,
   remove: (s: string) => void,
+  collection?: string,
 ) => {
   return Promise.all(
     triples.map((t) => {
       // If the 'o' element is a entity, do a label lookup, else
       // just use the literal value for its label
       if (t.o.e)
-        return queryLabel(socket, t.o.v, add, remove).then(
+        return queryLabel(socket, t.o.v, add, remove, collection).then(
           (label: string) => {
             return {
               ...t,
@@ -307,12 +312,12 @@ export const getTriples = (
   const api = socket.flow(flowId);
 
   return query(api, uri, add, remove, limit, collection)
-    .then((d) => labelS(api, d, add, remove))
-    .then((d) => labelP(api, d, add, remove))
-    .then((d) => labelO(api, d, add, remove))
+    .then((d) => labelS(api, d, add, remove, collection))
+    .then((d) => labelP(api, d, add, remove, collection))
+    .then((d) => labelO(api, d, add, remove, collection))
     .then((d) => filterInternals(d))
     .then((d) => {
-      return queryLabel(api, uri, add, remove).then((label: string) => {
+      return queryLabel(api, uri, add, remove, collection).then((label: string) => {
         return {
           triples: d,
           uri: uri,
