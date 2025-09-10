@@ -41,6 +41,7 @@ export const queryS = (
   add: (s: string) => void,
   remove: (s: string) => void,
   limit?: number,
+  collection?: string,
 ) => {
   const act = "Query S: " + uri;
   add(act);
@@ -51,6 +52,7 @@ export const queryS = (
       undefined,
       undefined,
       limit ? limit : LIMIT,
+      collection,
     )
     .then((x) => {
       remove(act);
@@ -69,6 +71,7 @@ export const queryP = (
   add: (s: string) => void,
   remove: (s: string) => void,
   limit?: number,
+  collection?: string,
 ) => {
   const act = "Query P: " + uri;
   add(act);
@@ -79,6 +82,7 @@ export const queryP = (
       { v: uri, e: true },
       undefined,
       limit ? limit : LIMIT,
+      collection,
     )
     .then((x) => {
       remove(act);
@@ -97,6 +101,7 @@ export const queryO = (
   add: (s: string) => void,
   remove: (s: string) => void,
   limit?: number,
+  collection?: string,
 ) => {
   const act = "Query O: " + uri;
   add(act);
@@ -107,6 +112,7 @@ export const queryO = (
       undefined,
       { v: uri, e: true },
       limit ? limit : LIMIT,
+      collection,
     )
     .then((x) => {
       remove(act);
@@ -125,14 +131,15 @@ export const query = (
   add: (s: string) => void,
   remove: (s: string) => void,
   limit?: number,
+  collection?: string,
 ) => {
   const act = "Query: " + uri;
   add(act);
 
   return Promise.all([
-    queryS(socket, uri, add, remove, limit),
-    queryP(socket, uri, add, remove, limit),
-    queryO(socket, uri, add, remove, limit),
+    queryS(socket, uri, add, remove, limit, collection),
+    queryP(socket, uri, add, remove, limit, collection),
+    queryO(socket, uri, add, remove, limit, collection),
   ])
     .then((resp) => {
       return resp[0].concat(resp[1]).concat(resp[2]);
@@ -292,13 +299,14 @@ export const getTriples = (
   add: (s: string) => void,
   remove: (s: string) => void,
   limit?: number,
+  collection?: string,
 ) => {
   // FIXME: Cache more
   // FIXME: Too many queries
 
   const api = socket.flow(flowId);
 
-  return query(api, uri, add, remove, limit)
+  return query(api, uri, add, remove, limit, collection)
     .then((d) => labelS(api, d, add, remove))
     .then((d) => labelP(api, d, add, remove))
     .then((d) => labelO(api, d, add, remove))

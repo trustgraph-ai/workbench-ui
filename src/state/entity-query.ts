@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useSocket } from "../api/trustgraph/socket";
 import { useNotification } from "./notify";
 import { useActivity } from "./activity";
+import { useSettings } from "./settings";
 import { getTriples } from "../utils/knowledge-graph";
 import { useProgressStateStore } from "./progress";
 
@@ -29,6 +30,9 @@ export const useEntityDetail = (
   // Hook for displaying user notifications
   const notify = useNotification();
 
+  // Hook for accessing user settings
+  const { settings } = useSettings();
+
   /**
    * Query for fetching entity details
    * Uses React Query for caching and background refetching
@@ -47,6 +51,8 @@ export const useEntityDetail = (
         entityUri,
         addActivity,
         removeActivity,
+        undefined,
+        settings.collection,
       );
     },
     // Only run query if both entityUri and flowId are available
