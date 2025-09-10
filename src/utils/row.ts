@@ -21,6 +21,7 @@ export const getGraphEmbeddings = (
   add: (s: string) => void,
   remove: (s: string) => void,
   limit?: number,
+  collection?: string,
 ) => {
   // Take the embeddings, and lookup entities using graph
   // embeddings, add embedding to each entity row, just an easy
@@ -30,7 +31,7 @@ export const getGraphEmbeddings = (
     add(act);
 
     return socket
-      .graphEmbeddingsQuery(vecs, limit ? limit : 10)
+      .graphEmbeddingsQuery(vecs, limit ? limit : 10, collection)
       .then((ents: Value[]): Row[] =>
         ents.map((ent) => {
           remove(act);
@@ -46,7 +47,7 @@ export const getGraphEmbeddings = (
 
 // For entities, lookup labels
 export const addRowLabels =
-  (socket: Socket, add: (s: string) => void, remove: (s: string) => void) =>
+  (socket: Socket, add: (s: string) => void, remove: (s: string) => void, collection?: string) =>
   (entities: Row[]): Promise<Row[]> => {
     return Promise.all<Row>(
       entities.map((ent: Row) => {
@@ -58,6 +59,7 @@ export const addRowLabels =
             { v: RDFS_LABEL, e: true },
             undefined,
             1,
+            collection,
           )
           .then((t): Row => {
             if (t.length < 1) {
@@ -86,7 +88,7 @@ export const addRowLabels =
 
 // For entities, lookup definitions
 export const addRowDefinitions =
-  (socket: Socket, add: (s: string) => void, remove: (s: string) => void) =>
+  (socket: Socket, add: (s: string) => void, remove: (s: string) => void, collection?: string) =>
   // For entities, lookup labels
   (entities: Row[]) => {
     return Promise.all<Row>(
@@ -99,6 +101,7 @@ export const addRowDefinitions =
             { v: SKOS_DEFINITION, e: true },
             undefined,
             1,
+            collection,
           )
           .then((t) => {
             if (t.length < 1) {
