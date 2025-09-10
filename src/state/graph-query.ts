@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSocket } from "../api/trustgraph/socket";
 import { useNotification } from "./notify";
 import { useActivity } from "./activity";
+import { useSettings } from "./settings";
 import {
   createSubgraph,
   updateSubgraph,
@@ -34,6 +35,9 @@ export const useGraphSubgraph = (
   // Hook for displaying user notifications
   const notify = useNotification();
 
+  // Hook for accessing user settings
+  const { settings } = useSettings();
+
   // Query client for cache management
   const queryClient = useQueryClient();
 
@@ -58,6 +62,7 @@ export const useGraphSubgraph = (
         sg,
         addActivity,
         removeActivity,
+        settings.collection,
       );
     },
     enabled: !!entityUri && !!flowId, // Only run query if both entityUri and flowId are available
@@ -120,6 +125,7 @@ export const useGraphSubgraph = (
         currentGraph,
         addActivity,
         removeActivity,
+        settings.collection,
       );
     },
     onSuccess: (newGraph) => {

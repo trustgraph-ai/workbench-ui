@@ -110,12 +110,13 @@ export const updateSubgraph = (
   sg: Subgraph,
   add: (s: string) => void,
   remove: (s: string) => void,
+  collection?: string,
 ) => {
   const api = socket.flow(flowId);
-  return query(api, uri, add, remove)
-    .then((d) => labelS(api, d, add, remove))
-    .then((d) => labelP(api, d, add, remove))
-    .then((d) => labelO(api, d, add, remove))
+  return query(api, uri, add, remove, undefined, collection)
+    .then((d) => labelS(api, d, add, remove, collection))
+    .then((d) => labelP(api, d, add, remove, collection))
+    .then((d) => labelO(api, d, add, remove, collection))
     .then((d) => filterInternals(d))
     .then((d) => updateSubgraphTriples(sg, d));
 };
@@ -129,6 +130,7 @@ export const updateSubgraphByRelationship = (
   sg: Subgraph,
   add: (s: string) => void,
   remove: (s: string) => void,
+  collection?: string,
 ) => {
   const api = socket.flow(flowId);
   const activityName = `Following ${direction} relationship: ${relationshipUri}`;
@@ -143,12 +145,14 @@ export const updateSubgraphByRelationship = (
           { v: relationshipUri, e: true }, // p = relationship
           undefined, // o = ??? (what we want to find)
           20, // Limit results
+          collection,
         )
       : api.triplesQuery(
           undefined, // s = ??? (what we want to find)
           { v: relationshipUri, e: true }, // p = relationship
           { v: selectedNodeId, e: true }, // o = selectedNode
           20, // Limit results
+          collection,
         );
 
   return queryPromise
@@ -156,9 +160,9 @@ export const updateSubgraphByRelationship = (
       remove(activityName);
       return triples;
     })
-    .then((d) => labelS(api, d, add, remove))
-    .then((d) => labelP(api, d, add, remove))
-    .then((d) => labelO(api, d, add, remove))
+    .then((d) => labelS(api, d, add, remove, collection))
+    .then((d) => labelP(api, d, add, remove, collection))
+    .then((d) => labelO(api, d, add, remove, collection))
     .then((d) => filterInternals(d))
     .then((d) => updateSubgraphTriples(sg, d));
 };
