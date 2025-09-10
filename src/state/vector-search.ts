@@ -2,6 +2,7 @@ import { useQueryClient } from "@tanstack/react-query";
 
 import { useSocket } from "../api/trustgraph/socket";
 import { useNotification } from "./notify";
+import { useSettings } from "./settings";
 import { vectorSearch } from "../utils/vector-search";
 import { useProgressStateStore } from "./progress";
 
@@ -25,6 +26,9 @@ export const useVectorSearch = () => {
   // Hook for displaying user notifications
   const notify = useNotification();
 
+  // Hook for accessing user settings
+  const { settings } = useSettings();
+
   const queryClient = useQueryClient();
 
   const query = ({ flow, term, limit }) => {
@@ -39,9 +43,9 @@ export const useVectorSearch = () => {
      */
 
     return queryClient.fetchQuery({
-      queryKey: ["search", { flow, term, limit }],
+      queryKey: ["search", { flow, term, limit, collection: settings.collection }],
       queryFn: () => {
-        return vectorSearch(socket, flow, addActivity, removeActivity, term)
+        return vectorSearch(socket, flow, addActivity, removeActivity, term, settings.collection)
           .then((x) => {
             if (x["error"]) {
               console.log("Error:", x);
