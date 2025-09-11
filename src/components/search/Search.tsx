@@ -51,10 +51,16 @@ const Search = () => {
       .query({ flow: flowId, term: search, limit: 10 })
       .then((x) => {
         console.log(x);
-        // Update search results view
-        setView(x.view);
-        // Update workbench entities for potential visualization
-        setEntities(x.entities);
+        if (x) {
+          // Update search results view
+          setView(x.view);
+          // Update workbench entities for potential visualization
+          setEntities(x.entities);
+        } else {
+          // Handle empty search term case
+          setView([]);
+          setEntities([]);
+        }
       })
       .catch((err) => console.log("Error:", err));
   };
