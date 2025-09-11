@@ -87,9 +87,9 @@ const GraphView = () => {
           // Create UnrealBloomPass with scene dimensions
           const bloomPass = new UnrealBloomPass(
             renderSize,
-            0.3,    // strength (lower = more subtle)
-            0.2,    // radius (lower = tighter glow)
-            0.9     // threshold (higher = only brightest objects glow)
+            0.5,    // strength (lower = more subtle)
+            0.1,    // radius (lower = tighter glow)
+            0.01     // threshold (higher = only brightest objects glow)
           );
           
           // Add the bloom pass
