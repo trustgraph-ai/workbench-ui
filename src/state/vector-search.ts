@@ -41,7 +41,7 @@ export const useVectorSearch = () => {
     enabled: !!searchParams?.term,
     queryFn: () => {
       const { flow, term, limit } = searchParams;
-      return vectorSearch(socket, flow || "default", addActivity, removeActivity, term, settings.collection)
+      return vectorSearch(socket, flow || "default", addActivity, removeActivity, term, settings.collection, limit)
         .then((x) => {
           if (x["error"]) {
             console.log("Error:", x);
