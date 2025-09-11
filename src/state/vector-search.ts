@@ -66,25 +66,24 @@ export const useVectorSearch = () => {
   });
 
   // Function to trigger a new search
-  const query = ({ flow, term, limit }) => {
-    if (!term) return Promise.resolve(null);
-
+  const startSearch = ({ flow, term, limit }) => {
+    if (!term) {
+      setSearchParams(null);
+      return;
+    }
     setSearchParams({ flow: flow || "default", term, limit: limit || 10 });
-
-    // Return the promise for backward compatibility
-    return searchQuery.refetch().then((result) => result.data);
   };
 
   // Return vector search state and operations for use in components
   return {
-    // Query function
-    query: query,
+    // Function to start a new search
+    startSearch: startSearch,
+    // Search results and state
+    data: searchQuery.data,
     isLoading: searchQuery.isLoading || searchQuery.isFetching,
     isError: searchQuery.isError,
     error: searchQuery.error,
-    data: searchQuery.data,
-
-    // Manual refetch function
-    refetch: searchQuery.refetch,
+    // Current search parameters
+    searchParams: searchParams,
   };
 };

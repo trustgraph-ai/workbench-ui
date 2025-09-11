@@ -1,5 +1,5 @@
 // Import state management hooks for different parts of the application
-import { useState } from "react";
+import React, { useState } from "react";
 import { useWorkbenchStateStore } from "../../state/workbench";
 import { useSearchStateStore } from "../../state/search";
 import { useSessionStore } from "../../state/session";
@@ -44,23 +44,21 @@ const Search = () => {
     setHasSearched(true);
     setLastSearchedTerm(search);
 
-    // Perform vector search query with current flow, search term, and limit
-    state
-      .query({ flow: flowId, term: search, limit: 10 })
-      .then((x) => {
-        if (x) {
-          // Update search results view
-          setView(x.view);
-          // Update workbench entities for potential visualization
-          setEntities(x.entities);
-        } else {
-          // Handle empty search term case
-          setView([]);
-          setEntities([]);
-        }
-      })
-      .catch((err) => console.log("Error:", err));
+    // Trigger search - results will come via state.data
+    state.startSearch({ flow: flowId, term: search, limit: 10 });
   };
+
+  // Update view when search data changes
+  React.useEffect(() => {
+    if (state.data) {
+      setView(state.data.view || []);
+      setEntities(state.data.entities || []);
+    } else if (hasSearched && !state.isLoading) {
+      // Clear results if no data and not loading
+      setView([]);
+      setEntities([]);
+    }
+  }, [state.data, hasSearched, state.isLoading, setView, setEntities]);
 
   return (
     <>
