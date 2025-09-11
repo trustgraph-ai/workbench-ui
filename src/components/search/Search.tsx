@@ -40,8 +40,6 @@ const Search = () => {
    * Updates both search results view and workbench entities on success
    */
   const submit = () => {
-    console.log(search);
-
     // Mark that a search has been performed and store the search term
     setHasSearched(true);
     setLastSearchedTerm(search);
@@ -50,7 +48,6 @@ const Search = () => {
     state
       .query({ flow: flowId, term: search, limit: 10 })
       .then((x) => {
-        console.log(x);
         if (x) {
           // Update search results view
           setView(x.view);
