@@ -1,4 +1,5 @@
 // Import state management hooks for different parts of the application
+import { useState } from "react";
 import { useWorkbenchStateStore } from "../../state/workbench";
 import { useSearchStateStore } from "../../state/search";
 import { useSessionStore } from "../../state/session";
@@ -7,6 +8,7 @@ import { useVectorSearch } from "../../state/vector-search";
 // Import child components for search functionality
 import SearchInput from "./SearchInput";
 import Results from "./Results";
+import { EmptyState } from "../common/TableStates";
 
 /**
  * Main search component that handles vector search functionality
@@ -29,12 +31,18 @@ const Search = () => {
   // Get current search input from search state
   const search = useSearchStateStore((state) => state.input);
 
+  // Track whether a search has been performed
+  const [hasSearched, setHasSearched] = useState(false);
+
   /**
    * Handles search submission by querying the vector search service
    * Updates both search results view and workbench entities on success
    */
   const submit = () => {
     console.log(search);
+
+    // Mark that a search has been performed
+    setHasSearched(true);
 
     // Perform vector search query with current flow, search term, and limit
     state
@@ -54,8 +62,12 @@ const Search = () => {
       {/* Search input component with submit handler */}
       <SearchInput submit={submit} />
 
-      {/* Conditionally render results if any exist */}
-      {view.length > 0 && <Results />}
+      {/* Show results if found, or empty state if searched but no results */}
+      {view.length > 0 ? (
+        <Results />
+      ) : hasSearched ? (
+        <EmptyState message={`No results found for "${search}"`} />
+      ) : null}
     </>
   );
 };
