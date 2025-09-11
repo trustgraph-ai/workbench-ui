@@ -31,7 +31,8 @@ const Search = () => {
   // Get current search input from search state
   const search = useSearchStateStore((state) => state.input);
 
-  // Track whether a search has been performed
+  // Track the last searched term separately from current input
+  const [lastSearchedTerm, setLastSearchedTerm] = useState("");
   const [hasSearched, setHasSearched] = useState(false);
 
   /**
@@ -41,8 +42,9 @@ const Search = () => {
   const submit = () => {
     console.log(search);
 
-    // Mark that a search has been performed
+    // Mark that a search has been performed and store the search term
     setHasSearched(true);
+    setLastSearchedTerm(search);
 
     // Perform vector search query with current flow, search term, and limit
     state
@@ -62,11 +64,13 @@ const Search = () => {
       {/* Search input component with submit handler */}
       <SearchInput submit={submit} />
 
-      {/* Show results if found, or empty state if searched but no results */}
-      {view.length > 0 ? (
+      {/* Show results if found, loading state, or empty state */}
+      {state.isLoading ? (
+        <EmptyState message="Searching..." />
+      ) : view.length > 0 ? (
         <Results />
-      ) : hasSearched ? (
-        <EmptyState message={`No results found for "${search}"`} />
+      ) : hasSearched && !state.isLoading ? (
+        <EmptyState message={`No results found for "${lastSearchedTerm}"`} />
       ) : null}
     </>
   );
