@@ -47,7 +47,12 @@ export const getGraphEmbeddings = (
 
 // For entities, lookup labels
 export const addRowLabels =
-  (socket: Socket, add: (s: string) => void, remove: (s: string) => void, collection?: string) =>
+  (
+    socket: Socket,
+    add: (s: string) => void,
+    remove: (s: string) => void,
+    collection?: string,
+  ) =>
   (entities: Row[]): Promise<Row[]> => {
     return Promise.all<Row>(
       entities.map((ent: Row) => {
@@ -88,7 +93,12 @@ export const addRowLabels =
 
 // For entities, lookup definitions
 export const addRowDefinitions =
-  (socket: Socket, add: (s: string) => void, remove: (s: string) => void, collection?: string) =>
+  (
+    socket: Socket,
+    add: (s: string) => void,
+    remove: (s: string) => void,
+    collection?: string,
+  ) =>
   // For entities, lookup labels
   (entities: Row[]) => {
     return Promise.all<Row>(

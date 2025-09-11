@@ -41,7 +41,15 @@ export const useVectorSearch = () => {
     enabled: !!searchParams?.term,
     queryFn: () => {
       const { flow, term, limit } = searchParams;
-      return vectorSearch(socket, flow || "default", addActivity, removeActivity, term, settings.collection, limit)
+      return vectorSearch(
+        socket,
+        flow || "default",
+        addActivity,
+        removeActivity,
+        term,
+        settings.collection,
+        limit,
+      )
         .then((x) => {
           if (x["error"]) {
             console.log("Error:", x);
@@ -60,11 +68,11 @@ export const useVectorSearch = () => {
   // Function to trigger a new search
   const query = ({ flow, term, limit }) => {
     if (!term) return Promise.resolve(null);
-    
+
     setSearchParams({ flow: flow || "default", term, limit: limit || 10 });
-    
+
     // Return the promise for backward compatibility
-    return searchQuery.refetch().then(result => result.data);
+    return searchQuery.refetch().then((result) => result.data);
   };
 
   // Return vector search state and operations for use in components
