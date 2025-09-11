@@ -32,12 +32,12 @@ export const getGraphEmbeddings = (
 
     return socket
       .graphEmbeddingsQuery(vecs, limit ? limit : 10, collection)
-      .then((ents: Value[]): Row[] =>
-        ents.map((ent) => {
-          remove(act);
+      .then((ents: Value[]): Row[] => {
+        remove(act);
+        return ents.map((ent) => {
           return { uri: ent.v, target: vecs[0] };
-        }),
-      )
+        });
+      })
       .catch((err) => {
         remove(act);
         throw err;
