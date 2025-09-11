@@ -4,7 +4,9 @@ import { Box, Alert, Heading, HStack } from "@chakra-ui/react";
 
 import { useResizeDetector } from "react-resize-detector";
 
-import { ForceGraph3D } from "react-force-graph";
+import ForceGraph3D from "react-force-graph-3d";
+import { BloomEffect, EffectComposer, EffectPass, RenderPass } from 'postprocessing';
+//import { SelectiveBloomEffect } from 'postprocessing';
 import SpriteText from "three-spritetext";
 
 import {
@@ -34,6 +36,7 @@ const GraphView = () => {
   // State to track the selected node
   const [selectedNode, setSelectedNode] = useState(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [graphReady, setGraphReady] = useState(false);
 
   const borderColor = useBorderColor();
   const backgroundColor = useBackgroundColor();
@@ -47,6 +50,55 @@ const GraphView = () => {
   // Use the new Tanstack Query hook for graph data
   const { view, isLoading, isError, navigateByRelationship } =
     useGraphSubgraph(selected?.uri, flowId);
+
+  // Bloom filter
+  useEffect(() => {
+
+    if (!graphReady || !fgRef.current) return;
+
+    const composer = fgRef.current.postProcessingComposer();
+    if (!composer) return;
+
+    // Clear existing passes to avoid duplicates (keep render pass)
+    while (composer.passes.length > 1) {
+      composer.removePass(composer.passes[composer.passes.length - 1]);
+    }
+
+    // Create bloom effect with correct API
+    const bloomEffect = new BloomEffect({
+      intensity: 2.0,        // Overall intensity
+      luminanceThreshold: 0.1, // Threshold for what gets bloomed
+      luminanceSmoothing: 0.9, // Smoothness of the threshold
+      mipmapBlur: true,      // Better quality blur
+      kernelSize: 3,         // Blur kernel size
+    });
+
+    // Wrap the effect in an EffectPass
+    const effectPass = new EffectPass(
+      fgRef.current.camera(),
+      bloomEffect
+    );
+    effectPass.renderToScreen = true;
+
+    // Add the effect pass
+    composer.addPass(effectPass);
+
+    console.log("Bloom effect pass added successfully", effectPass);
+
+    // Cleanup function
+    return () => {
+      if (composer && effectPass) {
+        composer.removePass(effectPass);
+      }
+    };
+
+  }, [graphReady]); // Depend on graphReady instead of empty array
+
+  // Track when graph is ready
+  const handleGraphReady = () => {
+    console.log("Graph is ready, initializing bloom effect");
+    setGraphReady(true);
+  };
 
   // Ensure drawer opens when node is selected
   useEffect(() => {
@@ -185,6 +237,7 @@ const GraphView = () => {
             node.fy = node.y;
             node.fz = node.z;
           }}
+          onEngineStop={handleGraphReady}
           linkDirectionalArrowLength={2.5}
           linkDirectionalArrowRelPos={0.75}
           linkOpacity={0.6}
@@ -226,3 +279,4 @@ const GraphView = () => {
 };
 
 export default GraphView;
+
