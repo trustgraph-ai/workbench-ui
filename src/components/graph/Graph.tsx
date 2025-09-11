@@ -5,9 +5,9 @@ import { Box, Alert, Heading, HStack } from "@chakra-ui/react";
 import { useResizeDetector } from "react-resize-detector";
 
 import ForceGraph3D from "react-force-graph-3d";
-import { BloomEffect, EffectComposer, EffectPass, RenderPass } from 'postprocessing';
-//import { SelectiveBloomEffect } from 'postprocessing';
 import SpriteText from "three-spritetext";
+import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass';
+import * as THREE from 'three';
 
 import {
   useBorderColor,
@@ -73,33 +73,36 @@ const GraphView = () => {
           return;
         }
 
-        // Clear existing passes to avoid duplicates (keep render pass)
-        while (composer.passes.length > 1) {
-          composer.removePass(composer.passes[composer.passes.length - 1]);
+        // Inspect what's in the composer
+        console.log("Existing passes:", composer.passes.length);
+        console.log("Pass types:", composer.passes.map(p => p.constructor.name));
+        console.log("Composer type:", composer.constructor.name);
+        
+        // Try UnrealBloomPass from three.js
+        try {
+          // Get renderer size for bloom pass
+          const renderSize = new THREE.Vector2();
+          renderer.getSize(renderSize);
+          
+          // Create UnrealBloomPass with scene dimensions
+          const bloomPass = new UnrealBloomPass(
+            renderSize,
+            0.5,    // strength
+            0.4,    // radius  
+            0.85    // threshold
+          );
+          
+          // Add the bloom pass
+          composer.addPass(bloomPass);
+          
+          console.log("UnrealBloomPass added successfully", {
+            passCount: composer.passes.length,
+            renderSize: renderSize
+          });
+        } catch (error) {
+          console.error("Error adding UnrealBloomPass:", error);
         }
 
-        // Create bloom effect with lower intensity to avoid red square
-        const bloomEffect = new BloomEffect({
-          intensity: 0.5,        // Lower intensity
-          luminanceThreshold: 0.5, // Higher threshold
-          luminanceSmoothing: 0.025, // Lower smoothing
-          mipmapBlur: true,
-        });
-
-        // Create effect pass with proper camera and scene
-        const effectPass = new EffectPass(camera, bloomEffect);
-        
-        // Don't set renderToScreen if there's already a render pass
-//        effectPass.renderToScreen = composer.passes.length === 0;
-
-        // Add the effect pass
-        composer.addPass(effectPass);
-
-        console.log("Bloom effect added after delay", {
-          passCount: composer.passes.length,
-          camera: camera,
-          scene: scene
-        });
       } catch (error) {
         console.error("Error adding bloom effect:", error);
       }
