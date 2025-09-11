@@ -36,7 +36,6 @@ const GraphView = () => {
   // State to track the selected node
   const [selectedNode, setSelectedNode] = useState(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [graphReady, setGraphReady] = useState(false);
 
   const borderColor = useBorderColor();
   const backgroundColor = useBackgroundColor();
@@ -51,54 +50,63 @@ const GraphView = () => {
   const { view, isLoading, isError, navigateByRelationship } =
     useGraphSubgraph(selected?.uri, flowId);
 
-  // Bloom filter
+  // Bloom filter - try to add it after a short delay when component mounts
   useEffect(() => {
+    // Use a timeout instead of waiting for engine stop
+    const timer = setTimeout(() => {
+      if (!fgRef.current) return;
 
-    if (!graphReady || !fgRef.current) return;
+      try {
+        const composer = fgRef.current.postProcessingComposer();
+        if (!composer) {
+          console.log("No composer available");
+          return;
+        }
 
-    const composer = fgRef.current.postProcessingComposer();
-    if (!composer) return;
+        // Get the scene and camera
+        const scene = fgRef.current.scene();
+        const camera = fgRef.current.camera();
+        const renderer = fgRef.current.renderer();
 
-    // Clear existing passes to avoid duplicates (keep render pass)
-    while (composer.passes.length > 1) {
-      composer.removePass(composer.passes[composer.passes.length - 1]);
-    }
+        if (!scene || !camera || !renderer) {
+          console.log("Missing scene, camera, or renderer");
+          return;
+        }
 
-    // Create bloom effect with correct API
-    const bloomEffect = new BloomEffect({
-      intensity: 2.0,        // Overall intensity
-      luminanceThreshold: 0.1, // Threshold for what gets bloomed
-      luminanceSmoothing: 0.9, // Smoothness of the threshold
-      mipmapBlur: true,      // Better quality blur
-      kernelSize: 3,         // Blur kernel size
-    });
+        // Clear existing passes to avoid duplicates (keep render pass)
+        while (composer.passes.length > 1) {
+          composer.removePass(composer.passes[composer.passes.length - 1]);
+        }
 
-    // Wrap the effect in an EffectPass
-    const effectPass = new EffectPass(
-      fgRef.current.camera(),
-      bloomEffect
-    );
-    effectPass.renderToScreen = true;
+        // Create bloom effect with lower intensity to avoid red square
+        const bloomEffect = new BloomEffect({
+          intensity: 0.5,        // Lower intensity
+          luminanceThreshold: 0.5, // Higher threshold
+          luminanceSmoothing: 0.025, // Lower smoothing
+          mipmapBlur: true,
+        });
 
-    // Add the effect pass
-    composer.addPass(effectPass);
+        // Create effect pass with proper camera and scene
+        const effectPass = new EffectPass(camera, bloomEffect);
+        
+        // Don't set renderToScreen if there's already a render pass
+//        effectPass.renderToScreen = composer.passes.length === 0;
 
-    console.log("Bloom effect pass added successfully", effectPass);
+        // Add the effect pass
+        composer.addPass(effectPass);
 
-    // Cleanup function
-    return () => {
-      if (composer && effectPass) {
-        composer.removePass(effectPass);
+        console.log("Bloom effect added after delay", {
+          passCount: composer.passes.length,
+          camera: camera,
+          scene: scene
+        });
+      } catch (error) {
+        console.error("Error adding bloom effect:", error);
       }
-    };
+    }, 2000); // Wait 2 seconds after mount
 
-  }, [graphReady]); // Depend on graphReady instead of empty array
-
-  // Track when graph is ready
-  const handleGraphReady = () => {
-    console.log("Graph is ready, initializing bloom effect");
-    setGraphReady(true);
-  };
+    return () => clearTimeout(timer);
+  }, []); // Run once on mount
 
   // Ensure drawer opens when node is selected
   useEffect(() => {
@@ -237,7 +245,6 @@ const GraphView = () => {
             node.fy = node.y;
             node.fz = node.z;
           }}
-          onEngineStop={handleGraphReady}
           linkDirectionalArrowLength={2.5}
           linkDirectionalArrowRelPos={0.75}
           linkOpacity={0.6}
