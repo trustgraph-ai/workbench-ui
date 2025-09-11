@@ -1,4 +1,5 @@
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 
 import { useSocket } from "../api/trustgraph/socket";
 import { useNotification } from "./notify";
@@ -7,10 +8,9 @@ import { vectorSearch } from "../utils/vector-search";
 import { useProgressStateStore } from "./progress";
 
 /**
- * Custom hook for managing token cost operations
- * Provides functionality for fetching, deleting, and updating token costs
- * for AI models
- * @returns {Object} Token cost state and operations
+ * Custom hook for managing vector search operations
+ * Provides functionality for searching entities using vector embeddings
+ * @returns {Object} Vector search state and operations
  */
 
 export const useVectorSearch = () => {
@@ -29,49 +29,62 @@ export const useVectorSearch = () => {
   // Hook for accessing user settings
   const { settings } = useSettings();
 
-  const queryClient = useQueryClient();
+  // State to track current search parameters
+  const [searchParams, setSearchParams] = useState(null);
 
+  /**
+   * Query for fetching vector search results
+   * Uses React Query for caching and background refetching
+   */
+  const searchQuery = useQuery({
+    queryKey: ["search", searchParams, settings.collection],
+    enabled: !!searchParams?.term,
+    queryFn: () => {
+      const { flow, term, limit } = searchParams;
+      return vectorSearch(
+        socket,
+        flow || "default",
+        addActivity,
+        removeActivity,
+        term,
+        settings.collection,
+        limit,
+      )
+        .then((x) => {
+          if (x["error"]) {
+            console.log("Error:", x);
+            throw x.error.message;
+          }
+          return x;
+        })
+        .catch((err) => {
+          console.log("Error:", err);
+          notify.error(err);
+          throw err;
+        });
+    },
+  });
+
+  // Function to trigger a new search
   const query = ({ flow, term, limit }) => {
-    if (!term) return;
+    if (!term) return Promise.resolve(null);
 
-    if (!flow) flow = "default";
-    if (!limit) limit = 10;
+    setSearchParams({ flow: flow || "default", term, limit: limit || 10 });
 
-    /**
-     * Query for fetching graph embeddings
-     * Uses React Query for caching and background refetching
-     */
-
-    return queryClient.fetchQuery({
-      queryKey: ["search", { flow, term, limit, collection: settings.collection }],
-      queryFn: () => {
-        return vectorSearch(socket, flow, addActivity, removeActivity, term, settings.collection)
-          .then((x) => {
-            if (x["error"]) {
-              console.log("Error:", x);
-              throw x.error.message;
-            }
-            return x;
-          })
-          .catch((err) => {
-            console.log("Error:", err);
-            notify.error(err);
-          });
-      },
-    });
+    // Return the promise for backward compatibility
+    return searchQuery.refetch().then((result) => result.data);
   };
 
-  // Not show loading indicators, it's handled above
-
-  // Return token cost state and operations for use in components
+  // Return vector search state and operations for use in components
   return {
-    // Token cost query state
+    // Query function
     query: query,
-    isLoading: query.isLoading,
-    isError: query.isError,
-    error: query.error,
+    isLoading: searchQuery.isLoading || searchQuery.isFetching,
+    isError: searchQuery.isError,
+    error: searchQuery.error,
+    data: searchQuery.data,
 
     // Manual refetch function
-    refetch: query.refetch,
+    refetch: searchQuery.refetch,
   };
 };

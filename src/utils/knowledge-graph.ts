@@ -208,15 +208,17 @@ export const labelS = (
 ) => {
   return Promise.all(
     triples.map((t) => {
-      return queryLabel(socket, t.s.v, add, remove, collection).then((label: string) => {
-        return {
-          ...t,
-          s: {
-            ...t.s,
-            label: label,
-          },
-        };
-      });
+      return queryLabel(socket, t.s.v, add, remove, collection).then(
+        (label: string) => {
+          return {
+            ...t,
+            s: {
+              ...t.s,
+              label: label,
+            },
+          };
+        },
+      );
     }),
   );
 };
@@ -232,15 +234,17 @@ export const labelP = (
 ) => {
   return Promise.all(
     triples.map((t) => {
-      return queryLabel(socket, t.p.v, add, remove, collection).then((label: string) => {
-        return {
-          ...t,
-          p: {
-            ...t.p,
-            label: label,
-          },
-        };
-      });
+      return queryLabel(socket, t.p.v, add, remove, collection).then(
+        (label: string) => {
+          return {
+            ...t,
+            p: {
+              ...t.p,
+              label: label,
+            },
+          };
+        },
+      );
     }),
   );
 };
@@ -317,12 +321,14 @@ export const getTriples = (
     .then((d) => labelO(api, d, add, remove, collection))
     .then((d) => filterInternals(d))
     .then((d) => {
-      return queryLabel(api, uri, add, remove, collection).then((label: string) => {
-        return {
-          triples: d,
-          uri: uri,
-          label: label,
-        };
-      });
+      return queryLabel(api, uri, add, remove, collection).then(
+        (label: string) => {
+          return {
+            triples: d,
+            uri: uri,
+            label: label,
+          };
+        },
+      );
     });
 };

@@ -14,6 +14,7 @@ export const vectorSearch = (
   removeActivity,
   term: string,
   collection?: string,
+  limit?: number,
 ) => {
   const api = socket.flow(flowId);
 
@@ -22,7 +23,15 @@ export const vectorSearch = (
 
   return api
     .embeddings(term)
-    .then(getGraphEmbeddings(api, addActivity, removeActivity, 10, collection))
+    .then(
+      getGraphEmbeddings(
+        api,
+        addActivity,
+        removeActivity,
+        limit || 10,
+        collection,
+      ),
+    )
     .then(addRowLabels(api, addActivity, removeActivity, collection))
     .then(addRowDefinitions(api, addActivity, removeActivity, collection))
     .then(addRowEmbeddings(api, addActivity, removeActivity))
