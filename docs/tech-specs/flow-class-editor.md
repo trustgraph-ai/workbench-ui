@@ -114,50 +114,263 @@ src/components/flow-editor/
 - **Label**: Queue name with non-persistent indicator
 - **Validation**: Request/response pairing validation
 
-## User Interactions
+## User Edit Operations
 
-### Node Palette
-- **Categorized processor library**:
-  - Common Services (class processors)
-  - Flow Components (flow processors)
-  - Interfaces (entry/exit points)
-- **Drag-and-drop** to add nodes to canvas
-- **Search/filter** functionality
-- **Templates** for common patterns (RAG, document processing)
+### 1. Processor Management
 
-### Canvas Operations
-- **Pan and zoom** with mouse/trackpad
-- **Node selection** (single/multi-select)
-- **Connection creation** by dragging from handles
-- **Node deletion** with Delete key or context menu
-- **Edge deletion** by clicking and pressing Delete
-- **Undo/redo** support (Cmd+Z/Cmd+Shift+Z)
+#### Add Processor
+- **Drag from palette**: Drag processor type from categorized library
+- **Double-click canvas**: Quick-add with processor type selector
+- **Context menu**: Right-click → Add Processor → Select type
+- **Keyboard shortcut**: `A` key opens add processor dialog
 
-### Properties Panel
-Dynamic panel that shows configuration for selected node/edge:
+#### Configure Processor
+- **Rename**: Click processor name to edit inline
+- **Change type**: Toggle between `{class}` and `{id}` via properties panel
+- **Queue management**:
+  ```tsx
+  // Add new queue to processor
+  addQueue(processorId, {
+    name: "custom-queue",
+    direction: "input" | "output" | "bidirectional",
+    pattern: "persistent://tg/flow/custom:{id}"
+  });
+  
+  // Remove queue
+  removeQueue(processorId, queueName);
+  
+  // Edit queue pattern
+  updateQueue(processorId, queueName, newPattern);
+  ```
 
-#### For Processors:
-- Processor name (editable)
-- Template variable type ({class} or {id})
-- Queue configurations:
-  - Add/remove queues
-  - Edit queue names
-  - Set persistence mode
-  - Configure namespace
+#### Delete Processor
+- **Single**: Select + Delete key
+- **Multiple**: Multi-select + Delete key
+- **Context menu**: Right-click → Delete
+- **Validation**: Warn if processor has connections
 
-#### For Edges:
-- Queue pattern display
-- Persistence mode toggle
-- Namespace selection
-- Custom topic name
+### 2. Connection Management
 
-### Validation Panel
-Real-time feedback on flow validity:
-- **Missing connections** warnings
-- **Invalid queue patterns** errors
-- **Orphaned nodes** detection
-- **Circular dependency** checking
-- **Template variable consistency**
+#### Create Connection
+- **Drag connection**: From output handle to input handle
+- **Validation rules**:
+  - Persistence compatibility (persistent ↔ persistent preferred)
+  - Namespace compatibility (flow/request/response)
+  - Template variable consistency ({class} ↔ {class}, {id} ↔ {id})
+  - No self-connections
+  - No duplicate connections
+
+#### Configure Connection
+- **Auto-naming**: Generate queue name from source/target processors
+- **Custom naming**: Override auto-generated queue name
+- **Persistence mode**: Toggle persistent/non-persistent
+- **Queue pattern template**:
+  ```tsx
+  generateQueuePattern({
+    persistence: "persistent" | "non-persistent",
+    tenant: "tg",
+    namespace: "flow" | "request" | "response",
+    topic: "document-embeddings",
+    template: "{id}" | "{class}"
+  });
+  // Result: "persistent://tg/flow/document-embeddings:{id}"
+  ```
+
+#### Delete Connection
+- **Click to select** + Delete key
+- **Context menu** on edge
+- **Disconnect handle**: Drag connection away from handle
+
+### 3. Interface Operations
+
+#### Add Interface
+- **Entry points**: Document load, text input, etc.
+- **Exit points**: Response outputs, storage endpoints
+- **Service interfaces**: Request/response pairs
+
+#### Configure Interface Type
+```tsx
+// Fire-and-forget pattern
+interface FireAndForgetInterface {
+  type: "fire-and-forget";
+  queue: string;  // Single queue pattern
+}
+
+// Request/response pattern
+interface RequestResponseInterface {
+  type: "request-response";
+  request: string;   // Request queue pattern
+  response: string;  // Response queue pattern
+}
+```
+
+### 4. Bulk Operations
+
+#### Multi-select Actions
+- **Box select**: Click and drag to select multiple nodes
+- **Shift-click**: Add to selection
+- **Cmd-click**: Toggle selection
+- **Select all**: Cmd+A
+
+#### Group Operations
+- **Move together**: Drag any selected node moves all
+- **Delete together**: Delete key removes all selected
+- **Duplicate**: Cmd+D duplicates selection
+- **Copy/paste**: Cmd+C/Cmd+V for cross-flow copying
+
+### 5. Layout Operations
+
+#### Auto-layout
+```tsx
+const layoutStrategies = {
+  hierarchical: {
+    direction: "LR" | "TB",  // Left-right or top-bottom
+    nodeSpacing: 150,
+    levelSpacing: 200
+  },
+  force: {
+    strength: -1000,
+    distance: 150
+  },
+  circular: {
+    radius: 300,
+    startAngle: 0
+  }
+};
+```
+
+#### Manual Arrangement
+- **Snap to grid**: Optional grid snapping (toggle with G key)
+- **Alignment tools**: Align selected nodes (top/bottom/left/right/center)
+- **Distribution**: Distribute nodes evenly (horizontal/vertical)
+
+### 6. Template Operations
+
+#### Apply Template
+```tsx
+const templates = {
+  "document-rag": {
+    description: "Document processing with RAG",
+    processors: [
+      { type: "pdf-decoder", id: "{id}" },
+      { type: "chunker", id: "{id}" },
+      { type: "embeddings", id: "{class}" },
+      { type: "de-write", id: "{id}" }
+    ],
+    connections: [
+      { from: "pdf-decoder.output", to: "chunker.input" },
+      { from: "chunker.output", to: "embeddings.input" },
+      { from: "embeddings.output", to: "de-write.input" }
+    ]
+  }
+};
+```
+
+#### Create Template
+- Select nodes/edges → Right-click → "Save as template"
+- Provide template name and description
+- Template saved to library for reuse
+
+### 7. Validation Operations
+
+#### Real-time Validation
+```tsx
+interface ValidationRule {
+  id: string;
+  severity: "error" | "warning" | "info";
+  check: (flowClass: FlowClass) => ValidationResult;
+}
+
+const validationRules = [
+  {
+    id: "no-orphans",
+    severity: "warning",
+    check: (flow) => findOrphanedNodes(flow)
+  },
+  {
+    id: "queue-consistency",
+    severity: "error",
+    check: (flow) => validateQueuePatterns(flow)
+  },
+  {
+    id: "template-consistency",
+    severity: "error",
+    check: (flow) => validateTemplateVariables(flow)
+  }
+];
+```
+
+#### Fix Suggestions
+- **Auto-fix**: One-click fixes for common issues
+- **Quick actions**: Context-aware suggestions
+- **Validation overlay**: Visual indicators on invalid elements
+
+### 8. History Management
+
+#### Undo/Redo Stack
+```tsx
+interface HistoryAction {
+  type: "add" | "delete" | "update" | "connect" | "disconnect";
+  before: FlowState;
+  after: FlowState;
+  timestamp: number;
+}
+
+const historyStack: HistoryAction[] = [];
+const redoStack: HistoryAction[] = [];
+
+// Track all operations
+const executeOperation = (operation: Operation) => {
+  const before = getCurrentState();
+  performOperation(operation);
+  const after = getCurrentState();
+  
+  historyStack.push({
+    type: operation.type,
+    before,
+    after,
+    timestamp: Date.now()
+  });
+  
+  redoStack.length = 0; // Clear redo on new operation
+};
+```
+
+### 9. Import/Export Operations
+
+#### Import Flow Class
+- **From JSON file**: Upload or paste JSON
+- **From Config API**: Select from existing flow classes
+- **Validation**: Verify structure before import
+- **Merge options**: Replace or merge with existing
+
+#### Export Flow Class
+- **To JSON**: Download as .json file
+- **To Config API**: Save directly to backend
+- **To clipboard**: Copy JSON for sharing
+- **Format options**: Minified or pretty-printed
+
+### 10. Metadata Operations
+
+#### Edit Flow Properties
+```tsx
+interface FlowMetadata {
+  id: string;           // Kebab-case identifier
+  name: string;         // Human-readable name
+  description: string;  // Detailed description
+  tags: string[];       // Categorization tags
+  version: string;      // Semantic version
+  author: string;       // Creator identity
+  created: Date;        // Creation timestamp
+  modified: Date;       // Last modification
+}
+```
+
+#### Tag Management
+- **Add tags**: Type or select from existing
+- **Remove tags**: Click X on tag chips
+- **Tag suggestions**: Based on processors used
+- **Tag categories**: System tags vs user tags
 
 ## Core Features
 
