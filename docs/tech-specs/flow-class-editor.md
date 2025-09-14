@@ -728,11 +728,108 @@ useEffect(() => {
 ```
 
 ### With Existing UI
-- Embedded in workbench as new tab/page
+
+#### Page Integration
+The Flow Class Editor is a separate page in the workbench, controlled by a feature toggle:
+
+```tsx
+// src/components/settings/FeatureSwitchesSection.tsx
+// Add to existing feature switches:
+<HStack justify="space-between" align="center">
+  <VStack gap={1} align="start">
+    <Text fontWeight="medium">Flow Class Editor</Text>
+    <HStack gap={2} align="center">
+      <Text fontSize="sm" color="fg.muted">
+        Enable the visual flow class editor for creating and modifying dataflow patterns
+      </Text>
+      <Tag.Root colorPalette="accent" size="sm">
+        <Tag.Label>experimental</Tag.Label>
+      </Tag.Root>
+    </HStack>
+  </VStack>
+  <Switch.Root
+    checked={flowClassEditor}
+    onCheckedChange={(details) =>
+      onFlowClassEditorChange(details.checked)
+    }
+  >
+    <Switch.HiddenInput />
+    <Switch.Control>
+      <Switch.Thumb />
+    </Switch.Control>
+  </Switch.Root>
+</HStack>
+```
+
+#### Sidebar Navigation
+```tsx
+// src/components/Sidebar.tsx
+// Add conditional menu item based on feature switch:
+{settings.featureSwitches.flowClassEditor && (
+  <SidebarItem
+    icon={<GitBranch />}
+    label="Flow Class Editor"
+    path="/flow-class-editor"
+    isActive={location.pathname === "/flow-class-editor"}
+  />
+)}
+```
+
+#### Route Configuration
+```tsx
+// src/App.tsx
+// Add route for the editor page:
+{settings.featureSwitches.flowClassEditor && (
+  <Route path="/flow-class-editor" element={<FlowClassEditorPage />} />
+)}
+```
+
+#### Page Component
+```tsx
+// src/pages/FlowClassEditorPage.tsx
+import React from "react";
+import PageHeader from "../components/common/PageHeader";
+import FlowClassEditor from "../components/flow-editor/FlowClassEditor";
+import { GitBranch } from "lucide-react";
+
+const FlowClassEditorPage: React.FC = () => {
+  return (
+    <>
+      <PageHeader
+        icon={<GitBranch />}
+        title="Flow Class Editor"
+        description="Visual editor for creating and modifying TrustGraph dataflow patterns"
+      />
+      <FlowClassEditor />
+    </>
+  );
+};
+
+export default FlowClassEditorPage;
+```
+
+#### Settings State Update
+```tsx
+// src/state/settings.ts
+interface FeatureSwitches {
+  ontologyEditor: boolean;
+  submissions: boolean;
+  agentTools: boolean;
+  mcpTools: boolean;
+  schemas: boolean;
+  tokenCost: boolean;
+  flowClasses: boolean;        // Existing flow classes management
+  flowClassEditor: boolean;     // New visual editor
+  structuredQuery: boolean;
+}
+```
+
+#### Integration Features
 - Uses consistent Chakra UI theming
-- Integrates with notification system
+- Integrates with notification system via `useNotification`
 - Progress indicators via `useActivity`
 - Follows existing Config API patterns
+- Respects user's feature toggle preferences
 
 ## Responsive Design
 
