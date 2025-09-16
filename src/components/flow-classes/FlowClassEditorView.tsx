@@ -1,9 +1,9 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo, useEffect } from 'react';
 import { Box, VStack, HStack, Heading, Text, Button, Code, Separator } from '@chakra-ui/react';
 import { ArrowLeft, FileCode, Construction } from 'lucide-react';
-import ReactFlow, { 
-  Background, 
-  Controls, 
+import ReactFlow, {
+  Background,
+  Controls,
   MiniMap,
   Node,
   Edge,
@@ -15,6 +15,7 @@ import ReactFlow, {
   Handle,
   Position
 } from 'reactflow';
+import dagre from 'dagre';
 import 'reactflow/dist/style.css';
 import { useFlowClasses } from '../../state/flow-classes';
 import serviceMap from '../../data/service-map.json';
@@ -24,19 +25,55 @@ interface FlowClassEditorViewProps {
   onBack: () => void;
 }
 
-// Custom node component with handles based on provides/consumes
-const CustomNode = ({ data }: { data: { label: string; type?: string; provides?: string[]; consumes?: string[] } }) => {
+// Custom node component - use role for connections, direction for positioning
+const CustomNode = ({ data }: {
+  data: {
+    label: string;
+    type?: string;
+    provides?: string[];
+    consumes?: string[];
+    processorInfo?: any;
+  }
+}) => {
   const borderColor = data.type === 'class' ? '#2563eb' : '#16a34a'; // blue for class, green for flow
   const backgroundColor = data.type === 'class' ? '#eff6ff' : '#f0fdf4';
-  
+
   const provides = data.provides || [];
   const consumes = data.consumes || [];
-  
-  // Calculate heights for positioning multiple handles
-  const providesHeight = Math.max(50, provides.length * 25 + 30);
-  const consumesHeight = Math.max(50, consumes.length * 25 + 30);
-  const nodeHeight = Math.max(providesHeight, consumesHeight);
-  
+  const processorInfo = data.processorInfo || { connections: [] };
+
+  // Group connections by direction for positioning
+  const leftConnections: string[] = [];
+  const rightConnections: string[] = [];
+
+  // Add provides connections to left or right based on direction
+  provides.forEach(connectionName => {
+    const conn = processorInfo.connections.find((c: any) => c.name === connectionName && c.role === 'provides');
+    if (conn?.direction === 'in') {
+      leftConnections.push(connectionName);
+    } else {
+      rightConnections.push(connectionName);
+    }
+  });
+
+  // Add consumes connections to left or right based on direction
+  consumes.forEach(connectionName => {
+    const conn = processorInfo.connections.find((c: any) => c.name === connectionName && c.role === 'consumes');
+    if (conn?.direction === 'in') {
+      leftConnections.push(connectionName);
+    } else {
+      rightConnections.push(connectionName);
+    }
+  });
+
+  const nodeHeight = Math.max(50, Math.max(leftConnections.length, rightConnections.length) * 25 + 30);
+
+  processorInfo.connections?.forEach((c: any) => {
+    const side = c.direction === 'in' ? 'LEFT' : 'RIGHT';
+    const handleType = c.direction === 'in' ? 'TARGET' : 'SOURCE';
+    const handleId = `${c.role === 'provides' ? 'provide' : 'consume'}-${c.name}`;
+  });
+
   return (
     <div style={{
       padding: '10px 20px',
@@ -53,112 +90,76 @@ const CustomNode = ({ data }: { data: { label: string; type?: string; provides?:
       justifyContent: 'center',
       alignItems: 'center',
     }}>
-      {/* Provides handles on the left */}
-      {provides.length > 0 ? provides.map((service, index) => (
-        <React.Fragment key={`provide-${service}`}>
-          <Handle
-            type="target"
-            position={Position.Left}
-            id={`provide-${service}`}
-            style={{ 
-              background: '#16a34a',
-              top: `${((index + 1) / (provides.length + 1)) * 100}%`,
-            }}
-          />
-          <div style={{
-            position: 'absolute',
-            right: `calc(100% + 15px)`,
-            top: `calc(${((index + 1) / (provides.length + 1)) * 100}% - 8px)`,
-            transform: 'translateY(-50%)',
-            fontSize: '9px',
-            color: '#16a34a',
-            fontWeight: 'normal',
-            whiteSpace: 'nowrap',
-            textAlign: 'right',
-          }}>
-            {service}
-          </div>
-        </React.Fragment>
-      )) : (
-        // Default input handle if no provides data
-        <React.Fragment>
-          <Handle
-            type="target"
-            position={Position.Left}
-            id="input"
-            style={{ background: '#555' }}
-          />
-          <div style={{
-            position: 'absolute',
-            right: `calc(100% + 15px)`,
-            top: '50%',
-            transform: 'translateY(-50%)',
-            fontSize: '10px',
-            color: '#666',
-            fontWeight: 'normal',
-            textAlign: 'right',
-          }}>
-            input
-          </div>
-        </React.Fragment>
-      )}
-      
-      {/* Consumes handles on the right */}
-      {consumes.length > 0 ? consumes.map((service, index) => (
-        <React.Fragment key={`consume-${service}`}>
-          <Handle
-            type="source"
-            position={Position.Right}
-            id={`consume-${service}`}
-            style={{ 
-              background: '#dc2626',
-              top: `${((index + 1) / (consumes.length + 1)) * 100}%`,
-            }}
-          />
-          <div style={{
-            position: 'absolute',
-            left: `calc(100% + 15px)`,
-            top: `calc(${((index + 1) / (consumes.length + 1)) * 100}% - 8px)`,
-            transform: 'translateY(-50%)',
-            fontSize: '9px',
-            color: '#dc2626',
-            fontWeight: 'normal',
-            whiteSpace: 'nowrap',
-            textAlign: 'left',
-          }}>
-            {service}
-          </div>
-        </React.Fragment>
-      )) : (
-        // Default output handle if no consumes data
-        <React.Fragment>
-          <Handle
-            type="source"
-            position={Position.Right}
-            id="output"
-            style={{ background: '#555' }}
-          />
-          <div style={{
-            position: 'absolute',
-            left: `calc(100% + 15px)`,
-            top: '50%',
-            transform: 'translateY(-50%)',
-            fontSize: '10px',
-            color: '#666',
-            fontWeight: 'normal',
-            textAlign: 'left',
-          }}>
-            output
-          </div>
-        </React.Fragment>
-      )}
-      
+      {/* LEFT side connections */}
+      {leftConnections.map((connection, index) => {
+        const conn = processorInfo.connections.find((c: any) => c.name === connection);
+        const isProvides = conn?.role === 'provides';
+        return (
+          <React.Fragment key={`${isProvides ? 'provide' : 'consume'}-${connection}`}>
+            <Handle
+              type="target"
+              position={Position.Left}
+              id={`${isProvides ? 'provide' : 'consume'}-${connection}`}
+              style={{
+                background: isProvides ? '#16a34a' : '#dc2626',
+                top: `${((index + 1) / (leftConnections.length + 1)) * 100}%`,
+              }}
+            />
+            <div style={{
+              position: 'absolute',
+              right: `calc(100% + 15px)`,
+              top: `calc(${((index + 1) / (leftConnections.length + 1)) * 100}% - 8px)`,
+              transform: 'translateY(-50%)',
+              fontSize: '9px',
+              color: isProvides ? '#16a34a' : '#dc2626',
+              fontWeight: 'normal',
+              whiteSpace: 'nowrap',
+              textAlign: 'right',
+            }}>
+              {connection}
+            </div>
+          </React.Fragment>
+        );
+      })}
+
+      {/* RIGHT side connections */}
+      {rightConnections.map((connection, index) => {
+        const conn = processorInfo.connections.find((c: any) => c.name === connection);
+        const isProvides = conn?.role === 'provides';
+        return (
+          <React.Fragment key={`${isProvides ? 'provide' : 'consume'}-${connection}`}>
+            <Handle
+              type="source"
+              position={Position.Right}
+              id={`${isProvides ? 'provide' : 'consume'}-${connection}`}
+              style={{
+                background: isProvides ? '#16a34a' : '#dc2626',
+                top: `${((index + 1) / (rightConnections.length + 1)) * 100}%`,
+              }}
+            />
+            <div style={{
+              position: 'absolute',
+              left: `calc(100% + 15px)`,
+              top: `calc(${((index + 1) / (rightConnections.length + 1)) * 100}% - 8px)`,
+              transform: 'translateY(-50%)',
+              fontSize: '9px',
+              color: isProvides ? '#16a34a' : '#dc2626',
+              fontWeight: 'normal',
+              whiteSpace: 'nowrap',
+              textAlign: 'left',
+            }}>
+              {connection}
+            </div>
+          </React.Fragment>
+        );
+      })}
+
       <div style={{ fontSize: '12px', fontWeight: '600' }}>
         {data.label}
       </div>
       {data.type && (
-        <div style={{ 
-          fontSize: '10px', 
+        <div style={{
+          fontSize: '10px',
           color: borderColor,
           fontWeight: 'normal',
           marginTop: '2px'
@@ -170,178 +171,421 @@ const CustomNode = ({ data }: { data: { label: string; type?: string; provides?:
   );
 };
 
+// Interface node component - visually distinct from processors
+const InterfaceNode = ({ data }: {
+  data: {
+    label: string;
+    interfaceKind?: string;
+    description?: string;
+    visible?: boolean;
+    queues?: any;
+  }
+}) => {
+  const borderColor = data.interfaceKind === 'service' ? '#8b5cf6' : '#ec4899'; // purple for service, pink for flow
+  const backgroundColor = data.interfaceKind === 'service' ? '#f3e8ff' : '#fce7f3';
+  const icon = data.interfaceKind === 'service' ? '⚡' : '📦';
+
+  return (
+    <div style={{
+      padding: '12px 20px',
+      border: `2px dashed ${borderColor}`,
+      borderRadius: '12px',
+      background: backgroundColor,
+      fontSize: '14px',
+      fontWeight: '500',
+      minWidth: '180px',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      gap: '4px',
+      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+      position: 'relative'
+    }}>
+      {/* Connection handle on the right side */}
+      <Handle
+        type="source"
+        position={Position.Right}
+        id={`interface-${data.label}`}
+        style={{
+          background: borderColor,
+          width: '12px',
+          height: '12px',
+          border: '2px solid white',
+          right: '-6px'
+        }}
+      />
+
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '8px',
+        fontSize: '16px',
+        fontWeight: '600'
+      }}>
+        <span>{icon}</span>
+        <span>{data.label}</span>
+      </div>
+      {data.description && (
+        <div style={{
+          fontSize: '11px',
+          color: '#6b7280',
+          fontStyle: 'italic',
+          textAlign: 'center',
+          maxWidth: '200px'
+        }}>
+          {data.description}
+        </div>
+      )}
+      <div style={{
+        fontSize: '10px',
+        color: borderColor,
+        fontWeight: 'bold',
+        textTransform: 'uppercase',
+        marginTop: '4px'
+      }}>
+        {data.interfaceKind} interface
+      </div>
+    </div>
+  );
+};
+
 // Register custom node types
 const nodeTypes = {
   custom: CustomNode,
+  interface: InterfaceNode,
 };
 
 // Generate nodes from flow class processors
 const generateNodesFromFlowClass = (flowClass: any): Node[] => {
-  console.log('generateNodesFromFlowClass called with:', flowClass);
-  console.log('Available processors in service map:', Object.keys(serviceMap.processors));
   const nodes: Node[] = [];
   let nodeIndex = 0;
-  
+
   // Add class processors
-  console.log('Class processors:', flowClass.class);
   Object.keys(flowClass.class || {}).forEach((processorName) => {
-    console.log('Adding class processor:', processorName);
-    
     // Strip template suffix to get base processor name for service map lookup
     const baseProcessorName = processorName.replace(/:\{[^}]+\}$/, '');
-    console.log('Base processor name for lookup:', baseProcessorName);
-    
-    // Get provides/consumes from service map
-    const processorInfo = serviceMap.processors[baseProcessorName] || { provides: [], consumes: [] };
-    console.log(`Processor ${processorName} - provides:`, processorInfo.provides, 'consumes:', processorInfo.consumes);
-    
+
+    // Get connection info from service map - use role for connections, direction for positioning
+    const processorInfo = serviceMap.processors[baseProcessorName] || { connections: [] };
+    const provides = processorInfo.connections?.filter(conn => conn.role === 'provides').map(conn => conn.name) || [];
+    const consumes = processorInfo.connections?.filter(conn => conn.role === 'consumes').map(conn => conn.name) || [];
+
     nodes.push({
       id: `class-${processorName}`,
-      position: { x: 100 + (nodeIndex % 3) * 250, y: 100 + Math.floor(nodeIndex / 3) * 150 },
-      data: { 
+      position: { x: 0, y: 0 }, // Will be calculated by dagre
+      data: {
         label: processorName,
         type: 'class',
-        provides: processorInfo.provides,
-        consumes: processorInfo.consumes
+        provides: provides,
+        consumes: consumes,
+        processorInfo: processorInfo // Pass full processor info for direction lookup
       },
       type: 'custom',
     });
     nodeIndex++;
   });
-  
+
   // Add flow processors
-  console.log('Flow processors:', flowClass.flow);
   Object.keys(flowClass.flow || {}).forEach((processorName) => {
-    console.log('Adding flow processor:', processorName);
-    
     // Strip template suffix to get base processor name for service map lookup
     const baseProcessorName = processorName.replace(/:\{[^}]+\}$/, '');
-    console.log('Base processor name for lookup:', baseProcessorName);
-    
-    // Get provides/consumes from service map
-    const processorInfo = serviceMap.processors[baseProcessorName] || { provides: [], consumes: [] };
-    console.log(`Processor ${processorName} - provides:`, processorInfo.provides, 'consumes:', processorInfo.consumes);
-    
+
+    // Get connection info from service map - use role for connections, direction for positioning
+    const processorInfo = serviceMap.processors[baseProcessorName] || { connections: [] };
+    const provides = processorInfo.connections?.filter(conn => conn.role === 'provides').map(conn => conn.name) || [];
+    const consumes = processorInfo.connections?.filter(conn => conn.role === 'consumes').map(conn => conn.name) || [];
+
     nodes.push({
       id: `flow-${processorName}`,
-      position: { x: 100 + (nodeIndex % 3) * 250, y: 100 + Math.floor(nodeIndex / 3) * 150 },
-      data: { 
+      position: { x: 0, y: 0 }, // Will be calculated by dagre
+      data: {
         label: processorName,
         type: 'flow',
-        provides: processorInfo.provides,
-        consumes: processorInfo.consumes
+        provides: provides,
+        consumes: consumes,
+        processorInfo: processorInfo // Pass full processor info for direction lookup
       },
       type: 'custom',
     });
     nodeIndex++;
   });
-  
-  console.log('Generated total nodes:', nodes.length);
+
+  // Add interface nodes
+  Object.entries(flowClass.interfaces || {}).forEach(([interfaceName, interfaceQueues]) => {
+    // Look up interface definition in service map
+    const interfaceDefinition = serviceMap.interfaces?.[interfaceName];
+
+    nodes.push({
+      id: `interface-${interfaceName}`,
+      position: { x: 0, y: 0 }, // Will be calculated by dagre
+      data: {
+        label: interfaceName,
+        type: 'interface',
+        interfaceKind: interfaceDefinition?.kind || 'unknown',
+        description: interfaceDefinition?.description || '',
+        visible: interfaceDefinition?.visible,
+        queues: interfaceQueues
+      },
+      type: 'interface', // Use a different node type for interfaces
+    });
+    nodeIndex++;
+  });
+
   return nodes;
 };
 
-// Generate edges from flow class connections
+// Apply dagre layout to nodes and edges for better positioning
+const applyDagreLayout = (nodes: Node[], edges: Edge[]): Node[] => {
+  const nodeWidth = 200;
+  const nodeHeight = 120; // Increased for interface nodes
+
+  // Create a new directed graph
+  const dagreGraph = new dagre.graphlib.Graph();
+  dagreGraph.setDefaultEdgeLabel(() => ({}));
+  dagreGraph.setGraph({
+    rankdir: 'LR',  // Left to right layout
+    nodesep: 80,    // Increased horizontal spacing between nodes
+    ranksep: 500,   // Extra 50% left-right spacing between ranks
+    marginx: 40,    // Increased margins
+    marginy: 40,
+    align: 'UL',    // Align ranks upward-left for better interface positioning
+    acyclicer: 'greedy', // Better cycle removal
+    ranker: 'tight-tree'  // Better ranking algorithm
+  });
+
+  // Add nodes to dagre graph
+  nodes.forEach((node) => {
+    dagreGraph.setNode(node.id, { width: nodeWidth, height: nodeHeight });
+  });
+
+  // Add edges to dagre graph
+  edges.forEach((edge) => {
+    dagreGraph.setEdge(edge.source, edge.target);
+  });
+
+  // Calculate the layout
+  dagre.layout(dagreGraph);
+
+  // Apply the calculated positions back to the nodes
+  return nodes.map((node) => {
+    const nodeWithPosition = dagreGraph.node(node.id);
+    return {
+      ...node,
+      position: {
+        x: nodeWithPosition.x - nodeWidth / 2,
+        y: nodeWithPosition.y - nodeHeight / 2,
+      },
+    };
+  });
+};
+
+// Generate edges from flow class connections using three-way matching algorithm
 const generateEdgesFromFlowClass = (flowClass: any): Edge[] => {
-  console.log('Generating edges from flow class connections');
+
   const edges: Edge[] = [];
   let edgeIndex = 0;
-  
-  // Build a map of service providers (processors that have input/request/response queues)
-  const serviceProviders = new Map<string, { processorId: string, queueType: string }>();
-  
-  // Check class processors for providers
-  Object.entries(flowClass.class || {}).forEach(([processorName, queues]: [string, any]) => {
-    Object.entries(queues).forEach(([queueName, queuePattern]: [string, string]) => {
-      if (queueName === 'input' || queueName === 'request' || queueName === 'response') {
-        // Extract service name from queue pattern
-        const serviceName = queuePattern.replace(/^.*\/\/[^\/]+\/[^\/]+\//, '').replace(/:\{[^}]+\}$/, '');
-        serviceProviders.set(serviceName, { 
-          processorId: `class-${processorName}`, 
-          queueType: queueName 
-        });
-        console.log(`Provider found: ${processorName} provides ${serviceName} via ${queueName}`);
+
+  // Build maps of providers and consumers by connection type
+  const providersByType = new Map<string, Array<{ processorId: string, processorName: string, connectionName: string, queues: any }>>();
+  const consumersByType = new Map<string, Array<{ processorId: string, processorName: string, connectionName: string, queues: any }>>();
+
+  // Collect all processors and their connections from service map + flow class queues
+  const allProcessors = [
+    ...Object.keys(flowClass.class || {}).map(name => ({ name, type: 'class', baseProcessorName: name.replace(/:\{[^}]+\}$/, ''), flowClassConnections: flowClass.class[name] })),
+    ...Object.keys(flowClass.flow || {}).map(name => ({ name, type: 'flow', baseProcessorName: name.replace(/:\{[^}]+\}$/, ''), flowClassConnections: flowClass.flow[name] }))
+  ];
+
+  allProcessors.forEach(({ name, type, baseProcessorName, flowClassConnections }) => {
+    const processorInfo = serviceMap.processors[baseProcessorName];
+    if (!processorInfo?.connections) return;
+
+    const processorId = `${type}-${name}`;
+
+    processorInfo.connections.forEach(connection => {
+      const connectionType = connection.type;
+      const connectionKind = serviceMap.connection_types[connectionType]?.kind;
+
+      // Extract queues based on connection kind
+      let queues: any = {};
+
+      if (connectionKind === 'service') {
+        // For service: look for {connection.name}-request and {connection.name}-response for consumers
+        // For providers: look for request and response
+        if (connection.role === 'provides') {
+          queues = {
+            request: flowClassConnections.request,
+            response: flowClassConnections.response
+          };
+        } else if (connection.role === 'consumes') {
+          queues = {
+            request: flowClassConnections[`${connection.name}-request`],
+            response: flowClassConnections[`${connection.name}-response`]
+          };
+        }
+      } else if (connectionKind === 'flow') {
+        // For flow: single queue value at connection.name
+        queues = { value: flowClassConnections[connection.name] };
+      } else if (connectionKind === 'passive') {
+        // For passive: both consumer and provider use single queue value
+        queues = { value: flowClassConnections[connection.name] };
       }
-    });
-  });
-  
-  // Check flow processors for providers
-  Object.entries(flowClass.flow || {}).forEach(([processorName, queues]: [string, any]) => {
-    Object.entries(queues).forEach(([queueName, queuePattern]: [string, string]) => {
-      if (queueName === 'input' || queueName === 'request' || queueName === 'response') {
-        const serviceName = queuePattern.replace(/^.*\/\/[^\/]+\/[^\/]+\//, '').replace(/:\{[^}]+\}$/, '');
-        serviceProviders.set(serviceName, { 
-          processorId: `flow-${processorName}`, 
-          queueType: queueName 
-        });
-        console.log(`Provider found: ${processorName} provides ${serviceName} via ${queueName}`);
-      }
-    });
-  });
-  
-  // Now find consumers and create edges
-  // Check class processors for consumers
-  Object.entries(flowClass.class || {}).forEach(([processorName, queues]: [string, any]) => {
-    Object.entries(queues).forEach(([queueName, queuePattern]: [string, string]) => {
-      if (queueName !== 'input' && queueName !== 'request' && queueName !== 'response' && queueName !== 'output') {
-        // This processor consumes a service
-        const serviceName = queuePattern.replace(/^.*\/\/[^\/]+\/[^\/]+\//, '').replace(/:\{[^}]+\}$/, '');
-        const provider = serviceProviders.get(serviceName);
-        
-        if (provider) {
-          // Create edge from consumer to provider
-          const baseProcessorName = processorName.replace(/:\{[^}]+\}$/, '');
-          const consumerService = serviceMap.processors[baseProcessorName]?.consumes?.find(s => 
-            queuePattern.includes(s)
-          ) || queueName;
-          
-          edges.push({
-            id: `edge-${edgeIndex++}`,
-            source: `class-${processorName}`,
-            target: provider.processorId,
-            sourceHandle: `consume-${consumerService}`,
-            targetHandle: `provide-${serviceName}`,
-            label: queueName,
-            type: 'default',
-            animated: true,
-            style: { stroke: '#2563eb' }
+
+      // Only add if we found valid queues
+      if (Object.values(queues).some(q => q !== undefined)) {
+        if (connection.role === 'provides') {
+          if (!providersByType.has(connectionType)) {
+            providersByType.set(connectionType, []);
+          }
+          providersByType.get(connectionType)!.push({
+            processorId,
+            processorName: name,
+            connectionName: connection.name,
+            queues
           });
-          console.log(`Edge created: class-${processorName} -> ${provider.processorId} for ${serviceName}`);
+        } else if (connection.role === 'consumes') {
+          if (!consumersByType.has(connectionType)) {
+            consumersByType.set(connectionType, []);
+          }
+          consumersByType.get(connectionType)!.push({
+            processorId,
+            processorName: name,
+            connectionName: connection.name,
+            queues
+          });
         }
       }
     });
   });
-  
-  // Check flow processors for consumers
-  Object.entries(flowClass.flow || {}).forEach(([processorName, queues]: [string, any]) => {
-    Object.entries(queues).forEach(([queueName, queuePattern]: [string, string]) => {
-      if (queueName !== 'input' && queueName !== 'request' && queueName !== 'response' && queueName !== 'output') {
-        const serviceName = queuePattern.replace(/^.*\/\/[^\/]+\/[^\/]+\//, '').replace(/:\{[^}]+\}$/, '');
-        const provider = serviceProviders.get(serviceName);
-        
-        if (provider) {
-          const baseProcessorName = processorName.replace(/:\{[^}]+\}$/, '');
-          const consumerService = serviceMap.processors[baseProcessorName]?.consumes?.find(s => 
-            queuePattern.includes(s)
-          ) || queueName;
-          
+
+  // Create edges by matching providers and consumers using the three algorithms
+  consumersByType.forEach((consumers, connectionType) => {
+    const providers = providersByType.get(connectionType) || [];
+    const connectionKind = serviceMap.connection_types[connectionType]?.kind;
+
+    if (connectionKind === 'passive') {
+    }
+
+    consumers.forEach(consumer => {
+      providers.forEach(provider => {
+        // Skip self-connections
+        if (consumer.processorId === provider.processorId) return;
+
+        let isMatch = false;
+
+        if (connectionKind === 'service') {
+          // Service: consumer's {connection-name}-request/response = provider's request/response
+          isMatch = consumer.queues.request === provider.queues.request &&
+                   consumer.queues.response === provider.queues.response;
+        } else if (connectionKind === 'flow') {
+          // Flow: same queue value
+          isMatch = consumer.queues.value === provider.queues.value;
+        } else if (connectionKind === 'passive') {
+          // Passive: consumer's single queue = provider's single queue
+          isMatch = consumer.queues.value === provider.queues.value;
+        }
+
+        if (isMatch) {
+          // Determine edge styling
+          let edgeColor = '#666666';
+          if (connectionKind === 'service') edgeColor = '#2563eb';
+          else if (connectionKind === 'flow') edgeColor = '#16a34a';
+          else if (connectionKind === 'passive') edgeColor = '#dc2626';
+
+
+          // For logical flow direction (consumer requests → provider responds):
+          // Use correct logical direction for both animation and layout
           edges.push({
             id: `edge-${edgeIndex++}`,
-            source: `flow-${processorName}`,
-            target: provider.processorId,
-            sourceHandle: `consume-${consumerService}`,
-            targetHandle: `provide-${serviceName}`,
-            label: queueName,
-            type: 'default',
-            animated: true,
-            style: { stroke: '#16a34a' }
+            source: consumer.processorId,  // Logical source (consumer makes request)
+            target: provider.processorId,  // Logical target (provider receives request)
+            sourceHandle: `consume-${consumer.connectionName}`,  // Consumer's outgoing handle
+            targetHandle: `provide-${provider.connectionName}`,  // Provider's incoming handle
+            animated: connectionKind === 'service',
+            style: { stroke: edgeColor, strokeWidth: connectionKind === 'passive' ? 1 : 2 },
+            label: connectionType,
+            type: connectionKind === 'passive' ? 'step' : 'default'
           });
-          console.log(`Edge created: flow-${processorName} -> ${provider.processorId} for ${serviceName}`);
         }
+      });
+    });
+  });
+
+  // Connect interfaces to their implementing processors
+
+  Object.entries(flowClass.interfaces || {}).forEach(([interfaceName, interfaceQueues]) => {
+    const interfaceDefinition = serviceMap.interfaces?.[interfaceName];
+    const interfaceKind = interfaceDefinition?.kind;
+
+    if (!interfaceKind) {
+      return;
+    }
+
+    // Find processors that match this interface's queue pattern
+    allProcessors.forEach(({ name, type, baseProcessorName, flowClassConnections }) => {
+      const processorId = `${type}-${name}`;
+      const processorInfo = serviceMap.processors[baseProcessorName];
+      if (!processorInfo?.connections) return;
+
+      let isMatch = false;
+      let matchingConnection: any = null;
+
+      if (interfaceKind === 'service') {
+        // For service interfaces: check if processor PROVIDES this service
+        const interfaceRequest = (interfaceQueues as any).request;
+        const interfaceResponse = (interfaceQueues as any).response;
+
+        // Check if this processor provides this service
+        if (flowClassConnections.request === interfaceRequest &&
+            flowClassConnections.response === interfaceResponse) {
+          // Find the service connection that provides
+          matchingConnection = processorInfo.connections.find(c =>
+            c.role === 'provides' && c.name === 'service'
+          );
+          if (matchingConnection) {
+            isMatch = true;
+          }
+        }
+      } else if (interfaceKind === 'flow') {
+        // For flow interfaces: check if processor PROVIDES this flow
+        const interfaceQueue = interfaceQueues as string;
+
+        // Check only provider connections for matching queue
+        processorInfo.connections.forEach(connection => {
+          if (connection.role === 'provides') {
+            const connectionQueue = flowClassConnections[connection.name];
+            if (connectionQueue === interfaceQueue) {
+              matchingConnection = connection;
+              isMatch = true;
+            }
+          }
+        });
+      }
+
+      if (isMatch && matchingConnection) {
+        // Create edge from interface to processor
+        const edgeColor = interfaceKind === 'service' ? '#8b5cf6' : '#ec4899';
+
+        edges.push({
+          id: `interface-edge-${edgeIndex++}`,
+          source: `interface-${interfaceName}`,
+          target: processorId,
+          sourceHandle: `interface-${interfaceName}`,
+          targetHandle: matchingConnection.role === 'provides' ?
+            `provide-${matchingConnection.name}` :
+            `consume-${matchingConnection.name}`,
+          animated: true,
+          style: {
+            stroke: edgeColor,
+            strokeWidth: 2,
+            strokeDasharray: '5,5'
+          },
+          label: `implements ${interfaceName}`,
+          type: 'default'
+        });
       }
     });
   });
-  
-  console.log(`Generated ${edges.length} edges`);
+
   return edges;
 };
 
@@ -351,337 +595,113 @@ export const FlowClassEditorView: React.FC<FlowClassEditorViewProps> = ({
   flowClassId,
   onBack,
 }) => {
-  const { getFlowClass, flowClasses } = useFlowClasses();
-  const flowClass = getFlowClass(flowClassId);
+  const { flowClasses } = useFlowClasses();
+  const flowClass = flowClasses.find(fc => fc.id === flowClassId);
+
+  // Generate nodes and edges from flow class data using useMemo - must be before early return
+  const initialNodes = useMemo(() => {
+    if (!flowClass) return [];
+    const nodes = generateNodesFromFlowClass(flowClass);
+    return nodes;
+  }, [flowClass]);
+
+  const generatedEdges = useMemo(() => {
+    if (!flowClass) return [];
+    const edges = generateEdgesFromFlowClass(flowClass);
+    return edges;
+  }, [flowClass]);
+
+  const layoutedNodes = useMemo(() => {
+    const layouted = applyDagreLayout(initialNodes, generatedEdges);
+    return layouted;
+  }, [initialNodes, generatedEdges]);
 
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 
-  // Update nodes and edges when flow class data changes
-  React.useEffect(() => {
-    if (flowClass) {
-      console.log('Generating nodes for flow class:', flowClass);
-      console.log('Service map loaded:', serviceMap);
-      const generatedNodes = generateNodesFromFlowClass(flowClass);
-      console.log('Generated nodes:', generatedNodes);
-      setNodes(generatedNodes);
-      
-      // Generate edges from connections
-      const generatedEdges = generateEdgesFromFlowClass(flowClass);
-      console.log('Generated edges:', generatedEdges);
-      setEdges(generatedEdges);
-    }
-  }, [flowClass, setNodes, setEdges]);
+  // Update nodes and edges when the data changes
+  useEffect(() => {
+    setNodes(layoutedNodes);
+  }, [layoutedNodes, setNodes]);
+
+  useEffect(() => {
+    setEdges(generatedEdges);
+  }, [generatedEdges, setEdges]);
 
   const onConnect = useCallback(
     (params: Connection) => setEdges((eds) => addEdge(params, eds)),
     [setEdges]
   );
 
-  // Debug logging
-  console.log('FlowClassEditorView - Looking for ID:', flowClassId);
-  console.log('FlowClassEditorView - Available flow classes:', flowClasses);
-  console.log('FlowClassEditorView - Found flow class:', flowClass);
 
   if (!flowClass) {
     return (
-      <Box h="100vh" bg="bg.subtle" display="flex" alignItems="center" justifyContent="center">
-        <VStack gap={3}>
-          <Text fontSize="lg">Flow Class Not Found</Text>
-          <Text color="fg.muted">ID: {flowClassId}</Text>
-          <Button onClick={onBack} variant="outline">
-            <ArrowLeft size={16} />
-            Go Back
+      <Box p={6}>
+        <HStack spacing={4} mb={4}>
+          <Button onClick={onBack} leftIcon={<ArrowLeft size={16} />} variant="ghost">
+            Back to Flow Classes
           </Button>
-        </VStack>
+        </HStack>
+        <Text>Flow class not found.</Text>
       </Box>
     );
   }
+
   return (
-    <Box h="100vh" bg="bg.subtle" display="flex" flexDirection="column">
-      {/* Header with back button */}
-      <Box
-        borderBottom="1px solid"
-        borderColor="border.muted"
-        bg="bg.default"
-        px={6}
-        py={3}
-      >
-        <HStack justify="space-between" align="center">
-          <HStack gap={3}>
-            <Button
-              leftIcon={<ArrowLeft size={16} />}
-              onClick={onBack}
-              variant="ghost"
-              size="sm"
-            >
+    <Box h="100vh" display="flex" flexDirection="column">
+      {/* Header */}
+      <VStack spacing={4} p={6} bg="white" borderBottom="1px" borderColor="gray.200">
+        <HStack justifyContent="space-between" w="100%">
+          <HStack spacing={4}>
+            <Button onClick={onBack} leftIcon={<ArrowLeft size={16} />} variant="ghost">
               Back to Flow Classes
             </Button>
-            <Text fontSize="lg" fontWeight="semibold" color="fg.muted">
-              Editing: {flowClassId}
-            </Text>
+          </HStack>
+          <HStack spacing={4}>
+{/*
+            <Button leftIcon={<FileCode size={16} />} variant="outline" size="sm">
+              Export
+            </Button>
+            <Button leftIcon={<Construction size={16} />} variant="outline" size="sm">
+              Build
+            </Button>
+*/}
           </HStack>
         </HStack>
-      </Box>
 
-      {/* Main content area - debug information */}
-      <Box flex={1} p={6} overflowY="auto">
-        <VStack gap={6} align="stretch" maxW="1200px" mx="auto">
-
-          {/* ReactFlow Visualization */}
-          <VStack gap={3} align="start">
-            <Heading size="lg">Flow Visualization</Heading>
-            <Text fontSize="sm" color="fg.muted">Simple ReactFlow demo with hello→world connection</Text>
-            <Box w="full" h="400px" border="1px solid" borderColor="border.muted" borderRadius="md" bg="bg.default">
-              <ReactFlow
-                nodes={nodes}
-                edges={edges}
-                onNodesChange={onNodesChange}
-                onEdgesChange={onEdgesChange}
-                onConnect={onConnect}
-                nodeTypes={nodeTypes}
-                connectionMode={ConnectionMode.Loose}
-                fitView
-              >
-                <Background />
-                <Controls />
-                <MiniMap />
-              </ReactFlow>
-            </Box>
-          </VStack>
-
-          <Separator />
-          
-          {/* Basic Info */}
-          <VStack gap={3} align="start">
-            <Heading size="lg">Flow Class Debug Information</Heading>
-            <HStack gap={4}>
-              <Text><strong>ID:</strong> {flowClass.id}</Text>
-              <Text><strong>Description:</strong> {flowClass.description || 'No description'}</Text>
-            </HStack>
-            <Text><strong>Tags:</strong> {flowClass.tags?.join(', ') || 'No tags'}</Text>
-          </VStack>
-
-          <Separator />
-
-          {/* Class Processors */}
-          <VStack gap={3} align="start">
-            <Heading size="md">Class Processors ({Object.keys(flowClass.class || {}).length})</Heading>
-            <Text fontSize="sm" color="fg.muted">Shared processors using {'{class}'} template variable</Text>
-            <Box bg="bg.muted" p={4} borderRadius="md" w="full">
-              <VStack gap={2} align="start" fontFamily="mono" fontSize="sm">
-                {Object.entries(flowClass.class || {}).map(([processorName, queues]) => (
-                  <VStack key={processorName} gap={1} align="start" w="full">
-                    <Text fontWeight="bold" color="blue.600">{processorName}</Text>
-                    {Object.entries(queues).map(([queueName, queuePattern]) => (
-                      <Text key={queueName} pl={4}>
-                        └─ <Code fontSize="xs">{queueName}</Code> → <Code fontSize="xs">{queuePattern}</Code>
-                      </Text>
-                    ))}
-                  </VStack>
-                ))}
-                {Object.keys(flowClass.class || {}).length === 0 && (
-                  <Text color="fg.muted">No class processors</Text>
-                )}
-              </VStack>
-            </Box>
-          </VStack>
-
-          <Separator />
-
-          {/* Flow Processors */}
-          <VStack gap={3} align="start">
-            <Heading size="md">Flow Processors ({Object.keys(flowClass.flow || {}).length})</Heading>
-            <Text fontSize="sm" color="fg.muted">Flow-specific processors using {'{id}'} template variable</Text>
-            <Box bg="bg.muted" p={4} borderRadius="md" w="full">
-              <VStack gap={2} align="start" fontFamily="mono" fontSize="sm">
-                {Object.entries(flowClass.flow || {}).map(([processorName, queues]) => (
-                  <VStack key={processorName} gap={1} align="start" w="full">
-                    <Text fontWeight="bold" color="green.600">{processorName}</Text>
-                    {Object.entries(queues).map(([queueName, queuePattern]) => (
-                      <Text key={queueName} pl={4}>
-                        └─ <Code fontSize="xs">{queueName}</Code> → <Code fontSize="xs">{queuePattern}</Code>
-                      </Text>
-                    ))}
-                  </VStack>
-                ))}
-                {Object.keys(flowClass.flow || {}).length === 0 && (
-                  <Text color="fg.muted">No flow processors</Text>
-                )}
-              </VStack>
-            </Box>
-          </VStack>
-
-          <Separator />
-
-          {/* Interfaces */}
-          <VStack gap={3} align="start">
-            <Heading size="md">Interfaces ({Object.keys(flowClass.interfaces || {}).length})</Heading>
-            <Text fontSize="sm" color="fg.muted">External interfaces for the flow class</Text>
-            <Box bg="bg.muted" p={4} borderRadius="md" w="full">
-              <VStack gap={2} align="start" fontFamily="mono" fontSize="sm">
-                {Object.entries(flowClass.interfaces || {}).map(([interfaceName, interfaceValue]) => (
-                  <VStack key={interfaceName} gap={1} align="start" w="full">
-                    <Text fontWeight="bold" color="purple.600">{interfaceName}</Text>
-                    {typeof interfaceValue === 'string' ? (
-                      <Text pl={4}>
-                        └─ <Code fontSize="xs">{interfaceValue}</Code>
-                      </Text>
-                    ) : (
-                      <>
-                        <Text pl={4}>
-                          └─ request: <Code fontSize="xs">{interfaceValue.request}</Code>
-                        </Text>
-                        <Text pl={4}>
-                          └─ response: <Code fontSize="xs">{interfaceValue.response}</Code>
-                        </Text>
-                      </>
-                    )}
-                  </VStack>
-                ))}
-                {Object.keys(flowClass.interfaces || {}).length === 0 && (
-                  <Text color="fg.muted">No interfaces</Text>
-                )}
-              </VStack>
-            </Box>
-          </VStack>
-
-          <Separator />
-
-          {/* Service Graph Connections */}
-          <VStack gap={3} align="start">
-            <Heading size="md">Service Graph Connections</Heading>
-            <Text fontSize="sm" color="fg.muted">
-              Shows how processors connect through shared queue names (providers → consumers)
-            </Text>
-            <Box bg="bg.muted" p={4} borderRadius="md" w="full">
-              <VStack gap={3} align="start" fontFamily="mono" fontSize="sm">
-                {(() => {
-                  // Build service providers map (processors that implement input/request/response queues)
-                  const providers = new Map<string, { processor: string, type: 'class' | 'flow', queueType: string }>();
-                  
-                  // Collect all service providers from class processors
-                  Object.entries(flowClass.class || {}).forEach(([processorName, queues]) => {
-                    Object.entries(queues).forEach(([queueName, queuePattern]) => {
-                      if (queueName === 'input' || queueName === 'request' || queueName === 'response') {
-                        // Extract the service name from the pattern (remove template variables)
-                        const serviceName = queuePattern.replace(/-\{class\}$/, '').replace(/-\{id\}$/, '');
-                        providers.set(serviceName, { 
-                          processor: processorName, 
-                          type: 'class',
-                          queueType: queueName 
-                        });
-                      }
-                    });
-                  });
-
-                  // Collect all service providers from flow processors  
-                  Object.entries(flowClass.flow || {}).forEach(([processorName, queues]) => {
-                    Object.entries(queues).forEach(([queueName, queuePattern]) => {
-                      if (queueName === 'input' || queueName === 'request' || queueName === 'response') {
-                        const serviceName = queuePattern.replace(/-\{class\}$/, '').replace(/-\{id\}$/, '');
-                        providers.set(serviceName, { 
-                          processor: processorName, 
-                          type: 'flow',
-                          queueType: queueName 
-                        });
-                      }
-                    });
-                  });
-
-                  // Build connections by finding consumers that use these services
-                  const connections: Array<{
-                    provider: string;
-                    providerType: 'class' | 'flow';
-                    providerQueueType: string;
-                    serviceName: string;
-                    consumers: Array<{ processor: string; type: 'class' | 'flow' }>;
-                  }> = [];
-
-                  providers.forEach((providerInfo, serviceName) => {
-                    const consumers: Array<{ processor: string; type: 'class' | 'flow' }> = [];
-                    
-                    // Check class processors for consumers
-                    Object.entries(flowClass.class || {}).forEach(([processorName, queues]) => {
-                      Object.entries(queues).forEach(([queueName, queuePattern]) => {
-                        if (queueName !== 'input' && queueName !== 'request' && queueName !== 'response') {
-                          const consumerServiceName = queuePattern.replace(/-\{class\}$/, '').replace(/-\{id\}$/, '');
-                          if (consumerServiceName === serviceName) {
-                            consumers.push({ processor: processorName, type: 'class' });
-                          }
-                        }
-                      });
-                    });
-
-                    // Check flow processors for consumers
-                    Object.entries(flowClass.flow || {}).forEach(([processorName, queues]) => {
-                      Object.entries(queues).forEach(([queueName, queuePattern]) => {
-                        if (queueName !== 'input' && queueName !== 'request' && queueName !== 'response') {
-                          const consumerServiceName = queuePattern.replace(/-\{class\}$/, '').replace(/-\{id\}$/, '');
-                          if (consumerServiceName === serviceName) {
-                            consumers.push({ processor: processorName, type: 'flow' });
-                          }
-                        }
-                      });
-                    });
-
-                    connections.push({
-                      provider: providerInfo.processor,
-                      providerType: providerInfo.type,
-                      providerQueueType: providerInfo.queueType,
-                      serviceName,
-                      consumers
-                    });
-                  });
-
-                  // Render connections
-                  if (connections.length === 0) {
-                    return <Text color="fg.muted">No service connections found</Text>;
-                  }
-
-                  return connections.map((connection, index) => (
-                    <VStack key={index} gap={1} align="start" w="full">
-                      <Text fontWeight="bold" color="orange.600">
-                        Service: {connection.serviceName}
-                      </Text>
-                      <Text pl={4}>
-                        🔧 Provider: <Code fontSize="xs" color="blue.600">{connection.provider}</Code> 
-                        <Code fontSize="xs" color="gray.600">({connection.providerType})</Code> 
-                        via <Code fontSize="xs">{connection.providerQueueType}</Code>
-                      </Text>
-                      {connection.consumers.length > 0 ? (
-                        connection.consumers.map((consumer, consumerIndex) => (
-                          <Text key={consumerIndex} pl={4}>
-                            📤 Consumer: <Code fontSize="xs" color="green.600">{consumer.processor}</Code>
-                            <Code fontSize="xs" color="gray.600">({consumer.type})</Code>
-                          </Text>
-                        ))
-                      ) : (
-                        <Text pl={4} color="fg.muted">
-                          📤 No consumers found
-                        </Text>
-                      )}
-                      {index < connections.length - 1 && <Text>│</Text>}
-                    </VStack>
-                  ));
-                })()}
-              </VStack>
-            </Box>
-          </VStack>
-
-          <Separator />
-
-          {/* Raw JSON */}
-          <VStack gap={3} align="start">
-            <Heading size="md">Raw JSON Data</Heading>
-            <Box bg="bg.muted" p={4} borderRadius="md" w="full" overflowX="auto">
-              <Code fontSize="xs" whiteSpace="pre" display="block">
-                {JSON.stringify(flowClass, null, 2)}
-              </Code>
-            </Box>
-          </VStack>
-
+        <VStack spacing={2} align="start" w="100%">
+          <Heading size="lg">{flowClass.name}</Heading>
         </VStack>
+
+        <Separator />
+
+      </VStack>
+
+      {/* ReactFlow Canvas */}
+      <Box flex={1} position="relative">
+        <ReactFlow
+          nodes={nodes}
+          edges={edges}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
+          onConnect={onConnect}
+          nodeTypes={nodeTypes}
+          connectionMode={ConnectionMode.Loose}
+          fitView
+          attributionPosition="bottom-left"
+        >
+          <Background />
+          <Controls />
+          <MiniMap
+            nodeColor={(node) => {
+              return node.data?.type === 'class' ? '#2563eb' : '#16a34a';
+            }}
+            position="top-right"
+            style={{
+              backgroundColor: 'rgba(255, 255, 255, 0.8)',
+            }}
+          />
+        </ReactFlow>
       </Box>
     </Box>
   );

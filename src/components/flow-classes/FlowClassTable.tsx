@@ -27,17 +27,6 @@ const FlowClassTable: React.FC<FlowClassTableProps> = ({ onEdit }) => {
     isDuplicating,
   } = useFlowClasses();
 
-  // Debug: Log the flow classes data
-  React.useEffect(() => {
-    console.log('Flow Classes Data:', flowClasses);
-    console.log('Is Loading:', isLoading);
-    console.log('Error:', error);
-    if (flowClasses && flowClasses.length > 0) {
-      console.log('First Flow Class:', flowClasses[0]);
-      console.log('Type of first item:', typeof flowClasses[0]);
-      console.log('Is first item an array?', Array.isArray(flowClasses[0]));
-    }
-  }, [flowClasses, isLoading, error]);
 
   // No need for selected flow class state - actions handled by ActionBar
 
@@ -47,7 +36,6 @@ const FlowClassTable: React.FC<FlowClassTableProps> = ({ onEdit }) => {
     
     // Check if first item is an array [key, value] pair
     if (flowClasses.length > 0 && Array.isArray(flowClasses[0]) && flowClasses[0].length === 2) {
-      console.log('Transforming flow classes from [key, value] pairs');
       return flowClasses.map(([id, flowClass]) => ({
         id,
         ...(flowClass as Omit<FlowClassDefinition, 'id'>)
@@ -73,8 +61,6 @@ const FlowClassTable: React.FC<FlowClassTableProps> = ({ onEdit }) => {
   const handleEdit = () => {
     if (selectedRows.length === 1) {
       const flowClassId = selectedRows[0].original.id;
-      console.log('FlowClassTable - Edit flow class ID:', flowClassId);
-      console.log('FlowClassTable - Selected row original:', selectedRows[0].original);
       onEdit?.(flowClassId);
     }
   };

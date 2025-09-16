@@ -60,12 +60,8 @@ export const useFlowClasses = () => {
     gcTime: 0, // Don't cache (React Query v5 uses gcTime instead of cacheTime)
     refetchOnMount: 'always',
     queryFn: async (): Promise<FlowClassDefinition[]> => {
-      console.log('useFlowClasses queryFn called');
       try {
         const response = await socket.config().getConfigAll();
-        
-        console.log('Flow Classes API Response:', response);
-        console.log('Flow Classes Config:', response.config["flow-classes"]);
         
         // Handle both array and object responses
         const config = response.config["flow-classes"];
@@ -74,8 +70,6 @@ export const useFlowClasses = () => {
           // If it's already an array, check if it's an array of [key, value] pairs
           if (config.length > 0 && Array.isArray(config[0]) && config[0].length === 2) {
             // It's an array of [id, flowClass] pairs - convert to objects
-            console.log('useFlowClasses: Converting array of [id, flowClass] pairs');
-            console.log('useFlowClasses: Raw config:', config);
             const converted = config.map(([id, flowClassData]) => {
               let flowClass = flowClassData;
               // If the flowClass is a JSON string, parse it
@@ -92,16 +86,13 @@ export const useFlowClasses = () => {
                 ...(flowClass as Omit<FlowClassDefinition, 'id'>)
               };
             });
-            console.log('useFlowClasses: Converted flow classes:', converted);
             return converted;
           } else {
             // It's already an array of flow class objects
-            console.log('useFlowClasses: Using existing array of flow class objects');
             return config;
           }
         } else if (config && typeof config === 'object') {
           // Convert object to array of flow classes
-          console.log('useFlowClasses: Converting object to array of flow classes');
           const converted = Object.entries(config).map(([id, flowClassData]) => {
             let flowClass = flowClassData;
             // If the flowClass is a JSON string, parse it
@@ -118,11 +109,9 @@ export const useFlowClasses = () => {
               ...(flowClass as Omit<FlowClassDefinition, 'id'>)
             };
           });
-          console.log('useFlowClasses: Converted flow classes:', converted);
           return converted;
         }
         
-        console.log('No flow classes config found, returning empty array');
         return [];
       } catch (error) {
         console.error('Failed to fetch flow classes:', error);
@@ -306,13 +295,9 @@ export const useFlowClasses = () => {
 
     // Utilities
     getFlowClass: (id: string): FlowClassDefinition | undefined => {
-      console.log('getFlowClass - Looking for ID:', id);
-      console.log('getFlowClass - Available data:', query.data);
       const found = query.data?.find(fc => {
-        console.log('getFlowClass - Comparing with fc.id:', fc.id);
         return fc.id === id;
       });
-      console.log('getFlowClass - Found:', found);
       return found;
     },
     exists: (id: string): boolean => {
