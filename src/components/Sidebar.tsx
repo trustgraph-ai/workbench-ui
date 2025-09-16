@@ -35,6 +35,7 @@ import {
   Database,
   Network,
   FileSearch,
+  GitBranch,
   Settings,
 } from "lucide-react";
 
@@ -123,6 +124,13 @@ const Sidebar = () => {
             to="/flow-classes"
             icon={ScrollText}
             label="Flow Classes"
+          />
+        )}
+        {settings.featureSwitches.flowClassEditor && (
+          <NavItem
+            to="/flow-class-editor"
+            icon={GitBranch}
+            label="Flow Editor"
           />
         )}
         <NavItem to="/flows" icon={Workflow} label="Flows" />
