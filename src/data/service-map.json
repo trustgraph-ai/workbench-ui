@@ -1,0 +1,138 @@
+{
+  "processors": {
+    "agent-manager": {
+      "provides": ["agent"],
+      "consumes": ["graph-rag", "mcp-tool", "prompt", "structured-query", "text-completion"]
+    },
+    "chunker": {
+      "provides": [],
+      "consumes": []
+    },
+    "de-query": {
+      "provides": ["document-embeddings"],
+      "consumes": []
+    },
+    "de-write": {
+      "provides": [],
+      "consumes": []
+    },
+    "document-embeddings": {
+      "provides": [],
+      "consumes": ["embeddings"]
+    },
+    "document-rag": {
+      "provides": ["document-rag"],
+      "consumes": ["document-embeddings", "embeddings", "prompt-rag"]
+    },
+    "embeddings": {
+      "provides": ["embeddings"],
+      "consumes": []
+    },
+    "ge-query": {
+      "provides": ["graph-embeddings"],
+      "consumes": []
+    },
+    "ge-write": {
+      "provides": [],
+      "consumes": []
+    },
+    "graph-embeddings": {
+      "provides": [],
+      "consumes": ["embeddings"]
+    },
+    "graph-rag": {
+      "provides": ["graph-rag"],
+      "consumes": ["embeddings", "graph-embeddings", "prompt-rag", "triples"]
+    },
+    "kg-extract-agent": {
+      "provides": [],
+      "consumes": ["agent"]
+    },
+    "kg-extract-definitions": {
+      "provides": [],
+      "consumes": ["prompt"]
+    },
+    "kg-extract-objects": {
+      "provides": [],
+      "consumes": ["prompt"]
+    },
+    "kg-extract-relationships": {
+      "provides": [],
+      "consumes": ["prompt"]
+    },
+    "kg-store": {
+      "provides": [],
+      "consumes": []
+    },
+    "mcp-tool": {
+      "provides": ["mcp-tool"],
+      "consumes": ["text-completion"]
+    },
+    "metering": {
+      "provides": [],
+      "consumes": []
+    },
+    "metering-rag": {
+      "provides": [],
+      "consumes": []
+    },
+    "nlp-query": {
+      "provides": ["nlp-query"],
+      "consumes": ["prompt-rag"]
+    },
+    "objects-query": {
+      "provides": ["objects"],
+      "consumes": []
+    },
+    "objects-write": {
+      "provides": [],
+      "consumes": []
+    },
+    "pdf-decoder": {
+      "provides": [],
+      "consumes": []
+    },
+    "prompt": {
+      "provides": ["prompt"],
+      "consumes": ["text-completion"]
+    },
+    "prompt-rag": {
+      "provides": ["prompt-rag"],
+      "consumes": ["text-completion-rag"]
+    },
+    "structured-query": {
+      "provides": ["structured-query"],
+      "consumes": ["nlp-query", "objects"]
+    },
+    "text-completion": {
+      "provides": ["text-completion"],
+      "consumes": []
+    },
+    "text-completion-rag": {
+      "provides": ["text-completion-rag"],
+      "consumes": []
+    },
+    "triples-query": {
+      "provides": ["triples"],
+      "consumes": []
+    },
+    "triples-write": {
+      "provides": [],
+      "consumes": []
+    }
+  },
+  "service_graph": {
+    "leaf_services": ["embeddings", "text-completion", "text-completion-rag", "objects", "triples", "document-embeddings", "graph-embeddings"],
+    "composite_services": {
+      "prompt": ["text-completion"],
+      "prompt-rag": ["text-completion-rag"],
+      "mcp-tool": ["text-completion"],
+      "nlp-query": ["prompt-rag"],
+      "structured-query": ["nlp-query", "objects"],
+      "document-rag": ["document-embeddings", "embeddings", "prompt-rag"],
+      "graph-rag": ["embeddings", "graph-embeddings", "prompt-rag", "triples"],
+      "agent": ["graph-rag", "mcp-tool", "prompt", "structured-query", "text-completion"]
+    },
+    "data_flow_only": ["chunker", "de-write", "document-embeddings", "ge-write", "graph-embeddings", "kg-extract-agent", "kg-extract-definitions", "kg-extract-objects", "kg-extract-relationships", "kg-store", "metering", "metering-rag", "objects-write", "pdf-decoder", "triples-write"]
+  }
+}
