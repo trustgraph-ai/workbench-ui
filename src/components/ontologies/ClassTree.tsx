@@ -22,6 +22,29 @@ export const ClassTree: React.FC<ClassTreeProps> = ({
 
   const classEntries = Object.entries(classes);
 
+  // Build class hierarchy
+  const buildClassHierarchy = () => {
+    const roots: string[] = [];
+    const children: Record<string, string[]> = {};
+
+    // Find root classes (no subClassOf) and build children map
+    classEntries.forEach(([classId, owlClass]) => {
+      const parent = owlClass["rdfs:subClassOf"];
+      if (!parent || parent.trim() === "") {
+        roots.push(classId);
+      } else {
+        if (!children[parent]) {
+          children[parent] = [];
+        }
+        children[parent].push(classId);
+      }
+    });
+
+    return { roots, children };
+  };
+
+  const { roots, children } = buildClassHierarchy();
+
   const handleCreateClass = () => {
     if (newClassName.trim()) {
       onCreateClass(newClassName.trim());
@@ -52,6 +75,70 @@ export const ClassTree: React.FC<ClassTreeProps> = ({
     // Fallback to extracting from URI
     const parts = owlClass.uri.split(/[/#]/);
     return parts[parts.length - 1] || "Unnamed Class";
+  };
+
+  // Recursive component to render class hierarchy
+  const renderClassNode = (classId: string, depth: number = 0): React.ReactNode => {
+    const owlClass = classes[classId];
+    if (!owlClass) return null;
+
+    const isSelected = classId === selectedClassId;
+    const isExpanded = expandedClasses.has(classId);
+    const hasSubclasses = children[classId] && children[classId].length > 0;
+
+    return (
+      <Box key={classId}>
+        <HStack
+          p={2}
+          pl={2 + depth * 16} // Indent based on depth
+          spacing={1}
+          bg={isSelected ? "blue.100" : "transparent"}
+          cursor="pointer"
+          _hover={{ bg: isSelected ? "blue.100" : "gray.100" }}
+          onClick={() => onSelectClass(classId)}
+        >
+          {hasSubclasses ? (
+            <IconButton
+              size="xs"
+              variant="ghost"
+              onClick={(e) => {
+                e.stopPropagation();
+                toggleExpanded(classId);
+              }}
+            >
+              {isExpanded ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
+            </IconButton>
+          ) : (
+            <Box w={6} /> // Spacer for alignment
+          )}
+
+          <Hash size={14} color="#666" />
+
+          <VStack align="start" spacing={0} flex="1" minW="0">
+            <Text
+              fontSize="sm"
+              fontWeight={isSelected ? "semibold" : "normal"}
+              color={isSelected ? "blue.800" : "gray.800"}
+              noOfLines={1}
+            >
+              {getClassLabel(owlClass)}
+            </Text>
+            {owlClass["rdfs:comment"] && (
+              <Text fontSize="xs" color="gray.500" noOfLines={1}>
+                {owlClass["rdfs:comment"]}
+              </Text>
+            )}
+          </VStack>
+        </HStack>
+
+        {/* Render subclasses when expanded */}
+        {hasSubclasses && isExpanded && (
+          <Box>
+            {children[classId].map((childId) => renderClassNode(childId, depth + 1))}
+          </Box>
+        )}
+      </Box>
+    );
   };
 
   return (
@@ -121,64 +208,8 @@ export const ClassTree: React.FC<ClassTreeProps> = ({
               </Button>
             </Box>
           ) : (
-            classEntries.map(([classId, owlClass]) => {
-              const isSelected = classId === selectedClassId;
-              const isExpanded = expandedClasses.has(classId);
-              const hasSubclasses = false; // TODO: Phase 3 - implement subclass relationships
-
-              return (
-                <Box key={classId}>
-                  <HStack
-                    p={2}
-                    spacing={1}
-                    bg={isSelected ? "blue.100" : "transparent"}
-                    cursor="pointer"
-                    _hover={{ bg: isSelected ? "blue.100" : "gray.100" }}
-                    onClick={() => onSelectClass(classId)}
-                  >
-                    {hasSubclasses ? (
-                      <IconButton
-                        size="xs"
-                        variant="ghost"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          toggleExpanded(classId);
-                        }}
-                      >
-                        {isExpanded ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
-                      </IconButton>
-                    ) : (
-                      <Box w={6} /> // Spacer for alignment
-                    )}
-
-                    <Hash size={14} color="#666" />
-
-                    <VStack align="start" spacing={0} flex="1" minW="0">
-                      <Text
-                        fontSize="sm"
-                        fontWeight={isSelected ? "semibold" : "normal"}
-                        color={isSelected ? "blue.800" : "gray.800"}
-                        noOfLines={1}
-                      >
-                        {getClassLabel(owlClass)}
-                      </Text>
-                      {owlClass["rdfs:comment"] && (
-                        <Text fontSize="xs" color="gray.500" noOfLines={1}>
-                          {owlClass["rdfs:comment"]}
-                        </Text>
-                      )}
-                    </VStack>
-                  </HStack>
-
-                  {/* Subclasses - TODO: Phase 3 */}
-                  {hasSubclasses && isExpanded && (
-                    <Box pl={4} borderLeftWidth="1px" borderLeftColor="gray.200" ml={3}>
-                      {/* Subclass items will go here in Phase 3 */}
-                    </Box>
-                  )}
-                </Box>
-              );
-            })
+            // Render hierarchy starting from root classes
+            roots.map((rootId) => renderClassNode(rootId))
           )}
         </VStack>
       </Box>

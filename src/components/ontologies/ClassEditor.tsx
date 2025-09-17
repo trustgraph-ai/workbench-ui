@@ -10,6 +10,11 @@ import {
   Field,
   Separator,
   Badge,
+  SelectContent,
+  SelectItem,
+  SelectRoot,
+  SelectTrigger,
+  SelectValueText,
 } from "@chakra-ui/react";
 import { Hash, Save } from "lucide-react";
 import { OWLClass, Ontology } from "../../state/ontologies";
@@ -29,15 +34,18 @@ export const ClassEditor: React.FC<ClassEditorProps> = ({
 }) => {
   const [label, setLabel] = useState("");
   const [comment, setComment] = useState("");
+  const [subClassOf, setSubClassOf] = useState("");
   const [hasChanges, setHasChanges] = useState(false);
 
   useEffect(() => {
     // Initialize form with current values
     const currentLabel = owlClass["rdfs:label"]?.[0]?.value || "";
     const currentComment = owlClass["rdfs:comment"] || "";
+    const currentSubClassOf = owlClass["rdfs:subClassOf"] || "";
 
     setLabel(currentLabel);
     setComment(currentComment);
+    setSubClassOf(currentSubClassOf);
     setHasChanges(false);
   }, [classId, owlClass]);
 
@@ -45,18 +53,21 @@ export const ClassEditor: React.FC<ClassEditorProps> = ({
     // Check for changes
     const currentLabel = owlClass["rdfs:label"]?.[0]?.value || "";
     const currentComment = owlClass["rdfs:comment"] || "";
+    const currentSubClassOf = owlClass["rdfs:subClassOf"] || "";
 
     const labelChanged = label !== currentLabel;
     const commentChanged = comment !== currentComment;
+    const subClassOfChanged = subClassOf !== currentSubClassOf;
 
-    setHasChanges(labelChanged || commentChanged);
-  }, [label, comment, owlClass]);
+    setHasChanges(labelChanged || commentChanged || subClassOfChanged);
+  }, [label, comment, subClassOf, owlClass]);
 
   const handleSave = () => {
     const updatedClass: OWLClass = {
       ...owlClass,
       "rdfs:label": label.trim() ? [{ value: label.trim(), lang: "en" }] : [],
       "rdfs:comment": comment.trim(),
+      "rdfs:subClassOf": subClassOf.trim() || undefined,
     };
 
     onUpdateClass(classId, updatedClass);
@@ -66,9 +77,11 @@ export const ClassEditor: React.FC<ClassEditorProps> = ({
   const handleReset = () => {
     const currentLabel = owlClass["rdfs:label"]?.[0]?.value || "";
     const currentComment = owlClass["rdfs:comment"] || "";
+    const currentSubClassOf = owlClass["rdfs:subClassOf"] || "";
 
     setLabel(currentLabel);
     setComment(currentComment);
+    setSubClassOf(currentSubClassOf);
     setHasChanges(false);
   };
 
@@ -191,19 +204,46 @@ export const ClassEditor: React.FC<ClassEditorProps> = ({
 
           <Separator />
 
-          {/* Relationships - Placeholder for Phase 3+ */}
+          {/* Relationships */}
           <VStack align="stretch" spacing={4}>
             <Text fontSize="md" fontWeight="semibold" color="gray.700">
               Relationships
             </Text>
 
-            <Box p={4} bg="gray.50" borderRadius="md">
-              <VStack spacing={2}>
-                <Text fontSize="sm" color="gray.600" textAlign="center">
-                  Class relationships will be available in Phase 3
+            <Field.Root>
+              <Field.Label>Subclass Of (rdfs:subClassOf)</Field.Label>
+              <SelectRoot
+                value={subClassOf ? [subClassOf] : []}
+                onValueChange={(e) => setSubClassOf(e.value[0] || "")}
+              >
+                <SelectTrigger>
+                  <SelectValueText placeholder="Select parent class (optional)" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">
+                    <em>None (top-level class)</em>
+                  </SelectItem>
+                  {Object.entries(ontology.classes)
+                    .filter(([id]) => id !== classId) // Don't allow self-reference
+                    .map(([id, owlClass]) => (
+                      <SelectItem key={id} value={id}>
+                        {owlClass["rdfs:label"]?.[0]?.value || id}
+                      </SelectItem>
+                    ))}
+                </SelectContent>
+              </SelectRoot>
+              <Text fontSize="xs" color="gray.500" mt={1}>
+                Choose a parent class to create a subclass relationship. Leave empty for top-level classes.
+              </Text>
+            </Field.Root>
+
+            {/* Future relationships - Coming in Phase 4+ */}
+            <Box p={3} bg="gray.50" borderRadius="md">
+              <VStack spacing={1}>
+                <Text fontSize="sm" color="gray.600" fontWeight="medium">
+                  Additional Relationships (Coming in Phase 4)
                 </Text>
                 <Text fontSize="xs" color="gray.500" textAlign="center">
-                  • Subclass relationships (rdfs:subClassOf)<br />
                   • Disjoint classes (owl:disjointWith)<br />
                   • Equivalent classes (owl:equivalentClass)
                 </Text>
