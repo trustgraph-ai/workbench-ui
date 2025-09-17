@@ -10,12 +10,8 @@ import {
   Field,
   Separator,
   Badge,
-  SelectContent,
-  SelectItem,
-  SelectRoot,
-  SelectTrigger,
-  SelectValueText,
 } from "@chakra-ui/react";
+import SelectField from "../common/SelectField";
 import { Hash, Save } from "lucide-react";
 import { OWLClass, Ontology } from "../../state/ontologies";
 
@@ -210,32 +206,25 @@ export const ClassEditor: React.FC<ClassEditorProps> = ({
               Relationships
             </Text>
 
-            <Field.Root>
-              <Field.Label>Subclass Of (rdfs:subClassOf)</Field.Label>
-              <SelectRoot
-                value={subClassOf ? [subClassOf] : []}
-                onValueChange={(e) => setSubClassOf(e.value[0] || "")}
-              >
-                <SelectTrigger>
-                  <SelectValueText placeholder="Select parent class (optional)" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="">
-                    <em>None (top-level class)</em>
-                  </SelectItem>
-                  {Object.entries(ontology.classes)
+            <VStack align="stretch" spacing={1}>
+              <SelectField
+                label="Subclass Of (rdfs:subClassOf)"
+                items={[
+                  { value: "", label: "None (top-level class)" },
+                  ...Object.entries(ontology.classes)
                     .filter(([id]) => id !== classId) // Don't allow self-reference
-                    .map(([id, owlClass]) => (
-                      <SelectItem key={id} value={id}>
-                        {owlClass["rdfs:label"]?.[0]?.value || id}
-                      </SelectItem>
-                    ))}
-                </SelectContent>
-              </SelectRoot>
+                    .map(([id, owlClass]) => ({
+                      value: id,
+                      label: owlClass["rdfs:label"]?.[0]?.value || id,
+                    }))
+                ]}
+                value={subClassOf}
+                onValueChange={setSubClassOf}
+              />
               <Text fontSize="xs" color="gray.500" mt={1}>
                 Choose a parent class to create a subclass relationship. Leave empty for top-level classes.
               </Text>
-            </Field.Root>
+            </VStack>
 
             {/* Future relationships - Coming in Phase 4+ */}
             <Box p={3} bg="gray.50" borderRadius="md">
