@@ -1,47 +1,48 @@
-# SKOS Taxonomy Management UI Technical Specification
+# OWL Ontology Management UI Technical Specification
 
 ## Overview
 
-This specification describes a user interface component for managing SKOS taxonomies within the existing TrustGraph system. The UI enables data architects to create, edit, and maintain hierarchical taxonomies with rich metadata, supporting multiple concurrent taxonomies stored as configuration items in the backend.
+This specification describes a user interface component for managing OWL ontologies within the existing TrustGraph system. The UI enables data architects to create, edit, and maintain formal ontologies with classes, properties, and complex relationships, supporting multiple concurrent ontologies stored as configuration items in the backend.
 
 **Naming Convention**: This project uses kebab-case for all identifiers (configuration keys, API endpoints, module names, etc.) rather than snake_case.
 
 The system supports four primary use cases:
 
-1. **Taxonomy Creation and Management**: Create new taxonomies and manage existing ones through a structured interface
-2. **Concept Hierarchy Management**: Build and modify parent-child relationships between taxonomy concepts
-3. **Rich Metadata Editing**: Add labels, definitions, examples, and detailed descriptions to concepts
-4. **AI-Assisted Content Generation**: Optional wizard/getting started flow using LLM helpers to generate or enhance taxonomy content
+1. **Ontology Creation and Management**: Create new ontologies and manage existing ones through a structured interface
+2. **Class and Property Definition**: Define OWL classes, object properties, and datatype properties with domains and ranges
+3. **Rich Metadata and Constraints**: Add labels, descriptions, cardinality constraints, and type specifications
+4. **AI-Assisted Content Generation**: Optional wizard/getting started flow using LLM helpers to generate or enhance ontology content
 
 ## Goals
 
-- **Intuitive Hierarchy Management**: Provide clear visual representation and manipulation of concept hierarchies
-- **Rich Metadata Support**: Enable comprehensive editing of all SKOS properties including labels, definitions, examples, and notes
-- **Multi-Taxonomy Support**: Allow data architects to work with multiple taxonomies simultaneously
-- **AI-Enhanced Productivity**: Provide optional LLM assistance for content generation and taxonomy enhancement
-- **Configuration Integration**: Seamlessly store and retrieve taxonomies from the existing configuration backend
-- **Data Architect Focus**: Design interfaces that expose technical details and provide precise control over taxonomy structure
-- **Validation and Consistency**: Ensure taxonomies conform to SKOS standards and maintain internal consistency
-- **Import/Export Capabilities**: Support standard formats (Turtle, JSON-LD) for taxonomy interchange
+- **Class and Property Management**: Define and manage OWL classes with properties, domains, ranges, and type constraints
+- **Rich Semantic Support**: Enable comprehensive editing of RDFS/OWL properties including labels, multi-language support, and formal constraints
+- **Multi-Ontology Support**: Allow data architects to work with multiple ontologies simultaneously
+- **AI-Enhanced Productivity**: Provide optional LLM assistance for content generation and ontology enhancement
+- **Configuration Integration**: Seamlessly store and retrieve ontologies from the existing configuration backend
+- **Data Architect Focus**: Design interfaces that expose technical details and provide precise control over ontology structure
+- **Validation and Reasoning**: Ensure ontologies conform to OWL standards with consistency checking and inference support
+- **Import/Export Capabilities**: Support standard formats (Turtle, RDF/XML, OWL/XML) for ontology interchange
 
 ## Background
 
-TrustGraph currently stores configuration data in a flexible key-value system that can accommodate various data types. SKOS taxonomies represent a structured knowledge organization system that needs to be managed through dedicated tooling rather than raw configuration editing.
+TrustGraph currently stores configuration data in a flexible key-value system that can accommodate various data types. OWL ontologies represent formal knowledge models that need to be managed through dedicated tooling rather than raw configuration editing.
 
-Data architects working with knowledge graphs need taxonomies to:
-- Standardize terminology across data sources
-- Provide controlled vocabularies for content classification
-- Enable semantic relationships between concepts
-- Support knowledge extraction and entity recognition workflows
+Data architects working with knowledge graphs need ontologies to:
+- Define formal object types and their properties
+- Specify property domains, ranges, and type constraints
+- Enable logical reasoning and inference
+- Support complex relationships and cardinality constraints
+- Provide unique identifiers and external reference capabilities
 
 Current limitations include:
-- No dedicated UI for taxonomy management
-- Manual editing of complex hierarchical structures
-- Difficulty maintaining SKOS compliance
+- No dedicated UI for ontology management
+- Manual editing of complex class and property definitions
+- Difficulty maintaining OWL consistency
 - No automated assistance for content generation
-- Limited validation of taxonomy consistency
+- Limited validation and reasoning capabilities
 
-This specification addresses these gaps by providing a specialized interface that understands SKOS semantics while integrating with the existing configuration infrastructure.
+This specification addresses these gaps by providing a specialized interface that understands OWL/RDFS semantics while integrating with the existing configuration infrastructure.
 
 ## Technical Design
 
@@ -49,131 +50,168 @@ This specification addresses these gaps by providing a specialized interface tha
 
 The taxonomy management UI requires the following components:
 
-1. **Taxonomy Manager Component**
-   - React-based interface component for the main taxonomy management workspace
+1. **Ontology Manager Component**
+   - React-based interface component for the main ontology management workspace
    - Integrates with existing UI framework and design system
    - Provides tree view, detail panels, and editing interfaces
    - Supports undo/redo operations and change tracking
    
-   Module: workbench-ui/src/components/TaxonomyManager
+   Module: workbench-ui/src/components/OntologyManager
 
 2. **Configuration API Integration** ✅ **[EXISTING]**
-   - Extends existing configuration API to handle taxonomy-specific operations
-   - Type: `taxonomy` for all SKOS taxonomy configurations
-   - Key: Unique taxonomy identifier (e.g., `risk-categories`, `document-types`)
-   - Value: Complete taxonomy in JSON-LD or Turtle format
+   - Extends existing configuration API to handle ontology-specific operations
+   - Type: `ontology` for all OWL ontology configurations
+   - Key: Unique ontology identifier (e.g., `domain-model`, `process-ontology`)
+   - Value: Complete ontology in JSON-LD, Turtle, or OWL/XML format
 
-3. **SKOS Parser/Serializer Module**
-   - Converts between internal JSON representation and standard SKOS formats
-   - Supports Turtle and JSON-LD import/export
-   - Validates SKOS compliance and structural integrity
+3. **OWL Parser/Serializer Module**
+   - Converts between internal JSON representation and standard OWL formats
+   - Supports Turtle, RDF/XML, and OWL/XML import/export
+   - Validates OWL compliance and logical consistency
    - Handles namespace management and URI generation
-   
-   Module: workbench-ui/src/utils/skos
+
+   Module: workbench-ui/src/utils/owl
 
 4. **LLM Assistant Integration (Optional)**
-   - Provides an optional wizard/getting started flow for new taxonomies
+   - Provides an optional wizard/getting started flow for new ontologies
    - Connects to existing LLM services for content generation
-   - Offers context-aware suggestions for labels, definitions, and examples
-   - Supports bulk content enhancement and taxonomy expansion
-   - Can be bypassed entirely for manual taxonomy creation
-   - Maintains consistency with existing concept definitions
-   
-   Module: workbench-ui/src/services/taxonomyAssistant
+   - Offers context-aware suggestions for classes, properties, and constraints
+   - Supports bulk content enhancement and ontology expansion
+   - Can be bypassed entirely for manual ontology creation
+   - Maintains logical consistency with existing definitions
 
-5. **Hierarchy Visualization Component**
-   - Tree-based visual representation of concept hierarchies
-   - Drag-and-drop support for restructuring
-   - Visual indicators for concept completeness and validation status
-   - Search and filtering capabilities
-   
-   Module: workbench-ui/src/components/TaxonomyTree
+   Module: workbench-ui/src/services/ontologyAssistant
 
-6. **Concept Editor Component**
-   - Form-based interface for editing individual concepts
-   - Dedicated sections for each SKOS property type
-   - Real-time validation and suggestion features
-   - Preview of generated RDF/Turtle output
-   
-   Module: workbench-ui/src/components/ConceptEditor
+5. **Class Hierarchy Visualization Component**
+   - Tree-based visual representation of class hierarchies and property relationships
+   - Drag-and-drop support for restructuring class inheritance
+   - Visual indicators for class completeness, property assignments, and validation status
+   - Search and filtering capabilities for classes and properties
 
-7. **Taxonomy Import/Export Service**
+   Module: workbench-ui/src/components/OntologyTree
+
+6. **Class/Property Editor Component**
+   - Form-based interface for editing classes and properties
+   - Dedicated sections for domains, ranges, type constraints, and cardinality
+   - Real-time validation and consistency checking
+   - Preview of generated OWL/Turtle output
+
+   Module: workbench-ui/src/components/OntologyEditor
+
+7. **Ontology Import/Export Service**
    - Handles file uploads and downloads
-   - Supports multiple formats (Turtle, JSON-LD, CSV templates)
+   - Supports multiple formats (Turtle, RDF/XML, OWL/XML, JSON-LD)
    - Provides format conversion and validation
    - Manages conflict resolution during imports
-   
-   Module: workbench-ui/src/services/taxonomyIO
+
+   Module: workbench-ui/src/services/ontologyIO
 
 ### Data Models
 
 #### Internal Representation
 
-Taxonomies are stored as configuration items with the following structure:
+Ontologies are stored as configuration items with the following structure:
 
 **Configuration Schema:**
 ```
-Type: taxonomy
-Key: [taxonomy_identifier]
+Type: ontology
+Key: [ontology_identifier]
 Value: {
   "metadata": {
-    "name": "Risk Categories",
-    "description": "Comprehensive risk classification taxonomy",
+    "name": "Domain Ontology",
+    "description": "Comprehensive domain model ontology",
     "version": "1.2",
     "created": "2025-01-15T10:30:00Z",
     "modified": "2025-08-15T14:22:00Z",
     "creator": "data-architect-001",
-    "namespace": "http://example.org/risk/"
+    "namespace": "http://example.org/domain/",
+    "imports": ["http://www.w3.org/2002/07/owl#"]
   },
-  "concepts": {
-    "risk-001": {
-      "id": "risk-001",
-      "prefLabel": "Operational Risk",
-      "altLabel": ["Operations Risk", "Op Risk"],
-      "definition": "Risk arising from inadequate or failed internal processes",
-      "scopeNote": "Includes technology failures, human errors, and process breakdowns...",
-      "example": ["IT system outages", "Employee fraud", "Supply chain disruptions"],
-      "notation": "1",
-      "broader": null,
-      "narrower": ["risk-002", "risk-003"],
-      "related": [],
-      "topConcept": true
+  "classes": {
+    "Document": {
+      "uri": "http://example.org/domain/Document",
+      "type": "owl:Class",
+      "rdfs:label": [{"value": "Document", "lang": "en"}, {"value": "Documento", "lang": "es"}],
+      "rdfs:comment": "A document in the system",
+      "rdfs:subClassOf": "Resource",
+      "owl:disjointWith": ["Person", "Organization"],
+      "dcterms:identifier": "DOC-001"
+    },
+    "Resource": {
+      "uri": "http://example.org/domain/Resource",
+      "type": "owl:Class",
+      "rdfs:label": [{"value": "Resource", "lang": "en"}],
+      "rdfs:comment": "Base class for all resources"
     }
   },
-  "scheme": {
-    "uri": "http://example.org/risk/scheme",
-    "prefLabel": "Risk Categories",
-    "hasTopConcept": ["risk-001", "risk-010", "risk-020"]
+  "objectProperties": {
+    "hasAuthor": {
+      "uri": "http://example.org/domain/hasAuthor",
+      "type": "owl:ObjectProperty",
+      "rdfs:label": [{"value": "has author", "lang": "en"}],
+      "rdfs:domain": "Document",
+      "rdfs:range": "Person",
+      "owl:inverseOf": "authorOf",
+      "rdfs:comment": "Links a document to its author"
+    }
+  },
+  "datatypeProperties": {
+    "title": {
+      "uri": "http://example.org/domain/title",
+      "type": "owl:DatatypeProperty",
+      "rdfs:label": [{"value": "title", "lang": "en"}],
+      "rdfs:domain": "Document",
+      "rdfs:range": "xsd:string",
+      "owl:functionalProperty": true,
+      "rdfs:comment": "The title of a document"
+    },
+    "pageCount": {
+      "uri": "http://example.org/domain/pageCount",
+      "type": "owl:DatatypeProperty",
+      "rdfs:label": [{"value": "page count", "lang": "en"}],
+      "rdfs:domain": "Document",
+      "rdfs:range": "xsd:integer",
+      "rdfs:comment": "Number of pages in the document"
+    }
   }
 }
 ```
 
-#### SKOS Property Mapping
+#### OWL/RDFS Property Mapping
 
-The UI supports all essential SKOS properties:
+The UI supports all essential OWL and RDFS properties:
 
-**Core Properties:**
-- `skos:prefLabel` - Primary concept name
-- `skos:altLabel` - Alternative names/synonyms
-- `skos:definition` - Brief formal definition
-- `skos:notation` - Hierarchical code (auto-generated or manual)
+**Class Definition Properties:**
+- `owl:Class` - Define object types
+- `rdfs:subClassOf` - Class hierarchy and inheritance
+- `owl:equivalentClass` - Class equivalence relationships
+- `owl:disjointWith` - Disjoint class declarations
+- `rdfs:label` - Human-readable labels with language tags
+- `rdfs:comment` - Class descriptions and documentation
+- `dcterms:identifier` - External reference IDs
 
-**Hierarchical Properties:**
-- `skos:broader` - Parent concept reference
-- `skos:narrower` - Child concept references
-- `skos:topConceptOf` - Root level indicator
-- `skos:related` - Non-hierarchical associations
+**Property Definition:**
+- `owl:ObjectProperty` - Properties linking to other classes
+- `owl:DatatypeProperty` - Properties with literal values
+- `rdfs:domain` - Specifies which classes have the property
+- `rdfs:range` - Specifies property value types (classes or XSD datatypes)
+- `rdfs:subPropertyOf` - Property hierarchy
+- `owl:inverseOf` - Inverse property relationships
 
-**Documentation Properties:**
-- `skos:scopeNote` - Detailed analytical commentary
-- `skos:example` - Real-world examples and case studies
-- `skos:note` - General annotations
-- `skos:editorialNote` - Internal management notes
-- `skos:changeNote` - Version history tracking
+**Cardinality and Constraints:**
+- `owl:functionalProperty` - At most one value
+- `owl:inverseFunctionalProperty` - Unique identifying property
+- `owl:minCardinality` - Minimum number of values
+- `owl:maxCardinality` - Maximum number of values
+- `owl:cardinality` - Exact number of values
 
-**Extended Properties:**
-- `dc:description` - Extended narrative description
-- Custom properties for domain-specific metadata
+**Datatype Support (XSD):**
+- `xsd:string` - Text values
+- `xsd:integer` - Integer numbers
+- `xsd:float` - Floating point numbers
+- `xsd:boolean` - True/false values
+- `xsd:dateTime` - Date and time values
+- `xsd:anyURI` - URI references
 
 ### User Interface Design
 
@@ -181,107 +219,126 @@ The UI supports all essential SKOS properties:
 
 ```
 +----------------------------------------------------------+
-| Taxonomy Manager                                    [?] [⚙] |
+| Ontology Manager                                    [?] [⚙] |
 +----------------------------------------------------------+
-| [Taxonomies ▼] [+ New] [Import] [Export]                |
+| [Ontologies ▼] [+ New] [Import] [Export] [Reasoner]     |
 +------------------+---------------------------------------+
-| Taxonomy Tree    | Concept Details                       |
+| Ontology Tree    | Element Details                       |
 | +--------------+ | +-----------------------------------+ |
-| | □ Risk Cat.  | | | Concept: Operational Risk         | |
-| |   ├─ Op Risk | | | ┌─ Basic Info ──────────────────┐ | |
-| |   │  ├─ Tech | | | │ Preferred Label: [____________] │ | |
-| |   │  └─ Human| | | │ Alternative Labels: [Add new_] │ | |
-| |   ├─ Market  | | | │ Notation: [____] Auto: □       │ | |
-| |   └─ Credit  | | | └─────────────────────────────────┘ | |
-| | [+ Add Root] | | | ┌─ Definition ───────────────────┐ | |
-| | [🔍 Search_] | | | │ [__________________________ ] │ | |
-| +--------------+ | | │ [AI Suggest] [Generate Example] │ | |
+| | ▼ Classes    | | | Class: Document                   | |
+| |   ├─ Resource| | | ┌─ Basic Info ──────────────────┐ | |
+| |   │  └─ Doc. | | | │ URI: http://example.org/Doc    │ | |
+| |   └─ Person  | | | │ Labels: [en: Document_____]    │ | |
+| | ▼ Properties | | | │         [+ Add language]        │ | |
+| |   ├─ Object  | | | │ Parent: [Resource_____▼]       │ | |
+| |   │  └─ has..| | | │ Disjoint: [Person, Org.]       │ | |
+| |   └─ Datatype| | | │ External ID: [DOC-001____]     │ | |
+| | [+ Add Class]| | | └─────────────────────────────────┘ | |
+| | [🔍 Search_] | | | ┌─ Properties ───────────────────┐ | |
+| +--------------+ | | │ Domain Properties:              │ | |
+|                  | | │ • title (string)                │ | |
+|                  | | │ • hasAuthor → Person            │ | |
+|                  | | │ [+ Add Property]                │ | |
 |                  | | └─────────────────────────────────┘ | |
 +------------------+---------------------------------------+
 ```
 
 #### Core UI Components
 
-**1. Taxonomy Selector**
-- Dropdown showing all available taxonomies
+**1. Ontology Selector**
+- Dropdown showing all available ontologies
 - Quick actions: New, Clone, Delete
-- Status indicators: Modified, Validated, Published
+- Status indicators: Modified, Validated, Consistent
 
-**2. Hierarchy Tree**
-- Expandable tree view with drag-and-drop
-- Visual indicators: ✓ Complete, ⚠ Missing data, ❌ Validation errors
-- Context menu: Add Child, Edit, Delete, Move
+**2. Ontology Tree**
+- Dual-section tree: Classes and Properties
+- Expandable class hierarchy with inheritance visualization
+- Property organization by type (Object/Datatype)
+- Visual indicators: ✓ Complete, ⚠ Missing constraints, ❌ Inconsistencies
+- Context menu: Add Subclass, Add Property, Edit, Delete, Move
 - Search with highlighting and filtering
 
-**3. Concept Detail Panel**
-- Tabbed interface for different property groups:
-  - **Basic Info**: Labels, notation, basic relationships
-  - **Definition**: Core definition and scope notes
-  - **Examples**: Real-world cases and use examples
-  - **Relationships**: Broader, narrower, and related concepts
-  - **Metadata**: Editorial notes, change history, custom properties
+**3. Element Detail Panel**
+- Context-sensitive form based on selection (Class or Property):
+  - **For Classes**:
+    - URI, labels (multi-language), parent class
+    - Equivalent/disjoint classes
+    - Properties with this class as domain
+    - External identifiers
+  - **For Properties**:
+    - Type (Object/Datatype)
+    - Domain and range specifications
+    - Cardinality constraints
+    - Inverse relationships
+    - Functional property settings
 
 **4. AI Assistant Panel (Optional)**
 - Toggle on/off for manual-only workflow
 - When enabled, provides:
-  - Context-aware content suggestions
-  - Bulk operations: "Generate examples for all concepts"
-  - Smart templates: "Create child concepts for [parent]"
-  - Consistency checking: "Find similar concepts"
+  - Context-aware class and property suggestions
+  - Bulk operations: "Generate properties for all classes"
+  - Smart templates: "Create subclasses for [parent]"
+  - Consistency checking: "Find logical conflicts"
+  - Domain/range recommendations
 - Can be hidden completely for users preferring manual creation
 
 ### AI Assistant Features (Optional Wizard)
 
-The AI Assistant is designed as an optional "getting started" wizard that helps users bootstrap their taxonomies. Users can:
-- Choose to start with the AI wizard or create taxonomies manually from scratch
+The AI Assistant is designed as an optional "getting started" wizard that helps users bootstrap their ontologies. Users can:
+- Choose to start with the AI wizard or create ontologies manually from scratch
 - Toggle AI assistance on/off at any point during editing
-- Use AI for specific tasks (e.g., generating examples) while doing everything else manually
-- Skip the wizard entirely and build taxonomies using traditional manual methods
+- Use AI for specific tasks (e.g., generating properties) while doing everything else manually
+- Skip the wizard entirely and build ontologies using traditional manual methods
 
 #### Content Generation Capabilities
 
-**Definition Assistant**
-- Analyzes concept label and position in hierarchy
-- Generates formal definitions following domain standards
-- Suggests scope notes with technical detail
-- Maintains consistency with sibling concepts
+**Class Definition Assistant**
+- Analyzes class names and inheritance structure
+- Suggests appropriate parent classes
+- Recommends disjoint class relationships
+- Generates class descriptions and documentation
 
-**Example Generator**
-- Creates relevant real-world examples
-- Considers concept specificity and domain context
-- Generates diverse example types (events, entities, scenarios)
-- Validates examples against concept definition
+**Property Generator**
+- Creates relevant object and datatype properties for classes
+- Suggests appropriate domains and ranges
+- Recommends cardinality constraints
+- Identifies potential inverse relationships
 
-**Hierarchy Suggestions**
-- Recommends child concepts for expansion
-- Identifies potential parent-child relationships
-- Suggests related concepts across branches
-- Detects hierarchy inconsistencies
+**Type and Constraint Suggestions**
+- Recommends appropriate XSD datatypes for properties
+- Suggests functional property declarations
+- Identifies candidates for inverse functional properties
+- Detects potential consistency issues
 
 **Bulk Enhancement**
-- Processes multiple concepts simultaneously
-- Maintains stylistic consistency across taxonomy
-- Fills in missing properties systematically
-- Provides quality scoring and recommendations
+- Processes multiple classes simultaneously
+- Maintains consistency across the ontology
+- Fills in missing domains/ranges systematically
+- Provides logical consistency checking
 
 #### Implementation Details
 
 **Assistant Integration:**
 ```javascript
 const assistantService = {
-  generateDefinition: async (concept, context) => {
-    // Send concept label, siblings, and domain context to LLM
-    // Return structured definition with confidence score
+  generateClassProperties: async (className, context) => {
+    // Analyze class name and context to suggest properties
+    // Return object and datatype properties with domains/ranges
   },
-  
-  suggestExamples: async (concept, count = 3) => {
-    // Generate contextually appropriate examples
-    // Filter for relevance and diversity
+
+  suggestDomainRange: async (propertyName, ontologyContext) => {
+    // Recommend appropriate domain classes and range types
+    // Consider existing class hierarchy and property patterns
   },
-  
-  expandHierarchy: async (parentConcept, depth = 2) => {
-    // Suggest logical child concepts
-    // Maintain naming and structural consistency
+
+  expandClassHierarchy: async (parentClass, depth = 2) => {
+    // Suggest logical subclasses
+    // Maintain naming consistency and inheritance logic
+  },
+
+  validateConsistency: async (ontology) => {
+    // Check for logical inconsistencies
+    // Identify missing constraints or conflicting definitions
   }
 };
 ```
@@ -290,31 +347,31 @@ const assistantService = {
 
 #### Using the Existing Config API
 
-The taxonomy management system uses the existing configuration API with type `taxonomy`. No new API endpoints are needed - all operations go through the existing socket-based config API.
+The ontology management system uses the existing configuration API with type `ontology`. No new API endpoints are needed - all operations go through the existing socket-based config API.
 
 **React Hook Implementation (following the established pattern):**
 
 ```typescript
-// src/state/taxonomies.ts
+// src/state/ontologies.ts
 import { useQueryClient, useQuery, useMutation } from "@tanstack/react-query";
 import { useSocket } from "../api/trustgraph/socket";
 import { useNotification } from "./notify";
 import { useActivity } from "./activity";
 
-export const useTaxonomies = () => {
+export const useOntologies = () => {
   const socket = useSocket();
   const queryClient = useQueryClient();
   const notify = useNotification();
 
-  // Fetch all taxonomies using getValues
-  const taxonomiesQuery = useQuery({
-    queryKey: ["taxonomies"],
+  // Fetch all ontologies using getValues
+  const ontologiesQuery = useQuery({
+    queryKey: ["ontologies"],
     queryFn: () => {
       return socket
         .config()
-        .getValues("taxonomy")
+        .getValues("ontology")
         .then((values) => {
-          // Returns array of [id, taxonomyData] tuples
+          // Returns array of [id, ontologyData] tuples
           return values.map((item) => [item.key, JSON.parse(item.value)]);
         })
         .catch((err) => {
@@ -324,16 +381,16 @@ export const useTaxonomies = () => {
     },
   });
 
-  // Create/Update taxonomy mutation
-  const updateTaxonomyMutation = useMutation({
-    mutationFn: ({ id, taxonomy, onSuccess }) => {
+  // Create/Update ontology mutation
+  const updateOntologyMutation = useMutation({
+    mutationFn: ({ id, ontology, onSuccess }) => {
       return socket
         .config()
         .putConfig([
           {
-            type: "taxonomy",
+            type: "ontology",
             key: id,
-            value: JSON.stringify(taxonomy),
+            value: JSON.stringify(ontology),
           },
         ])
         .then((x) => {
@@ -349,19 +406,19 @@ export const useTaxonomies = () => {
       notify.error(err.toString());
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["taxonomies"] });
-      notify.success("Taxonomy updated");
+      queryClient.invalidateQueries({ queryKey: ["ontologies"] });
+      notify.success("Ontology updated");
     },
   });
 
-  // Delete taxonomy mutation
-  const deleteTaxonomyMutation = useMutation({
+  // Delete ontology mutation
+  const deleteOntologyMutation = useMutation({
     mutationFn: ({ id, onSuccess }) => {
       return socket
         .config()
         .deleteConfig([
           {
-            type: "taxonomy",
+            type: "ontology",
             key: id,
           },
         ])
@@ -378,31 +435,31 @@ export const useTaxonomies = () => {
       notify.error(err.toString());
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["taxonomies"] });
-      notify.success("Taxonomy deleted");
+      queryClient.invalidateQueries({ queryKey: ["ontologies"] });
+      notify.success("Ontology deleted");
     },
   });
 
   // Track loading states
-  useActivity(taxonomiesQuery.isLoading, "Loading taxonomies");
-  useActivity(updateTaxonomyMutation.isPending, "Updating taxonomy");
-  useActivity(deleteTaxonomyMutation.isPending, "Deleting taxonomy");
+  useActivity(ontologiesQuery.isLoading, "Loading ontologies");
+  useActivity(updateOntologyMutation.isPending, "Updating ontology");
+  useActivity(deleteOntologyMutation.isPending, "Deleting ontology");
 
   return {
-    taxonomies: taxonomiesQuery.data || [],
-    taxonomiesLoading: taxonomiesQuery.isLoading,
-    taxonomiesError: taxonomiesQuery.error,
-    
-    updateTaxonomy: updateTaxonomyMutation.mutate,
-    isUpdatingTaxonomy: updateTaxonomyMutation.isPending,
-    
-    createTaxonomy: updateTaxonomyMutation.mutate, // Same as update
-    isCreatingTaxonomy: updateTaxonomyMutation.isPending,
-    
-    deleteTaxonomy: deleteTaxonomyMutation.mutate,
-    isDeletingTaxonomy: deleteTaxonomyMutation.isPending,
-    
-    refetch: () => taxonomiesQuery.refetch(),
+    ontologies: ontologiesQuery.data || [],
+    ontologiesLoading: ontologiesQuery.isLoading,
+    ontologiesError: ontologiesQuery.error,
+
+    updateOntology: updateOntologyMutation.mutate,
+    isUpdatingOntology: updateOntologyMutation.isPending,
+
+    createOntology: updateOntologyMutation.mutate, // Same as update
+    isCreatingOntology: updateOntologyMutation.isPending,
+
+    deleteOntology: deleteOntologyMutation.mutate,
+    isDeletingOntology: deleteOntologyMutation.isPending,
+
+    refetch: () => ontologiesQuery.refetch(),
   };
 };
 ```
