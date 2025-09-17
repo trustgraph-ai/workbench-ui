@@ -164,7 +164,7 @@ export const ClassEditor: React.FC<ClassEditorProps> = ({
               <Field.Label>URI</Field.Label>
               <Input
                 value={owlClass.uri}
-                isReadOnly
+                readOnly
                 bg="gray.50"
                 color="gray.600"
                 fontFamily="mono"
@@ -179,7 +179,7 @@ export const ClassEditor: React.FC<ClassEditorProps> = ({
               <Field.Label>Type</Field.Label>
               <Input
                 value="owl:Class"
-                isReadOnly
+                readOnly
                 bg="gray.50"
                 color="gray.600"
                 fontFamily="mono"
@@ -194,7 +194,7 @@ export const ClassEditor: React.FC<ClassEditorProps> = ({
               <Field.Label>Class ID</Field.Label>
               <Input
                 value={classId}
-                isReadOnly
+                readOnly
                 bg="gray.50"
                 color="gray.600"
                 fontFamily="mono"
