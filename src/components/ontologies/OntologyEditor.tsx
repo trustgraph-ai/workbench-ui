@@ -5,6 +5,7 @@ import { useOntologies, Ontology, OWLClass, OWLObjectProperty, OWLDatatypeProper
 import { ClassTree } from "./ClassTree";
 import { ClassEditor } from "./ClassEditor";
 import { PropertyTree } from "./PropertyTree";
+import { PropertyEditor } from "./PropertyEditor";
 import { WelcomePanel } from "./WelcomePanel";
 
 interface OntologyEditorProps {
@@ -194,6 +195,40 @@ export const OntologyEditor: React.FC<OntologyEditorProps> = ({
     setActiveTab("classes");
   };
 
+  const handleUpdateProperty = (
+    propertyId: string,
+    updatedProperty: OWLObjectProperty | OWLDatatypeProperty,
+    type: "object" | "datatype"
+  ) => {
+    if (!ontologyData) return;
+
+    const updatedOntology: Ontology = {
+      ...ontologyData,
+      ...(type === "object"
+        ? {
+            objectProperties: {
+              ...ontologyData.objectProperties,
+              [propertyId]: updatedProperty as OWLObjectProperty,
+            },
+          }
+        : {
+            datatypeProperties: {
+              ...ontologyData.datatypeProperties,
+              [propertyId]: updatedProperty as OWLDatatypeProperty,
+            },
+          }),
+      metadata: {
+        ...ontologyData.metadata,
+        modified: new Date().toISOString(),
+      },
+    };
+
+    updateOntology({
+      id: ontologyId,
+      ontology: updatedOntology,
+    });
+  };
+
   const selectedClass = selectedClassId ? ontologyData.classes[selectedClassId] : null;
   const selectedProperty = selectedPropertyId && selectedPropertyType
     ? (selectedPropertyType === "object"
@@ -279,17 +314,13 @@ export const OntologyEditor: React.FC<OntologyEditorProps> = ({
                   onUpdateClass={handleUpdateClass}
                 />
               ) : selectedProperty && selectedPropertyId && selectedPropertyType ? (
-                <Box p={6}>
-                  <Text fontSize="lg" fontWeight="semibold" mb={4}>
-                    {selectedPropertyType === "object" ? "Object" : "Datatype"} Property Editor
-                  </Text>
-                  <Text color="gray.600">
-                    Property editor coming in Phase 3.3
-                  </Text>
-                  <Text fontSize="sm" color="gray.500" mt={2}>
-                    Selected: {selectedProperty["rdfs:label"]?.[0]?.value || selectedPropertyId}
-                  </Text>
-                </Box>
+                <PropertyEditor
+                  propertyId={selectedPropertyId}
+                  property={selectedProperty}
+                  propertyType={selectedPropertyType}
+                  ontology={ontologyData}
+                  onUpdateProperty={handleUpdateProperty}
+                />
               ) : (
                 <Box p={6} display="flex" alignItems="center" justifyContent="center" h="100%">
                   <VStack spacing={4}>
