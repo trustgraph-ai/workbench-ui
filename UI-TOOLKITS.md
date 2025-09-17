@@ -410,39 +410,26 @@ notify.info("FYI: This is informational");
 - `Slider` - Range slider component
 
 #### SelectField Usage
-**CRITICAL**: SelectField has TWO usage patterns depending on the context:
+**CRITICAL**: SelectField expects string values for single selection:
 
-**Pattern 1: Single-value selection (most common)**
 ```tsx
-// ✅ Use when you have a current selection
+// ✅ Correct usage
 <SelectField
-  label="Current Selection"
+  label="Select Option"
   items={[
-    {value: 'option1', label: 'Option 1', description: 'Option 1'}, 
-    {value: 'option2', label: 'Option 2', description: 'Option 2'}
+    {value: 'option1', label: 'Option 1', description: 'Description for option 1'},
+    {value: 'option2', label: 'Option 2', description: 'Description for option 2'}
   ]}
-  value={selectedValue}          // string - current selection
+  value={selectedValue}          // string - current selection (empty string for no selection)
   onValueChange={(value) => setSelectedValue(value)}  // receives string
 />
 ```
 
-**Pattern 2: Empty/initial selection (for dropdowns with no initial selection)**
-```tsx
-// ✅ Use when starting with no selection
-<SelectField
-  label="Choose Option"  
-  items={[
-    {value: 'option1', label: 'Option 1', description: 'Option 1'}, 
-    {value: 'option2', label: 'Option 2', description: 'Option 2'}
-  ]}
-  value={[]}                     // empty array - no initial selection
-  onValueChange={(values) => {   // receives array
-    if (values.length > 0) setSelectedValue(values[0]);
-  }}
-/>
-```
-
-**Important:** Due to current SelectField implementation, both `label` and `description` should be provided with the same value for proper display in dropdown options.
+**Important Notes:**
+- Pass an empty string `""` for no selection, not an empty array
+- The `value` prop should always be a string
+- The `onValueChange` callback receives a string
+- The `description` field in items is optional and will be displayed below the label if provided
 
 ### Theming and Colors
 **ALWAYS** use semantic color tokens instead of direct color palettes. The theme provides semantic tokens that automatically handle light/dark mode:
