@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { Box, VStack, HStack, Heading, Button, Text } from "@chakra-ui/react";
+import { Box, VStack, HStack, Heading, Button, Text, Tabs } from "@chakra-ui/react";
 import { Save, ArrowLeft } from "lucide-react";
-import { useOntologies, Ontology, OWLClass } from "../../state/ontologies";
+import { useOntologies, Ontology, OWLClass, OWLObjectProperty, OWLDatatypeProperty } from "../../state/ontologies";
 import { ClassTree } from "./ClassTree";
 import { ClassEditor } from "./ClassEditor";
+import { PropertyTree } from "./PropertyTree";
 import { WelcomePanel } from "./WelcomePanel";
 
 interface OntologyEditorProps {
@@ -17,6 +18,9 @@ export const OntologyEditor: React.FC<OntologyEditorProps> = ({
 }) => {
   const { ontologies, updateOntology } = useOntologies();
   const [selectedClassId, setSelectedClassId] = useState<string | null>(null);
+  const [selectedPropertyId, setSelectedPropertyId] = useState<string | null>(null);
+  const [selectedPropertyType, setSelectedPropertyType] = useState<"object" | "datatype" | null>(null);
+  const [activeTab, setActiveTab] = useState<"classes" | "properties">("classes");
   const [showWelcome, setShowWelcome] = useState(false);
 
   // Find the ontology data
@@ -104,7 +108,98 @@ export const OntologyEditor: React.FC<OntologyEditorProps> = ({
     });
   };
 
+  const handleCreateObjectProperty = (propertyName: string) => {
+    if (!ontologyData) return;
+
+    const propertyId = propertyName.toLowerCase().replace(/\s+/g, "");
+    const propertyUri = `${ontologyData.metadata.namespace}${propertyId}`;
+
+    const newProperty: OWLObjectProperty = {
+      uri: propertyUri,
+      type: "owl:ObjectProperty",
+      "rdfs:label": [{ value: propertyName, lang: "en" }],
+      "rdfs:comment": "",
+    };
+
+    const updatedOntology: Ontology = {
+      ...ontologyData,
+      objectProperties: {
+        ...ontologyData.objectProperties,
+        [propertyId]: newProperty,
+      },
+      metadata: {
+        ...ontologyData.metadata,
+        modified: new Date().toISOString(),
+      },
+    };
+
+    updateOntology({
+      id: ontologyId,
+      ontology: updatedOntology,
+    });
+
+    setSelectedPropertyId(propertyId);
+    setSelectedPropertyType("object");
+    setActiveTab("properties");
+    setShowWelcome(false);
+  };
+
+  const handleCreateDatatypeProperty = (propertyName: string) => {
+    if (!ontologyData) return;
+
+    const propertyId = propertyName.toLowerCase().replace(/\s+/g, "");
+    const propertyUri = `${ontologyData.metadata.namespace}${propertyId}`;
+
+    const newProperty: OWLDatatypeProperty = {
+      uri: propertyUri,
+      type: "owl:DatatypeProperty",
+      "rdfs:label": [{ value: propertyName, lang: "en" }],
+      "rdfs:comment": "",
+      "rdfs:range": "xsd:string",
+    };
+
+    const updatedOntology: Ontology = {
+      ...ontologyData,
+      datatypeProperties: {
+        ...ontologyData.datatypeProperties,
+        [propertyId]: newProperty,
+      },
+      metadata: {
+        ...ontologyData.metadata,
+        modified: new Date().toISOString(),
+      },
+    };
+
+    updateOntology({
+      id: ontologyId,
+      ontology: updatedOntology,
+    });
+
+    setSelectedPropertyId(propertyId);
+    setSelectedPropertyType("datatype");
+    setActiveTab("properties");
+    setShowWelcome(false);
+  };
+
+  const handleSelectProperty = (propertyId: string, type: "object" | "datatype") => {
+    setSelectedPropertyId(propertyId);
+    setSelectedPropertyType(type);
+    setSelectedClassId(null); // Clear class selection
+  };
+
+  const handleSelectClass = (classId: string) => {
+    setSelectedClassId(classId);
+    setSelectedPropertyId(null); // Clear property selection
+    setSelectedPropertyType(null);
+    setActiveTab("classes");
+  };
+
   const selectedClass = selectedClassId ? ontologyData.classes[selectedClassId] : null;
+  const selectedProperty = selectedPropertyId && selectedPropertyType
+    ? (selectedPropertyType === "object"
+        ? ontologyData.objectProperties[selectedPropertyId]
+        : ontologyData.datatypeProperties[selectedPropertyId])
+    : null;
 
   return (
     <Box h="calc(100vh - 140px)" display="flex" flexDirection="column">
@@ -143,17 +238,38 @@ export const OntologyEditor: React.FC<OntologyEditorProps> = ({
           </Box>
         ) : (
           <>
-            {/* Left Panel - Class Tree */}
-            <Box w="300px" borderRightWidth="1px" bg="gray.50" overflow="auto">
-              <ClassTree
-                classes={ontologyData.classes}
-                selectedClassId={selectedClassId}
-                onSelectClass={setSelectedClassId}
-                onCreateClass={handleCreateClass}
-              />
+            {/* Left Panel - Tabbed Navigation */}
+            <Box w="350px" borderRightWidth="1px" bg="gray.50" overflow="auto">
+              <Tabs.Root value={activeTab} onValueChange={(details) => setActiveTab(details.value as "classes" | "properties")}>
+                <Tabs.List>
+                  <Tabs.Trigger value="classes">Classes</Tabs.Trigger>
+                  <Tabs.Trigger value="properties">Properties</Tabs.Trigger>
+                </Tabs.List>
+
+                <Tabs.Content value="classes">
+                  <ClassTree
+                    classes={ontologyData.classes}
+                    selectedClassId={selectedClassId}
+                    onSelectClass={handleSelectClass}
+                    onCreateClass={handleCreateClass}
+                  />
+                </Tabs.Content>
+
+                <Tabs.Content value="properties">
+                  <PropertyTree
+                    objectProperties={ontologyData.objectProperties}
+                    datatypeProperties={ontologyData.datatypeProperties}
+                    selectedPropertyId={selectedPropertyId}
+                    selectedPropertyType={selectedPropertyType}
+                    onSelectProperty={handleSelectProperty}
+                    onCreateObjectProperty={handleCreateObjectProperty}
+                    onCreateDatatypeProperty={handleCreateDatatypeProperty}
+                  />
+                </Tabs.Content>
+              </Tabs.Root>
             </Box>
 
-            {/* Right Panel - Class Editor */}
+            {/* Right Panel - Editor */}
             <Box flex="1" overflow="auto">
               {selectedClass && selectedClassId ? (
                 <ClassEditor
@@ -162,15 +278,27 @@ export const OntologyEditor: React.FC<OntologyEditorProps> = ({
                   ontology={ontologyData}
                   onUpdateClass={handleUpdateClass}
                 />
+              ) : selectedProperty && selectedPropertyId && selectedPropertyType ? (
+                <Box p={6}>
+                  <Text fontSize="lg" fontWeight="semibold" mb={4}>
+                    {selectedPropertyType === "object" ? "Object" : "Datatype"} Property Editor
+                  </Text>
+                  <Text color="gray.600">
+                    Property editor coming in Phase 3.3
+                  </Text>
+                  <Text fontSize="sm" color="gray.500" mt={2}>
+                    Selected: {selectedProperty["rdfs:label"]?.[0]?.value || selectedPropertyId}
+                  </Text>
+                </Box>
               ) : (
                 <Box p={6} display="flex" alignItems="center" justifyContent="center" h="100%">
                   <VStack spacing={4}>
                     <Text color="gray.500" fontSize="lg">
-                      Select a class to edit
+                      Select a class or property to edit
                     </Text>
                     <Text color="gray.400" fontSize="sm" textAlign="center">
-                      Choose a class from the tree view on the left<br />
-                      or create a new class to get started
+                      Choose an item from the navigation panel<br />
+                      or create a new class or property to get started
                     </Text>
                   </VStack>
                 </Box>
