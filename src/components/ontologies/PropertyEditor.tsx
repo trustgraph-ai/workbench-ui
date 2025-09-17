@@ -13,7 +13,7 @@ import {
 } from "@chakra-ui/react";
 import SelectField from "../common/SelectField";
 import XSDDatatypeSelector from "./XSDDatatypeSelector";
-import { Link, Type, Save } from "lucide-react";
+import { Link, Type, Save, Trash2 } from "lucide-react";
 import { OWLObjectProperty, OWLDatatypeProperty, Ontology } from "../../state/ontologies";
 
 interface PropertyEditorProps {
@@ -22,6 +22,7 @@ interface PropertyEditorProps {
   propertyType: "object" | "datatype";
   ontology: Ontology;
   onUpdateProperty: (propertyId: string, updatedProperty: OWLObjectProperty | OWLDatatypeProperty, type: "object" | "datatype") => void;
+  onDeleteProperty: (propertyId: string, type: "object" | "datatype") => void;
 }
 
 export const PropertyEditor: React.FC<PropertyEditorProps> = ({
@@ -30,6 +31,7 @@ export const PropertyEditor: React.FC<PropertyEditorProps> = ({
   propertyType,
   ontology,
   onUpdateProperty,
+  onDeleteProperty,
 }) => {
   const [label, setLabel] = useState("");
   const [comment, setComment] = useState("");
@@ -122,20 +124,32 @@ export const PropertyEditor: React.FC<PropertyEditorProps> = ({
               </Text>
             </VStack>
           </HStack>
-          {hasChanges && (
-            <HStack>
-              <Badge colorPalette="orange" variant="subtle">
-                Unsaved changes
-              </Badge>
-              <Button size="sm" variant="ghost" onClick={handleReset}>
-                Reset
-              </Button>
-              <Button size="sm" colorPalette="primary" onClick={handleSave}>
-                <Save size={14} style={{ marginRight: "4px" }} />
-                Save
-              </Button>
-            </HStack>
-          )}
+          <HStack>
+            {hasChanges && (
+              <>
+                <Badge colorPalette="orange" variant="subtle">
+                  Unsaved changes
+                </Badge>
+                <Button size="sm" variant="ghost" onClick={handleReset}>
+                  Reset
+                </Button>
+                <Button size="sm" colorPalette="primary" onClick={handleSave}>
+                  <Save size={14} style={{ marginRight: "4px" }} />
+                  Save
+                </Button>
+              </>
+            )}
+            <Button
+              size="sm"
+              colorPalette="red"
+              variant="ghost"
+              onClick={() => onDeleteProperty(propertyId, propertyType)}
+              ml={hasChanges ? 2 : 0}
+            >
+              <Trash2 size={14} style={{ marginRight: "4px" }} />
+              Delete
+            </Button>
+          </HStack>
         </HStack>
       </Box>
 

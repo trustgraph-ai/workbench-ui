@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Box, VStack, HStack, Text, Button, Input, IconButton, Tabs } from "@chakra-ui/react";
-import { Plus, Link, Type } from "lucide-react";
+import { Plus, Link, Type, Trash2 } from "lucide-react";
 import { OWLObjectProperty, OWLDatatypeProperty } from "../../state/ontologies";
 
 interface PropertyTreeProps {
@@ -11,6 +11,7 @@ interface PropertyTreeProps {
   onSelectProperty: (propertyId: string, type: "object" | "datatype") => void;
   onCreateObjectProperty: (propertyName: string) => void;
   onCreateDatatypeProperty: (propertyName: string) => void;
+  onDeleteProperty: (propertyId: string, type: "object" | "datatype") => void;
 }
 
 export const PropertyTree: React.FC<PropertyTreeProps> = ({
@@ -21,6 +22,7 @@ export const PropertyTree: React.FC<PropertyTreeProps> = ({
   onSelectProperty,
   onCreateObjectProperty,
   onCreateDatatypeProperty,
+  onDeleteProperty,
 }) => {
   const [isCreating, setIsCreating] = useState<"object" | "datatype" | null>(null);
   const [newPropertyName, setNewPropertyName] = useState("");
@@ -73,6 +75,7 @@ export const PropertyTree: React.FC<PropertyTreeProps> = ({
           return (
             <HStack
               key={propertyId}
+              role="group"
               p={2}
               spacing={2}
               bg={isSelected ? "blue.100" : "transparent"}
@@ -96,6 +99,23 @@ export const PropertyTree: React.FC<PropertyTreeProps> = ({
                   </Text>
                 )}
               </VStack>
+
+              {/* Delete button - show on hover */}
+              <IconButton
+                size="xs"
+                variant="ghost"
+                colorPalette="red"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDeleteProperty(propertyId, type);
+                }}
+                opacity={0}
+                _groupHover={{ opacity: 1 }}
+                transition="opacity 0.2s"
+                aria-label={`Delete ${getPropertyLabel(property)}`}
+              >
+                <Trash2 size={12} />
+              </IconButton>
             </HStack>
           );
         })

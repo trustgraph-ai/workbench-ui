@@ -213,6 +213,61 @@ export const OntologyEditor: React.FC<OntologyEditorProps> = ({
     return dependencies;
   };
 
+  const handleDeleteProperty = (propertyId: string, type: "object" | "datatype") => {
+    if (!ontologyData) return;
+
+    const propertyToDelete = type === "object"
+      ? ontologyData.objectProperties[propertyId]
+      : ontologyData.datatypeProperties[propertyId];
+
+    if (!propertyToDelete) return;
+
+    const propertyName = propertyToDelete["rdfs:label"]?.[0]?.value || propertyId;
+    const propertyTypeName = type === "object" ? "object property" : "datatype property";
+
+    if (!confirm(`Are you sure you want to delete the ${propertyTypeName} "${propertyName}"?`)) {
+      return;
+    }
+
+    // Remove the property
+    const updatedOntology: Ontology = {
+      ...ontologyData,
+      ...(type === "object"
+        ? {
+            objectProperties: {
+              ...ontologyData.objectProperties,
+            },
+          }
+        : {
+            datatypeProperties: {
+              ...ontologyData.datatypeProperties,
+            },
+          }),
+      metadata: {
+        ...ontologyData.metadata,
+        modified: new Date().toISOString(),
+      },
+    };
+
+    // Remove the property from the appropriate collection
+    if (type === "object") {
+      delete updatedOntology.objectProperties[propertyId];
+    } else {
+      delete updatedOntology.datatypeProperties[propertyId];
+    }
+
+    updateOntology({
+      id: ontologyId,
+      ontology: updatedOntology,
+    });
+
+    // Clear selection if the deleted property was selected
+    if (selectedPropertyId === propertyId && selectedPropertyType === type) {
+      setSelectedPropertyId(null);
+      setSelectedPropertyType(null);
+    }
+  };
+
   const handleCreateObjectProperty = (propertyName: string) => {
     if (!ontologyData) return;
 
@@ -405,6 +460,7 @@ export const OntologyEditor: React.FC<OntologyEditorProps> = ({
                     onSelectProperty={handleSelectProperty}
                     onCreateObjectProperty={handleCreateObjectProperty}
                     onCreateDatatypeProperty={handleCreateDatatypeProperty}
+                    onDeleteProperty={handleDeleteProperty}
                   />
                 </Tabs.Content>
               </Tabs.Root>
@@ -427,6 +483,7 @@ export const OntologyEditor: React.FC<OntologyEditorProps> = ({
                   propertyType={selectedPropertyType}
                   ontology={ontologyData}
                   onUpdateProperty={handleUpdateProperty}
+                  onDeleteProperty={handleDeleteProperty}
                 />
               ) : (
                 <Box p={6} display="flex" alignItems="center" justifyContent="center" h="100%">
