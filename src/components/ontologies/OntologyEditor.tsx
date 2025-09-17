@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Box, VStack, HStack, Heading, Button, Text, Tabs } from "@chakra-ui/react";
-import { Save, ArrowLeft, CheckCircle2, AlertTriangle } from "lucide-react";
+import { Save, ArrowLeft, CheckCircle2, AlertTriangle, Download } from "lucide-react";
 import { useOntologies, Ontology, OWLClass, OWLObjectProperty, OWLDatatypeProperty } from "../../state/ontologies";
 import { ClassTree } from "./ClassTree";
 import { ClassEditor } from "./ClassEditor";
@@ -9,6 +9,7 @@ import { PropertyEditor } from "./PropertyEditor";
 import { WelcomePanel } from "./WelcomePanel";
 import { OntologyValidator, ValidationResult } from "./OntologyValidator";
 import { ValidationPanel } from "./ValidationPanel";
+import { ExportDialog } from "./ExportDialog";
 
 interface OntologyEditorProps {
   ontologyId: string;
@@ -27,6 +28,7 @@ export const OntologyEditor: React.FC<OntologyEditorProps> = ({
   const [showWelcome, setShowWelcome] = useState(false);
   const [validationResult, setValidationResult] = useState<ValidationResult | null>(null);
   const [showValidation, setShowValidation] = useState(false);
+  const [showExportDialog, setShowExportDialog] = useState(false);
 
   // Find the ontology data
   const ontologyData = ontologies.find((ont) => ont[0] === ontologyId)?.[1];
@@ -427,9 +429,9 @@ export const OntologyEditor: React.FC<OntologyEditorProps> = ({
     : null;
 
   return (
-    <Box h="calc(100vh - 140px)" display="flex" flexDirection="column">
+    <Box h="calc(100vh - 140px)" display="flex" flexDirection="column" bg="gray.25">
       {/* Header */}
-      <Box p={4} borderBottomWidth="1px" bg="gray.50">
+      <Box p={6} borderBottomWidth="1px" bg="white" boxShadow="sm">
         <HStack justify="space-between" align="center">
           <HStack>
             {onBack && (
@@ -457,6 +459,13 @@ export const OntologyEditor: React.FC<OntologyEditorProps> = ({
               ) : null}
               Validate
             </Button>
+            <Button
+              variant="outline"
+              onClick={() => setShowExportDialog(true)}
+            >
+              <Download size={16} style={{ marginRight: "8px" }} />
+              Export
+            </Button>
             <Button colorPalette="primary" onClick={handleSave}>
               <Save size={16} style={{ marginRight: "8px" }} />
               Save
@@ -467,7 +476,7 @@ export const OntologyEditor: React.FC<OntologyEditorProps> = ({
 
       {/* Validation Panel */}
       {showValidation && validationResult && (
-        <Box p={4} borderBottomWidth="1px">
+        <Box p={6} borderBottomWidth="1px" bg="white" boxShadow="sm">
           <ValidationPanel
             validationResult={validationResult}
             onNavigateToItem={handleNavigateToItem}
@@ -489,7 +498,7 @@ export const OntologyEditor: React.FC<OntologyEditorProps> = ({
         ) : (
           <>
             {/* Left Panel - Tabbed Navigation */}
-            <Box w="350px" borderRightWidth="1px" bg="gray.50" overflow="auto">
+            <Box w="380px" borderRightWidth="1px" bg="white" overflow="auto" boxShadow="sm">
               <Tabs.Root value={activeTab} onValueChange={(details) => setActiveTab(details.value as "classes" | "properties")}>
                 <Tabs.List>
                   <Tabs.Trigger value="classes">Classes</Tabs.Trigger>
@@ -523,7 +532,7 @@ export const OntologyEditor: React.FC<OntologyEditorProps> = ({
             </Box>
 
             {/* Right Panel - Editor */}
-            <Box flex="1" overflow="auto">
+            <Box flex="1" overflow="auto" bg="white">
               {selectedClass && selectedClassId ? (
                 <ClassEditor
                   classId={selectedClassId}
@@ -558,6 +567,13 @@ export const OntologyEditor: React.FC<OntologyEditorProps> = ({
           </>
         )}
       </Box>
+
+      {/* Export Dialog */}
+      <ExportDialog
+        ontology={ontologyData}
+        isOpen={showExportDialog}
+        onClose={() => setShowExportDialog(false)}
+      />
     </Box>
   );
 };

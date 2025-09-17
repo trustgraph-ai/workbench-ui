@@ -76,11 +76,11 @@ export const PropertyTree: React.FC<PropertyTreeProps> = ({
             <HStack
               key={propertyId}
               role="group"
-              p={2}
-              spacing={2}
-              bg={isSelected ? "blue.100" : "transparent"}
+              p={3}
+              spacing={3}
+              bg={isSelected ? "blue.50" : "transparent"}
               cursor="pointer"
-              _hover={{ bg: isSelected ? "blue.100" : "gray.100" }}
+              _hover={{ bg: isSelected ? "blue.100" : "gray.50" }}
               onClick={() => onSelectProperty(propertyId, type)}
             >
               {icon}
@@ -126,9 +126,9 @@ export const PropertyTree: React.FC<PropertyTreeProps> = ({
   return (
     <VStack align="stretch" spacing={0} h="100%">
       {/* Header */}
-      <Box p={3} borderBottomWidth="1px">
+      <Box p={4} borderBottomWidth="1px" bg="gray.50">
         <HStack justify="space-between">
-          <Text fontWeight="semibold" fontSize="sm" color="gray.700">
+          <Text fontWeight="semibold" fontSize="md" color="gray.800">
             Properties ({objectPropertyEntries.length + datatypePropertyEntries.length})
           </Text>
         </HStack>
@@ -151,7 +151,7 @@ export const PropertyTree: React.FC<PropertyTreeProps> = ({
           <Tabs.Content value="object">
             <VStack align="stretch" spacing={0}>
               {/* Create Object Property */}
-              <Box p={2} borderBottomWidth="1px">
+              <Box p={3} borderBottomWidth="1px" bg="gray.25">
                 {isCreating === "object" ? (
                   <VStack spacing={2}>
                     <Input
@@ -201,7 +201,7 @@ export const PropertyTree: React.FC<PropertyTreeProps> = ({
           <Tabs.Content value="datatype">
             <VStack align="stretch" spacing={0}>
               {/* Create Datatype Property */}
-              <Box p={2} borderBottomWidth="1px">
+              <Box p={3} borderBottomWidth="1px" bg="gray.25">
                 {isCreating === "datatype" ? (
                   <VStack spacing={2}>
                     <Input

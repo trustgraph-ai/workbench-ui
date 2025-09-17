@@ -186,14 +186,14 @@ export const ClassTree: React.FC<ClassTreeProps> = ({
       <Box key={classId}>
         <HStack
           role="group"
-          p={2}
-          pl={2 + depth * 16} // Indent based on depth
-          spacing={1}
+          p={3}
+          pl={3 + depth * 20} // Indent based on depth
+          spacing={3}
           bg={
             isDraggedOver
               ? "green.100"
               : isSelected
-                ? "blue.100"
+                ? "blue.50"
                 : isDragging
                   ? "gray.200"
                   : "transparent"
@@ -203,7 +203,7 @@ export const ClassTree: React.FC<ClassTreeProps> = ({
           borderStyle="dashed"
           cursor={isDragging ? "grabbing" : "grab"}
           opacity={isDragging ? 0.5 : 1}
-          _hover={{ bg: isDraggedOver ? "green.100" : isSelected ? "blue.100" : "gray.100" }}
+          _hover={{ bg: isDraggedOver ? "green.100" : isSelected ? "blue.100" : "gray.50" }}
           onClick={() => onSelectClass(classId)}
           draggable
           onDragStart={(e) => handleDragStart(e, classId)}
@@ -277,9 +277,9 @@ export const ClassTree: React.FC<ClassTreeProps> = ({
   return (
     <VStack align="stretch" spacing={0} h="100%">
       {/* Header */}
-      <Box p={3} borderBottomWidth="1px">
+      <Box p={4} borderBottomWidth="1px" bg="gray.50">
         <HStack justify="space-between">
-          <Text fontWeight="semibold" fontSize="sm" color="gray.700">
+          <Text fontWeight="semibold" fontSize="md" color="gray.800">
             Classes ({classEntries.length})
           </Text>
           <IconButton
@@ -306,7 +306,7 @@ export const ClassTree: React.FC<ClassTreeProps> = ({
         <VStack align="stretch" spacing={0}>
           {/* New Class Creation */}
           {isCreating && (
-            <Box p={2} bg="blue.50" borderBottomWidth="1px">
+            <Box p={3} bg="blue.25" borderBottomWidth="1px">
               <VStack spacing={2}>
                 <Input
                   size="sm"
