@@ -810,6 +810,178 @@ const validator = {
 - Constraint specification and validation
 - Import/export with real OWL files
 
+## UX Refactoring Plan
+
+### Problem Statement
+
+The current schema creation flow has significant duplication between the creation dialog and the main editor:
+- The creation dialog allows entering concepts/fields which duplicates the editor functionality
+- Users are forced to work in a constrained dialog when they could be using the full editor
+- The transition from creation to editing is jarring and requires mental context switching
+
+### Solution: Streamlined Creation Flow
+
+#### 1. Minimal Creation Dialog
+
+The "Create New Ontology" dialog should only capture the absolute minimum needed to create an ontology:
+
+```
++---------------------------------------------+
+| Create New Ontology                     [X] |
++---------------------------------------------+
+| Ontology ID:     [___________________]      |
+|                                              |
+| Name:            [___________________]      |
+|                                              |
+| Description:     [___________________]      |
+|                  [___________________]      |
+|                                              |
+| Namespace URI:   [http://example.org/____]  |
+|                                              |
+| ○ Start with blank ontology                 |
+| ○ Use AI assistant to bootstrap             |
+| ○ Import from file                          |
+|                                              |
+| [Cancel]              [Create & Open Editor] |
++---------------------------------------------+
+```
+
+**Key Features:**
+- Only 4 required fields: ID, name, description, namespace
+- Three clear starting options
+- Single action: "Create & Open Editor"
+- No concept/class creation in dialog
+
+#### 2. Main Ontology Editor Workflow
+
+After creation, immediately open the full ontology editor:
+
+```
++----------------------------------------------------------+
+| Ontology Editor: Domain Ontology                   [Save] |
++----------------------------------------------------------+
+| [Classes] [Properties] [Imports] [Prefixes] [Settings]   |
++----------------------------------------------------------+
+| Welcome Panel (shown for new ontologies):                |
+| ┌────────────────────────────────────────────────────┐  |
+| │ Getting Started with Your Ontology                  │  |
+| │                                                      │  |
+| │ Your ontology is ready! Here's what to do next:     │  |
+| │                                                      │  |
+| │ [+ Add First Class]  Start by defining object types │  |
+| │ [⚡ Use AI Assistant] Let AI suggest initial classes │  |
+| │ [📁 Import Classes]   Load from existing ontology   │  |
+| │                                                      │  |
+| │ [Dismiss]                        [Show me around 🎯] │  |
+| └────────────────────────────────────────────────────┘  |
++----------------------------------------------------------+
+```
+
+**Key Benefits:**
+- Full editor context immediately available
+- Welcome panel provides guidance without constraining
+- Can be dismissed to start working immediately
+- All tools accessible from the start
+
+#### 3. Editor-First Design Principles
+
+**Immediate Context:**
+- User lands in the full editor, not a dialog
+- All ontology management happens in one place
+- No artificial separation between creation and editing
+
+**Progressive Disclosure:**
+- Start simple with empty ontology
+- Reveal complexity as user adds elements
+- Contextual help and suggestions based on current state
+
+**Persistent Workspace:**
+- Auto-save drafts during editing
+- Can leave and return without losing work
+- Version history for rollback
+
+### Implementation Phases
+
+#### Phase 1: Simplify Creation Dialog (Week 1)
+- Remove all field/concept creation from dialog
+- Reduce to just core metadata fields
+- Add starting mode selection (blank/AI/import)
+
+#### Phase 2: Enhance Editor Landing (Week 2)
+- Create welcome panel component
+- Implement guided first steps
+- Add contextual empty states
+
+#### Phase 3: Improve Editor Navigation (Week 3)
+- Tab-based navigation for different aspects
+- Breadcrumb trail for deep navigation
+- Quick access toolbar for common actions
+
+#### Phase 4: AI Integration Points (Week 4)
+- AI assistant panel (collapsible)
+- Inline suggestions in editors
+- Bulk generation workflows
+
+### Detailed Component Changes
+
+#### CreateOntologyDialog Component
+
+```typescript
+// Simplified creation dialog
+interface CreateOntologyDialogProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onCreated: (ontologyId: string) => void; // Callback to open editor
+}
+
+// Only captures:
+// - id: string (kebab-case, unique)
+// - name: string (display name)
+// - description: string (brief description)
+// - namespace: string (base URI)
+// - startMode: 'blank' | 'ai-assisted' | 'import'
+```
+
+#### OntologyEditor Component
+
+```typescript
+// Full-featured editor
+interface OntologyEditorProps {
+  ontologyId: string;
+  showWelcome?: boolean; // Show welcome panel for new ontologies
+}
+
+// Features:
+// - Multi-tab interface (Classes, Properties, etc.)
+// - Split-pane layout (tree + details)
+// - Integrated AI assistant (optional)
+// - Real-time validation
+// - Import/Export toolbar
+```
+
+### Benefits of This Approach
+
+1. **Reduced Cognitive Load**: Users only think about metadata during creation
+2. **Faster Time to Value**: Get into the editor immediately
+3. **Consistent Context**: All ontology work happens in the editor
+4. **Better Discoverability**: Full UI reveals all capabilities
+5. **Natural Workflow**: Create → Edit → Refine (no back-and-forth)
+
+### Migration from Current System
+
+1. **Preserve Existing Schemas**: Convert to OWL format behind the scenes
+2. **Dual Mode Support**: Keep old schema editor while building new ontology editor
+3. **Gradual Transition**: Users can opt-in to new editor
+4. **Data Migration Tools**: Automated conversion utilities
+
+### Success Metrics
+
+- Time from "Create" click to first class/property added
+- Number of back-navigations during creation flow
+- User feedback on creation experience
+- Completion rate of ontology creation
+- Feature discovery and usage
+
 ### Migration Plan
 
 **Phase 1: Core UI (Weeks 1-4)**
