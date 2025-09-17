@@ -287,6 +287,7 @@ export const OntologyEditor: React.FC<OntologyEditorProps> = ({
                     selectedClassId={selectedClassId}
                     onSelectClass={handleSelectClass}
                     onCreateClass={handleCreateClass}
+                    onUpdateClass={handleUpdateClass}
                   />
                 </Tabs.Content>
 

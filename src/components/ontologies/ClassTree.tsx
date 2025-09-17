@@ -8,6 +8,7 @@ interface ClassTreeProps {
   selectedClassId?: string | null;
   onSelectClass: (classId: string) => void;
   onCreateClass: (className: string) => void;
+  onUpdateClass: (classId: string, updatedClass: OWLClass) => void;
 }
 
 export const ClassTree: React.FC<ClassTreeProps> = ({
@@ -15,10 +16,13 @@ export const ClassTree: React.FC<ClassTreeProps> = ({
   selectedClassId,
   onSelectClass,
   onCreateClass,
+  onUpdateClass,
 }) => {
   const [isCreating, setIsCreating] = useState(false);
   const [newClassName, setNewClassName] = useState("");
   const [expandedClasses, setExpandedClasses] = useState<Set<string>>(new Set());
+  const [draggedClassId, setDraggedClassId] = useState<string | null>(null);
+  const [dragOverClassId, setDragOverClassId] = useState<string | null>(null);
 
   const classEntries = Object.entries(classes);
 
@@ -77,6 +81,94 @@ export const ClassTree: React.FC<ClassTreeProps> = ({
     return parts[parts.length - 1] || "Unnamed Class";
   };
 
+  // Drag and drop handlers
+  const handleDragStart = (e: React.DragEvent, classId: string) => {
+    setDraggedClassId(classId);
+    e.dataTransfer.setData("text/plain", classId);
+    e.dataTransfer.effectAllowed = "move";
+  };
+
+  const handleDragOver = (e: React.DragEvent, targetClassId: string) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+    setDragOverClassId(targetClassId);
+  };
+
+  const handleDragLeave = () => {
+    setDragOverClassId(null);
+  };
+
+  const handleDrop = (e: React.DragEvent, targetClassId: string) => {
+    e.preventDefault();
+    setDragOverClassId(null);
+
+    const sourceClassId = e.dataTransfer.getData("text/plain");
+
+    if (sourceClassId && sourceClassId !== targetClassId && draggedClassId) {
+      // Check for circular dependency
+      if (isCircularDependency(sourceClassId, targetClassId)) {
+        alert("Cannot create circular dependency: this would make a class a subclass of itself.");
+        setDraggedClassId(null);
+        return;
+      }
+
+      // Update the dragged class to have the target as its parent
+      const sourceClass = classes[sourceClassId];
+      if (sourceClass) {
+        const updatedClass: OWLClass = {
+          ...sourceClass,
+          "rdfs:subClassOf": targetClassId,
+        };
+        onUpdateClass(sourceClassId, updatedClass);
+      }
+    }
+
+    setDraggedClassId(null);
+  };
+
+  const handleDropToRoot = (e: React.DragEvent) => {
+    e.preventDefault();
+    setDragOverClassId(null);
+
+    const sourceClassId = e.dataTransfer.getData("text/plain");
+
+    if (sourceClassId && draggedClassId) {
+      // Make the class a root class (no parent)
+      const sourceClass = classes[sourceClassId];
+      if (sourceClass) {
+        const updatedClass: OWLClass = {
+          ...sourceClass,
+          "rdfs:subClassOf": undefined,
+        };
+        onUpdateClass(sourceClassId, updatedClass);
+      }
+    }
+
+    setDraggedClassId(null);
+  };
+
+  // Check if making sourceClassId a child of targetClassId would create a circular dependency
+  const isCircularDependency = (sourceClassId: string, targetClassId: string): boolean => {
+    const visited = new Set<string>();
+
+    const checkPath = (currentId: string): boolean => {
+      if (currentId === sourceClassId) return true;
+      if (visited.has(currentId)) return false;
+
+      visited.add(currentId);
+      const currentClass = classes[currentId];
+      const parentId = currentClass?.["rdfs:subClassOf"];
+
+      if (parentId && parentId.trim()) {
+        return checkPath(parentId);
+      }
+
+      return false;
+    };
+
+    return checkPath(targetClassId);
+  };
+
   // Recursive component to render class hierarchy
   const renderClassNode = (classId: string, depth: number = 0): React.ReactNode => {
     const owlClass = classes[classId];
@@ -85,6 +177,8 @@ export const ClassTree: React.FC<ClassTreeProps> = ({
     const isSelected = classId === selectedClassId;
     const isExpanded = expandedClasses.has(classId);
     const hasSubclasses = children[classId] && children[classId].length > 0;
+    const isDraggedOver = dragOverClassId === classId;
+    const isDragging = draggedClassId === classId;
 
     return (
       <Box key={classId}>
@@ -92,10 +186,27 @@ export const ClassTree: React.FC<ClassTreeProps> = ({
           p={2}
           pl={2 + depth * 16} // Indent based on depth
           spacing={1}
-          bg={isSelected ? "blue.100" : "transparent"}
-          cursor="pointer"
-          _hover={{ bg: isSelected ? "blue.100" : "gray.100" }}
+          bg={
+            isDraggedOver
+              ? "green.100"
+              : isSelected
+                ? "blue.100"
+                : isDragging
+                  ? "gray.200"
+                  : "transparent"
+          }
+          borderWidth={isDraggedOver ? "2px" : "0"}
+          borderColor="green.400"
+          borderStyle="dashed"
+          cursor={isDragging ? "grabbing" : "grab"}
+          opacity={isDragging ? 0.5 : 1}
+          _hover={{ bg: isDraggedOver ? "green.100" : isSelected ? "blue.100" : "gray.100" }}
           onClick={() => onSelectClass(classId)}
+          draggable
+          onDragStart={(e) => handleDragStart(e, classId)}
+          onDragOver={(e) => handleDragOver(e, classId)}
+          onDragLeave={handleDragLeave}
+          onDrop={(e) => handleDrop(e, classId)}
         >
           {hasSubclasses ? (
             <IconButton
@@ -161,7 +272,15 @@ export const ClassTree: React.FC<ClassTreeProps> = ({
       </Box>
 
       {/* Class List */}
-      <Box flex="1" overflow="auto">
+      <Box
+        flex="1"
+        overflow="auto"
+        onDragOver={(e) => {
+          e.preventDefault();
+          e.dataTransfer.dropEffect = "move";
+        }}
+        onDrop={handleDropToRoot}
+      >
         <VStack align="stretch" spacing={0}>
           {/* New Class Creation */}
           {isCreating && (
@@ -187,6 +306,25 @@ export const ClassTree: React.FC<ClassTreeProps> = ({
                   </Button>
                 </HStack>
               </VStack>
+            </Box>
+          )}
+
+          {/* Drop zone indicator when dragging */}
+          {draggedClassId && (
+            <Box
+              p={3}
+              mx={2}
+              mb={2}
+              borderWidth="2px"
+              borderStyle="dashed"
+              borderColor="green.400"
+              bg="green.50"
+              borderRadius="md"
+              textAlign="center"
+            >
+              <Text fontSize="xs" color="green.600" fontWeight="medium">
+                Drop here to make "{classes[draggedClassId] && getClassLabel(classes[draggedClassId])}" a top-level class
+              </Text>
             </Box>
           )}
 
