@@ -12,6 +12,7 @@ import {
   Badge,
 } from "@chakra-ui/react";
 import SelectField from "../common/SelectField";
+import XSDDatatypeSelector from "./XSDDatatypeSelector";
 import { Link, Type, Save } from "lucide-react";
 import { OWLObjectProperty, OWLDatatypeProperty, Ontology } from "../../state/ontologies";
 
@@ -100,16 +101,6 @@ export const PropertyEditor: React.FC<PropertyEditorProps> = ({
     }))
   ];
 
-  // XSD datatype options for datatype properties
-  const datatypeOptions = [
-    { value: "xsd:string", label: "String (xsd:string)" },
-    { value: "xsd:int", label: "Integer (xsd:int)" },
-    { value: "xsd:double", label: "Double (xsd:double)" },
-    { value: "xsd:boolean", label: "Boolean (xsd:boolean)" },
-    { value: "xsd:date", label: "Date (xsd:date)" },
-    { value: "xsd:dateTime", label: "DateTime (xsd:dateTime)" },
-    { value: "xsd:anyURI", label: "URI (xsd:anyURI)" },
-  ];
 
   return (
     <Box h="100%" display="flex" flexDirection="column">
@@ -261,12 +252,20 @@ export const PropertyEditor: React.FC<PropertyEditorProps> = ({
             </VStack>
 
             <VStack align="stretch" spacing={1}>
-              <SelectField
-                label={`Range (rdfs:range)`}
-                items={propertyType === "object" ? classOptions : datatypeOptions}
-                value={range}
-                onValueChange={setRange}
-              />
+              {propertyType === "object" ? (
+                <SelectField
+                  label="Range (rdfs:range)"
+                  items={classOptions}
+                  value={range}
+                  onValueChange={setRange}
+                />
+              ) : (
+                <XSDDatatypeSelector
+                  label="Range (rdfs:range)"
+                  value={range}
+                  onValueChange={setRange}
+                />
+              )}
               <Text fontSize="xs" color="gray.500" mt={1}>
                 {propertyType === "object"
                   ? "The class that this property points to."
