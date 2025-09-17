@@ -211,28 +211,19 @@ const XSDDatatypeSelector: React.FC<XSDDatatypeSelectorProps> = ({
     return groups;
   }, []);
 
-  // Flatten for collection while preserving grouping info
+  // Create simple flat list for collection (headers will be handled in rendering)
   const flattenedItems = useMemo(() => {
     const items: any[] = [];
-    Object.entries(groupedDatatypes).forEach(([category, datatypes]) => {
-      // Add category header
+    XSD_DATATYPES.forEach((datatype) => {
       items.push({
-        value: `__header__${category}`,
-        label: category,
-        isHeader: true,
-      });
-      // Add datatypes in this category
-      datatypes.forEach((datatype) => {
-        items.push({
-          value: datatype.value,
-          label: datatype.label,
-          description: datatype.description,
-          isHeader: false,
-        });
+        value: datatype.value,
+        label: datatype.label,
+        description: datatype.description,
+        category: datatype.category,
       });
     });
     return items;
-  }, [groupedDatatypes]);
+  }, []);
 
   const collection = useMemo(
     () => createListCollection({ items: flattenedItems }),
@@ -264,10 +255,9 @@ const XSDDatatypeSelector: React.FC<XSDDatatypeSelectorProps> = ({
         <Portal container={contentRef}>
           <Select.Positioner>
             <Select.Content maxH="300px" overflowY="auto">
-              {flattenedItems.map((item) => (
-                item.isHeader ? (
+              {Object.entries(groupedDatatypes).map(([category, datatypes]) => (
+                <React.Fragment key={category}>
                   <Text
-                    key={item.value}
                     px={3}
                     py={2}
                     fontSize="xs"
@@ -276,28 +266,28 @@ const XSDDatatypeSelector: React.FC<XSDDatatypeSelectorProps> = ({
                     bg="gray.100"
                     borderBottomWidth="1px"
                   >
-                    {item.label}
+                    {category}
                   </Text>
-                ) : (
-                  <Select.Item
-                    item={item.value}
-                    key={item.value}
-                    disabled={item.value.startsWith("__header__")}
-                  >
-                    <Stack gap={1}>
-                      <Text fontWeight="medium">{item.label}</Text>
-                      {item.description && (
-                        <Text fontSize="xs" color="gray.500">
-                          {item.description}
+                  {datatypes.map((datatype) => (
+                    <Select.Item
+                      item={datatype.value}
+                      key={datatype.value}
+                    >
+                      <Stack gap={1}>
+                        <Text fontWeight="medium">{datatype.label}</Text>
+                        {datatype.description && (
+                          <Text fontSize="xs" color="gray.500">
+                            {datatype.description}
+                          </Text>
+                        )}
+                        <Text fontSize="xs" color="gray.400" fontFamily="mono">
+                          {datatype.value}
                         </Text>
-                      )}
-                      <Text fontSize="xs" color="gray.400" fontFamily="mono">
-                        {item.value}
-                      </Text>
-                    </Stack>
-                    <Select.ItemIndicator />
-                  </Select.Item>
-                )
+                      </Stack>
+                      <Select.ItemIndicator />
+                    </Select.Item>
+                  ))}
+                </React.Fragment>
               ))}
             </Select.Content>
           </Select.Positioner>
