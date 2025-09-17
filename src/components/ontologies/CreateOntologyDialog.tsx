@@ -9,7 +9,7 @@ import {
   Input,
   Textarea,
   Field,
-  RadioGroup,
+  Text,
   RadioCard,
 } from "@chakra-ui/react";
 import { useOntologies, Ontology } from "../../state/ontologies";
@@ -173,34 +173,48 @@ export const CreateOntologyDialog: React.FC<CreateOntologyDialogProps> = ({
                 </Field>
 
                 <Field label="How would you like to start?">
-                  <RadioGroup value={startMode} onValueChange={(e) => setStartMode(e.value as StartMode)}>
+                  <RadioCard.Root value={startMode} onValueChange={(details) => setStartMode(details.value as StartMode)}>
                     <VStack gap={2} align="stretch">
-                      <RadioCard value="blank">
-                        <VStack align="start" gap={1}>
-                          <strong>Start with blank ontology</strong>
-                          <span style={{ fontSize: "14px", color: "gray" }}>
-                            Create classes and properties manually
-                          </span>
-                        </VStack>
-                      </RadioCard>
-                      <RadioCard value="ai-assisted" disabled>
-                        <VStack align="start" gap={1}>
-                          <strong>Use AI assistant to bootstrap</strong>
-                          <span style={{ fontSize: "14px", color: "gray" }}>
-                            Coming in Phase 7 - Let AI suggest initial structure
-                          </span>
-                        </VStack>
-                      </RadioCard>
-                      <RadioCard value="import" disabled>
-                        <VStack align="start" gap={1}>
-                          <strong>Import from file</strong>
-                          <span style={{ fontSize: "14px", color: "gray" }}>
-                            Coming in Phase 6 - Load existing OWL/RDF ontology
-                          </span>
-                        </VStack>
-                      </RadioCard>
+                      <RadioCard.Item value="blank">
+                        <RadioCard.ItemHiddenInput />
+                        <RadioCard.ItemControl>
+                          <RadioCard.ItemContent>
+                            <RadioCard.ItemText>Start with blank ontology</RadioCard.ItemText>
+                            <RadioCard.ItemDescription>
+                              Create classes and properties manually
+                            </RadioCard.ItemDescription>
+                          </RadioCard.ItemContent>
+                          <RadioCard.ItemIndicator />
+                        </RadioCard.ItemControl>
+                      </RadioCard.Item>
+
+                      <RadioCard.Item value="ai-assisted" disabled>
+                        <RadioCard.ItemHiddenInput />
+                        <RadioCard.ItemControl>
+                          <RadioCard.ItemContent>
+                            <RadioCard.ItemText>Use AI assistant to bootstrap</RadioCard.ItemText>
+                            <RadioCard.ItemDescription>
+                              Coming in Phase 7 - Let AI suggest initial structure
+                            </RadioCard.ItemDescription>
+                          </RadioCard.ItemContent>
+                          <RadioCard.ItemIndicator />
+                        </RadioCard.ItemControl>
+                      </RadioCard.Item>
+
+                      <RadioCard.Item value="import" disabled>
+                        <RadioCard.ItemHiddenInput />
+                        <RadioCard.ItemControl>
+                          <RadioCard.ItemContent>
+                            <RadioCard.ItemText>Import from file</RadioCard.ItemText>
+                            <RadioCard.ItemDescription>
+                              Coming in Phase 6 - Load existing OWL/RDF ontology
+                            </RadioCard.ItemDescription>
+                          </RadioCard.ItemContent>
+                          <RadioCard.ItemIndicator />
+                        </RadioCard.ItemControl>
+                      </RadioCard.Item>
                     </VStack>
-                  </RadioGroup>
+                  </RadioCard.Root>
                 </Field>
               </VStack>
             </Dialog.Body>

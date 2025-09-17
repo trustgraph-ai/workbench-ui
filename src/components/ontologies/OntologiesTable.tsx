@@ -40,8 +40,10 @@ export const OntologiesTable: React.FC<OntologiesTableProps> = ({ onEditOntology
   };
 
   const handleCreateOntology = (ontologyId: string) => {
+    setIsCreateDialogOpen(false);
     if (onEditOntology) {
-      onEditOntology(ontologyId);
+      // Small delay to allow the dialog to close first
+      setTimeout(() => onEditOntology(ontologyId), 100);
     }
   };
 

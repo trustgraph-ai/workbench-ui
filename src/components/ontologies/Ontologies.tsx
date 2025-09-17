@@ -1,13 +1,28 @@
-import React from "react";
-import { Box } from "@chakra-ui/react";
+import React, { useState } from "react";
+import { Box, Button, HStack } from "@chakra-ui/react";
+import { ArrowLeft } from "lucide-react";
 import { OntologiesTable } from "./OntologiesTable";
+import { OntologyEditor } from "./OntologyEditor";
 
 export const Ontologies: React.FC = () => {
+  const [selectedOntologyId, setSelectedOntologyId] = useState<string | null>(null);
+
   const handleEditOntology = (ontologyId: string) => {
-    // TODO: Navigate to ontology editor in Phase 2
-    console.log(`Edit ontology: ${ontologyId}`);
-    alert(`Ontology editor will be implemented in Phase 2.\nOntology ID: ${ontologyId}`);
+    setSelectedOntologyId(ontologyId);
   };
+
+  const handleBackToList = () => {
+    setSelectedOntologyId(null);
+  };
+
+  if (selectedOntologyId) {
+    return (
+      <OntologyEditor
+        ontologyId={selectedOntologyId}
+        onBack={handleBackToList}
+      />
+    );
+  }
 
   return (
     <Box p={6}>
