@@ -109,6 +109,110 @@ export const OntologyEditor: React.FC<OntologyEditorProps> = ({
     });
   };
 
+  const handleDeleteClass = (classId: string) => {
+    if (!ontologyData) return;
+
+    const classToDelete = ontologyData.classes[classId];
+    if (!classToDelete) return;
+
+    // Check for dependencies
+    const dependencies = getClassDependencies(classId);
+
+    if (dependencies.length > 0) {
+      const dependencyList = dependencies.map(dep => {
+        const depClass = ontologyData.classes[dep];
+        return depClass?.["rdfs:label"]?.[0]?.value || dep;
+      }).join(", ");
+
+      if (!confirm(
+        `This class is referenced by other classes: ${dependencyList}. ` +
+        `Deleting it will remove these relationships. Continue?`
+      )) {
+        return;
+      }
+    } else {
+      const className = classToDelete["rdfs:label"]?.[0]?.value || classId;
+      if (!confirm(`Are you sure you want to delete the class "${className}"?`)) {
+        return;
+      }
+    }
+
+    // Remove the class and clean up references
+    const updatedClasses = { ...ontologyData.classes };
+    delete updatedClasses[classId];
+
+    // Remove references to this class from subClassOf relationships
+    Object.keys(updatedClasses).forEach(otherClassId => {
+      const otherClass = updatedClasses[otherClassId];
+      if (otherClass["rdfs:subClassOf"] === classId) {
+        updatedClasses[otherClassId] = {
+          ...otherClass,
+          "rdfs:subClassOf": undefined,
+        };
+      }
+    });
+
+    // Remove references from properties' domain/range
+    const updatedObjectProperties = { ...ontologyData.objectProperties };
+    Object.keys(updatedObjectProperties).forEach(propId => {
+      const prop = updatedObjectProperties[propId];
+      let updated = false;
+
+      if (prop["rdfs:domain"] === classId) {
+        updatedObjectProperties[propId] = { ...prop, "rdfs:domain": undefined };
+        updated = true;
+      }
+      if (prop["rdfs:range"] === classId) {
+        updatedObjectProperties[propId] = { ...prop, "rdfs:range": undefined };
+        updated = true;
+      }
+    });
+
+    const updatedDatatypeProperties = { ...ontologyData.datatypeProperties };
+    Object.keys(updatedDatatypeProperties).forEach(propId => {
+      const prop = updatedDatatypeProperties[propId];
+      if (prop["rdfs:domain"] === classId) {
+        updatedDatatypeProperties[propId] = { ...prop, "rdfs:domain": undefined };
+      }
+    });
+
+    const updatedOntology: Ontology = {
+      ...ontologyData,
+      classes: updatedClasses,
+      objectProperties: updatedObjectProperties,
+      datatypeProperties: updatedDatatypeProperties,
+      metadata: {
+        ...ontologyData.metadata,
+        modified: new Date().toISOString(),
+      },
+    };
+
+    updateOntology({
+      id: ontologyId,
+      ontology: updatedOntology,
+    });
+
+    // Clear selection if the deleted class was selected
+    if (selectedClassId === classId) {
+      setSelectedClassId(null);
+    }
+  };
+
+  const getClassDependencies = (classId: string): string[] => {
+    if (!ontologyData) return [];
+
+    const dependencies: string[] = [];
+
+    // Check subclass relationships
+    Object.entries(ontologyData.classes).forEach(([otherClassId, otherClass]) => {
+      if (otherClass["rdfs:subClassOf"] === classId) {
+        dependencies.push(otherClassId);
+      }
+    });
+
+    return dependencies;
+  };
+
   const handleCreateObjectProperty = (propertyName: string) => {
     if (!ontologyData) return;
 
@@ -288,6 +392,7 @@ export const OntologyEditor: React.FC<OntologyEditorProps> = ({
                     onSelectClass={handleSelectClass}
                     onCreateClass={handleCreateClass}
                     onUpdateClass={handleUpdateClass}
+                    onDeleteClass={handleDeleteClass}
                   />
                 </Tabs.Content>
 
@@ -313,6 +418,7 @@ export const OntologyEditor: React.FC<OntologyEditorProps> = ({
                   owlClass={selectedClass}
                   ontology={ontologyData}
                   onUpdateClass={handleUpdateClass}
+                  onDeleteClass={handleDeleteClass}
                 />
               ) : selectedProperty && selectedPropertyId && selectedPropertyType ? (
                 <PropertyEditor

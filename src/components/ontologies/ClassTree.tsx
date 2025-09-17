@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Box, VStack, HStack, Text, Button, Input, IconButton } from "@chakra-ui/react";
-import { Plus, ChevronRight, ChevronDown, Hash } from "lucide-react";
+import { Plus, ChevronRight, ChevronDown, Hash, Trash2, MoreVertical } from "lucide-react";
 import { OWLClass } from "../../state/ontologies";
 
 interface ClassTreeProps {
@@ -9,6 +9,7 @@ interface ClassTreeProps {
   onSelectClass: (classId: string) => void;
   onCreateClass: (className: string) => void;
   onUpdateClass: (classId: string, updatedClass: OWLClass) => void;
+  onDeleteClass: (classId: string) => void;
 }
 
 export const ClassTree: React.FC<ClassTreeProps> = ({
@@ -17,6 +18,7 @@ export const ClassTree: React.FC<ClassTreeProps> = ({
   onSelectClass,
   onCreateClass,
   onUpdateClass,
+  onDeleteClass,
 }) => {
   const [isCreating, setIsCreating] = useState(false);
   const [newClassName, setNewClassName] = useState("");
@@ -183,6 +185,7 @@ export const ClassTree: React.FC<ClassTreeProps> = ({
     return (
       <Box key={classId}>
         <HStack
+          role="group"
           p={2}
           pl={2 + depth * 16} // Indent based on depth
           spacing={1}
@@ -240,6 +243,25 @@ export const ClassTree: React.FC<ClassTreeProps> = ({
               </Text>
             )}
           </VStack>
+
+          {/* Delete button - only show on hover and not while dragging */}
+          {!isDragging && (
+            <IconButton
+              size="xs"
+              variant="ghost"
+              colorPalette="red"
+              onClick={(e) => {
+                e.stopPropagation();
+                onDeleteClass(classId);
+              }}
+              opacity={0}
+              _groupHover={{ opacity: 1 }}
+              transition="opacity 0.2s"
+              aria-label={`Delete ${getClassLabel(owlClass)}`}
+            >
+              <Trash2 size={12} />
+            </IconButton>
+          )}
         </HStack>
 
         {/* Render subclasses when expanded */}

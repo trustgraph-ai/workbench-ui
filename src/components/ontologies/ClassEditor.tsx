@@ -12,7 +12,7 @@ import {
   Badge,
 } from "@chakra-ui/react";
 import SelectField from "../common/SelectField";
-import { Hash, Save } from "lucide-react";
+import { Hash, Save, Trash2 } from "lucide-react";
 import { OWLClass, Ontology } from "../../state/ontologies";
 
 interface ClassEditorProps {
@@ -20,6 +20,7 @@ interface ClassEditorProps {
   owlClass: OWLClass;
   ontology: Ontology;
   onUpdateClass: (classId: string, updatedClass: OWLClass) => void;
+  onDeleteClass: (classId: string) => void;
 }
 
 export const ClassEditor: React.FC<ClassEditorProps> = ({
@@ -27,6 +28,7 @@ export const ClassEditor: React.FC<ClassEditorProps> = ({
   owlClass,
   ontology,
   onUpdateClass,
+  onDeleteClass,
 }) => {
   const [label, setLabel] = useState("");
   const [comment, setComment] = useState("");
@@ -97,20 +99,32 @@ export const ClassEditor: React.FC<ClassEditorProps> = ({
               </Text>
             </VStack>
           </HStack>
-          {hasChanges && (
-            <HStack>
-              <Badge colorPalette="orange" variant="subtle">
-                Unsaved changes
-              </Badge>
-              <Button size="sm" variant="ghost" onClick={handleReset}>
-                Reset
-              </Button>
-              <Button size="sm" colorPalette="primary" onClick={handleSave}>
-                <Save size={14} style={{ marginRight: "4px" }} />
-                Save
-              </Button>
-            </HStack>
-          )}
+          <HStack>
+            {hasChanges && (
+              <>
+                <Badge colorPalette="orange" variant="subtle">
+                  Unsaved changes
+                </Badge>
+                <Button size="sm" variant="ghost" onClick={handleReset}>
+                  Reset
+                </Button>
+                <Button size="sm" colorPalette="primary" onClick={handleSave}>
+                  <Save size={14} style={{ marginRight: "4px" }} />
+                  Save
+                </Button>
+              </>
+            )}
+            <Button
+              size="sm"
+              colorPalette="red"
+              variant="ghost"
+              onClick={() => onDeleteClass(classId)}
+              ml={hasChanges ? 2 : 0}
+            >
+              <Trash2 size={14} style={{ marginRight: "4px" }} />
+              Delete
+            </Button>
+          </HStack>
         </HStack>
       </Box>
 
