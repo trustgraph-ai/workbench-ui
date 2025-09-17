@@ -123,7 +123,11 @@ export const ClassEditor: React.FC<ClassEditorProps> = ({
               Basic Information
             </Text>
 
-            <Field label="Label" required>
+            <Field.Root required>
+              <Field.Label>
+                Label
+                <Field.RequiredIndicator />
+              </Field.Label>
               <Input
                 value={label}
                 onChange={(e) => setLabel(e.target.value)}
@@ -132,9 +136,10 @@ export const ClassEditor: React.FC<ClassEditorProps> = ({
               <Text fontSize="xs" color="gray.500" mt={1}>
                 The preferred human-readable name for this class
               </Text>
-            </Field>
+            </Field.Root>
 
-            <Field label="Description">
+            <Field.Root>
+              <Field.Label>Description</Field.Label>
               <Textarea
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
@@ -144,7 +149,7 @@ export const ClassEditor: React.FC<ClassEditorProps> = ({
               <Text fontSize="xs" color="gray.500" mt={1}>
                 A brief description explaining the purpose and scope of this class
               </Text>
-            </Field>
+            </Field.Root>
           </VStack>
 
           <Separator />
@@ -155,7 +160,8 @@ export const ClassEditor: React.FC<ClassEditorProps> = ({
               Technical Details
             </Text>
 
-            <Field label="URI">
+            <Field.Root>
+              <Field.Label>URI</Field.Label>
               <Input
                 value={owlClass.uri}
                 isReadOnly
@@ -167,9 +173,10 @@ export const ClassEditor: React.FC<ClassEditorProps> = ({
               <Text fontSize="xs" color="gray.500" mt={1}>
                 Unique identifier for this class (read-only)
               </Text>
-            </Field>
+            </Field.Root>
 
-            <Field label="Type">
+            <Field.Root>
+              <Field.Label>Type</Field.Label>
               <Input
                 value="owl:Class"
                 isReadOnly
@@ -181,9 +188,10 @@ export const ClassEditor: React.FC<ClassEditorProps> = ({
               <Text fontSize="xs" color="gray.500" mt={1}>
                 OWL class type (read-only)
               </Text>
-            </Field>
+            </Field.Root>
 
-            <Field label="Class ID">
+            <Field.Root>
+              <Field.Label>Class ID</Field.Label>
               <Input
                 value={classId}
                 isReadOnly
@@ -195,7 +203,7 @@ export const ClassEditor: React.FC<ClassEditorProps> = ({
               <Text fontSize="xs" color="gray.500" mt={1}>
                 Internal identifier used in the ontology structure (read-only)
               </Text>
-            </Field>
+            </Field.Root>
           </VStack>
 
           <Separator />
