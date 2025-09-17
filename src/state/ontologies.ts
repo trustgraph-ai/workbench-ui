@@ -12,32 +12,35 @@ export interface OntologyMetadata {
   modified: string;
   creator: string;
   namespace: string;
+  imports?: string[];
 }
 
-export interface OntologyConcept {
-  id: string;
-  prefLabel: string;
-  altLabel?: string[];
-  definition?: string;
-  scopeNote?: string;
-  example?: string[];
-  notation?: string;
-  broader?: string | null;
-  narrower?: string[];
-  related?: string[];
-  topConcept?: boolean;
-}
-
-export interface OntologyScheme {
+export interface OWLClass {
   uri: string;
-  prefLabel: string;
-  hasTopConcept: string[];
+  type: "owl:Class";
+  "rdfs:label"?: Array<{ value: string; lang?: string }>;
+  "rdfs:comment"?: string;
+  "rdfs:subClassOf"?: string;
+  "owl:disjointWith"?: string[];
+  "dcterms:identifier"?: string;
+}
+
+export interface OWLProperty {
+  uri: string;
+  type: "owl:ObjectProperty" | "owl:DatatypeProperty";
+  "rdfs:label"?: Array<{ value: string; lang?: string }>;
+  "rdfs:domain"?: string;
+  "rdfs:range"?: string;
+  "owl:inverseOf"?: string;
+  "rdfs:comment"?: string;
+  "owl:functionalProperty"?: boolean;
 }
 
 export interface Ontology {
   metadata: OntologyMetadata;
-  concepts: Record<string, OntologyConcept>;
-  scheme: OntologyScheme;
+  classes: Record<string, OWLClass>;
+  objectProperties: Record<string, OWLProperty>;
+  datatypeProperties: Record<string, OWLProperty>;
 }
 
 export const useOntologies = () => {
