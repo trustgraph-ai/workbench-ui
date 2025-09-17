@@ -475,31 +475,33 @@ Following the established pattern using Tanstack Table:
 **Table Column Definition:**
 
 ```typescript
-// src/model/taxonomies-table.tsx
+// src/model/ontologies-table.tsx
 import { createColumnHelper } from "@tanstack/react-table";
 
-export type TaxonomyTableRow = [string, {
+export type OntologyTableRow = [string, {
   metadata: {
     name: string;
     description: string;
     version: string;
     modified: string;
     creator: string;
+    namespace: string;
   };
-  concepts: Record<string, any>;
-  scheme: any;
+  classes: Record<string, any>;
+  objectProperties: Record<string, any>;
+  datatypeProperties: Record<string, any>;
 }];
 
-const columnHelper = createColumnHelper<TaxonomyTableRow>();
+const columnHelper = createColumnHelper<OntologyTableRow>();
 
-export const taxonomyColumns = [
+export const ontologyColumns = [
   columnHelper.accessor((row) => row[0], {
     id: "id",
     header: "ID",
     cell: (info) => info.getValue(),
   }),
   columnHelper.accessor((row) => row[1].metadata.name, {
-    id: "name", 
+    id: "name",
     header: "Name",
     cell: (info) => info.getValue(),
   }),
@@ -508,9 +510,16 @@ export const taxonomyColumns = [
     header: "Description",
     cell: (info) => info.getValue() || "-",
   }),
-  columnHelper.accessor((row) => Object.keys(row[1].concepts).length, {
-    id: "conceptCount",
-    header: "Concepts",
+  columnHelper.accessor((row) => Object.keys(row[1].classes || {}).length, {
+    id: "classCount",
+    header: "Classes",
+    cell: (info) => info.getValue(),
+  }),
+  columnHelper.accessor((row) =>
+    Object.keys(row[1].objectProperties || {}).length +
+    Object.keys(row[1].datatypeProperties || {}).length, {
+    id: "propertyCount",
+    header: "Properties",
     cell: (info) => info.getValue(),
   }),
   columnHelper.accessor((row) => row[1].metadata.modified, {
@@ -524,7 +533,7 @@ export const taxonomyColumns = [
 **Table Component:**
 
 ```typescript
-// src/components/taxonomies/TaxonomiesTable.tsx
+// src/components/ontologies/OntologiesTable.tsx
 import React from "react";
 import { Box, Table, Text, Spinner, Center } from "@chakra-ui/react";
 import {
@@ -533,29 +542,29 @@ import {
   getSortedRowModel,
   flexRender,
 } from "@tanstack/react-table";
-import { useTaxonomies } from "../../state/taxonomies";
-import { TaxonomyTableRow, taxonomyColumns } from "../../model/taxonomies-table";
-import { EditTaxonomyDialog } from "./EditTaxonomyDialog";
+import { useOntologies } from "../../state/ontologies";
+import { OntologyTableRow, ontologyColumns } from "../../model/ontologies-table";
+import { EditOntologyDialog } from "./EditOntologyDialog";
 
-export const TaxonomiesTable: React.FC = () => {
-  const { taxonomies, taxonomiesLoading, taxonomiesError } = useTaxonomies();
+export const OntologiesTable: React.FC = () => {
+  const { ontologies, ontologiesLoading, ontologiesError } = useOntologies();
   const [isOpen, setIsOpen] = React.useState(false);
-  const [selectedTaxonomy, setSelectedTaxonomy] = 
-    React.useState<TaxonomyTableRow | null>(null);
+  const [selectedOntology, setSelectedOntology] =
+    React.useState<OntologyTableRow | null>(null);
 
   const table = useReactTable({
-    data: taxonomies as TaxonomyTableRow[],
-    columns: taxonomyColumns,
+    data: ontologies as OntologyTableRow[],
+    columns: ontologyColumns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
   });
 
-  const handleRowClick = (row: TaxonomyTableRow) => {
-    setSelectedTaxonomy(row);
+  const handleRowClick = (row: OntologyTableRow) => {
+    setSelectedOntology(row);
     setIsOpen(true);
   };
 
-  if (taxonomiesLoading) {
+  if (ontologiesLoading) {
     return (
       <Center h="200px">
         <Spinner size="xl" />
@@ -563,21 +572,21 @@ export const TaxonomiesTable: React.FC = () => {
     );
   }
 
-  if (taxonomiesError) {
+  if (ontologiesError) {
     return (
       <Box p={4} borderWidth="1px" borderColor="red.500" borderRadius="md" bg="red.50">
         <Text color="red.700">
-          Error loading taxonomies: {taxonomiesError.toString()}
+          Error loading ontologies: {ontologiesError.toString()}
         </Text>
       </Box>
     );
   }
 
-  if (taxonomies.length === 0) {
+  if (ontologies.length === 0) {
     return (
       <Center h="200px">
         <Text color="gray.500">
-          No taxonomies found. Create one to get started.
+          No ontologies found. Create one to get started.
         </Text>
       </Center>
     );
@@ -624,13 +633,13 @@ export const TaxonomiesTable: React.FC = () => {
         </Table.Root>
       </Box>
 
-      {selectedTaxonomy && (
-        <EditTaxonomyDialog
+      {selectedOntology && (
+        <EditOntologyDialog
           isOpen={isOpen}
           onClose={() => setIsOpen(false)}
           mode="edit"
-          taxonomyId={selectedTaxonomy[0]}
-          initialTaxonomy={selectedTaxonomy[1]}
+          ontologyId={selectedOntology[0]}
+          initialOntology={selectedOntology[1]}
         />
       )}
     </>
@@ -640,45 +649,71 @@ export const TaxonomiesTable: React.FC = () => {
 
 ### Validation and Quality Assurance
 
-#### SKOS Compliance Checking
+#### OWL Compliance and Reasoning
 
 **Structural Validation:**
-- Verify proper concept scheme structure
-- Check for circular hierarchical references
-- Validate URI consistency and namespace usage
-- Ensure required properties are present
+- Verify proper ontology structure and namespace declarations
+- Check for circular class inheritance
+- Validate URI consistency and uniqueness
+- Ensure required OWL/RDFS properties are present
 
-**Content Quality:**
-- Check for duplicate or conflicting labels
-- Validate definition completeness and clarity
-- Verify example relevance and accuracy
-- Detect inconsistent notation schemes
+**Type and Constraint Checking:**
+- Validate domain and range specifications
+- Check cardinality constraint consistency
+- Verify datatype property ranges against XSD types
+- Detect conflicting functional property declarations
 
-**Relationship Integrity:**
-- Ensure bidirectional relationship consistency
-- Validate broader/narrower relationships
-- Check for orphaned concepts
-- Detect missing top concepts
+**Logical Consistency:**
+- Check for unsatisfiable classes
+- Validate disjoint class declarations
+- Ensure property inverse relationships are bidirectional
+- Detect inconsistent equivalence relationships
+
+**Reasoning and Inference:**
+- Support for OWL reasoners (HermiT, Pellet)
+- Automatic classification of inferred relationships
+- Detection of implicit contradictions
+- Validation of transitivity and symmetry
 
 #### Real-time Validation
 
 ```javascript
 const validator = {
-  validateConcept: (concept, taxonomy) => {
+  validateClass: (owlClass, ontology) => {
     return {
       isValid: boolean,
       errors: [{ field, message, severity }],
       warnings: [{ field, message, suggestion }],
+      missingProperties: [propertyNames],
       completeness: percentage
     };
   },
-  
-  validateTaxonomy: (taxonomy) => {
+
+  validateProperty: (property, ontology) => {
     return {
       isValid: boolean,
-      conceptErrors: { conceptId: [errors] },
-      structuralIssues: [issues],
+      domainIssues: [issues],
+      rangeIssues: [issues],
+      cardinalityConflicts: [conflicts]
+    };
+  },
+
+  validateOntology: (ontology) => {
+    return {
+      isConsistent: boolean,
+      unsatisfiableClasses: [classIds],
+      logicalErrors: [{ type, message, elements }],
+      inferredRelationships: [relationships],
       qualityScore: percentage
+    };
+  },
+
+  runReasoner: async (ontology) => {
+    // Integrate with OWL reasoner service
+    return {
+      inferences: [inferredFacts],
+      inconsistencies: [conflicts],
+      classification: hierarchyUpdates
     };
   }
 };
@@ -689,10 +724,22 @@ const validator = {
 #### Supported Formats
 
 **Turtle (.ttl)**
-- Standard SKOS representation
-- Full property support
+- Standard OWL/RDF representation
+- Full property and constraint support
 - Namespace management
 - Human-readable format
+
+**RDF/XML (.rdf, .owl)**
+- W3C standard OWL serialization
+- Complete OWL feature support
+- Tool compatibility (Protégé, etc.)
+- Verbose but comprehensive
+
+**OWL/XML (.owx)**
+- OWL-specific XML format
+- Structured representation
+- Easy parsing and validation
+- Direct OWL construct mapping
 
 **JSON-LD (.jsonld)**
 - Web-friendly JSON format
@@ -700,114 +747,121 @@ const validator = {
 - API integration ready
 - Compact representation
 
-**CSV Template**
-- Spreadsheet-friendly format
-- Bulk concept creation
-- Simplified property mapping
-- Non-technical user support
-
 #### Import Process
 
 1. **File Upload**: Drag-and-drop or file picker
 2. **Format Detection**: Automatic format recognition
-3. **Preview**: Show parsed content before import
-4. **Conflict Resolution**: Handle duplicate concepts
-5. **Validation**: Check SKOS compliance
-6. **Import Execution**: Create configuration entries
+3. **Parsing**: Extract classes, properties, and relationships
+4. **Preview**: Show ontology structure before import
+5. **Conflict Resolution**: Handle duplicate URIs and conflicting definitions
+6. **Validation**: Check OWL consistency and run reasoner
+7. **Import Execution**: Create configuration entries with full ontology
 
 ### Security Considerations
 
 **Access Control:**
 - Integrate with existing user authentication
-- Role-based permissions for taxonomy editing
+- Role-based permissions for ontology editing
 - Audit trail for all modifications
-- Version control for taxonomy changes
+- Version control for ontology changes
 
 **Data Validation:**
 - Sanitize all user inputs
 - Validate file uploads for malicious content
-- Limit taxonomy size and complexity
-- Rate limiting for AI assistant requests
+- Limit ontology size and complexity
+- Rate limiting for AI assistant and reasoner requests
 
 ### Performance Considerations
 
 **Frontend Optimization:**
-- Virtual scrolling for large taxonomies
-- Lazy loading of concept details
+- Virtual scrolling for large ontologies
+- Lazy loading of class and property details
 - Debounced search and filtering
 - Optimistic UI updates with rollback
+- Incremental reasoning for real-time validation
 
 **Backend Efficiency:**
 - Efficient configuration storage queries
-- Caching for frequently accessed taxonomies
+- Caching for frequently accessed ontologies
 - Batch operations for bulk modifications
 - Async processing for large imports
+- Background reasoning for complex ontologies
 
 ### Testing Strategy
 
 **Unit Testing:**
 - Component testing for UI elements
-- SKOS parser/serializer validation
+- OWL parser/serializer validation
 - AI assistant response handling
 - Import/export functionality
+- Property constraint validation
 
 **Integration Testing:**
 - Configuration API integration
-- Full taxonomy CRUD operations
+- Full ontology CRUD operations
 - Import/export round-trip testing
 - AI assistant service integration
+- Reasoner integration testing
 
 **User Acceptance Testing:**
 - Data architect workflow validation
-- Taxonomy creation scenarios
-- Bulk editing operations
-- Import/export with real data
+- Ontology creation scenarios
+- Class and property definition workflows
+- Constraint specification and validation
+- Import/export with real OWL files
 
 ### Migration Plan
 
 **Phase 1: Core UI (Weeks 1-4)**
-- Basic taxonomy management interface
+- Basic ontology management interface
 - Configuration API integration
-- Simple CRUD operations
+- Class and property CRUD operations
 
-**Phase 2: Hierarchy Management (Weeks 5-8)**
-- Tree visualization component
-- Drag-and-drop functionality
-- Relationship management
+**Phase 2: Advanced Features (Weeks 5-8)**
+- Class hierarchy visualization
+- Property domain/range specification
+- Cardinality and constraint management
+- Multi-language label support
 
 **Phase 3: AI Assistant Wizard (Weeks 9-12)**
 - Optional LLM integration
 - "Getting started" wizard flow
-- Content generation features
-- Bulk enhancement tools
+- Property generation features
+- Consistency checking tools
 - Manual-only mode support
 
-**Phase 4: Import/Export (Weeks 13-16)**
-- File format support
+**Phase 4: Reasoning & Import/Export (Weeks 13-16)**
+- OWL reasoner integration
+- File format support (Turtle, RDF/XML, OWL/XML)
 - Import/export workflows
-- Format conversion utilities
+- Inference visualization
 
 ### Timeline
 
 **Total Duration**: 16 weeks
 
 **Milestones:**
-- Week 4: Basic taxonomy management functional (manual creation)
-- Week 8: Complete hierarchy editing capabilities
+- Week 4: Basic ontology management functional (manual creation)
+- Week 8: Complete class/property editing with constraints
 - Week 12: Optional AI assistant wizard fully integrated
-- Week 16: Full feature set with import/export
+- Week 16: Full feature set with reasoning and import/export
 
 ### Open Questions
 
-- Do we need integration with external taxonomy services (e.g., Library of Congress, schema.org)? Not needed currently.
-- Should the system support taxonomy versioning and branching? No.
-- How should we handle very large taxonomies (1000+ concepts)? No explicit support needed at the moment.
+- Do we need integration with external ontology repositories (e.g., BioPortal, schema.org)? Not needed currently.
+- Should the system support ontology versioning and branching? No.
+- How should we handle very large ontologies (1000+ classes)? No explicit support needed at the moment.
 - Do we need offline editing capabilities? No.
+- Which OWL profiles should we support (OWL Lite, DL, Full)? Start with OWL DL for decidable reasoning.
 
 ### References
 
-- [SKOS Simple Knowledge Organization System Reference](https://www.w3.org/TR/skos-reference/)
+- [OWL 2 Web Ontology Language Reference](https://www.w3.org/TR/owl2-overview/)
+- [RDF Schema 1.1](https://www.w3.org/TR/rdf-schema/)
+- [RDF/XML Syntax Specification](https://www.w3.org/TR/rdf-syntax-grammar/)
+- [OWL 2 XML Serialization](https://www.w3.org/TR/owl2-xml-serialization/)
 - [JSON-LD 1.1 Specification](https://www.w3.org/TR/json-ld11/)
 - [Turtle RDF Syntax](https://www.w3.org/TR/turtle/)
 - [Dublin Core Metadata Terms](https://www.dublincore.org/specifications/dublin-core/dcmi-terms/)
+- [XML Schema Datatypes](https://www.w3.org/TR/xmlschema-2/)
 
