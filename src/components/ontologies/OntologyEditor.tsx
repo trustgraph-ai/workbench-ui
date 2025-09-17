@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { Box, VStack, HStack, Heading, Button, Text, Tabs } from "@chakra-ui/react";
-import { Save, ArrowLeft } from "lucide-react";
+import { Save, ArrowLeft, CheckCircle2, AlertTriangle } from "lucide-react";
 import { useOntologies, Ontology, OWLClass, OWLObjectProperty, OWLDatatypeProperty } from "../../state/ontologies";
 import { ClassTree } from "./ClassTree";
 import { ClassEditor } from "./ClassEditor";
 import { PropertyTree } from "./PropertyTree";
 import { PropertyEditor } from "./PropertyEditor";
 import { WelcomePanel } from "./WelcomePanel";
+import { OntologyValidator, ValidationResult } from "./OntologyValidator";
+import { ValidationPanel } from "./ValidationPanel";
 
 interface OntologyEditorProps {
   ontologyId: string;
@@ -23,6 +25,8 @@ export const OntologyEditor: React.FC<OntologyEditorProps> = ({
   const [selectedPropertyType, setSelectedPropertyType] = useState<"object" | "datatype" | null>(null);
   const [activeTab, setActiveTab] = useState<"classes" | "properties">("classes");
   const [showWelcome, setShowWelcome] = useState(false);
+  const [validationResult, setValidationResult] = useState<ValidationResult | null>(null);
+  const [showValidation, setShowValidation] = useState(false);
 
   // Find the ontology data
   const ontologyData = ontologies.find((ont) => ont[0] === ontologyId)?.[1];
@@ -36,6 +40,10 @@ export const OntologyEditor: React.FC<OntologyEditorProps> = ({
         Object.keys(ontologyData.datatypeProperties).length > 0;
 
       setShowWelcome(!hasClasses && !hasProperties);
+
+      // Auto-validate when ontology changes (but don't show validation panel automatically)
+      const result = OntologyValidator.validate(ontologyData);
+      setValidationResult(result);
     }
   }, [ontologyData]);
 
@@ -52,6 +60,29 @@ export const OntologyEditor: React.FC<OntologyEditorProps> = ({
       id: ontologyId,
       ontology: ontologyData,
     });
+  };
+
+  const handleValidate = () => {
+    if (!ontologyData) return;
+
+    const result = OntologyValidator.validate(ontologyData);
+    setValidationResult(result);
+    setShowValidation(true);
+  };
+
+  const handleNavigateToItem = (itemId: string, itemType: "class" | "objectProperty" | "datatypeProperty") => {
+    if (itemType === "class") {
+      setSelectedClassId(itemId);
+      setSelectedPropertyId(null);
+      setSelectedPropertyType(null);
+      setActiveTab("classes");
+    } else {
+      setSelectedPropertyId(itemId);
+      setSelectedPropertyType(itemType === "objectProperty" ? "object" : "datatype");
+      setSelectedClassId(null);
+      setActiveTab("properties");
+    }
+    setShowValidation(false);
   };
 
   const handleCreateClass = (className: string) => {
@@ -413,12 +444,37 @@ export const OntologyEditor: React.FC<OntologyEditorProps> = ({
               </Text>
             </VStack>
           </HStack>
-          <Button colorPalette="primary" onClick={handleSave}>
-            <Save size={16} style={{ marginRight: "8px" }} />
-            Save
-          </Button>
+          <HStack>
+            <Button
+              variant="outline"
+              onClick={handleValidate}
+              colorPalette={validationResult?.isValid === false ? "red" : validationResult?.isValid === true ? "green" : "gray"}
+            >
+              {validationResult?.isValid === false ? (
+                <AlertTriangle size={16} style={{ marginRight: "8px" }} />
+              ) : validationResult?.isValid === true ? (
+                <CheckCircle2 size={16} style={{ marginRight: "8px" }} />
+              ) : null}
+              Validate
+            </Button>
+            <Button colorPalette="primary" onClick={handleSave}>
+              <Save size={16} style={{ marginRight: "8px" }} />
+              Save
+            </Button>
+          </HStack>
         </HStack>
       </Box>
+
+      {/* Validation Panel */}
+      {showValidation && validationResult && (
+        <Box p={4} borderBottomWidth="1px">
+          <ValidationPanel
+            validationResult={validationResult}
+            onNavigateToItem={handleNavigateToItem}
+            onClose={() => setShowValidation(false)}
+          />
+        </Box>
+      )}
 
       {/* Main Content */}
       <Box flex="1" display="flex" minH="0">
