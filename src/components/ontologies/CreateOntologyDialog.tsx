@@ -139,40 +139,57 @@ export const CreateOntologyDialog: React.FC<CreateOntologyDialogProps> = ({
                   </VStack>
                 )}
 
-                <Field label="Ontology ID" required>
+                <Field.Root required>
+                  <Field.Label>
+                    Ontology ID
+                    <Field.RequiredIndicator />
+                  </Field.Label>
                   <Input
                     value={id}
                     onChange={(e) => setId(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ""))}
                     placeholder="domain-model"
                   />
-                </Field>
+                </Field.Root>
 
-                <Field label="Name" required>
+                <Field.Root required>
+                  <Field.Label>
+                    Name
+                    <Field.RequiredIndicator />
+                  </Field.Label>
                   <Input
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Domain Model Ontology"
                   />
-                </Field>
+                </Field.Root>
 
-                <Field label="Description" required>
+                <Field.Root required>
+                  <Field.Label>
+                    Description
+                    <Field.RequiredIndicator />
+                  </Field.Label>
                   <Textarea
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     placeholder="A comprehensive ontology for modeling domain concepts..."
                     rows={3}
                   />
-                </Field>
+                </Field.Root>
 
-                <Field label="Namespace URI" required>
+                <Field.Root required>
+                  <Field.Label>
+                    Namespace URI
+                    <Field.RequiredIndicator />
+                  </Field.Label>
                   <Input
                     value={namespace}
                     onChange={(e) => setNamespace(e.target.value)}
                     placeholder="http://example.org/domain/"
                   />
-                </Field>
+                </Field.Root>
 
-                <Field label="How would you like to start?">
+                <Field.Root>
+                  <Field.Label>How would you like to start?</Field.Label>
                   <RadioCard.Root value={startMode} onValueChange={(details) => setStartMode(details.value as StartMode)}>
                     <VStack gap={2} align="stretch">
                       <RadioCard.Item value="blank">
@@ -215,7 +232,7 @@ export const CreateOntologyDialog: React.FC<CreateOntologyDialogProps> = ({
                       </RadioCard.Item>
                     </VStack>
                   </RadioCard.Root>
-                </Field>
+                </Field.Root>
               </VStack>
             </Dialog.Body>
 
