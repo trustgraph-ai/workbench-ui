@@ -12,32 +12,48 @@ export interface OntologyMetadata {
   modified: string;
   creator: string;
   namespace: string;
+  imports?: string[];
 }
 
-export interface OntologyConcept {
-  id: string;
-  prefLabel: string;
-  altLabel?: string[];
-  definition?: string;
-  scopeNote?: string;
-  example?: string[];
-  notation?: string;
-  broader?: string | null;
-  narrower?: string[];
-  related?: string[];
-  topConcept?: boolean;
-}
-
-export interface OntologyScheme {
+export interface OWLClass {
   uri: string;
-  prefLabel: string;
-  hasTopConcept: string[];
+  type: "owl:Class";
+  "rdfs:label"?: Array<{ value: string; lang?: string }>;
+  "rdfs:comment"?: string;
+  "rdfs:subClassOf"?: string;
+  "owl:equivalentClass"?: string[];
+  "owl:disjointWith"?: string[];
+  "dcterms:identifier"?: string;
+}
+
+export interface OWLBaseProperty {
+  uri: string;
+  "rdfs:label"?: Array<{ value: string; lang?: string }>;
+  "rdfs:domain"?: string;
+  "rdfs:range"?: string;
+  "rdfs:comment"?: string;
+  "owl:functionalProperty"?: boolean;
+  "owl:minCardinality"?: number;
+  "owl:maxCardinality"?: number;
+  "owl:cardinality"?: number;
+  "rdfs:subPropertyOf"?: string;
+}
+
+export interface OWLObjectProperty extends OWLBaseProperty {
+  type: "owl:ObjectProperty";
+  "owl:inverseOf"?: string;
+  "owl:inverseFunctionalProperty"?: boolean;
+}
+
+export interface OWLDatatypeProperty extends OWLBaseProperty {
+  type: "owl:DatatypeProperty";
 }
 
 export interface Ontology {
   metadata: OntologyMetadata;
-  concepts: Record<string, OntologyConcept>;
-  scheme: OntologyScheme;
+  classes: Record<string, OWLClass>;
+  objectProperties: Record<string, OWLObjectProperty>;
+  datatypeProperties: Record<string, OWLDatatypeProperty>;
 }
 
 export const useOntologies = () => {
