@@ -11,6 +11,7 @@ import { OntologyValidator, ValidationResult } from "./OntologyValidator";
 import { ValidationPanel } from "./ValidationPanel";
 import { ExportDialog } from "./ExportDialog";
 import { MetadataEditor } from "./MetadataEditor";
+import { ConfirmDialog } from "../common/ConfirmDialog";
 
 interface OntologyEditorProps {
   ontologyId: string;
@@ -30,6 +31,19 @@ export const OntologyEditor: React.FC<OntologyEditorProps> = ({
   const [validationResult, setValidationResult] = useState<ValidationResult | null>(null);
   const [showValidation, setShowValidation] = useState(false);
   const [showExportDialog, setShowExportDialog] = useState(false);
+  const [confirmDialog, setConfirmDialog] = useState<{
+    isOpen: boolean;
+    title: string;
+    message: string;
+    onConfirm: () => void;
+    variant?: "danger" | "warning" | "info";
+    confirmText?: string;
+  }>({
+    isOpen: false,
+    title: "",
+    message: "",
+    onConfirm: () => {},
+  });
 
   // Find the ontology data
   const ontologyData = ontologies.find((ont) => ont[0] === ontologyId)?.[1];
@@ -152,24 +166,36 @@ export const OntologyEditor: React.FC<OntologyEditorProps> = ({
     // Check for dependencies
     const dependencies = getClassDependencies(classId);
 
+    const className = classToDelete["rdfs:label"]?.[0]?.value || classId;
+
     if (dependencies.length > 0) {
       const dependencyList = dependencies.map(dep => {
         const depClass = ontologyData.classes[dep];
         return depClass?.["rdfs:label"]?.[0]?.value || dep;
       }).join(", ");
 
-      if (!confirm(
-        `This class is referenced by other classes: ${dependencyList}. ` +
-        `Deleting it will remove these relationships. Continue?`
-      )) {
-        return;
-      }
+      setConfirmDialog({
+        isOpen: true,
+        title: "Delete Class with Dependencies",
+        message: `This class is referenced by other classes: ${dependencyList}.\n\nDeleting "${className}" will remove these relationships and may affect the ontology structure.`,
+        onConfirm: () => performDeleteClass(classId),
+        variant: "danger",
+        confirmText: "Delete Anyway",
+      });
     } else {
-      const className = classToDelete["rdfs:label"]?.[0]?.value || classId;
-      if (!confirm(`Are you sure you want to delete the class "${className}"?`)) {
-        return;
-      }
+      setConfirmDialog({
+        isOpen: true,
+        title: "Delete Class",
+        message: `Are you sure you want to delete the class "${className}"?\n\nThis action cannot be undone.`,
+        onConfirm: () => performDeleteClass(classId),
+        variant: "danger",
+        confirmText: "Delete",
+      });
     }
+  };
+
+  const performDeleteClass = (classId: string) => {
+    if (!ontologyData) return;
 
     // Remove the class and clean up references
     const updatedClasses = { ...ontologyData.classes };
@@ -259,9 +285,18 @@ export const OntologyEditor: React.FC<OntologyEditorProps> = ({
     const propertyName = propertyToDelete["rdfs:label"]?.[0]?.value || propertyId;
     const propertyTypeName = type === "object" ? "object property" : "datatype property";
 
-    if (!confirm(`Are you sure you want to delete the ${propertyTypeName} "${propertyName}"?`)) {
-      return;
-    }
+    setConfirmDialog({
+      isOpen: true,
+      title: `Delete ${propertyTypeName}`,
+      message: `Are you sure you want to delete the ${propertyTypeName} "${propertyName}"?\n\nThis action cannot be undone.`,
+      onConfirm: () => performDeleteProperty(propertyId, type),
+      variant: "danger",
+      confirmText: "Delete",
+    });
+  };
+
+  const performDeleteProperty = (propertyId: string, type: "object" | "datatype") => {
+    if (!ontologyData) return;
 
     // Remove the property
     const updatedOntology: Ontology = {
@@ -616,6 +651,17 @@ export const OntologyEditor: React.FC<OntologyEditorProps> = ({
         ontology={ontologyData}
         isOpen={showExportDialog}
         onClose={() => setShowExportDialog(false)}
+      />
+
+      {/* Confirm Dialog */}
+      <ConfirmDialog
+        isOpen={confirmDialog.isOpen}
+        onClose={() => setConfirmDialog({ ...confirmDialog, isOpen: false })}
+        onConfirm={confirmDialog.onConfirm}
+        title={confirmDialog.title}
+        message={confirmDialog.message}
+        variant={confirmDialog.variant}
+        confirmText={confirmDialog.confirmText}
       />
     </Box>
   );

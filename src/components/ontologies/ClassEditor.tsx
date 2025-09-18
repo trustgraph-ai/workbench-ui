@@ -75,13 +75,16 @@ export const ClassEditor: React.FC<ClassEditorProps> = ({
 
   const handleSave = () => {
     const validLabels = labels.filter(l => l.value.trim());
+    const validEquivalentClasses = equivalentClasses.filter(c => c.trim());
+    const validDisjointClasses = disjointClasses.filter(c => c.trim());
+
     const updatedClass: OWLClass = {
       ...owlClass,
       "rdfs:label": validLabels.length > 0 ? validLabels : [],
       "rdfs:comment": comment.trim(),
       "rdfs:subClassOf": subClassOf.trim() || undefined,
-      "owl:equivalentClass": equivalentClasses.length > 0 ? equivalentClasses : undefined,
-      "owl:disjointWith": disjointClasses.length > 0 ? disjointClasses : undefined,
+      "owl:equivalentClass": validEquivalentClasses.length > 0 ? validEquivalentClasses : undefined,
+      "owl:disjointWith": validDisjointClasses.length > 0 ? validDisjointClasses : undefined,
     };
 
     onUpdateClass(classId, updatedClass);
@@ -259,18 +262,121 @@ export const ClassEditor: React.FC<ClassEditorProps> = ({
               </Text>
             </VStack>
 
-            {/* Future relationships - Coming in Phase 4+ */}
-            <Box p={3} bg="gray.50" borderRadius="md">
-              <VStack spacing={1}>
-                <Text fontSize="sm" color="gray.600" fontWeight="medium">
-                  Additional Relationships (Coming in Phase 4)
-                </Text>
-                <Text fontSize="xs" color="gray.500" textAlign="center">
-                  • Disjoint classes (owl:disjointWith)<br />
-                  • Equivalent classes (owl:equivalentClass)
+            {/* Equivalent Classes */}
+            <VStack align="stretch" spacing={3}>
+              <Text fontSize="sm" fontWeight="medium" color="gray.700">
+                Equivalent Classes (owl:equivalentClass)
+              </Text>
+
+              <VStack align="stretch" spacing={2}>
+                {equivalentClasses.map((equivalentClassId, index) => (
+                  <HStack key={index} spacing={2}>
+                    <SelectField
+                      items={[
+                        { value: "", label: "Select class..." },
+                        ...Object.entries(ontology.classes)
+                          .filter(([id]) => id !== classId && !equivalentClasses.includes(id))
+                          .map(([id, owlClass]) => ({
+                            value: id,
+                            label: owlClass["rdfs:label"]?.[0]?.value || id,
+                          }))
+                      ]}
+                      value={equivalentClassId}
+                      onValueChange={(value) => {
+                        const newEquivalentClasses = [...equivalentClasses];
+                        newEquivalentClasses[index] = value;
+                        setEquivalentClasses(newEquivalentClasses);
+                      }}
+                      placeholder="Select equivalent class"
+                    />
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      colorPalette="red"
+                      onClick={() => {
+                        const newEquivalentClasses = equivalentClasses.filter((_, i) => i !== index);
+                        setEquivalentClasses(newEquivalentClasses);
+                      }}
+                    >
+                      <Trash2 size={14} />
+                    </Button>
+                  </HStack>
+                ))}
+
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  colorPalette="blue"
+                  onClick={() => setEquivalentClasses([...equivalentClasses, ""])}
+                  alignSelf="flex-start"
+                >
+                  <Link size={14} style={{ marginRight: "4px" }} />
+                  Add Equivalent Class
+                </Button>
+
+                <Text fontSize="xs" color="gray.500">
+                  Classes that represent the same concept and have identical sets of instances
                 </Text>
               </VStack>
-            </Box>
+            </VStack>
+
+            {/* Disjoint Classes */}
+            <VStack align="stretch" spacing={3}>
+              <Text fontSize="sm" fontWeight="medium" color="gray.700">
+                Disjoint Classes (owl:disjointWith)
+              </Text>
+
+              <VStack align="stretch" spacing={2}>
+                {disjointClasses.map((disjointClassId, index) => (
+                  <HStack key={index} spacing={2}>
+                    <SelectField
+                      items={[
+                        { value: "", label: "Select class..." },
+                        ...Object.entries(ontology.classes)
+                          .filter(([id]) => id !== classId && !disjointClasses.includes(id))
+                          .map(([id, owlClass]) => ({
+                            value: id,
+                            label: owlClass["rdfs:label"]?.[0]?.value || id,
+                          }))
+                      ]}
+                      value={disjointClassId}
+                      onValueChange={(value) => {
+                        const newDisjointClasses = [...disjointClasses];
+                        newDisjointClasses[index] = value;
+                        setDisjointClasses(newDisjointClasses);
+                      }}
+                      placeholder="Select disjoint class"
+                    />
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      colorPalette="red"
+                      onClick={() => {
+                        const newDisjointClasses = disjointClasses.filter((_, i) => i !== index);
+                        setDisjointClasses(newDisjointClasses);
+                      }}
+                    >
+                      <Trash2 size={14} />
+                    </Button>
+                  </HStack>
+                ))}
+
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  colorPalette="blue"
+                  onClick={() => setDisjointClasses([...disjointClasses, ""])}
+                  alignSelf="flex-start"
+                >
+                  <AlertTriangle size={14} style={{ marginRight: "4px" }} />
+                  Add Disjoint Class
+                </Button>
+
+                <Text fontSize="xs" color="gray.500">
+                  Classes that cannot share any instances (mutually exclusive)
+                </Text>
+              </VStack>
+            </VStack>
           </VStack>
 
           <Separator />

@@ -12,6 +12,7 @@ import { Download, X } from "lucide-react";
 import SelectField from "../common/SelectField";
 import { Ontology } from "../../state/ontologies";
 import { OntologyExporter, ExportOptions } from "./OntologyExporter";
+import { useNotification } from "../../state/notify";
 
 interface ExportDialogProps {
   ontology: Ontology;
@@ -28,6 +29,7 @@ export const ExportDialog: React.FC<ExportDialogProps> = ({
   const [includeComments, setIncludeComments] = useState(true);
   const [includeNamespaces, setIncludeNamespaces] = useState(true);
   const [isExporting, setIsExporting] = useState(false);
+  const notify = useNotification();
 
   const formatOptions = [
     { value: "owl", label: "OWL/XML (.owl)" },
@@ -51,12 +53,13 @@ export const ExportDialog: React.FC<ExportDialogProps> = ({
 
       OntologyExporter.downloadFile(content, filename, mimeType);
 
+      notify.success(`Successfully exported "${ontology.metadata.name}" as ${format.toUpperCase()}`);
+
       // Close dialog after successful export
       onClose();
     } catch (error) {
       console.error("Export failed:", error);
-      // In a real app, you'd show a proper error message to the user
-      alert("Export failed. Please try again.");
+      notify.error(`Failed to export ontology: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setIsExporting(false);
     }

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Box, VStack, HStack, Text, Button, Input, IconButton } from "@chakra-ui/react";
 import { Plus, ChevronRight, ChevronDown, Hash, Trash2, MoreVertical } from "lucide-react";
 import { OWLClass } from "../../state/ontologies";
+import { useNotification } from "../../state/notify";
 
 interface ClassTreeProps {
   classes: Record<string, OWLClass>;
@@ -25,6 +26,7 @@ export const ClassTree: React.FC<ClassTreeProps> = ({
   const [expandedClasses, setExpandedClasses] = useState<Set<string>>(new Set());
   const [draggedClassId, setDraggedClassId] = useState<string | null>(null);
   const [dragOverClassId, setDragOverClassId] = useState<string | null>(null);
+  const notify = useNotification();
 
   const classEntries = Object.entries(classes);
 
@@ -109,7 +111,7 @@ export const ClassTree: React.FC<ClassTreeProps> = ({
     if (sourceClassId && sourceClassId !== targetClassId && draggedClassId) {
       // Check for circular dependency
       if (isCircularDependency(sourceClassId, targetClassId)) {
-        alert("Cannot create circular dependency: this would make a class a subclass of itself.");
+        notify.warning("Cannot create circular dependency: this would make a class a subclass of itself.");
         setDraggedClassId(null);
         return;
       }
