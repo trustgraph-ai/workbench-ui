@@ -128,19 +128,27 @@ export const ExportDialog: React.FC<ExportDialogProps> = ({
                   Export Options
                 </Text>
 
-                <Checkbox
+                <Checkbox.Root
                   checked={includeComments}
                   onCheckedChange={(e) => setIncludeComments(!!e.checked)}
                 >
-                  Include comments and descriptions
-                </Checkbox>
+                  <Checkbox.HiddenInput />
+                  <Checkbox.Control />
+                  <Checkbox.Label>
+                    Include comments and descriptions
+                  </Checkbox.Label>
+                </Checkbox.Root>
 
-                <Checkbox
+                <Checkbox.Root
                   checked={includeNamespaces}
                   onCheckedChange={(e) => setIncludeNamespaces(!!e.checked)}
                 >
-                  Include namespace declarations
-                </Checkbox>
+                  <Checkbox.HiddenInput />
+                  <Checkbox.Control />
+                  <Checkbox.Label>
+                    Include namespace declarations
+                  </Checkbox.Label>
+                </Checkbox.Root>
               </VStack>
 
               <Box p={3} bg="blue.50" borderRadius="md" borderLeftWidth="3px" borderLeftColor="blue.500">
