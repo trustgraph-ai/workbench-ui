@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Box, VStack, HStack, Heading, Button, Text, Tabs } from "@chakra-ui/react";
 import { Save, ArrowLeft, CheckCircle2, AlertTriangle, Download } from "lucide-react";
-import { useOntologies, Ontology, OWLClass, OWLObjectProperty, OWLDatatypeProperty } from "../../state/ontologies";
+import { useOntologies, Ontology, OWLClass, OWLObjectProperty, OWLDatatypeProperty, OntologyMetadata } from "../../state/ontologies";
 import { ClassTree } from "./ClassTree";
 import { ClassEditor } from "./ClassEditor";
 import { PropertyTree } from "./PropertyTree";
@@ -10,6 +10,7 @@ import { WelcomePanel } from "./WelcomePanel";
 import { OntologyValidator, ValidationResult } from "./OntologyValidator";
 import { ValidationPanel } from "./ValidationPanel";
 import { ExportDialog } from "./ExportDialog";
+import { MetadataEditor } from "./MetadataEditor";
 
 interface OntologyEditorProps {
   ontologyId: string;
@@ -24,7 +25,7 @@ export const OntologyEditor: React.FC<OntologyEditorProps> = ({
   const [selectedClassId, setSelectedClassId] = useState<string | null>(null);
   const [selectedPropertyId, setSelectedPropertyId] = useState<string | null>(null);
   const [selectedPropertyType, setSelectedPropertyType] = useState<"object" | "datatype" | null>(null);
-  const [activeTab, setActiveTab] = useState<"classes" | "properties">("classes");
+  const [activeTab, setActiveTab] = useState<"classes" | "properties" | "metadata">("classes");
   const [showWelcome, setShowWelcome] = useState(false);
   const [validationResult, setValidationResult] = useState<ValidationResult | null>(null);
   const [showValidation, setShowValidation] = useState(false);
@@ -421,6 +422,20 @@ export const OntologyEditor: React.FC<OntologyEditorProps> = ({
     });
   };
 
+  const handleUpdateMetadata = (metadata: OntologyMetadata) => {
+    if (!ontologyData) return;
+
+    const updatedOntology: Ontology = {
+      ...ontologyData,
+      metadata,
+    };
+
+    updateOntology({
+      id: ontologyId,
+      ontology: updatedOntology,
+    });
+  };
+
   const selectedClass = selectedClassId ? ontologyData.classes[selectedClassId] : null;
   const selectedProperty = selectedPropertyId && selectedPropertyType
     ? (selectedPropertyType === "object"
@@ -499,10 +514,11 @@ export const OntologyEditor: React.FC<OntologyEditorProps> = ({
           <>
             {/* Left Panel - Tabbed Navigation */}
             <Box w="380px" borderRightWidth="1px" bg="white" overflow="auto" boxShadow="sm">
-              <Tabs.Root value={activeTab} onValueChange={(details) => setActiveTab(details.value as "classes" | "properties")}>
+              <Tabs.Root value={activeTab} onValueChange={(details) => setActiveTab(details.value as "classes" | "properties" | "metadata")}>
                 <Tabs.List>
                   <Tabs.Trigger value="classes">Classes</Tabs.Trigger>
                   <Tabs.Trigger value="properties">Properties</Tabs.Trigger>
+                  <Tabs.Trigger value="metadata">Metadata</Tabs.Trigger>
                 </Tabs.List>
 
                 <Tabs.Content value="classes">
@@ -528,12 +544,32 @@ export const OntologyEditor: React.FC<OntologyEditorProps> = ({
                     onDeleteProperty={handleDeleteProperty}
                   />
                 </Tabs.Content>
+
+                <Tabs.Content value="metadata">
+                  <Box p={6}>
+                    <VStack spacing={4}>
+                      <Text fontSize="lg" fontWeight="semibold" color="gray.700">
+                        Ontology Information
+                      </Text>
+                      <Text fontSize="sm" color="gray.600">
+                        Configure basic metadata about this ontology
+                      </Text>
+                    </VStack>
+                  </Box>
+                </Tabs.Content>
               </Tabs.Root>
             </Box>
 
             {/* Right Panel - Editor */}
             <Box flex="1" overflow="auto" bg="white">
-              {selectedClass && selectedClassId ? (
+              {activeTab === "metadata" ? (
+                <MetadataEditor
+                  metadata={ontologyData.metadata}
+                  onUpdateMetadata={handleUpdateMetadata}
+                  hasClasses={Object.keys(ontologyData.classes).length > 0}
+                  hasProperties={Object.keys(ontologyData.objectProperties).length > 0 || Object.keys(ontologyData.datatypeProperties).length > 0}
+                />
+              ) : selectedClass && selectedClassId ? (
                 <ClassEditor
                   classId={selectedClassId}
                   owlClass={selectedClass}
@@ -560,11 +596,12 @@ export const OntologyEditor: React.FC<OntologyEditorProps> = ({
                 <Box p={6} display="flex" alignItems="center" justifyContent="center" h="100%">
                   <VStack spacing={4}>
                     <Text color="gray.500" fontSize="lg">
-                      Select a class or property to edit
+                      {activeTab === "classes" ? "Select a class to edit" : activeTab === "properties" ? "Select a property to edit" : "Select an item to edit"}
                     </Text>
                     <Text color="gray.400" fontSize="sm" textAlign="center">
-                      Choose an item from the navigation panel<br />
-                      or create a new class or property to get started
+                      {activeTab === "classes" ? "Choose a class from the navigation panel or create a new one to get started" :
+                       activeTab === "properties" ? "Choose a property from the navigation panel or create a new one to get started" :
+                       "Choose an item from the navigation panel or create new content to get started"}
                     </Text>
                   </VStack>
                 </Box>
