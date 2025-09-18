@@ -540,6 +540,12 @@ export const OntologyEditor: React.FC<OntologyEditorProps> = ({
                   ontology={ontologyData}
                   onUpdateClass={handleUpdateClass}
                   onDeleteClass={handleDeleteClass}
+                  onNavigateToProperty={(propertyId, propertyType) => {
+                    setSelectedPropertyId(propertyId);
+                    setSelectedPropertyType(propertyType === "objectProperty" ? "object" : "datatype");
+                    setSelectedClassId(null);
+                    setActiveTab("properties");
+                  }}
                 />
               ) : selectedProperty && selectedPropertyId && selectedPropertyType ? (
                 <PropertyEditor

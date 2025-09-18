@@ -21,26 +21,39 @@ export interface OWLClass {
   "rdfs:label"?: Array<{ value: string; lang?: string }>;
   "rdfs:comment"?: string;
   "rdfs:subClassOf"?: string;
+  "owl:equivalentClass"?: string[];
   "owl:disjointWith"?: string[];
   "dcterms:identifier"?: string;
 }
 
-export interface OWLProperty {
+export interface OWLBaseProperty {
   uri: string;
-  type: "owl:ObjectProperty" | "owl:DatatypeProperty";
   "rdfs:label"?: Array<{ value: string; lang?: string }>;
   "rdfs:domain"?: string;
   "rdfs:range"?: string;
-  "owl:inverseOf"?: string;
   "rdfs:comment"?: string;
   "owl:functionalProperty"?: boolean;
+  "owl:minCardinality"?: number;
+  "owl:maxCardinality"?: number;
+  "owl:cardinality"?: number;
+  "rdfs:subPropertyOf"?: string;
+}
+
+export interface OWLObjectProperty extends OWLBaseProperty {
+  type: "owl:ObjectProperty";
+  "owl:inverseOf"?: string;
+  "owl:inverseFunctionalProperty"?: boolean;
+}
+
+export interface OWLDatatypeProperty extends OWLBaseProperty {
+  type: "owl:DatatypeProperty";
 }
 
 export interface Ontology {
   metadata: OntologyMetadata;
   classes: Record<string, OWLClass>;
-  objectProperties: Record<string, OWLProperty>;
-  datatypeProperties: Record<string, OWLProperty>;
+  objectProperties: Record<string, OWLObjectProperty>;
+  datatypeProperties: Record<string, OWLDatatypeProperty>;
 }
 
 export const useOntologies = () => {

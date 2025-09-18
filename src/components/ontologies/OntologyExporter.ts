@@ -113,6 +113,43 @@ export class OntologyExporter {
         }
       }
 
+      // owl:inverseOf
+      if (property["owl:inverseOf"]) {
+        const inverseProperty = ontology.objectProperties[property["owl:inverseOf"]];
+        if (inverseProperty) {
+          lines.push('        <owl:inverseOf rdf:resource="' + inverseProperty.uri + '"/>');
+        }
+      }
+
+      // rdfs:subPropertyOf
+      if (property["rdfs:subPropertyOf"]) {
+        const parentProperty = ontology.objectProperties[property["rdfs:subPropertyOf"]];
+        if (parentProperty) {
+          lines.push('        <rdfs:subPropertyOf rdf:resource="' + parentProperty.uri + '"/>');
+        }
+      }
+
+      // owl:functionalProperty
+      if (property["owl:functionalProperty"]) {
+        lines.push('        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>');
+      }
+
+      // owl:inverseFunctionalProperty
+      if (property["owl:inverseFunctionalProperty"]) {
+        lines.push('        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#InverseFunctionalProperty"/>');
+      }
+
+      // Cardinality constraints (as comments for documentation)
+      if (property["owl:minCardinality"] !== undefined) {
+        lines.push('        <!-- Minimum cardinality: ' + property["owl:minCardinality"] + ' -->');
+      }
+      if (property["owl:maxCardinality"] !== undefined) {
+        lines.push('        <!-- Maximum cardinality: ' + property["owl:maxCardinality"] + ' -->');
+      }
+      if (property["owl:cardinality"] !== undefined) {
+        lines.push('        <!-- Exact cardinality: ' + property["owl:cardinality"] + ' -->');
+      }
+
       lines.push('    </owl:ObjectProperty>');
       lines.push('');
     });
@@ -146,6 +183,31 @@ export class OntologyExporter {
       // rdfs:range (datatype)
       if (property["rdfs:range"]) {
         lines.push('        <rdfs:range rdf:resource="' + property["rdfs:range"] + '"/>');
+      }
+
+      // rdfs:subPropertyOf
+      if (property["rdfs:subPropertyOf"]) {
+        const parentProperty = ontology.datatypeProperties[property["rdfs:subPropertyOf"]];
+        if (parentProperty) {
+          lines.push('        <rdfs:subPropertyOf rdf:resource="' + parentProperty.uri + '"/>');
+        }
+      }
+
+      // owl:functionalProperty
+      if (property["owl:functionalProperty"]) {
+        lines.push('        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>');
+      }
+
+      // Cardinality constraints would typically be expressed as restrictions on classes
+      // For now, we include them as annotations for documentation purposes
+      if (property["owl:minCardinality"] !== undefined) {
+        lines.push('        <!-- Minimum cardinality: ' + property["owl:minCardinality"] + ' -->');
+      }
+      if (property["owl:maxCardinality"] !== undefined) {
+        lines.push('        <!-- Maximum cardinality: ' + property["owl:maxCardinality"] + ' -->');
+      }
+      if (property["owl:cardinality"] !== undefined) {
+        lines.push('        <!-- Exact cardinality: ' + property["owl:cardinality"] + ' -->');
       }
 
       lines.push('    </owl:DatatypeProperty>');
