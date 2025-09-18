@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Table, Text, Spinner, Center, Button } from "@chakra-ui/react";
+import { Box, Table, Text, Spinner, Center, Button, HStack } from "@chakra-ui/react";
 import {
   useReactTable,
   getCoreRowModel,
@@ -10,6 +10,8 @@ import { useOntologies } from "../../state/ontologies";
 import { OntologyTableRow, ontologyColumns } from "../../model/ontologies-table";
 import { CreateOntologyDialog } from "./CreateOntologyDialog";
 import { ConfirmDialog } from "../common/ConfirmDialog";
+import { ImportDialog } from "./ImportDialog";
+import { Upload } from "lucide-react";
 
 interface OntologiesTableProps {
   onEditOntology?: (ontologyId: string) => void;
@@ -18,6 +20,7 @@ interface OntologiesTableProps {
 export const OntologiesTable: React.FC<OntologiesTableProps> = ({ onEditOntology }) => {
   const { ontologies, ontologiesLoading, ontologiesError, deleteOntology } = useOntologies();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
   const [confirmDialog, setConfirmDialog] = useState<{
     isOpen: boolean;
     ontologyId: string;
@@ -61,6 +64,14 @@ export const OntologiesTable: React.FC<OntologiesTableProps> = ({ onEditOntology
     }
   };
 
+  const handleImportOntology = (ontologyId: string) => {
+    setIsImportDialogOpen(false);
+    if (onEditOntology) {
+      // Small delay to allow the dialog to close first
+      setTimeout(() => onEditOntology(ontologyId), 100);
+    }
+  };
+
   if (ontologiesLoading) {
     return (
       <Center h="200px">
@@ -82,12 +93,21 @@ export const OntologiesTable: React.FC<OntologiesTableProps> = ({ onEditOntology
   return (
     <>
       <Box mb={4}>
-        <Button
-          colorPalette="primary"
-          onClick={() => setIsCreateDialogOpen(true)}
-        >
-          Create New Ontology
-        </Button>
+        <HStack>
+          <Button
+            colorPalette="primary"
+            onClick={() => setIsCreateDialogOpen(true)}
+          >
+            Create New Ontology
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => setIsImportDialogOpen(true)}
+          >
+            <Upload size={16} style={{ marginRight: "8px" }} />
+            Import Ontology
+          </Button>
+        </HStack>
       </Box>
 
       {ontologies.length === 0 ? (
@@ -152,6 +172,12 @@ export const OntologiesTable: React.FC<OntologiesTableProps> = ({ onEditOntology
         isOpen={isCreateDialogOpen}
         onClose={() => setIsCreateDialogOpen(false)}
         onCreated={handleCreateOntology}
+      />
+
+      <ImportDialog
+        isOpen={isImportDialogOpen}
+        onClose={() => setIsImportDialogOpen(false)}
+        onImported={handleImportOntology}
       />
 
       <ConfirmDialog
