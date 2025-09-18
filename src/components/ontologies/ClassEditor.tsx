@@ -12,7 +12,7 @@ import {
   Badge,
 } from "@chakra-ui/react";
 import SelectField from "../common/SelectField";
-import { Hash, Save, Trash2, Link, Type } from "lucide-react";
+import { Hash, Save, Trash2, Link, Type, AlertTriangle } from "lucide-react";
 import { OWLClass, Ontology } from "../../state/ontologies";
 import { MultiLanguageLabels } from "./MultiLanguageLabels";
 
