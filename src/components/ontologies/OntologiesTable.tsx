@@ -9,6 +9,7 @@ import {
 import { useOntologies } from "../../state/ontologies";
 import { OntologyTableRow, ontologyColumns } from "../../model/ontologies-table";
 import { CreateOntologyDialog } from "./CreateOntologyDialog";
+import { ConfirmDialog } from "../common/ConfirmDialog";
 
 interface OntologiesTableProps {
   onEditOntology?: (ontologyId: string) => void;
@@ -17,6 +18,13 @@ interface OntologiesTableProps {
 export const OntologiesTable: React.FC<OntologiesTableProps> = ({ onEditOntology }) => {
   const { ontologies, ontologiesLoading, ontologiesError, deleteOntology } = useOntologies();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [confirmDialog, setConfirmDialog] = useState<{
+    isOpen: boolean;
+    ontologyId: string;
+  }>({
+    isOpen: false,
+    ontologyId: "",
+  });
 
   const table = useReactTable({
     data: ontologies as OntologyTableRow[],
@@ -34,9 +42,15 @@ export const OntologiesTable: React.FC<OntologiesTableProps> = ({ onEditOntology
   const handleDelete = (ontologyId: string, event: React.MouseEvent) => {
     event.stopPropagation(); // Prevent row click
 
-    if (confirm(`Are you sure you want to delete the ontology "${ontologyId}"?`)) {
-      deleteOntology({ id: ontologyId });
-    }
+    setConfirmDialog({
+      isOpen: true,
+      ontologyId,
+    });
+  };
+
+  const handleConfirmDelete = () => {
+    deleteOntology({ id: confirmDialog.ontologyId });
+    setConfirmDialog({ isOpen: false, ontologyId: "" });
   };
 
   const handleCreateOntology = (ontologyId: string) => {
@@ -138,6 +152,16 @@ export const OntologiesTable: React.FC<OntologiesTableProps> = ({ onEditOntology
         isOpen={isCreateDialogOpen}
         onClose={() => setIsCreateDialogOpen(false)}
         onCreated={handleCreateOntology}
+      />
+
+      <ConfirmDialog
+        isOpen={confirmDialog.isOpen}
+        onClose={() => setConfirmDialog({ isOpen: false, ontologyId: "" })}
+        onConfirm={handleConfirmDelete}
+        title="Delete Ontology"
+        message={`Are you sure you want to delete the ontology "${confirmDialog.ontologyId}"?\n\nThis action cannot be undone and will permanently remove all classes, properties, and metadata.`}
+        variant="danger"
+        confirmText="Delete"
       />
     </>
   );

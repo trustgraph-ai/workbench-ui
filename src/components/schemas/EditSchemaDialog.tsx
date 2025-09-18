@@ -16,6 +16,7 @@ import { SchemaValidationErrors } from "./SchemaValidationErrors";
 import { SchemaBasicInfo } from "./SchemaBasicInfo";
 import { SchemaFieldsList } from "./SchemaFieldsList";
 import { SchemaIndexesSection } from "./SchemaIndexesSection";
+import { ConfirmDialog } from "../common/ConfirmDialog";
 
 interface EditSchemaDialogProps {
   isOpen: boolean;
@@ -34,6 +35,7 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
 }) => {
   const { createSchema, updateSchema, deleteSchema, schemas } = useSchemas();
   const contentRef = useRef<HTMLDivElement>(null);
+  const [confirmDelete, setConfirmDelete] = React.useState(false);
 
   const {
     id,
@@ -104,14 +106,17 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
   };
 
   const handleDelete = () => {
-    if (confirm(`Are you sure you want to delete the schema "${name}"?`)) {
-      deleteSchema({
-        id: schemaId!,
-        onSuccess: () => {
-          onClose();
-        },
-      });
-    }
+    setConfirmDelete(true);
+  };
+
+  const handleConfirmDelete = () => {
+    deleteSchema({
+      id: schemaId!,
+      onSuccess: () => {
+        onClose();
+      },
+    });
+    setConfirmDelete(false);
   };
 
   return (
@@ -199,6 +204,16 @@ export const EditSchemaDialog: React.FC<EditSchemaDialogProps> = ({
           </Dialog.Content>
         </Dialog.Positioner>
       </Portal>
+
+      <ConfirmDialog
+        isOpen={confirmDelete}
+        onClose={() => setConfirmDelete(false)}
+        onConfirm={handleConfirmDelete}
+        title="Delete Schema"
+        message={`Are you sure you want to delete the schema "${name}"?\n\nThis action cannot be undone and will permanently remove the schema and all its configuration.`}
+        variant="danger"
+        confirmText="Delete"
+      />
     </Dialog.Root>
   );
 };
