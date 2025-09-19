@@ -1,5 +1,25 @@
 # UI Toolkits and Framework Notes
 
+## Change Management and API Stability
+
+**CRITICAL**: Components in `src/components/common/` are foundational to the entire application. DO NOT modify these components without explicit approval from the application design authority. Changes to common components have extensive downstream impact and can break multiple features across the application.
+
+### Change Impact Assessment
+Before modifying any common component:
+1. **Document all consumers** - Search the entire codebase for usage
+2. **Assess breaking changes** - Any interface changes affect all consumers
+3. **Test extensively** - Changes can break seemingly unrelated features
+4. **Get approval** - Design authority must approve all common component changes
+
+### Lessons from SelectField Issues
+Recent issues with SelectField demonstrate why common component changes are dangerous:
+- **September 2025**: Changes to SelectField to support one feature (Ontology editor) broke document submission
+- **Root cause**: Interface contract violations between array/string APIs
+- **Impact**: Multiple components across different domains affected
+- **Resolution required**: Systematic updates to 15+ components across the application
+
+**Key takeaway**: Changing common components to fix one feature often breaks others. Always prefer adapter patterns or feature-specific solutions over modifying shared infrastructure.
+
 ## Directory Structure and Organization Rationale
 
 ### Core Principles
@@ -410,15 +430,34 @@ notify.info("FYI: This is informational");
 - `Slider` - Range slider component
 
 #### SelectField Usage
-**CRITICAL**: SelectField expects array values for selection:
+**CRITICAL**: SelectField expects array values for selection and MUST include description fields for dropdown display:
 
 ```tsx
 // ✅ Correct usage
+import SelectField from "../common/SelectField";
+import SelectOptionText from "../common/SelectOptionText";
+
 <SelectField
   label="Select Option"
   items={[
-    {value: 'option1', label: 'Option 1', description: 'Description for option 1'},
-    {value: 'option2', label: 'Option 2', description: 'Description for option 2'}
+    {
+      value: 'option1',
+      label: 'Option 1',
+      description: (
+        <SelectOptionText>
+          Option 1
+        </SelectOptionText>
+      )
+    },
+    {
+      value: 'option2',
+      label: 'Option 2',
+      description: (
+        <SelectOptionText>
+          Option 2
+        </SelectOptionText>
+      )
+    }
   ]}
   value={selectedValues}         // array - current selection (empty array for no selection)
   onValueChange={(values) => setSelectedValues(values)}  // receives array
@@ -430,7 +469,8 @@ notify.info("FYI: This is informational");
 - The `value` prop should always be an array
 - The `onValueChange` callback receives an array
 - For single selection, extract the first element: `values.length > 0 ? values[0] : null`
-- The `description` field in items is optional and will be displayed below the label if provided
+- **REQUIRED**: The `description` field MUST be provided using `SelectOptionText` or `SelectOption` components
+- **Missing descriptions will result in empty dropdown options**
 
 **Example with single selection extraction:**
 ```tsx
@@ -445,6 +485,29 @@ const handleSubmit = () => {
     onSubmit(selectedValue);
   }
 };
+```
+
+**Common Mistake - Missing Descriptions:**
+```tsx
+// ❌ WRONG - Will show empty dropdown options
+items={[
+  {value: 'option1', label: 'Option 1'},  // Missing description!
+  {value: 'option2', label: 'Option 2'}   // Missing description!
+]}
+
+// ✅ CORRECT - Includes required descriptions
+items={[
+  {
+    value: 'option1',
+    label: 'Option 1',
+    description: <SelectOptionText>Option 1</SelectOptionText>
+  },
+  {
+    value: 'option2',
+    label: 'Option 2',
+    description: <SelectOptionText>Option 2</SelectOptionText>
+  }
+]}
 ```
 
 ### Theming and Colors
