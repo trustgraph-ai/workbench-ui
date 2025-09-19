@@ -13,6 +13,7 @@ import {
   Checkbox,
 } from "@chakra-ui/react";
 import SelectField from "../common/SelectField";
+import SelectOptionText from "../common/SelectOptionText";
 import XSDDatatypeSelector from "./XSDDatatypeSelector";
 import { Link, Type, Save, Trash2 } from "lucide-react";
 import { OWLObjectProperty, OWLDatatypeProperty, Ontology } from "../../state/ontologies";
@@ -167,16 +168,37 @@ export const PropertyEditor: React.FC<PropertyEditorProps> = ({
 
   // Get available classes for domain/range selection
   const classOptions = [
-    { value: "", label: "None" },
+    {
+      value: "",
+      label: "None",
+      description: (
+        <SelectOptionText>
+          None
+        </SelectOptionText>
+      )
+    },
     ...Object.entries(ontology.classes).map(([id, owlClass]) => ({
       value: id,
       label: owlClass["rdfs:label"]?.[0]?.value || id,
+      description: (
+        <SelectOptionText>
+          {owlClass["rdfs:label"]?.[0]?.value || id}
+        </SelectOptionText>
+      )
     }))
   ];
 
   // Get available properties for subPropertyOf and inverseOf
   const sameTypePropertyOptions = [
-    { value: "", label: "None" },
+    {
+      value: "",
+      label: "None",
+      description: (
+        <SelectOptionText>
+          None
+        </SelectOptionText>
+      )
+    },
     ...Object.entries(
       propertyType === "object" ? ontology.objectProperties : ontology.datatypeProperties
     )
@@ -184,16 +206,34 @@ export const PropertyEditor: React.FC<PropertyEditorProps> = ({
       .map(([id, prop]) => ({
         value: id,
         label: prop["rdfs:label"]?.[0]?.value || id,
+        description: (
+          <SelectOptionText>
+            {prop["rdfs:label"]?.[0]?.value || id}
+          </SelectOptionText>
+        )
       }))
   ];
 
   const objectPropertyOptions = [
-    { value: "", label: "None" },
+    {
+      value: "",
+      label: "None",
+      description: (
+        <SelectOptionText>
+          None
+        </SelectOptionText>
+      )
+    },
     ...Object.entries(ontology.objectProperties)
       .filter(([id]) => id !== propertyId) // Don't allow self-reference
       .map(([id, prop]) => ({
         value: id,
         label: prop["rdfs:label"]?.[0]?.value || id,
+        description: (
+          <SelectOptionText>
+            {prop["rdfs:label"]?.[0]?.value || id}
+          </SelectOptionText>
+        )
       }))
   ];
 
