@@ -14,6 +14,7 @@ import {
 } from "@chakra-ui/react";
 import { Upload, X, FileText, AlertTriangle } from "lucide-react";
 import SelectField from "../common/SelectField";
+import SelectOptionText from "../common/SelectOptionText";
 import { useOntologies, Ontology } from "../../state/ontologies";
 import { OntologyImporter, ImportFormat, ImportOptions } from "./OntologyImporter";
 import { useNotification } from "../../state/notify";
@@ -43,10 +44,42 @@ export const ImportDialog: React.FC<ImportDialogProps> = ({
   const notify = useNotification();
 
   const formatOptions = [
-    { value: "auto", label: "Auto-detect" },
-    { value: "owl", label: "OWL/XML (.owl)" },
-    { value: "rdf", label: "RDF/XML (.rdf)" },
-    { value: "turtle", label: "Turtle (.ttl)" },
+    {
+      value: "auto",
+      label: "Auto-detect",
+      description: (
+        <SelectOptionText>
+          Auto-detect
+        </SelectOptionText>
+      )
+    },
+    {
+      value: "owl",
+      label: "OWL/XML (.owl)",
+      description: (
+        <SelectOptionText>
+          OWL/XML (.owl)
+        </SelectOptionText>
+      )
+    },
+    {
+      value: "rdf",
+      label: "RDF/XML (.rdf)",
+      description: (
+        <SelectOptionText>
+          RDF/XML (.rdf)
+        </SelectOptionText>
+      )
+    },
+    {
+      value: "turtle",
+      label: "Turtle (.ttl)",
+      description: (
+        <SelectOptionText>
+          Turtle (.ttl)
+        </SelectOptionText>
+      )
+    },
   ];
 
   const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
