@@ -410,7 +410,7 @@ notify.info("FYI: This is informational");
 - `Slider` - Range slider component
 
 #### SelectField Usage
-**CRITICAL**: SelectField expects string values for single selection:
+**CRITICAL**: SelectField expects array values for selection:
 
 ```tsx
 // ✅ Correct usage
@@ -420,16 +420,32 @@ notify.info("FYI: This is informational");
     {value: 'option1', label: 'Option 1', description: 'Description for option 1'},
     {value: 'option2', label: 'Option 2', description: 'Description for option 2'}
   ]}
-  value={selectedValue}          // string - current selection (empty string for no selection)
-  onValueChange={(value) => setSelectedValue(value)}  // receives string
+  value={selectedValues}         // array - current selection (empty array for no selection)
+  onValueChange={(values) => setSelectedValues(values)}  // receives array
 />
 ```
 
 **Important Notes:**
-- Pass an empty string `""` for no selection, not an empty array
-- The `value` prop should always be a string
-- The `onValueChange` callback receives a string
+- Pass an empty array `[]` for no selection, not an empty string
+- The `value` prop should always be an array
+- The `onValueChange` callback receives an array
+- For single selection, extract the first element: `values.length > 0 ? values[0] : null`
 - The `description` field in items is optional and will be displayed below the label if provided
+
+**Example with single selection extraction:**
+```tsx
+const [selectedValues, setSelectedValues] = useState([]);
+
+// Get the selected value (for single select behavior)
+const selectedValue = selectedValues.length > 0 ? selectedValues[0] : null;
+
+// Handle submission
+const handleSubmit = () => {
+  if (selectedValue) {
+    onSubmit(selectedValue);
+  }
+};
+```
 
 ### Theming and Colors
 **ALWAYS** use semantic color tokens instead of direct color palettes. The theme provides semantic tokens that automatically handle light/dark mode:
