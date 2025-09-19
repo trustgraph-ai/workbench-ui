@@ -43,10 +43,11 @@ export const ConceptRelationshipsTab: React.FC<
             description: c.prefLabel,
           })),
         ]}
-        value={editedConcept.broader || ""}
-        onValueChange={(value) =>
-          onUpdateField("broader", value === "" ? null : value)
-        }
+        value={[editedConcept.broader || ""]}
+        onValueChange={(values) => {
+          const value = values[0] || "";
+          onUpdateField("broader", value === "" ? null : value);
+        }}
       />
 
       <ArrayFieldEditor

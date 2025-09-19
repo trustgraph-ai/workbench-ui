@@ -243,9 +243,9 @@ export const SKOSDialog: React.FC<SKOSDialogProps> = ({
                       label: info.name,
                       description: info.description,
                     }))}
-                  value={format}
-                  onValueChange={(value) => {
-                    setFormat(value as ExportFormat);
+                  value={[format]}
+                  onValueChange={(values) => {
+                    setFormat((values[0] || "skos-ttl") as ExportFormat);
                     // Re-export with new format if dialog is in export mode
                     if (mode === "export" && ontology) {
                       setTimeout(() => handleExport(), 0);

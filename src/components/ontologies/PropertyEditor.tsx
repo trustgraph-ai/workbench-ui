@@ -13,6 +13,7 @@ import {
   Checkbox,
 } from "@chakra-ui/react";
 import SelectField from "../common/SelectField";
+import SelectOptionText from "../common/SelectOptionText";
 import XSDDatatypeSelector from "./XSDDatatypeSelector";
 import { Link, Type, Save, Trash2 } from "lucide-react";
 import { OWLObjectProperty, OWLDatatypeProperty, Ontology } from "../../state/ontologies";
@@ -167,16 +168,37 @@ export const PropertyEditor: React.FC<PropertyEditorProps> = ({
 
   // Get available classes for domain/range selection
   const classOptions = [
-    { value: "", label: "None" },
+    {
+      value: "",
+      label: "None",
+      description: (
+        <SelectOptionText>
+          None
+        </SelectOptionText>
+      )
+    },
     ...Object.entries(ontology.classes).map(([id, owlClass]) => ({
       value: id,
       label: owlClass["rdfs:label"]?.[0]?.value || id,
+      description: (
+        <SelectOptionText>
+          {owlClass["rdfs:label"]?.[0]?.value || id}
+        </SelectOptionText>
+      )
     }))
   ];
 
   // Get available properties for subPropertyOf and inverseOf
   const sameTypePropertyOptions = [
-    { value: "", label: "None" },
+    {
+      value: "",
+      label: "None",
+      description: (
+        <SelectOptionText>
+          None
+        </SelectOptionText>
+      )
+    },
     ...Object.entries(
       propertyType === "object" ? ontology.objectProperties : ontology.datatypeProperties
     )
@@ -184,16 +206,34 @@ export const PropertyEditor: React.FC<PropertyEditorProps> = ({
       .map(([id, prop]) => ({
         value: id,
         label: prop["rdfs:label"]?.[0]?.value || id,
+        description: (
+          <SelectOptionText>
+            {prop["rdfs:label"]?.[0]?.value || id}
+          </SelectOptionText>
+        )
       }))
   ];
 
   const objectPropertyOptions = [
-    { value: "", label: "None" },
+    {
+      value: "",
+      label: "None",
+      description: (
+        <SelectOptionText>
+          None
+        </SelectOptionText>
+      )
+    },
     ...Object.entries(ontology.objectProperties)
       .filter(([id]) => id !== propertyId) // Don't allow self-reference
       .map(([id, prop]) => ({
         value: id,
         label: prop["rdfs:label"]?.[0]?.value || id,
+        description: (
+          <SelectOptionText>
+            {prop["rdfs:label"]?.[0]?.value || id}
+          </SelectOptionText>
+        )
       }))
   ];
 
@@ -351,8 +391,8 @@ export const PropertyEditor: React.FC<PropertyEditorProps> = ({
               <SelectField
                 label="Domain (rdfs:domain)"
                 items={classOptions}
-                value={domain}
-                onValueChange={setDomain}
+                value={[domain]}
+                onValueChange={(values) => setDomain(values[0] || "")}
               />
               <Text fontSize="xs" color="gray.500" mt={1}>
                 The class that can have this property. Leave empty if any class can have this property.
@@ -364,8 +404,8 @@ export const PropertyEditor: React.FC<PropertyEditorProps> = ({
                 <SelectField
                   label="Range (rdfs:range)"
                   items={classOptions}
-                  value={range}
-                  onValueChange={setRange}
+                  value={[range]}
+                  onValueChange={(values) => setRange(values[0] || "")}
                 />
               ) : (
                 <XSDDatatypeSelector
@@ -396,8 +436,8 @@ export const PropertyEditor: React.FC<PropertyEditorProps> = ({
               <SelectField
                 label="Subproperty Of (rdfs:subPropertyOf)"
                 items={sameTypePropertyOptions}
-                value={subPropertyOf}
-                onValueChange={setSubPropertyOf}
+                value={[subPropertyOf]}
+                onValueChange={(values) => setSubPropertyOf(values[0] || "")}
               />
               <Text fontSize="xs" color="gray.500" mt={1}>
                 Make this property a specialization of another property
@@ -411,8 +451,8 @@ export const PropertyEditor: React.FC<PropertyEditorProps> = ({
                   <SelectField
                     label="Inverse Of (owl:inverseOf)"
                     items={objectPropertyOptions}
-                    value={inverseOf}
-                    onValueChange={setInverseOf}
+                    value={[inverseOf]}
+                    onValueChange={(values) => setInverseOf(values[0] || "")}
                   />
                   <Text fontSize="xs" color="gray.500" mt={1}>
                     Specify the inverse relationship (e.g., 'hasParent' inverse of 'hasChild')

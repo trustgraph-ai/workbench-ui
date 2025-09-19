@@ -84,8 +84,8 @@ export const ArrayFieldEditor: React.FC<ArrayFieldEditorProps> = ({
                       description: c.prefLabel,
                     })),
                   ]}
-                  value={item || ""}
-                  onValueChange={(value) => onUpdateItem(field, index, value)}
+                  value={[item || ""]}
+                  onValueChange={(values) => onUpdateItem(field, index, values[0] || "")}
                 />
               </Box>
             ) : (

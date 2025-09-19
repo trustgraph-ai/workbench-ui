@@ -12,6 +12,7 @@ import {
   Badge,
 } from "@chakra-ui/react";
 import SelectField from "../common/SelectField";
+import SelectOptionText from "../common/SelectOptionText";
 import { Hash, Save, Trash2, Link, Type, AlertTriangle } from "lucide-react";
 import { OWLClass, Ontology } from "../../state/ontologies";
 import { MultiLanguageLabels } from "./MultiLanguageLabels";
@@ -246,16 +247,29 @@ export const ClassEditor: React.FC<ClassEditorProps> = ({
               <SelectField
                 label="Subclass Of (rdfs:subClassOf)"
                 items={[
-                  { value: "", label: "None (top-level class)" },
+                  {
+                    value: "",
+                    label: "None (top-level class)",
+                    description: (
+                      <SelectOptionText>
+                        None (top-level class)
+                      </SelectOptionText>
+                    )
+                  },
                   ...Object.entries(ontology.classes)
                     .filter(([id]) => id !== classId) // Don't allow self-reference
                     .map(([id, owlClass]) => ({
                       value: id,
                       label: owlClass["rdfs:label"]?.[0]?.value || id,
+                      description: (
+                        <SelectOptionText>
+                          {owlClass["rdfs:label"]?.[0]?.value || id}
+                        </SelectOptionText>
+                      )
                     }))
                 ]}
-                value={subClassOf}
-                onValueChange={setSubClassOf}
+                value={[subClassOf]}
+                onValueChange={(values) => setSubClassOf(values[0] || "")}
               />
               <Text fontSize="xs" color="gray.500" mt={1}>
                 Choose a parent class to create a subclass relationship. Leave empty for top-level classes.
@@ -273,16 +287,30 @@ export const ClassEditor: React.FC<ClassEditorProps> = ({
                   <HStack key={index} spacing={2}>
                     <SelectField
                       items={[
-                        { value: "", label: "Select class..." },
+                        {
+                          value: "",
+                          label: "Select class...",
+                          description: (
+                            <SelectOptionText>
+                              Select class...
+                            </SelectOptionText>
+                          )
+                        },
                         ...Object.entries(ontology.classes)
                           .filter(([id]) => id !== classId && !equivalentClasses.includes(id))
                           .map(([id, owlClass]) => ({
                             value: id,
                             label: owlClass["rdfs:label"]?.[0]?.value || id,
+                            description: (
+                              <SelectOptionText>
+                                {owlClass["rdfs:label"]?.[0]?.value || id}
+                              </SelectOptionText>
+                            )
                           }))
                       ]}
-                      value={equivalentClassId}
-                      onValueChange={(value) => {
+                      value={[equivalentClassId]}
+                      onValueChange={(values) => {
+                        const value = values[0] || "";
                         const newEquivalentClasses = [...equivalentClasses];
                         newEquivalentClasses[index] = value;
                         setEquivalentClasses(newEquivalentClasses);
@@ -331,16 +359,30 @@ export const ClassEditor: React.FC<ClassEditorProps> = ({
                   <HStack key={index} spacing={2}>
                     <SelectField
                       items={[
-                        { value: "", label: "Select class..." },
+                        {
+                          value: "",
+                          label: "Select class...",
+                          description: (
+                            <SelectOptionText>
+                              Select class...
+                            </SelectOptionText>
+                          )
+                        },
                         ...Object.entries(ontology.classes)
                           .filter(([id]) => id !== classId && !disjointClasses.includes(id))
                           .map(([id, owlClass]) => ({
                             value: id,
                             label: owlClass["rdfs:label"]?.[0]?.value || id,
+                            description: (
+                              <SelectOptionText>
+                                {owlClass["rdfs:label"]?.[0]?.value || id}
+                              </SelectOptionText>
+                            )
                           }))
                       ]}
-                      value={disjointClassId}
-                      onValueChange={(value) => {
+                      value={[disjointClassId]}
+                      onValueChange={(values) => {
+                        const value = values[0] || "";
                         const newDisjointClasses = [...disjointClasses];
                         newDisjointClasses[index] = value;
                         setDisjointClasses(newDisjointClasses);

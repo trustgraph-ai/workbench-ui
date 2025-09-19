@@ -10,6 +10,7 @@ import {
 } from "@chakra-ui/react";
 import { Download, X } from "lucide-react";
 import SelectField from "../common/SelectField";
+import SelectOptionText from "../common/SelectOptionText";
 import { Ontology } from "../../state/ontologies";
 import { OntologyExporter, ExportOptions } from "./OntologyExporter";
 import { useNotification } from "../../state/notify";
@@ -32,9 +33,33 @@ export const ExportDialog: React.FC<ExportDialogProps> = ({
   const notify = useNotification();
 
   const formatOptions = [
-    { value: "owl", label: "OWL/XML (.owl)" },
-    { value: "rdf", label: "RDF/XML (.rdf)" },
-    { value: "turtle", label: "Turtle (.ttl)" },
+    {
+      value: "owl",
+      label: "OWL/XML (.owl)",
+      description: (
+        <SelectOptionText>
+          OWL/XML (.owl)
+        </SelectOptionText>
+      )
+    },
+    {
+      value: "rdf",
+      label: "RDF/XML (.rdf)",
+      description: (
+        <SelectOptionText>
+          RDF/XML (.rdf)
+        </SelectOptionText>
+      )
+    },
+    {
+      value: "turtle",
+      label: "Turtle (.ttl)",
+      description: (
+        <SelectOptionText>
+          Turtle (.ttl)
+        </SelectOptionText>
+      )
+    },
   ];
 
   const handleExport = async () => {
@@ -118,8 +143,8 @@ export const ExportDialog: React.FC<ExportDialogProps> = ({
                 <Field.Label>Export Format</Field.Label>
                 <SelectField
                   items={formatOptions}
-                  value={format}
-                  onValueChange={(value) => setFormat(value as ExportOptions['format'])}
+                  value={[format]}
+                  onValueChange={(values) => setFormat((values[0] || "ttl") as ExportOptions['format'])}
                 />
                 <Text fontSize="xs" color="gray.500" mt={1}>
                   Choose the format for your exported ontology file
