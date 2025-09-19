@@ -68,8 +68,8 @@ const XSDDatatypeSelector: React.FC<XSDDatatypeSelectorProps> = ({
     <SelectField
       label={label}
       items={items}
-      value={value}
-      onValueChange={onValueChange}
+      value={[value]}
+      onValueChange={(values) => onValueChange(values[0] || "")}
       contentRef={contentRef}
     />
   );

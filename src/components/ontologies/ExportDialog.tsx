@@ -118,8 +118,8 @@ export const ExportDialog: React.FC<ExportDialogProps> = ({
                 <Field.Label>Export Format</Field.Label>
                 <SelectField
                   items={formatOptions}
-                  value={format}
-                  onValueChange={(value) => setFormat(value as ExportOptions['format'])}
+                  value={[format]}
+                  onValueChange={(values) => setFormat((values[0] || "ttl") as ExportOptions['format'])}
                 />
                 <Text fontSize="xs" color="gray.500" mt={1}>
                   Choose the format for your exported ontology file

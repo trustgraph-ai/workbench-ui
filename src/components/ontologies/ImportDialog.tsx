@@ -312,8 +312,8 @@ export const ImportDialog: React.FC<ImportDialogProps> = ({
               <Field.Label>Import Format</Field.Label>
               <SelectField
                 items={formatOptions}
-                value={format}
-                onValueChange={(value) => setFormat(value as ImportFormat | "auto")}
+                value={[format]}
+                onValueChange={(values) => setFormat((values[0] || "auto") as ImportFormat | "auto")}
               />
               {detectedFormat && format === "auto" && (
                 <HStack mt={2}>

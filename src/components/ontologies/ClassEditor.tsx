@@ -254,8 +254,8 @@ export const ClassEditor: React.FC<ClassEditorProps> = ({
                       label: owlClass["rdfs:label"]?.[0]?.value || id,
                     }))
                 ]}
-                value={subClassOf}
-                onValueChange={setSubClassOf}
+                value={[subClassOf]}
+                onValueChange={(values) => setSubClassOf(values[0] || "")}
               />
               <Text fontSize="xs" color="gray.500" mt={1}>
                 Choose a parent class to create a subclass relationship. Leave empty for top-level classes.
@@ -281,8 +281,9 @@ export const ClassEditor: React.FC<ClassEditorProps> = ({
                             label: owlClass["rdfs:label"]?.[0]?.value || id,
                           }))
                       ]}
-                      value={equivalentClassId}
-                      onValueChange={(value) => {
+                      value={[equivalentClassId]}
+                      onValueChange={(values) => {
+                        const value = values[0] || "";
                         const newEquivalentClasses = [...equivalentClasses];
                         newEquivalentClasses[index] = value;
                         setEquivalentClasses(newEquivalentClasses);
@@ -339,8 +340,9 @@ export const ClassEditor: React.FC<ClassEditorProps> = ({
                             label: owlClass["rdfs:label"]?.[0]?.value || id,
                           }))
                       ]}
-                      value={disjointClassId}
-                      onValueChange={(value) => {
+                      value={[disjointClassId]}
+                      onValueChange={(values) => {
+                        const value = values[0] || "";
                         const newDisjointClasses = [...disjointClasses];
                         newDisjointClasses[index] = value;
                         setDisjointClasses(newDisjointClasses);

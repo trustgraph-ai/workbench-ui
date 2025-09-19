@@ -351,8 +351,8 @@ export const PropertyEditor: React.FC<PropertyEditorProps> = ({
               <SelectField
                 label="Domain (rdfs:domain)"
                 items={classOptions}
-                value={domain}
-                onValueChange={setDomain}
+                value={[domain]}
+                onValueChange={(values) => setDomain(values[0] || "")}
               />
               <Text fontSize="xs" color="gray.500" mt={1}>
                 The class that can have this property. Leave empty if any class can have this property.
@@ -364,8 +364,8 @@ export const PropertyEditor: React.FC<PropertyEditorProps> = ({
                 <SelectField
                   label="Range (rdfs:range)"
                   items={classOptions}
-                  value={range}
-                  onValueChange={setRange}
+                  value={[range]}
+                  onValueChange={(values) => setRange(values[0] || "")}
                 />
               ) : (
                 <XSDDatatypeSelector
@@ -396,8 +396,8 @@ export const PropertyEditor: React.FC<PropertyEditorProps> = ({
               <SelectField
                 label="Subproperty Of (rdfs:subPropertyOf)"
                 items={sameTypePropertyOptions}
-                value={subPropertyOf}
-                onValueChange={setSubPropertyOf}
+                value={[subPropertyOf]}
+                onValueChange={(values) => setSubPropertyOf(values[0] || "")}
               />
               <Text fontSize="xs" color="gray.500" mt={1}>
                 Make this property a specialization of another property
@@ -411,8 +411,8 @@ export const PropertyEditor: React.FC<PropertyEditorProps> = ({
                   <SelectField
                     label="Inverse Of (owl:inverseOf)"
                     items={objectPropertyOptions}
-                    value={inverseOf}
-                    onValueChange={setInverseOf}
+                    value={[inverseOf]}
+                    onValueChange={(values) => setInverseOf(values[0] || "")}
                   />
                   <Text fontSize="xs" color="gray.500" mt={1}>
                     Specify the inverse relationship (e.g., 'hasParent' inverse of 'hasChild')
