@@ -18,8 +18,8 @@ interface SelectFieldProps {
 
   items: SelectFieldValue[];
 
-  value: string;
-  onValueChange: (x: string) => void;
+  value: string[];
+  onValueChange: (x: string[]) => void;
 
   contentRef?;
 }
