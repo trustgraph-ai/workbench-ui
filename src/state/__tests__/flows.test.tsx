@@ -177,6 +177,7 @@ describe("useFlows hook", () => {
           "test-flow",
           "test-class",
           "Test description",
+          undefined,
         );
       });
 
@@ -200,7 +201,7 @@ describe("useFlows hook", () => {
       });
 
       await waitFor(() => {
-        expect(mockNotify.error).toHaveBeenCalledWith(error.toString());
+        expect(mockNotify.error).toHaveBeenCalledWith(error.message);
       });
     });
 
@@ -274,7 +275,7 @@ describe("useFlows hook", () => {
       });
 
       await waitFor(() => {
-        expect(mockNotify.error).toHaveBeenCalledWith(error.toString());
+        expect(mockNotify.error).toHaveBeenCalledWith(error.message);
       });
     });
 

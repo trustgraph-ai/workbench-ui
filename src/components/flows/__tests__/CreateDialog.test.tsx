@@ -19,6 +19,22 @@ vi.mock("../../../state/flows", () => ({
   }),
 }));
 
+// Mock the useFlowParameters hook
+vi.mock("../../../state/flow-parameters", () => ({
+  useFlowParameters: () => ({
+    parameterDefinitions: {},
+    parameterMapping: {},
+    parameterMetadata: {},
+    isLoading: false,
+    isError: false,
+    error: null,
+  }),
+  useParameterValidation: () => ({
+    isValid: true,
+    errors: {},
+  }),
+}));
+
 // Since SelectField is complex and we've documented its behavior,
 // we'll mock it to test the integration properly
 vi.mock("../../common/SelectField", () => ({
@@ -92,23 +108,43 @@ describe("CreateDialog", () => {
 
   it("should render dialog when open", () => {
     const { getByText } = renderComponent();
-    expect(getByText("Submit documents for processing")).toBeInTheDocument();
+    expect(getByText("Create Flow")).toBeInTheDocument();
   });
 
   it("should display flow class selector", () => {
     const { getByLabelText } = renderComponent();
-    const select = getByLabelText("Processing flow");
+    const select = getByLabelText("Flow class");
     expect(select).toBeInTheDocument();
   });
 
   it("should handle flow class selection and form submission", () => {
-    const { getByRole } = renderComponent();
+    const { getByRole, getByLabelText, getByText, container } = renderComponent();
 
-    // Simply verify the form renders and can be submitted
+    // Fill in required fields to enable submission
+    const flowClassSelect = getByLabelText("Flow class");
+
+    // Find ID and Description inputs - they have required attribute
+    const requiredInputs = container.querySelectorAll('input[required]');
+    const idInput = requiredInputs[0] as HTMLInputElement;
+    const descriptionInput = requiredInputs[1] as HTMLInputElement;
+
+    // Select a flow class (set value on the select element)
+    (flowClassSelect as HTMLSelectElement).value = "class1";
+    flowClassSelect.dispatchEvent(new Event("change", { bubbles: true }));
+
+    // Fill in ID
+    idInput.value = "test-id";
+    idInput.dispatchEvent(new Event("change", { bubbles: true }));
+
+    // Fill in Description
+    descriptionInput.value = "Test description";
+    descriptionInput.dispatchEvent(new Event("change", { bubbles: true }));
+
+    // Now submit
     const createButton = getByRole("button", { name: /create/i });
     createButton.click();
 
-    // Verify startFlow was called (the actual component state management is complex)
+    // Verify startFlow was called
     expect(mockStartFlow).toHaveBeenCalled();
 
     // Verify the call had the expected structure
@@ -135,12 +171,27 @@ describe("CreateDialog", () => {
       onSuccess();
     });
 
-    const { getByLabelText, getByRole } = renderComponent({ onOpenChange });
+    const { getByLabelText, getByRole, container } = renderComponent({ onOpenChange });
 
     // Fill minimal required fields
-    const idInput = getByLabelText("ID") as HTMLInputElement;
+    const flowClassSelect = getByLabelText("Flow class");
+
+    // Find ID and Description inputs - they have required attribute
+    const requiredInputs = container.querySelectorAll('input[required]');
+    const idInput = requiredInputs[0] as HTMLInputElement;
+    const descriptionInput = requiredInputs[1] as HTMLInputElement;
+
+    // Select a flow class (set value on the select element)
+    (flowClassSelect as HTMLSelectElement).value = "class1";
+    flowClassSelect.dispatchEvent(new Event("change", { bubbles: true }));
+
+    // Fill in ID
     idInput.value = "test-id";
     idInput.dispatchEvent(new Event("change", { bubbles: true }));
+
+    // Fill in Description
+    descriptionInput.value = "Test description";
+    descriptionInput.dispatchEvent(new Event("change", { bubbles: true }));
 
     // Submit
     const createButton = getByRole("button", { name: /create/i });
@@ -163,16 +214,19 @@ describe("CreateDialog", () => {
 
     it("should handle empty selection", () => {
       // This verifies that when no flow class is selected,
-      // the component handles it gracefully
+      // the component now validates and prevents submission
 
       const { getByRole } = renderComponent();
 
       // Submit without selecting anything
       const createButton = getByRole("button", { name: /create/i });
-      createButton.click();
 
-      // Should have been called even with no selection
-      expect(mockStartFlow).toHaveBeenCalled();
+      // Button should be disabled when form is invalid
+      expect(createButton).toBeDisabled();
+
+      // StartFlow should not be called with invalid form
+      createButton.click();
+      expect(mockStartFlow).not.toHaveBeenCalled();
     });
   });
 });
