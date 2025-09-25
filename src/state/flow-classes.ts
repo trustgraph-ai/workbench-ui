@@ -216,7 +216,8 @@ export const useFlowClasses = () => {
         });
       } catch (error) {
         console.error(`Failed to delete flow class ${id}:`, error);
-        throw new Error(`Failed to delete flow class: ${id}`);
+        // Re-throw the original error to preserve the API error message
+        throw error;
       }
     },
     onSuccess: (_, id) => {
@@ -226,7 +227,8 @@ export const useFlowClasses = () => {
       notify.success(`Flow class "${id}" deleted successfully`);
     },
     onError: (error: Error) => {
-      notify.error(`Failed to delete flow class: ${error.message}`);
+      // Show the actual API error message without additional prefixes
+      notify.error(error.message || 'Unknown error occurred while deleting flow class');
     },
   });
 

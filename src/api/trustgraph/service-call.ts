@@ -59,7 +59,7 @@ export class ServiceCall {
 
   /**
    * Called when a response is received for this request
-   * Handles cleanup and calls the success callback
+   * Handles cleanup and calls the success or error callback based on response
    *
    * @param resp - The response object received from the server
    */
@@ -77,6 +77,29 @@ export class ServiceCall {
 
     // Remove from inflight requests tracker
     delete this.socket.inflight[this.mid];
+
+    // Check if the response contains an error (error can be directly in resp or nested under response)
+    let errorToHandle = null;
+
+    // Check for direct error in response
+    if (resp && typeof resp === 'object' && 'error' in resp) {
+      errorToHandle = (resp as any).error;
+    }
+    // Check for nested error under response property
+    else if (resp && typeof resp === 'object' && 'response' in resp) {
+      const response = (resp as any).response;
+      if (response && typeof response === 'object' && 'error' in response) {
+        errorToHandle = response.error;
+      }
+    }
+
+    if (errorToHandle) {
+      // Response contains an error - call error callback
+      const errorMessage = errorToHandle.message || errorToHandle.type || 'Unknown error';
+      console.log('ServiceCall: API error detected in response:', errorMessage, 'Full error:', errorToHandle);
+      this.error(new Error(errorMessage));
+      return;
+    }
 
     // Call success callback with the response
     this.success(resp);
