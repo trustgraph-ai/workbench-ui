@@ -911,7 +911,17 @@ export class FlowsApi {
         description: description,
       },
       30000,
-    );
+    ).then((response) => {
+      if (response.error) {
+        const errorMessage = typeof response.error === 'object' && response.error.message
+          ? response.error.message
+          : typeof response.error === 'string'
+          ? response.error
+          : "Flow start failed";
+        throw new Error(errorMessage);
+      }
+      return response;
+    });
   }
 
   /**
