@@ -1,5 +1,6 @@
 import { createColumnHelper } from "@tanstack/react-table";
-import { Checkbox } from "@chakra-ui/react";
+import { Checkbox, Box } from "@chakra-ui/react";
+import ParameterDisplay from "../components/flows/ParameterDisplay";
 
 /**
  * Flow data structure for the flow table
@@ -7,8 +8,9 @@ import { Checkbox } from "@chakra-ui/react";
  */
 export type Flow = {
   id: string; // Unique identifier for the flow
-  flowClass: string; // Flow class ID
+  "class-name": string; // Flow class ID
   description: string; // Human-readable description
+  parameters?: { [key: string]: any }; // Flow parameters
 };
 
 // Create a column helper instance for type-safe column definitions
@@ -79,5 +81,18 @@ export const columns = [
     id: "description",
     header: "Description",
     cell: (info) => info.getValue(),
+  }),
+
+  // Parameters column - displays flow parameters with descriptions
+  columnHelper.accessor("parameters", {
+    id: "parameters",
+    header: "Parameters",
+    cell: (info) => {
+      const row = info.row.original;
+      const parameters = info.getValue();
+
+      // Use the ParameterDisplay component to show parameters with descriptions
+      return <ParameterDisplay flowClassName={row["class-name"]} parameters={parameters} />;
+    },
   }),
 ];

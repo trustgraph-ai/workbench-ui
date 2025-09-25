@@ -902,22 +902,22 @@ After creation, immediately open the full ontology editor:
 
 ### Implementation Phases
 
-#### Phase 1: Simplify Creation Dialog (Week 1)
+#### Phase 1: Simplify Creation Dialog
 - Remove all field/concept creation from dialog
 - Reduce to just core metadata fields
 - Add starting mode selection (blank/AI/import)
 
-#### Phase 2: Enhance Editor Landing (Week 2)
+#### Phase 2: Enhance Editor Landing
 - Create welcome panel component
 - Implement guided first steps
 - Add contextual empty states
 
-#### Phase 3: Improve Editor Navigation (Week 3)
+#### Phase 3: Improve Editor Navigation
 - Tab-based navigation for different aspects
 - Breadcrumb trail for deep navigation
 - Quick access toolbar for common actions
 
-#### Phase 4: AI Integration Points (Week 4)
+#### Phase 4: AI Integration Points
 - AI assistant panel (collapsible)
 - Inline suggestions in editors
 - Bulk generation workflows
@@ -984,39 +984,29 @@ interface OntologyEditorProps {
 
 ### Migration Plan
 
-**Phase 1: Core UI (Weeks 1-4)**
+**Phase 1: Core UI**
 - Basic ontology management interface
 - Configuration API integration
 - Class and property CRUD operations
 
-**Phase 2: Advanced Features (Weeks 5-8)**
+**Phase 2: Advanced Features**
 - Class hierarchy visualization
 - Property domain/range specification
 - Cardinality and constraint management
 - Multi-language label support
 
-**Phase 3: AI Assistant Wizard (Weeks 9-12)**
+**Phase 3: AI Assistant Wizard**
 - Optional LLM integration
 - "Getting started" wizard flow
 - Property generation features
 - Consistency checking tools
 - Manual-only mode support
 
-**Phase 4: Reasoning & Import/Export (Weeks 13-16)**
+**Phase 4: Reasoning & Import/Export**
 - OWL reasoner integration
 - File format support (Turtle, RDF/XML, OWL/XML)
 - Import/export workflows
 - Inference visualization
-
-### Timeline
-
-**Total Duration**: 16 weeks
-
-**Milestones:**
-- Week 4: Basic ontology management functional (manual creation)
-- Week 8: Complete class/property editing with constraints
-- Week 12: Optional AI assistant wizard fully integrated
-- Week 16: Full feature set with reasoning and import/export
 
 ### Open Questions
 

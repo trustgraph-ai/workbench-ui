@@ -79,10 +79,10 @@ export const useFlows = () => {
    * Mutation for starting a new flow for processing workflows
    */
   const startFlowMutation = useMutation({
-    mutationFn: ({ id, flowClass, description, onSuccess }) => {
+    mutationFn: ({ id, flowClass, description, parameters, onSuccess }) => {
       return socket
         .flows()
-        .startFlow(id, flowClass, description)
+        .startFlow(id, flowClass, description, parameters)
         .then(() => {
           // Execute success callback if provided
           if (onSuccess) onSuccess();
@@ -91,7 +91,7 @@ export const useFlows = () => {
     onError: (err) => {
       console.log("Error:", err);
       // Show error notification to user
-      notify.error(err.toString());
+      notify.error(err.message);
     },
     onSuccess: () => {
       // Invalidate flows cache to refresh the list
@@ -118,7 +118,7 @@ export const useFlows = () => {
     onError: (err) => {
       console.log("Error:", err);
       // Show error notification to user
-      notify.error(err.toString());
+      notify.error(err.message);
     },
     onSuccess: () => {
       // Invalidate flows cache to trigger refetch
