@@ -11,7 +11,6 @@ interface FeatureSwitchesSectionProps {
   schemas: boolean;
   tokenCost: boolean;
   flowClasses: boolean;
-  flowClassEditor: boolean;
   structuredQuery: boolean;
   onOntologyEditorChange: (enabled: boolean) => void;
   onSubmissionsChange: (enabled: boolean) => void;
@@ -20,7 +19,6 @@ interface FeatureSwitchesSectionProps {
   onSchemasChange: (enabled: boolean) => void;
   onTokenCostChange: (enabled: boolean) => void;
   onFlowClassesChange: (enabled: boolean) => void;
-  onFlowClassEditorChange: (enabled: boolean) => void;
   onStructuredQueryChange: (enabled: boolean) => void;
 }
 
@@ -32,7 +30,6 @@ const FeatureSwitchesSection: React.FC<FeatureSwitchesSectionProps> = ({
   schemas,
   tokenCost,
   flowClasses,
-  flowClassEditor,
   structuredQuery,
   onOntologyEditorChange,
   onSubmissionsChange,
@@ -41,7 +38,6 @@ const FeatureSwitchesSection: React.FC<FeatureSwitchesSectionProps> = ({
   onSchemasChange,
   onTokenCostChange,
   onFlowClassesChange,
-  onFlowClassEditorChange,
   onStructuredQueryChange,
 }) => {
   return (
@@ -189,32 +185,7 @@ const FeatureSwitchesSection: React.FC<FeatureSwitchesSectionProps> = ({
           </Switch.Root>
         </HStack>
 
-        <HStack justify="space-between" align="center">
-          <VStack gap={1} align="start">
-            <Text fontWeight="medium">Flow Class Editor</Text>
-            <HStack gap={2} align="center">
-              <Text fontSize="sm" color="fg.muted">
-                Enable the visual flow class editor for creating and modifying dataflow patterns
-              </Text>
-              <Tag.Root colorPalette="accent" size="sm">
-                <Tag.Label>experimental</Tag.Label>
-              </Tag.Root>
-            </HStack>
-          </VStack>
-          <Switch.Root
-            checked={flowClassEditor}
-            onCheckedChange={(details) =>
-              onFlowClassEditorChange(details.checked)
-            }
-          >
-            <Switch.HiddenInput />
-            <Switch.Control>
-              <Switch.Thumb />
-            </Switch.Control>
-          </Switch.Root>
-        </HStack>
-
-        <HStack justify="space-between" align="center">
+<HStack justify="space-between" align="center">
           <VStack gap={1} align="start">
             <Text fontWeight="medium">Structured Query</Text>
             <Text fontSize="sm" color="fg.muted">
