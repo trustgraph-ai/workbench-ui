@@ -1,5 +1,5 @@
 import { createColumnHelper } from "@tanstack/react-table";
-import { Checkbox } from "@chakra-ui/react";
+import { Checkbox, Box, Text, VStack } from "@chakra-ui/react";
 
 /**
  * Flow data structure for the flow table
@@ -7,8 +7,9 @@ import { Checkbox } from "@chakra-ui/react";
  */
 export type Flow = {
   id: string; // Unique identifier for the flow
-  flowClass: string; // Flow class ID
+  "class-name": string; // Flow class ID
   description: string; // Human-readable description
+  parameters?: { [key: string]: any }; // Flow parameters
 };
 
 // Create a column helper instance for type-safe column definitions
@@ -79,5 +80,31 @@ export const columns = [
     id: "description",
     header: "Description",
     cell: (info) => info.getValue(),
+  }),
+
+  // Parameters column - displays flow parameters
+  columnHelper.accessor("parameters", {
+    id: "parameters",
+    header: "Parameters",
+    cell: (info) => {
+      const parameters = info.getValue();
+
+      // If no parameters, show "None"
+      if (!parameters || Object.keys(parameters).length === 0) {
+        return <Text color="fg.muted" fontSize="sm">None</Text>;
+      }
+
+      // Display parameters as key: value pairs
+      return (
+        <VStack align="start" gap={1}>
+          {Object.entries(parameters).map(([key, value]) => (
+            <Text key={key} fontSize="sm">
+              <Text as="span" fontWeight="medium">{key}:</Text>{" "}
+              <Text as="span" color="fg.muted">{String(value)}</Text>
+            </Text>
+          ))}
+        </VStack>
+      );
+    },
   }),
 ];
