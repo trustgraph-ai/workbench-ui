@@ -168,14 +168,8 @@ const ParameterInputs: React.FC<ParameterInputsProps> = ({
             placeholder={placeholder}
             value={value.toString()}
             onValueChange={(val) => {
-              const numValue = schema.type === 'integer'
-                ? parseInt(val, 10)
-                : parseFloat(val);
-              if (!isNaN(numValue)) {
-                handleParameterChange(flowParamName, numValue);
-              } else if (val === "") {
-                handleParameterChange(flowParamName, "");
-              }
+              // Store as string since backend expects string-encoded values
+              handleParameterChange(flowParamName, val);
             }}
             type="number"
             required={schema.required}
