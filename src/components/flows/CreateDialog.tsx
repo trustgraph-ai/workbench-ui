@@ -19,6 +19,11 @@ const CreateDialog = ({ open, onOpenChange }) => {
   const [description, setDescription] = useState("");
 
   const onSubmit = () => {
+    // Validate required fields before submission
+    if (!flowClass || !id.trim() || !description.trim()) {
+      return;
+    }
+
     flowState.startFlow({
       id: id,
       flowClass: flowClass,
@@ -28,6 +33,9 @@ const CreateDialog = ({ open, onOpenChange }) => {
       },
     });
   };
+
+  // Check if form is valid for submission
+  const isFormValid = flowClass && id.trim().length > 0 && description.trim().length > 0;
 
   const flowClassOptions = flowClasses.map((flowClass) => {
     return {
@@ -77,22 +85,28 @@ const CreateDialog = ({ open, onOpenChange }) => {
               <TextField
                 label="ID"
                 helperText="A unique ID for your flow"
-                values={id}
+                value={id}
                 onValueChange={setId}
+                required={true}
               />
 
               <TextField
                 label="Description"
                 helperText="A human-readable description"
-                values={description}
+                value={description}
                 onValueChange={setDescription}
+                required={true}
               />
             </Dialog.Body>
             <Dialog.Footer>
               <Button variant="outline" onClick={() => onOpenChange(false)}>
                 Cancel
               </Button>
-              <Button onClick={() => onSubmit()} colorPalette="primary">
+              <Button
+                onClick={() => onSubmit()}
+                colorPalette="primary"
+                disabled={!isFormValid}
+              >
                 <Plus /> Create
               </Button>
             </Dialog.Footer>
