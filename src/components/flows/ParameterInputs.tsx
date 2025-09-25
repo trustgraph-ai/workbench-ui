@@ -71,8 +71,7 @@ const ParameterInputs: React.FC<ParameterInputsProps> = ({
     const error = validationErrors[flowParamName];
     // Use metadata description if available, fallback to schema description, then parameter name
     const description = metadata?.description || schema.description;
-    const displayLabel = description || flowParamName;
-    const label = `${displayLabel}${schema.required ? " *" : ""}`;
+    const label = description || flowParamName;
 
     // Helper text priority: schema.helper -> type-based fallback
     const getHelperText = () => {
@@ -111,7 +110,7 @@ const ParameterInputs: React.FC<ParameterInputsProps> = ({
       return (
         <Box key={flowParamName} mt={5}>
           <SelectField
-            label={label}
+            label={schema.required ? `${label} *` : label}
             items={options}
             value={value ? [value.toString()] : []}
             onValueChange={(values) => {
@@ -139,7 +138,7 @@ const ParameterInputs: React.FC<ParameterInputsProps> = ({
               checked={value}
               onChange={(e) => handleParameterChange(flowParamName, e.target.checked)}
             >
-              {label}
+              {schema.required ? `${label} *` : label}
             </Checkbox>
             {helperText && <Field.HelperText>{helperText}</Field.HelperText>}
             {error && <Text color="red.500" fontSize="sm" mt={1}>{error}</Text>}
