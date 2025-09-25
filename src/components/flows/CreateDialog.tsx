@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 
 import { Plus } from "lucide-react";
 
@@ -24,12 +24,31 @@ const CreateDialog = ({ open, onOpenChange }) => {
   // Fetch parameter definitions when flow class is selected
   const {
     parameterDefinitions,
+    parameterMapping,
     isLoading: isLoadingParameters
   } = useFlowParameters(flowClass);
+
+  // Apply default values when parameter definitions change
+  useEffect(() => {
+    if (parameterMapping && parameterDefinitions && Object.keys(parameterMapping).length > 0) {
+      const defaultValues = {};
+      Object.entries(parameterMapping).forEach(([flowParamName, definitionName]) => {
+        const schema = parameterDefinitions[definitionName];
+        if (schema && schema.default !== undefined && parameterValues[flowParamName] === undefined) {
+          defaultValues[flowParamName] = schema.default;
+        }
+      });
+
+      if (Object.keys(defaultValues).length > 0) {
+        setParameterValues(prev => ({ ...prev, ...defaultValues }));
+      }
+    }
+  }, [parameterDefinitions, parameterMapping]);
 
   // Validate form including parameters
   const { isValid: areParametersValid, errors: parameterErrors } = useParameterValidation(
     parameterDefinitions,
+    parameterMapping,
     parameterValues
   );
 
@@ -126,6 +145,7 @@ const CreateDialog = ({ open, onOpenChange }) => {
               {flowClass && (
                 <ParameterInputs
                   parameterDefinitions={parameterDefinitions}
+                  parameterMapping={parameterMapping}
                   parameterValues={parameterValues}
                   onParameterChange={setParameterValues}
                   validationErrors={parameterErrors}

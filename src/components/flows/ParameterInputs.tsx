@@ -25,6 +25,7 @@ interface ParameterSchema {
 
 interface ParameterInputsProps {
   parameterDefinitions: { [key: string]: ParameterSchema }; // The actual definitions
+  parameterMapping: { [key: string]: string }; // Maps flow param names to definition names
   parameterValues: { [key: string]: any };
   onParameterChange: (values: { [key: string]: any }) => void;
   validationErrors: { [key: string]: string };
@@ -33,12 +34,13 @@ interface ParameterInputsProps {
 
 const ParameterInputs: React.FC<ParameterInputsProps> = ({
   parameterDefinitions,
+  parameterMapping,
   parameterValues,
   onParameterChange,
   validationErrors,
   contentRef,
 }) => {
-  if (!parameterDefinitions || Object.keys(parameterDefinitions).length === 0) {
+  if (!parameterMapping || Object.keys(parameterMapping).length === 0) {
     return null;
   }
 
@@ -49,11 +51,16 @@ const ParameterInputs: React.FC<ParameterInputsProps> = ({
     });
   };
 
-  const renderParameterInput = (paramName: string, schema: ParameterSchema) => {
+  const renderParameterInput = (flowParamName: string, definitionName: string) => {
+    const schema = parameterDefinitions[definitionName];
+    if (!schema) {
+      return null;
+    }
     const defaultValue = schema.default;
-    const value = parameterValues[paramName] ?? defaultValue ?? "";
-    const error = validationErrors[paramName];
-    const label = (schema.description || paramName) + (schema.required ? " *" : "");
+    const value = parameterValues[flowParamName] ?? defaultValue ?? "";
+    const error = validationErrors[flowParamName];
+    const label = `${flowParamName}${schema.required ? " *" : ""}`;
+    const labelDescription = schema.description ? ` (${schema.description})` : "";
 
     // Helper text priority: schema.helper -> type-based fallback
     const getHelperText = () => {
@@ -90,14 +97,14 @@ const ParameterInputs: React.FC<ParameterInputsProps> = ({
       });
 
       return (
-        <Box key={paramName} mt={5}>
+        <Box key={flowParamName} mt={5}>
           <SelectField
-            label={label}
+            label={label + labelDescription}
             items={options}
             value={value ? [value.toString()] : []}
             onValueChange={(values) => {
               const selectedValue = values.length > 0 ? values[0] : "";
-              handleParameterChange(paramName, selectedValue);
+              handleParameterChange(flowParamName, selectedValue);
             }}
             contentRef={contentRef}
           />
@@ -114,13 +121,13 @@ const ParameterInputs: React.FC<ParameterInputsProps> = ({
     // Boolean parameters - use Checkbox
     if (schema.type === 'boolean') {
       return (
-        <Box key={paramName} mt={5}>
+        <Box key={flowParamName} mt={5}>
           <Field.Root>
             <Checkbox
               checked={value}
-              onChange={(e) => handleParameterChange(paramName, e.target.checked)}
+              onChange={(e) => handleParameterChange(flowParamName, e.target.checked)}
             >
-              {label}
+              {label + labelDescription}
             </Checkbox>
             {helperText && <Field.HelperText>{helperText}</Field.HelperText>}
             {error && <Text color="red.500" fontSize="sm" mt={1}>{error}</Text>}
@@ -143,9 +150,9 @@ const ParameterInputs: React.FC<ParameterInputsProps> = ({
       }
 
       return (
-        <Box key={paramName} mt={5}>
+        <Box key={flowParamName} mt={5}>
           <TextField
-            label={label}
+            label={label + labelDescription}
             helperText={enhancedHelperText}
             placeholder={placeholder}
             value={value.toString()}
@@ -154,9 +161,9 @@ const ParameterInputs: React.FC<ParameterInputsProps> = ({
                 ? parseInt(val, 10)
                 : parseFloat(val);
               if (!isNaN(numValue)) {
-                handleParameterChange(paramName, numValue);
+                handleParameterChange(flowParamName, numValue);
               } else if (val === "") {
-                handleParameterChange(paramName, "");
+                handleParameterChange(flowParamName, "");
               }
             }}
             type="number"
@@ -169,13 +176,13 @@ const ParameterInputs: React.FC<ParameterInputsProps> = ({
 
     // String parameters - use TextField
     return (
-      <Box key={paramName} mt={5}>
+      <Box key={flowParamName} mt={5}>
         <TextField
-          label={label}
+          label={label + labelDescription}
           helperText={helperText}
           placeholder={placeholder}
           value={value.toString()}
-          onValueChange={(val) => handleParameterChange(paramName, val)}
+          onValueChange={(val) => handleParameterChange(flowParamName, val)}
           required={schema.required}
         />
         {error && <Text color="red.500" fontSize="sm" mt={1}>{error}</Text>}
@@ -188,8 +195,8 @@ const ParameterInputs: React.FC<ParameterInputsProps> = ({
       <Box mt={5} mb={3} fontWeight="bold">
         Parameters:
       </Box>
-      {Object.entries(parameterDefinitions).map(([paramName, schema]) =>
-        renderParameterInput(paramName, schema)
+      {Object.entries(parameterMapping).map(([flowParamName, definitionName]) =>
+        renderParameterInput(flowParamName, definitionName)
       )}
     </Box>
   );

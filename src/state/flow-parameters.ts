@@ -105,23 +105,28 @@ export const useFlowParameters = (flowClassName?: string) => {
 /**
  * Custom hook for parameter validation
  * @param parameterDefinitions - The parameter schema definitions
+ * @param parameterMapping - Maps flow param names to definition names
  * @param parameterValues - Current parameter values
  * @returns Validation result with isValid flag and errors object
  */
 export const useParameterValidation = (
   parameterDefinitions: ParameterDefinitions,
+  parameterMapping: { [key: string]: string },
   parameterValues: { [key: string]: any }
 ) => {
   return useMemo(() => {
     const errors: { [key: string]: string } = {};
     let isValid = true;
 
-    Object.entries(parameterDefinitions).forEach(([paramName, schema]) => {
-      const value = parameterValues[paramName];
+    Object.entries(parameterMapping).forEach(([flowParamName, definitionName]) => {
+      const schema = parameterDefinitions[definitionName];
+      if (!schema) return;
+
+      const value = parameterValues[flowParamName];
 
       // Check required fields
       if (schema.required && (value === undefined || value === "")) {
-        errors[paramName] = `${paramName} is required`;
+        errors[flowParamName] = `${flowParamName} is required`;
         isValid = false;
         return;
       }
@@ -135,24 +140,24 @@ export const useParameterValidation = (
       if (schema.type === 'number' || schema.type === 'integer') {
         const numValue = typeof value === 'string' ? parseFloat(value) : value;
         if (isNaN(numValue)) {
-          errors[paramName] = `${paramName} must be a valid number`;
+          errors[flowParamName] = `${flowParamName} must be a valid number`;
           isValid = false;
           return;
         }
 
         if (schema.type === 'integer' && !Number.isInteger(numValue)) {
-          errors[paramName] = `${paramName} must be an integer`;
+          errors[flowParamName] = `${flowParamName} must be an integer`;
           isValid = false;
           return;
         }
 
         // Range validation
         if (schema.minimum !== undefined && numValue < schema.minimum) {
-          errors[paramName] = `${paramName} must be at least ${schema.minimum}`;
+          errors[flowParamName] = `${flowParamName} must be at least ${schema.minimum}`;
           isValid = false;
         }
         if (schema.maximum !== undefined && numValue > schema.maximum) {
-          errors[paramName] = `${paramName} must be at most ${schema.maximum}`;
+          errors[flowParamName] = `${flowParamName} must be at most ${schema.maximum}`;
           isValid = false;
         }
       }
@@ -163,7 +168,7 @@ export const useParameterValidation = (
           typeof option === 'object' ? option.id : option
         );
         if (!validValues.includes(value)) {
-          errors[paramName] = `${paramName} must be one of: ${validValues.join(', ')}`;
+          errors[flowParamName] = `${flowParamName} must be one of: ${validValues.join(', ')}`;
           isValid = false;
         }
       }
@@ -172,14 +177,14 @@ export const useParameterValidation = (
       if (schema.pattern && schema.type === 'string') {
         const regex = new RegExp(schema.pattern);
         if (!regex.test(value.toString())) {
-          errors[paramName] = `${paramName} format is invalid`;
+          errors[flowParamName] = `${flowParamName} format is invalid`;
           isValid = false;
         }
       }
     });
 
     return { isValid, errors };
-  }, [parameterDefinitions, parameterValues]);
+  }, [parameterDefinitions, parameterMapping, parameterValues]);
 };
 
 export type { ParameterSchema, EnumOption, ParameterDefinitions };
