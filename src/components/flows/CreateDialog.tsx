@@ -29,6 +29,10 @@ const CreateDialog = ({ open, onOpenChange }) => {
       flowClass: flowClass,
       description: description,
       onSuccess: () => {
+        // Clear form after successful submission
+        setFlowClass(undefined);
+        setId("");
+        setDescription("");
         onOpenChange(false);
       },
     });
