@@ -1,5 +1,5 @@
 import React from "react";
-import { Check, Trash, Copy, Edit } from "lucide-react";
+import { Check, Trash, Copy, Eye } from "lucide-react";
 import { ActionBar, Portal, Button } from "@chakra-ui/react";
 
 interface FlowClassActionsProps {
@@ -36,7 +36,7 @@ const FlowClassActions: React.FC<FlowClassActionsProps> = ({
                 size="sm"
                 onClick={onEdit}
               >
-                <Edit /> Edit
+                <Eye /> View
               </Button>
             )}
             

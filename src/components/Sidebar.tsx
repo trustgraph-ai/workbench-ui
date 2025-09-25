@@ -126,13 +126,6 @@ const Sidebar = () => {
             label="Flow Classes"
           />
         )}
-        {settings.featureSwitches.flowClassEditor && (
-          <NavItem
-            to="/flow-class-editor"
-            icon={GitBranch}
-            label="Flow Editor"
-          />
-        )}
         <NavItem to="/flows" icon={Workflow} label="Flows" />
         <NavItem to="/kc" icon={BrainCircuit} label="Knowledge Cores" />
         {settings.featureSwitches.submissions && (
