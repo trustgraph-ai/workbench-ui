@@ -91,8 +91,15 @@ interface FlowClass {
   description: string;
   flow: { [stepName: string]: any }; // Flow step definitions
   interfaces: { [interfaceName: string]: any }; // Interface definitions
-  parameters?: { [flowParamName: string]: string }; // Maps flow param names to parameter-type definition names
+  parameters?: { [flowParamName: string]: FlowParameterMetadata }; // Maps flow param names to parameter metadata
   tags?: string[];
+}
+
+// Flow parameter metadata structure
+interface FlowParameterMetadata {
+  type: string; // Reference to parameter-type definition name
+  description: string; // Human-readable description for UI display
+  order: number; // Display order for parameter forms (lower numbers appear first)
 }
 
 // Parameter definitions fetched from config
@@ -409,15 +416,15 @@ export const useFlowParameters = (flowClassName?: string) => {
       // Get flow class definition first
       const flowClass = await socket.flows().getFlowClass(flowClassName);
 
-      // Extract parameter references
-      const parameterRefs = flowClass.parameters || {};
-      if (Object.keys(parameterRefs).length === 0) {
-        return { parameterDefinitions: {}, parameterMapping: {} };
+      // Extract parameter metadata
+      const parameterMetadata = flowClass.parameters || {};
+      if (Object.keys(parameterMetadata).length === 0) {
+        return { parameterDefinitions: {}, parameterMapping: {}, parameterMetadata: {} };
       }
 
-      // Fetch parameter definitions from config
-      const definitionNames = Object.values(parameterRefs);
-      const configKeys = definitionNames.map(name => ({ type: "parameter-types", key: name }));
+      // Extract unique parameter types for fetching definitions
+      const parameterTypes = [...new Set(Object.values(parameterMetadata).map(meta => meta.type))];
+      const configKeys = parameterTypes.map(type => ({ type: "parameter-types", key: type }));
 
       const configResponse = await socket.config().getConfig(configKeys);
       const parameterDefinitions = {};
@@ -429,9 +436,16 @@ export const useFlowParameters = (flowClassName?: string) => {
         }
       });
 
+      // Create mapping for backwards compatibility
+      const parameterMapping = {};
+      Object.entries(parameterMetadata).forEach(([paramName, meta]) => {
+        parameterMapping[paramName] = meta.type;
+      });
+
       return {
         parameterDefinitions,
-        parameterMapping: parameterRefs, // Maps flow param names to definition names
+        parameterMapping, // Maps flow param names to definition names (backwards compatibility)
+        parameterMetadata, // Full metadata with description, order, and type
       };
     },
   });
@@ -441,6 +455,7 @@ export const useFlowParameters = (flowClassName?: string) => {
   return {
     parameterDefinitions: parametersQuery.data?.parameterDefinitions || {},
     parameterMapping: parametersQuery.data?.parameterMapping || {},
+    parameterMetadata: parametersQuery.data?.parameterMetadata || {},
     isLoading: parametersQuery.isLoading,
     isError: parametersQuery.isError,
     error: parametersQuery.error,
@@ -597,14 +612,33 @@ const fetchParameterDefinitions = async (definitionNames: string[]) => {
   "flow": {
     "text-completion:{id}": {
       "model": "{llm-model}",
+      "temperature": "{llm-temperature}",
       "request": "non-persistent://tg/request/text-completion:{id}",
       "response": "non-persistent://tg/response/text-completion:{id}"
     }
   },
   "interfaces": { /* ... */ },
   "parameters": {
-    "llm-model": "llm-model",
-    "llm-rag-model": "llm-model"
+    "llm-model": {
+      "description": "LLM model",
+      "order": 1,
+      "type": "llm-model"
+    },
+    "llm-rag-model": {
+      "description": "LLM model for RAG",
+      "order": 2,
+      "type": "llm-model"
+    },
+    "llm-rag-temperature": {
+      "description": "LLM temperature",
+      "order": 3,
+      "type": "llm-temperature"
+    },
+    "llm-temperature": {
+      "description": "LLM temperature",
+      "order": 3,
+      "type": "llm-temperature"
+    }
   },
   "tags": ["document-rag", "graph-rag"]
 }

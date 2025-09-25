@@ -23,9 +23,17 @@ interface ParameterSchema {
   placeholder?: string; // Custom placeholder text
 }
 
+// Flow parameter metadata (stored in flow class)
+interface FlowParameterMetadata {
+  description: string;
+  order: number;
+  type: string; // Reference to parameter definition name
+}
+
 interface ParameterInputsProps {
   parameterDefinitions: { [key: string]: ParameterSchema }; // The actual definitions
   parameterMapping: { [key: string]: string }; // Maps flow param names to definition names
+  parameterMetadata: { [key: string]: FlowParameterMetadata }; // Flow-specific metadata
   parameterValues: { [key: string]: any };
   onParameterChange: (values: { [key: string]: any }) => void;
   validationErrors: { [key: string]: string };
@@ -35,6 +43,7 @@ interface ParameterInputsProps {
 const ParameterInputs: React.FC<ParameterInputsProps> = ({
   parameterDefinitions,
   parameterMapping,
+  parameterMetadata,
   parameterValues,
   onParameterChange,
   validationErrors,
@@ -53,6 +62,7 @@ const ParameterInputs: React.FC<ParameterInputsProps> = ({
 
   const renderParameterInput = (flowParamName: string, definitionName: string) => {
     const schema = parameterDefinitions[definitionName];
+    const metadata = parameterMetadata[flowParamName];
     if (!schema) {
       return null;
     }
@@ -60,7 +70,9 @@ const ParameterInputs: React.FC<ParameterInputsProps> = ({
     const value = parameterValues[flowParamName] ?? defaultValue ?? "";
     const error = validationErrors[flowParamName];
     const label = `${flowParamName}${schema.required ? " *" : ""}`;
-    const labelDescription = schema.description ? ` (${schema.description})` : "";
+    // Use metadata description if available, fallback to schema description
+    const description = metadata?.description || schema.description;
+    const labelDescription = description ? ` (${description})` : "";
 
     // Helper text priority: schema.helper -> type-based fallback
     const getHelperText = () => {
@@ -190,12 +202,19 @@ const ParameterInputs: React.FC<ParameterInputsProps> = ({
     );
   };
 
+  // Sort parameters by order field from metadata
+  const sortedParameters = Object.entries(parameterMapping).sort(([paramNameA], [paramNameB]) => {
+    const orderA = parameterMetadata[paramNameA]?.order || 999;
+    const orderB = parameterMetadata[paramNameB]?.order || 999;
+    return orderA - orderB;
+  });
+
   return (
     <Box>
       <Box mt={5} mb={3} fontWeight="bold">
         Parameters:
       </Box>
-      {Object.entries(parameterMapping).map(([flowParamName, definitionName]) =>
+      {sortedParameters.map(([flowParamName, definitionName]) =>
         renderParameterInput(flowParamName, definitionName)
       )}
     </Box>

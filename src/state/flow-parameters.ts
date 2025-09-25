@@ -29,6 +29,13 @@ interface ParameterDefinitions {
   [definitionName: string]: ParameterSchema;
 }
 
+// Flow parameter metadata (stored in flow class)
+interface FlowParameterMetadata {
+  description: string;
+  order: number;
+  type: string; // Reference to parameter definition name
+}
+
 /**
  * Custom hook for fetching parameter definitions for a flow class
  * @param flowClassName - The name of the flow class to fetch parameters for
@@ -56,14 +63,20 @@ export const useFlowParameters = (flowClassName?: string) => {
         // Get flow class definition first
         const flowClass = await socket.flows().getFlowClass(flowClassName);
 
-        // Extract parameter references
-        const parameterRefs = flowClass.parameters || {};
-        if (Object.keys(parameterRefs).length === 0) {
-          return { parameterDefinitions: {}, parameterMapping: {} };
+        // Extract parameter metadata with new structure
+        const parameterMetadata: { [key: string]: FlowParameterMetadata } = flowClass.parameters || {};
+        if (Object.keys(parameterMetadata).length === 0) {
+          return { parameterDefinitions: {}, parameterMapping: {}, parameterMetadata: {} };
         }
 
+        // Create mapping from flow param names to definition names
+        const parameterMapping: { [key: string]: string } = {};
+        Object.entries(parameterMetadata).forEach(([flowParamName, metadata]) => {
+          parameterMapping[flowParamName] = metadata.type;
+        });
+
         // Fetch parameter definitions from config
-        const definitionNames = Object.values(parameterRefs);
+        const definitionNames = Object.values(parameterMapping);
         const configKeys = definitionNames.map(name => ({ type: "parameter-types", key: name }));
 
         const configResponse = await socket.config().getConfig(configKeys);
@@ -82,7 +95,8 @@ export const useFlowParameters = (flowClassName?: string) => {
 
         return {
           parameterDefinitions,
-          parameterMapping: parameterRefs, // Maps flow param names to definition names
+          parameterMapping, // Maps flow param names to definition names
+          parameterMetadata, // Flow-specific metadata with description, order, type
         };
       } catch (error) {
         console.error("Failed to fetch flow parameters:", error);
@@ -96,6 +110,7 @@ export const useFlowParameters = (flowClassName?: string) => {
   return {
     parameterDefinitions: parametersQuery.data?.parameterDefinitions || {},
     parameterMapping: parametersQuery.data?.parameterMapping || {},
+    parameterMetadata: parametersQuery.data?.parameterMetadata || {},
     isLoading: parametersQuery.isLoading,
     isError: parametersQuery.isError,
     error: parametersQuery.error,
@@ -187,4 +202,4 @@ export const useParameterValidation = (
   }, [parameterDefinitions, parameterMapping, parameterValues]);
 };
 
-export type { ParameterSchema, EnumOption, ParameterDefinitions };
+export type { ParameterSchema, EnumOption, ParameterDefinitions, FlowParameterMetadata };

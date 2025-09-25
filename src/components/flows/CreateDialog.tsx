@@ -25,6 +25,7 @@ const CreateDialog = ({ open, onOpenChange }) => {
   const {
     parameterDefinitions,
     parameterMapping,
+    parameterMetadata,
     isLoading: isLoadingParameters
   } = useFlowParameters(flowClass);
 
@@ -146,6 +147,7 @@ const CreateDialog = ({ open, onOpenChange }) => {
                 <ParameterInputs
                   parameterDefinitions={parameterDefinitions}
                   parameterMapping={parameterMapping}
+                  parameterMetadata={parameterMetadata}
                   parameterValues={parameterValues}
                   onParameterChange={setParameterValues}
                   validationErrors={parameterErrors}
