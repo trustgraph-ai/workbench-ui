@@ -81,12 +81,8 @@ const FlowClassTable: React.FC<FlowClassTableProps> = ({ onEdit }) => {
 
   const handleDelete = async () => {
     if (selectedIds.length > 0) {
-      try {
-        await Promise.all(selectedIds.map(id => deleteFlowClass(id)));
-        table.setRowSelection({});
-      } catch (error) {
-        console.error('Failed to delete flow classes:', error);
-      }
+      await Promise.all(selectedIds.map(id => deleteFlowClass(id)));
+      table.setRowSelection({});
     }
   };
 
