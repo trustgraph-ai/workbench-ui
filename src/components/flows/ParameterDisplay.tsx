@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { Text, VStack } from "@chakra-ui/react";
+import { Text, Box, Badge, Flex } from "@chakra-ui/react";
 import { useFlows } from "../../state/flows";
 import { useFlowParameters } from "../../state/flow-parameters";
 
@@ -68,22 +68,37 @@ const ParameterDisplay: React.FC<ParameterDisplayProps> = ({ flowClassName, para
     });
   }, [parameters, parameterMetadata]);
 
-  // Display parameters with descriptions when available
+  // Array of color palettes to cycle through for visual distinction
+  const colorPalettes = ["blue", "teal", "purple", "green", "orange", "pink", "cyan"];
+
+  // Display parameters as compact badges that can wrap
   return (
-    <VStack align="start" gap={1}>
-      {sortedParameterEntries.map(([key, value]) => {
+    <Flex wrap="wrap" gap={1.5} maxWidth="400px">
+      {sortedParameterEntries.map(([key, value], index) => {
         // Use parameter description if available, otherwise fall back to key
         const displayName = parameterMetadata[key]?.description || key;
         const displayValue = displayValues[key] || String(value);
+        // Cycle through color palettes for visual distinction
+        const colorPalette = colorPalettes[index % colorPalettes.length];
 
         return (
-          <Text key={key} fontSize="sm">
-            <Text as="span" fontWeight="medium">{displayName}:</Text>{" "}
-            <Text as="span" color="fg.muted">{displayValue}</Text>
-          </Text>
+          <Badge
+            key={key}
+            colorPalette={colorPalette}
+            variant="subtle"
+            size="sm"
+            px={2}
+            py={0.5}
+            borderRadius="md"
+          >
+            <Text fontSize="xs">
+              <Text as="span" fontWeight="semibold">{displayName}:</Text>{" "}
+              <Text as="span">{displayValue}</Text>
+            </Text>
+          </Badge>
         );
       })}
-    </VStack>
+    </Flex>
   );
 };
 
