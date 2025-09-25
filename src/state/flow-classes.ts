@@ -210,10 +210,7 @@ export const useFlowClasses = () => {
   const deleteMutation = useMutation({
     mutationFn: async (id: string): Promise<void> => {
       try {
-        await socket.config().deleteConfig({
-          type: "flow-classes",
-          key: id
-        });
+        await socket.flows().deleteFlowClass(id);
       } catch (error) {
         console.error(`Failed to delete flow class ${id}:`, error);
         // Re-throw the original error to preserve the API error message

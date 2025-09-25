@@ -896,6 +896,20 @@ export class FlowsApi {
       .then((r) => JSON.parse(r["class-definition"]));
   }
 
+  /**
+   * Deletes a flow class
+   */
+  deleteFlowClass(name: string) {
+    return this.api.makeRequest<FlowRequest, FlowResponse>(
+      "flow",
+      {
+        operation: "delete-class",
+        "class-name": name,
+      },
+      30000,
+    );
+  }
+
   // Flow lifecycle management
 
   /**
