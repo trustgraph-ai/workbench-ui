@@ -59,10 +59,19 @@ const ParameterDisplay: React.FC<ParameterDisplayProps> = ({ flowClassName, para
     return result;
   }, [parameters, parameterDefinitions, parameterMapping]);
 
+  // Sort parameters by order field from metadata
+  const sortedParameterEntries = useMemo(() => {
+    return Object.entries(parameters).sort(([keyA], [keyB]) => {
+      const orderA = parameterMetadata[keyA]?.order || 999;
+      const orderB = parameterMetadata[keyB]?.order || 999;
+      return orderA - orderB;
+    });
+  }, [parameters, parameterMetadata]);
+
   // Display parameters with descriptions when available
   return (
     <VStack align="start" gap={1}>
-      {Object.entries(parameters).map(([key, value]) => {
+      {sortedParameterEntries.map(([key, value]) => {
         // Use parameter description if available, otherwise fall back to key
         const displayName = parameterMetadata[key]?.description || key;
         const displayValue = displayValues[key] || String(value);
