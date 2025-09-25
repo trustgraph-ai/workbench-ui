@@ -39,8 +39,10 @@ const FlowClassActions: React.FC<FlowClassActionsProps> = ({
                 <Eye /> View
               </Button>
             )}
-            
-            {selectedCount === 1 && onDuplicate && (
+
+            { /* false... temporarily disabled this because it doesn't
+                 work */ }
+            {false && selectedCount === 1 && onDuplicate && (
               <Button
                 variant="outline"
                 colorPalette="green"
