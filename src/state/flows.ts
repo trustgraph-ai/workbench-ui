@@ -91,7 +91,7 @@ export const useFlows = () => {
     onError: (err) => {
       console.log("Error:", err);
       // Show error notification to user
-      notify.error(err.toString());
+      notify.error(err.message);
     },
     onSuccess: () => {
       // Invalidate flows cache to refresh the list
@@ -118,7 +118,7 @@ export const useFlows = () => {
     onError: (err) => {
       console.log("Error:", err);
       // Show error notification to user
-      notify.error(err.toString());
+      notify.error(err.message);
     },
     onSuccess: () => {
       // Invalidate flows cache to trigger refetch
