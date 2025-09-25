@@ -56,16 +56,14 @@ const CreateDialog = ({ open, onOpenChange }) => {
         <Dialog.Positioner>
           <Dialog.Content ref={contentRef}>
             <Dialog.Header>
-              <Dialog.Title>Submit documents for processing</Dialog.Title>
+              <Dialog.Title>Create Flow</Dialog.Title>
             </Dialog.Header>
             <Dialog.Body>
-              <Box>Submit the following documents:</Box>
-
-              <Box mt={5}>With following flow classes:</Box>
+              <Box mt={5}>Select flow class and configuration:</Box>
 
               <Box mt={5}>
                 <SelectField
-                  label="Processing flow"
+                  label="Flow class"
                   items={flowClassOptions}
                   value={flowClass ? [flowClass] : []}
                   onValueChange={(x) => {
