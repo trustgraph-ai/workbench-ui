@@ -901,15 +901,22 @@ export class FlowsApi {
   /**
    * Starts a new flow instance
    */
-  startFlow(id: string, class_name: string, description: string) {
+  startFlow(id: string, class_name: string, description: string, parameters?: { [key: string]: any }) {
+    const request: any = {
+      operation: "start-flow",
+      "flow-id": id,
+      "class-name": class_name,
+      description: description,
+    };
+
+    // Only include parameters if provided and not empty
+    if (parameters && Object.keys(parameters).length > 0) {
+      request.parameters = parameters;
+    }
+
     return this.api.makeRequest<FlowRequest, FlowResponse>(
       "flow",
-      {
-        operation: "start-flow",
-        "flow-id": id,
-        "class-name": class_name,
-        description: description,
-      },
+      request,
       30000,
     ).then((response) => {
       if (response.error) {
