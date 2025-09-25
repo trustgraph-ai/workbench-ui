@@ -79,10 +79,10 @@ export const useFlows = () => {
    * Mutation for starting a new flow for processing workflows
    */
   const startFlowMutation = useMutation({
-    mutationFn: ({ id, flowClass, description, onSuccess }) => {
+    mutationFn: ({ id, flowClass, description, parameters, onSuccess }) => {
       return socket
         .flows()
-        .startFlow(id, flowClass, description)
+        .startFlow(id, flowClass, description, parameters)
         .then(() => {
           // Execute success callback if provided
           if (onSuccess) onSuccess();

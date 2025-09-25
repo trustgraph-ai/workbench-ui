@@ -1,0 +1,185 @@
+import { useQuery } from "@tanstack/react-query";
+import { useMemo } from "react";
+import { useSocket, useConnectionState } from "../api/trustgraph/socket";
+import { useNotification } from "./notify";
+import { useActivity } from "./activity";
+
+// Parameter schema definition
+interface ParameterSchema {
+  type: 'string' | 'number' | 'integer' | 'boolean';
+  description?: string;
+  default?: any;
+  enum?: EnumOption[] | string[];
+  minimum?: number;
+  maximum?: number;
+  pattern?: string;
+  required?: boolean;
+  helper?: string;
+  placeholder?: string;
+}
+
+// Rich enum option structure
+interface EnumOption {
+  id: string;
+  description: string;
+}
+
+// Parameter definitions fetched from config
+interface ParameterDefinitions {
+  [definitionName: string]: ParameterSchema;
+}
+
+/**
+ * Custom hook for fetching parameter definitions for a flow class
+ * @param flowClassName - The name of the flow class to fetch parameters for
+ * @returns Parameter definitions, mapping, and loading states
+ */
+export const useFlowParameters = (flowClassName?: string) => {
+  const socket = useSocket();
+  const connectionState = useConnectionState();
+  const notify = useNotification();
+
+  const isSocketReady =
+    connectionState?.status === "authenticated" ||
+    connectionState?.status === "unauthenticated";
+
+  /**
+   * Query for fetching parameter definitions for a flow class
+   */
+  const parametersQuery = useQuery({
+    queryKey: ["flow-parameters", flowClassName],
+    enabled: isSocketReady && !!flowClassName,
+    queryFn: async () => {
+      if (!flowClassName) return null;
+
+      try {
+        // Get flow class definition first
+        const flowClass = await socket.flows().getFlowClass(flowClassName);
+
+        // Extract parameter references
+        const parameterRefs = flowClass.parameters || {};
+        if (Object.keys(parameterRefs).length === 0) {
+          return { parameterDefinitions: {}, parameterMapping: {} };
+        }
+
+        // Fetch parameter definitions from config
+        const definitionNames = Object.values(parameterRefs);
+        const configKeys = definitionNames.map(name => ({ type: "parameter-types", key: name }));
+
+        const configResponse = await socket.config().getConfig(configKeys);
+        const parameterDefinitions: ParameterDefinitions = {};
+
+        // Parse config response to get parameter definitions
+        configResponse.values?.forEach(item => {
+          if (item.type === "parameter-types") {
+            try {
+              parameterDefinitions[item.key] = JSON.parse(item.value);
+            } catch (error) {
+              console.error(`Failed to parse parameter definition for ${item.key}:`, error);
+            }
+          }
+        });
+
+        return {
+          parameterDefinitions,
+          parameterMapping: parameterRefs, // Maps flow param names to definition names
+        };
+      } catch (error) {
+        console.error("Failed to fetch flow parameters:", error);
+        throw error;
+      }
+    },
+  });
+
+  useActivity(parametersQuery.isLoading, "Loading flow parameters");
+
+  return {
+    parameterDefinitions: parametersQuery.data?.parameterDefinitions || {},
+    parameterMapping: parametersQuery.data?.parameterMapping || {},
+    isLoading: parametersQuery.isLoading,
+    isError: parametersQuery.isError,
+    error: parametersQuery.error,
+  };
+};
+
+/**
+ * Custom hook for parameter validation
+ * @param parameterDefinitions - The parameter schema definitions
+ * @param parameterValues - Current parameter values
+ * @returns Validation result with isValid flag and errors object
+ */
+export const useParameterValidation = (
+  parameterDefinitions: ParameterDefinitions,
+  parameterValues: { [key: string]: any }
+) => {
+  return useMemo(() => {
+    const errors: { [key: string]: string } = {};
+    let isValid = true;
+
+    Object.entries(parameterDefinitions).forEach(([paramName, schema]) => {
+      const value = parameterValues[paramName];
+
+      // Check required fields
+      if (schema.required && (value === undefined || value === "")) {
+        errors[paramName] = `${paramName} is required`;
+        isValid = false;
+        return;
+      }
+
+      // Skip validation for empty optional fields
+      if (value === undefined || value === "") {
+        return;
+      }
+
+      // Type validation
+      if (schema.type === 'number' || schema.type === 'integer') {
+        const numValue = typeof value === 'string' ? parseFloat(value) : value;
+        if (isNaN(numValue)) {
+          errors[paramName] = `${paramName} must be a valid number`;
+          isValid = false;
+          return;
+        }
+
+        if (schema.type === 'integer' && !Number.isInteger(numValue)) {
+          errors[paramName] = `${paramName} must be an integer`;
+          isValid = false;
+          return;
+        }
+
+        // Range validation
+        if (schema.minimum !== undefined && numValue < schema.minimum) {
+          errors[paramName] = `${paramName} must be at least ${schema.minimum}`;
+          isValid = false;
+        }
+        if (schema.maximum !== undefined && numValue > schema.maximum) {
+          errors[paramName] = `${paramName} must be at most ${schema.maximum}`;
+          isValid = false;
+        }
+      }
+
+      // Enum validation
+      if (schema.enum && schema.enum.length > 0) {
+        const validValues = schema.enum.map(option =>
+          typeof option === 'object' ? option.id : option
+        );
+        if (!validValues.includes(value)) {
+          errors[paramName] = `${paramName} must be one of: ${validValues.join(', ')}`;
+          isValid = false;
+        }
+      }
+
+      // Pattern validation for strings
+      if (schema.pattern && schema.type === 'string') {
+        const regex = new RegExp(schema.pattern);
+        if (!regex.test(value.toString())) {
+          errors[paramName] = `${paramName} format is invalid`;
+          isValid = false;
+        }
+      }
+    });
+
+    return { isValid, errors };
+  }, [parameterDefinitions, parameterValues]);
+};
+
+export type { ParameterSchema, EnumOption, ParameterDefinitions };

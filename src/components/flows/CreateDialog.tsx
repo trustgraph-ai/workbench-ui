@@ -5,9 +5,11 @@ import { Plus } from "lucide-react";
 import { Portal, Button, Dialog, Box, CloseButton } from "@chakra-ui/react";
 
 import { useFlows } from "../../state/flows";
+import { useFlowParameters, useParameterValidation } from "../../state/flow-parameters";
 import SelectField from "../common/SelectField";
 import SelectOption from "../common/SelectOption";
 import TextField from "../common/TextField";
+import ParameterInputs from "./ParameterInputs";
 
 const CreateDialog = ({ open, onOpenChange }) => {
   const flowState = useFlows();
@@ -17,10 +19,23 @@ const CreateDialog = ({ open, onOpenChange }) => {
   const [flowClass, setFlowClass] = useState(undefined);
   const [id, setId] = useState("");
   const [description, setDescription] = useState("");
+  const [parameterValues, setParameterValues] = useState({});
+
+  // Fetch parameter definitions when flow class is selected
+  const {
+    parameterDefinitions,
+    isLoading: isLoadingParameters
+  } = useFlowParameters(flowClass);
+
+  // Validate form including parameters
+  const { isValid: areParametersValid, errors: parameterErrors } = useParameterValidation(
+    parameterDefinitions,
+    parameterValues
+  );
 
   const onSubmit = () => {
     // Validate required fields before submission
-    if (!flowClass || !id.trim() || !description.trim()) {
+    if (!flowClass || !id.trim() || !description.trim() || !areParametersValid) {
       return;
     }
 
@@ -28,18 +43,23 @@ const CreateDialog = ({ open, onOpenChange }) => {
       id: id,
       flowClass: flowClass,
       description: description,
+      parameters: parameterValues,
       onSuccess: () => {
         // Clear form after successful submission
         setFlowClass(undefined);
         setId("");
         setDescription("");
+        setParameterValues({});
         onOpenChange(false);
       },
     });
   };
 
   // Check if form is valid for submission
-  const isFormValid = flowClass && id.trim().length > 0 && description.trim().length > 0;
+  const isFormValid = flowClass &&
+    id.trim().length > 0 &&
+    description.trim().length > 0 &&
+    areParametersValid;
 
   const flowClassOptions = flowClasses.map((flowClass) => {
     return {
@@ -101,6 +121,17 @@ const CreateDialog = ({ open, onOpenChange }) => {
                 onValueChange={setDescription}
                 required={true}
               />
+
+              {/* Parameter inputs - only show if flow class has parameters */}
+              {flowClass && (
+                <ParameterInputs
+                  parameterDefinitions={parameterDefinitions}
+                  parameterValues={parameterValues}
+                  onParameterChange={setParameterValues}
+                  validationErrors={parameterErrors}
+                  contentRef={contentRef}
+                />
+              )}
             </Dialog.Body>
             <Dialog.Footer>
               <Button variant="outline" onClick={() => onOpenChange(false)}>
