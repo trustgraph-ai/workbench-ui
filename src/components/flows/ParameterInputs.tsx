@@ -69,10 +69,10 @@ const ParameterInputs: React.FC<ParameterInputsProps> = ({
     const defaultValue = schema.default;
     const value = parameterValues[flowParamName] ?? defaultValue ?? "";
     const error = validationErrors[flowParamName];
-    const label = `${flowParamName}${schema.required ? " *" : ""}`;
-    // Use metadata description if available, fallback to schema description
+    // Use metadata description if available, fallback to schema description, then parameter name
     const description = metadata?.description || schema.description;
-    const labelDescription = description ? ` (${description})` : "";
+    const displayLabel = description || flowParamName;
+    const label = `${displayLabel}${schema.required ? " *" : ""}`;
 
     // Helper text priority: schema.helper -> type-based fallback
     const getHelperText = () => {
@@ -111,7 +111,7 @@ const ParameterInputs: React.FC<ParameterInputsProps> = ({
       return (
         <Box key={flowParamName} mt={5}>
           <SelectField
-            label={label + labelDescription}
+            label={label}
             items={options}
             value={value ? [value.toString()] : []}
             onValueChange={(values) => {
@@ -139,7 +139,7 @@ const ParameterInputs: React.FC<ParameterInputsProps> = ({
               checked={value}
               onChange={(e) => handleParameterChange(flowParamName, e.target.checked)}
             >
-              {label + labelDescription}
+              {label}
             </Checkbox>
             {helperText && <Field.HelperText>{helperText}</Field.HelperText>}
             {error && <Text color="red.500" fontSize="sm" mt={1}>{error}</Text>}
@@ -164,7 +164,7 @@ const ParameterInputs: React.FC<ParameterInputsProps> = ({
       return (
         <Box key={flowParamName} mt={5}>
           <TextField
-            label={label + labelDescription}
+            label={label}
             helperText={enhancedHelperText}
             placeholder={placeholder}
             value={value.toString()}
@@ -190,7 +190,7 @@ const ParameterInputs: React.FC<ParameterInputsProps> = ({
     return (
       <Box key={flowParamName} mt={5}>
         <TextField
-          label={label + labelDescription}
+          label={label}
           helperText={helperText}
           placeholder={placeholder}
           value={value.toString()}
