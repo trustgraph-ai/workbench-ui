@@ -1,5 +1,6 @@
 import { createColumnHelper } from "@tanstack/react-table";
-import { Checkbox, Box, Text, VStack } from "@chakra-ui/react";
+import { Checkbox, Box } from "@chakra-ui/react";
+import ParameterDisplay from "../components/flows/ParameterDisplay";
 
 /**
  * Flow data structure for the flow table
@@ -82,29 +83,16 @@ export const columns = [
     cell: (info) => info.getValue(),
   }),
 
-  // Parameters column - displays flow parameters
+  // Parameters column - displays flow parameters with descriptions
   columnHelper.accessor("parameters", {
     id: "parameters",
     header: "Parameters",
     cell: (info) => {
+      const row = info.row.original;
       const parameters = info.getValue();
 
-      // If no parameters, show "None"
-      if (!parameters || Object.keys(parameters).length === 0) {
-        return <Text color="fg.muted" fontSize="sm">None</Text>;
-      }
-
-      // Display parameters as key: value pairs
-      return (
-        <VStack align="start" gap={1}>
-          {Object.entries(parameters).map(([key, value]) => (
-            <Text key={key} fontSize="sm">
-              <Text as="span" fontWeight="medium">{key}:</Text>{" "}
-              <Text as="span" color="fg.muted">{String(value)}</Text>
-            </Text>
-          ))}
-        </VStack>
-      );
+      // Use the ParameterDisplay component to show parameters with descriptions
+      return <ParameterDisplay flowClassName={row["class-name"]} parameters={parameters} />;
     },
   }),
 ];
