@@ -46,6 +46,50 @@ const CreateDialog = ({ open, onOpenChange }) => {
     }
   }, [parameterDefinitions, parameterMapping]);
 
+  // Resolve all parameter values including inheritance and defaults
+  const resolveAllParameters = () => {
+    const resolvedValues: { [key: string]: any } = {};
+
+    // Helper function to resolve a parameter value with controlled-by logic
+    const resolveValue = (paramName: string): any => {
+      // If already resolved, return it
+      if (resolvedValues[paramName] !== undefined) {
+        return resolvedValues[paramName];
+      }
+
+      const metadata = parameterMetadata[paramName];
+      const schema = parameterDefinitions[parameterMapping[paramName]];
+
+      // If parameter has explicit user value, use it
+      if (parameterValues[paramName] !== undefined && parameterValues[paramName] !== "") {
+        resolvedValues[paramName] = parameterValues[paramName];
+        return parameterValues[paramName];
+      }
+
+      // If parameter is controlled by another parameter, inherit its value
+      if (metadata && metadata["controlled-by"]) {
+        const controllerName = metadata["controlled-by"];
+        const controllerValue = resolveValue(controllerName);
+        if (controllerValue !== undefined && controllerValue !== "") {
+          resolvedValues[paramName] = controllerValue;
+          return controllerValue;
+        }
+      }
+
+      // Fall back to default value from schema
+      const defaultValue = schema?.default ?? "";
+      resolvedValues[paramName] = defaultValue;
+      return defaultValue;
+    };
+
+    // Resolve all parameters
+    Object.keys(parameterMapping).forEach(paramName => {
+      resolveValue(paramName);
+    });
+
+    return resolvedValues;
+  };
+
   // Validate form including parameters
   const { isValid: areParametersValid, errors: parameterErrors } = useParameterValidation(
     parameterDefinitions,
