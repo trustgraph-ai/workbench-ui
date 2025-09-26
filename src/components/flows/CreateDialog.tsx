@@ -50,6 +50,7 @@ const CreateDialog = ({ open, onOpenChange }) => {
   const { isValid: areParametersValid, errors: parameterErrors } = useParameterValidation(
     parameterDefinitions,
     parameterMapping,
+    parameterMetadata,
     parameterValues
   );
 

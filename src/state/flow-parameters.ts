@@ -34,6 +34,8 @@ interface FlowParameterMetadata {
   description: string;
   order: number;
   type: string; // Reference to parameter definition name
+  advanced?: boolean; // If true, parameter is shown in collapsible advanced section
+  "controlled-by"?: string; // Name of parameter that controls this parameter's value
 }
 
 /**
@@ -121,23 +123,49 @@ export const useFlowParameters = (flowClassName?: string) => {
  * Custom hook for parameter validation
  * @param parameterDefinitions - The parameter schema definitions
  * @param parameterMapping - Maps flow param names to definition names
+ * @param parameterMetadata - Flow parameter metadata including controlled-by relationships
  * @param parameterValues - Current parameter values
  * @returns Validation result with isValid flag and errors object
  */
 export const useParameterValidation = (
   parameterDefinitions: ParameterDefinitions,
   parameterMapping: { [key: string]: string },
+  parameterMetadata: { [key: string]: FlowParameterMetadata },
   parameterValues: { [key: string]: any }
 ) => {
   return useMemo(() => {
     const errors: { [key: string]: string } = {};
     let isValid = true;
 
+    // Resolve parameter value considering controlled-by relationships
+    const resolveParameterValue = (paramName: string, currentValues: { [key: string]: any }): any => {
+      const metadata = parameterMetadata[paramName];
+      const schema = parameterDefinitions[parameterMapping[paramName]];
+
+      // If parameter has explicit value, use it
+      if (currentValues[paramName] !== undefined && currentValues[paramName] !== "") {
+        return currentValues[paramName];
+      }
+
+      // If parameter is controlled by another parameter, inherit its value
+      if (metadata && metadata["controlled-by"]) {
+        const controllerName = metadata["controlled-by"];
+        const controllerValue = resolveParameterValue(controllerName, currentValues);
+        if (controllerValue !== undefined && controllerValue !== "") {
+          return controllerValue;
+        }
+      }
+
+      // Fall back to default value from schema
+      return schema?.default ?? "";
+    };
+
     Object.entries(parameterMapping).forEach(([flowParamName, definitionName]) => {
       const schema = parameterDefinitions[definitionName];
       if (!schema) return;
 
-      const value = parameterValues[flowParamName];
+      const resolvedValue = resolveParameterValue(flowParamName, parameterValues);
+      const value = resolvedValue;
 
       // Check required fields
       if (schema.required && (value === undefined || value === "")) {
@@ -199,7 +227,7 @@ export const useParameterValidation = (
     });
 
     return { isValid, errors };
-  }, [parameterDefinitions, parameterMapping, parameterValues]);
+  }, [parameterDefinitions, parameterMapping, parameterMetadata, parameterValues]);
 };
 
 export type { ParameterSchema, EnumOption, ParameterDefinitions, FlowParameterMetadata };

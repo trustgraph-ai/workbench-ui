@@ -53,10 +53,16 @@ const ParameterInputs: React.FC<ParameterInputsProps> = ({
   contentRef,
 }) => {
   const [showAdvanced, setShowAdvanced] = useState(false);
+  const [explicitlySetParams, setExplicitlySetParams] = useState<Set<string>>(new Set());
 
   if (!parameterMapping || Object.keys(parameterMapping).length === 0) {
     return null;
   }
+
+  // Debug logging
+  console.log('[ParameterInputs] Parameter metadata:', parameterMetadata);
+  console.log('[ParameterInputs] Parameter mapping:', parameterMapping);
+  console.log('[ParameterInputs] Parameter values:', parameterValues);
 
   // Initialize controlled parameter values when component mounts or dependencies change
   useEffect(() => {
@@ -152,17 +158,35 @@ const ParameterInputs: React.FC<ParameterInputsProps> = ({
   };
 
   const handleParameterChange = (paramName: string, value: any) => {
+    console.log(`[ParameterInputs] Changing parameter ${paramName} to:`, value);
+
+    // Mark this parameter as explicitly set by user
+    const newExplicitParams = new Set(explicitlySetParams);
+    newExplicitParams.add(paramName);
+    setExplicitlySetParams(newExplicitParams);
+
     const newValues = { ...parameterValues, [paramName]: value };
 
     // Update controlled parameters
     const controlledParams = getControlledParameters(paramName);
+    console.log(`[ParameterInputs] Found ${controlledParams.length} controlled parameters:`, controlledParams);
+
     for (const controlledParam of controlledParams) {
-      // Only update if the controlled parameter doesn't have an explicit value
-      if (parameterValues[controlledParam] === undefined || parameterValues[controlledParam] === "") {
+      const currentValue = parameterValues[controlledParam];
+      const isExplicitlySet = explicitlySetParams.has(controlledParam);
+
+      console.log(`[ParameterInputs] Controlled param ${controlledParam}: current="${currentValue}", isExplicit=${isExplicitlySet}`);
+
+      // Only update if the controlled parameter hasn't been explicitly set by user
+      if (!isExplicitlySet) {
+        console.log(`[ParameterInputs] Setting ${controlledParam} = ${value} (inherited from ${paramName})`);
         newValues[controlledParam] = value;
+      } else {
+        console.log(`[ParameterInputs] Skipping ${controlledParam} - user has explicitly set it`);
       }
     }
 
+    console.log(`[ParameterInputs] Final parameter values:`, newValues);
     onParameterChange(newValues);
   };
 
@@ -179,7 +203,7 @@ const ParameterInputs: React.FC<ParameterInputsProps> = ({
 
     // Check if this parameter is inheriting its value
     const isInheriting = metadata && metadata["controlled-by"] &&
-      (parameterValues[flowParamName] === undefined || parameterValues[flowParamName] === "");
+      !explicitlySetParams.has(flowParamName);
     const controllerName = metadata?.["controlled-by"];
 
     // Use metadata description if available, fallback to schema description, then parameter name
