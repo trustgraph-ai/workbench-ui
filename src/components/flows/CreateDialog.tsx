@@ -87,7 +87,13 @@ const CreateDialog = ({ open, onOpenChange }) => {
       resolveValue(paramName);
     });
 
-    return resolvedValues;
+    // Convert all values to strings as backend expects string values
+    const stringifiedValues: { [key: string]: string } = {};
+    Object.entries(resolvedValues).forEach(([key, value]) => {
+      stringifiedValues[key] = value?.toString() || "";
+    });
+
+    return stringifiedValues;
   };
 
   // Validate form including parameters
@@ -104,11 +110,16 @@ const CreateDialog = ({ open, onOpenChange }) => {
       return;
     }
 
+    // Resolve all parameter values including inheritance and defaults
+    const resolvedParameters = resolveAllParameters();
+
+    console.log('[CreateDialog] Submitting with resolved parameters:', resolvedParameters);
+
     flowState.startFlow({
       id: id,
       flowClass: flowClass,
       description: description,
-      parameters: parameterValues,
+      parameters: resolvedParameters,
       onSuccess: () => {
         // Clear form after successful submission
         setFlowClass(undefined);
