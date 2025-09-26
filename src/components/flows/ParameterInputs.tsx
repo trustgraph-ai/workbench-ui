@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import { Box, Text, Field, Checkbox, Button, Collapsible, HStack } from "@chakra-ui/react";
-import { ChevronDown, ChevronRight } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { Box, Text, Field, Checkbox, Button, Collapsible, HStack, Badge } from "@chakra-ui/react";
+import { ChevronDown, ChevronRight, Link2 } from "lucide-react";
 import TextField from "../common/TextField";
 import SelectField from "../common/SelectField";
 import SelectOptionText from "../common/SelectOptionText";
@@ -30,6 +30,7 @@ interface FlowParameterMetadata {
   order: number;
   type: string; // Reference to parameter definition name
   advanced?: boolean; // If true, parameter is shown in collapsible advanced section
+  "controlled-by"?: string; // Name of parameter that controls this parameter's value
 }
 
 interface ParameterInputsProps {
@@ -57,11 +58,112 @@ const ParameterInputs: React.FC<ParameterInputsProps> = ({
     return null;
   }
 
-  const handleParameterChange = (paramName: string, value: any) => {
-    onParameterChange({
-      ...parameterValues,
-      [paramName]: value,
+  // Initialize controlled parameter values when component mounts or dependencies change
+  useEffect(() => {
+    if (!parameterMetadata || !parameterDefinitions || Object.keys(parameterMapping).length === 0) {
+      return;
+    }
+
+    const needsUpdate = Object.entries(parameterMetadata).some(([paramName, metadata]) => {
+      if (metadata["controlled-by"]) {
+        const hasExplicitValue = parameterValues[paramName] !== undefined && parameterValues[paramName] !== "";
+        if (!hasExplicitValue) {
+          const resolvedValue = resolveParameterValue(paramName, parameterValues);
+          return resolvedValue !== parameterValues[paramName];
+        }
+      }
+      return false;
     });
+
+    if (needsUpdate) {
+      const updatedValues = { ...parameterValues };
+      Object.entries(parameterMetadata).forEach(([paramName, metadata]) => {
+        if (metadata["controlled-by"]) {
+          const hasExplicitValue = parameterValues[paramName] !== undefined && parameterValues[paramName] !== "";
+          if (!hasExplicitValue) {
+            const resolvedValue = resolveParameterValue(paramName, parameterValues);
+            if (resolvedValue !== parameterValues[paramName]) {
+              updatedValues[paramName] = resolvedValue;
+            }
+          }
+        }
+      });
+      onParameterChange(updatedValues);
+    }
+  }, [parameterMetadata, parameterDefinitions, parameterMapping]);
+
+  // Detect circular dependencies in controlled-by relationships
+  const detectCircularDependencies = (
+    paramName: string,
+    visited: Set<string> = new Set(),
+    path: string[] = []
+  ): string[] | null => {
+    if (visited.has(paramName)) {
+      const cycleStart = path.indexOf(paramName);
+      return path.slice(cycleStart).concat(paramName);
+    }
+
+    const metadata = parameterMetadata[paramName];
+    if (!metadata || !metadata["controlled-by"]) {
+      return null;
+    }
+
+    visited.add(paramName);
+    path.push(paramName);
+
+    return detectCircularDependencies(metadata["controlled-by"], visited, path);
+  };
+
+  // Resolve parameter value considering controlled-by relationships
+  const resolveParameterValue = (paramName: string, currentValues: { [key: string]: any }): any => {
+    // Check for circular dependencies first
+    const cycle = detectCircularDependencies(paramName);
+    if (cycle) {
+      console.warn(`Circular dependency detected in controlled-by chain: ${cycle.join(' -> ')}`);
+      return currentValues[paramName] ?? parameterDefinitions[parameterMapping[paramName]]?.default ?? "";
+    }
+
+    const metadata = parameterMetadata[paramName];
+    const schema = parameterDefinitions[parameterMapping[paramName]];
+
+    // If parameter has explicit value, use it
+    if (currentValues[paramName] !== undefined && currentValues[paramName] !== "") {
+      return currentValues[paramName];
+    }
+
+    // If parameter is controlled by another parameter, inherit its value
+    if (metadata && metadata["controlled-by"]) {
+      const controllerName = metadata["controlled-by"];
+      const controllerValue = resolveParameterValue(controllerName, currentValues);
+      if (controllerValue !== undefined && controllerValue !== "") {
+        return controllerValue;
+      }
+    }
+
+    // Fall back to default value from schema
+    return schema?.default ?? "";
+  };
+
+  // Get all parameters that are controlled by a given parameter
+  const getControlledParameters = (controllerName: string): string[] => {
+    return Object.entries(parameterMetadata)
+      .filter(([_, metadata]) => metadata["controlled-by"] === controllerName)
+      .map(([paramName]) => paramName);
+  };
+
+  const handleParameterChange = (paramName: string, value: any) => {
+    const newValues = { ...parameterValues, [paramName]: value };
+
+    // Update controlled parameters
+    const controlledParams = getControlledParameters(paramName);
+    for (const controlledParam of controlledParams) {
+      // Only update if the controlled parameter doesn't have an explicit value
+      if (parameterValues[controlledParam] === undefined || parameterValues[controlledParam] === "") {
+        newValues[controlledParam] = value;
+      }
+    }
+
+    onParameterChange(newValues);
   };
 
   const renderParameterInput = (flowParamName: string, definitionName: string) => {
@@ -71,27 +173,58 @@ const ParameterInputs: React.FC<ParameterInputsProps> = ({
       return null;
     }
     const defaultValue = schema.default;
-    const value = parameterValues[flowParamName] ?? defaultValue ?? "";
+    const resolvedValue = resolveParameterValue(flowParamName, parameterValues);
+    const value = resolvedValue ?? defaultValue ?? "";
     const error = validationErrors[flowParamName];
+
+    // Check if this parameter is inheriting its value
+    const isInheriting = metadata && metadata["controlled-by"] &&
+      (parameterValues[flowParamName] === undefined || parameterValues[flowParamName] === "");
+    const controllerName = metadata?.["controlled-by"];
+
     // Use metadata description if available, fallback to schema description, then parameter name
     const description = metadata?.description || schema.description;
     const label = description || flowParamName;
 
-    // Helper text priority: schema.helper -> type-based fallback
+    // Helper text priority: inheritance info -> schema.helper -> type-based fallback
     const getHelperText = () => {
-      if (schema.helper) return schema.helper;
+      let baseHelperText = schema.helper;
 
-      switch (schema.type) {
-        case 'integer': return 'Enter a whole number';
-        case 'number': return 'Enter a number (decimals allowed)';
-        case 'boolean': return 'Select true or false';
-        case 'string': return schema.enum ? undefined : 'Enter text';
-        default: return undefined;
+      if (!baseHelperText) {
+        switch (schema.type) {
+          case 'integer': baseHelperText = 'Enter a whole number'; break;
+          case 'number': baseHelperText = 'Enter a number (decimals allowed)'; break;
+          case 'boolean': baseHelperText = 'Select true or false'; break;
+          case 'string': baseHelperText = schema.enum ? undefined : 'Enter text'; break;
+          default: baseHelperText = undefined;
+        }
       }
+
+      // Add inheritance info if applicable
+      if (isInheriting && controllerName) {
+        const inheritanceText = `Inherits from "${controllerName}"`;
+        return baseHelperText ? `${baseHelperText}. ${inheritanceText}` : inheritanceText;
+      }
+
+      return baseHelperText;
     };
 
     const helperText = getHelperText();
     const placeholder = schema.placeholder || "";
+
+    // Helper component to show inheritance indicator
+    const renderInheritanceIndicator = () => {
+      if (!isInheriting || !controllerName) return null;
+
+      return (
+        <HStack gap={1} mt={1}>
+          <Link2 size={12} style={{ color: 'var(--colors-fg-muted)' }} />
+          <Text fontSize="xs" color="fg.muted">
+            Inherits from {controllerName}
+          </Text>
+        </HStack>
+      );
+    };
 
     // Enum parameters - handle both rich {id, description} and simple string arrays
     if (schema.enum && schema.enum.length > 0) {
@@ -129,6 +262,7 @@ const ParameterInputs: React.FC<ParameterInputsProps> = ({
               {helperText}
             </Text>
           )}
+          {renderInheritanceIndicator()}
         </Box>
       );
     }
@@ -147,6 +281,7 @@ const ParameterInputs: React.FC<ParameterInputsProps> = ({
             {helperText && <Field.HelperText>{helperText}</Field.HelperText>}
             {error && <Text color="red.500" fontSize="sm" mt={1}>{error}</Text>}
           </Field.Root>
+          {renderInheritanceIndicator()}
         </Box>
       );
     }
@@ -179,6 +314,7 @@ const ParameterInputs: React.FC<ParameterInputsProps> = ({
             required={schema.required}
           />
           {error && <Text color="red.500" fontSize="sm" mt={1}>{error}</Text>}
+          {renderInheritanceIndicator()}
         </Box>
       );
     }
@@ -195,6 +331,7 @@ const ParameterInputs: React.FC<ParameterInputsProps> = ({
           required={schema.required}
         />
         {error && <Text color="red.500" fontSize="sm" mt={1}>{error}</Text>}
+        {renderInheritanceIndicator()}
       </Box>
     );
   };
