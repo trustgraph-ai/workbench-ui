@@ -1,5 +1,6 @@
-import React from "react";
-import { Box, Text, Field, Checkbox } from "@chakra-ui/react";
+import React, { useState } from "react";
+import { Box, Text, Field, Checkbox, Button, Collapsible, HStack } from "@chakra-ui/react";
+import { ChevronDown, ChevronRight } from "lucide-react";
 import TextField from "../common/TextField";
 import SelectField from "../common/SelectField";
 import SelectOptionText from "../common/SelectOptionText";
@@ -28,6 +29,7 @@ interface FlowParameterMetadata {
   description: string;
   order: number;
   type: string; // Reference to parameter definition name
+  advanced?: boolean; // If true, parameter is shown in collapsible advanced section
 }
 
 interface ParameterInputsProps {
@@ -49,6 +51,8 @@ const ParameterInputs: React.FC<ParameterInputsProps> = ({
   validationErrors,
   contentRef,
 }) => {
+  const [showAdvanced, setShowAdvanced] = useState(false);
+
   if (!parameterMapping || Object.keys(parameterMapping).length === 0) {
     return null;
   }
@@ -195,20 +199,63 @@ const ParameterInputs: React.FC<ParameterInputsProps> = ({
     );
   };
 
-  // Sort parameters by order field from metadata
+  // Sort parameters by order field from metadata and separate basic vs advanced
   const sortedParameters = Object.entries(parameterMapping).sort(([paramNameA], [paramNameB]) => {
     const orderA = parameterMetadata[paramNameA]?.order || 999;
     const orderB = parameterMetadata[paramNameB]?.order || 999;
     return orderA - orderB;
   });
 
+  // Separate basic and advanced parameters
+  const basicParameters = sortedParameters.filter(([paramName]) =>
+    !parameterMetadata[paramName]?.advanced
+  );
+
+  const advancedParameters = sortedParameters.filter(([paramName]) =>
+    parameterMetadata[paramName]?.advanced === true
+  );
+
   return (
     <Box>
       <Box mt={5} mb={3} fontWeight="bold">
         Parameters:
       </Box>
-      {sortedParameters.map(([flowParamName, definitionName]) =>
+
+      {/* Basic Parameters */}
+      {basicParameters.map(([flowParamName, definitionName]) =>
         renderParameterInput(flowParamName, definitionName)
+      )}
+
+      {/* Advanced Parameters Section */}
+      {advancedParameters.length > 0 && (
+        <Box mt={6}>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setShowAdvanced(!showAdvanced)}
+            p={0}
+            h="auto"
+            minH="auto"
+            fontWeight="normal"
+            color="fg.muted"
+            _hover={{ color: "fg" }}
+          >
+            <HStack gap={1}>
+              {showAdvanced ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+              <Text fontSize="sm">Advanced Settings</Text>
+            </HStack>
+          </Button>
+
+          <Collapsible.Root open={showAdvanced}>
+            <Collapsible.Content>
+              <Box mt={3} pl={6} borderLeft="2px solid" borderColor="border.muted">
+                {advancedParameters.map(([flowParamName, definitionName]) =>
+                  renderParameterInput(flowParamName, definitionName)
+                )}
+              </Box>
+            </Collapsible.Content>
+          </Collapsible.Root>
+        </Box>
       )}
     </Box>
   );
