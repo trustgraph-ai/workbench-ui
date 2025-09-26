@@ -55,15 +55,6 @@ const ParameterInputs: React.FC<ParameterInputsProps> = ({
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [explicitlySetParams, setExplicitlySetParams] = useState<Set<string>>(new Set());
 
-  if (!parameterMapping || Object.keys(parameterMapping).length === 0) {
-    return null;
-  }
-
-  // Debug logging
-  console.log('[ParameterInputs] Parameter metadata:', parameterMetadata);
-  console.log('[ParameterInputs] Parameter mapping:', parameterMapping);
-  console.log('[ParameterInputs] Parameter values:', parameterValues);
-
   // Initialize controlled parameter values when component mounts or dependencies change
   useEffect(() => {
     if (!parameterMetadata || !parameterDefinitions || Object.keys(parameterMapping).length === 0) {
@@ -97,6 +88,16 @@ const ParameterInputs: React.FC<ParameterInputsProps> = ({
       onParameterChange(updatedValues);
     }
   }, [parameterMetadata, parameterDefinitions, parameterMapping]);
+
+  // Early return after all hooks to avoid hook order violation
+  if (!parameterMapping || Object.keys(parameterMapping).length === 0) {
+    return null;
+  }
+
+  // Debug logging
+  console.log('[ParameterInputs] Parameter metadata:', parameterMetadata);
+  console.log('[ParameterInputs] Parameter mapping:', parameterMapping);
+  console.log('[ParameterInputs] Parameter values:', parameterValues);
 
   // Detect circular dependencies in controlled-by relationships
   const detectCircularDependencies = (
