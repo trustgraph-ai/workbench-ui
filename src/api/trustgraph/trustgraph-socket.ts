@@ -601,6 +601,10 @@ export class BaseApi {
   config() {
     return new ConfigApi(this);
   }
+
+  collectionManagement() {
+    return new CollectionManagementApi(this);
+  }
 }
 
 /**
@@ -1522,6 +1526,99 @@ export class KnowledgeApi {
         collection: collection || "default",
       },
       recv, // Stream handler
+      30000,
+    );
+  }
+}
+
+/**
+ * CollectionManagementApi - Manages collections for organizing documents
+ * Provides operations for listing, creating, updating, and deleting collections
+ */
+export class CollectionManagementApi {
+  api: BaseApi;
+
+  constructor(api: BaseApi) {
+    this.api = api;
+  }
+
+  /**
+   * Lists all collections for a user with optional tag filtering
+   * @param user - User identifier
+   * @param tagFilter - Optional array of tags to filter collections
+   * @returns Promise resolving to array of collection metadata
+   */
+  listCollections(user: string, tagFilter?: string[]) {
+    const request: any = {
+      operation: "list-collections",
+      user,
+    };
+
+    if (tagFilter && tagFilter.length > 0) {
+      request.tag_filter = tagFilter;
+    }
+
+    return this.api
+      .makeRequest<any, any>("collection-management", request, 30000)
+      .then((r) => r.collections || []);
+  }
+
+  /**
+   * Creates or updates a collection
+   * @param user - User identifier
+   * @param collection - Collection ID (unique identifier)
+   * @param name - Display name for the collection
+   * @param description - Description of the collection
+   * @param tags - Array of tags for categorization
+   * @returns Promise resolving to updated collection metadata
+   */
+  updateCollection(
+    user: string,
+    collection: string,
+    name?: string,
+    description?: string,
+    tags?: string[],
+  ) {
+    const request: any = {
+      operation: "update-collection",
+      user,
+      collection,
+    };
+
+    if (name !== undefined) {
+      request.name = name;
+    }
+    if (description !== undefined) {
+      request.description = description;
+    }
+    if (tags !== undefined) {
+      request.tags = tags;
+    }
+
+    return this.api
+      .makeRequest<any, any>("collection-management", request, 30000)
+      .then((r) => {
+        if (r.collections && r.collections.length > 0) {
+          return r.collections[0];
+        }
+        throw new Error("Failed to update collection");
+      });
+  }
+
+  /**
+   * Deletes a collection and all its data
+   * @param user - User identifier
+   * @param collection - Collection ID to delete
+   * @returns Promise resolving when deletion is complete
+   */
+  deleteCollection(user: string, collection: string) {
+    return this.api.makeRequest<any, any>(
+      "collection-management",
+      {
+        operation: "delete-collection",
+        user,
+        collection,
+      },
       30000,
     );
   }
