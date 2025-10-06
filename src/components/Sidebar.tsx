@@ -20,6 +20,7 @@ import {
   TestTube2,
   Hammer,
   Plug,
+  Bot,
   MessageSquareText,
   Search,
   Waypoints,
@@ -152,6 +153,9 @@ const Sidebar = () => {
         )}
         {settings.featureSwitches.mcpTools && (
           <NavItem to="/mcp-tools" icon={Plug} label="MCP Tools" />
+        )}
+        {settings.featureSwitches.llmModels && (
+          <NavItem to="/llm-models" icon={Bot} label="LLM Models" />
         )}
         <NavItem to="/settings" icon={Settings} label="Settings" />
       </VStack>
