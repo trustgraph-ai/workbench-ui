@@ -38,14 +38,36 @@ const ModelsTable: React.FC<ModelsTableProps> = ({
     value: string
   ) => {
     const updated = [...editingModels];
+    const oldId = updated[index].id;
     updated[index] = { ...updated[index], [field]: value };
     setEditingModels(updated);
     setHasChanges(true);
+
+    // If this is the ID field, update the default accordingly
+    if (field === "id") {
+      console.log("ID changed:", { oldId, value, editingDefault });
+      if (!editingDefault && value) {
+        // No default set and we're adding an ID - make it the default
+        console.log("Setting default to:", value);
+        setEditingDefault(value);
+      } else if (editingDefault === oldId) {
+        // We're changing the ID of the current default - update the default to the new ID
+        console.log("Updating default from", oldId, "to", value);
+        setEditingDefault(value);
+      }
+    }
   };
 
   const handleAddModel = () => {
-    setEditingModels([...editingModels, { id: "", description: "" }]);
+    const newModel = { id: "", description: "" };
+    const updated = [...editingModels, newModel];
+    setEditingModels(updated);
     setHasChanges(true);
+
+    // If this is the first model (table was empty), make it the default
+    if (editingModels.length === 0) {
+      setEditingDefault("");
+    }
   };
 
   const handleDeleteModel = (index: number) => {
@@ -53,9 +75,13 @@ const ModelsTable: React.FC<ModelsTableProps> = ({
     setEditingModels(updated);
     setHasChanges(true);
 
-    // If we deleted the default, clear it
+    // If we deleted the default, set the first remaining model as default
     if (editingModels[index].id === editingDefault) {
-      setEditingDefault("");
+      if (updated.length > 0) {
+        setEditingDefault(updated[0].id);
+      } else {
+        setEditingDefault("");
+      }
     }
   };
 
@@ -83,14 +109,13 @@ const ModelsTable: React.FC<ModelsTableProps> = ({
         <Table.Body>
           {editingModels.map((model, index) => (
             <Table.Row key={index}>
-              <Table.Cell>
+              <Table.Cell textAlign="center">
                 <input
                   type="radio"
                   name="default-model"
                   checked={editingDefault === model.id}
-                  disabled={!model.id}
-                  onChange={() => model.id && handleDefaultChange(model.id)}
-                  style={{ cursor: model.id ? "pointer" : "not-allowed" }}
+                  onChange={() => handleDefaultChange(model.id)}
+                  style={{ cursor: "pointer" }}
                 />
               </Table.Cell>
               <Table.Cell>
