@@ -1,17 +1,18 @@
 import React from "react";
 import { Bot } from "lucide-react";
-import Card from "../components/common/Card";
+import PageHeader from "../components/common/PageHeader";
 import LLMModels from "../components/llm-models/LLMModels";
 
 const LLMModelsPage: React.FC = () => {
   return (
-    <Card
-      title="LLM Models"
-      description="Manage LLM model options for parameter types with enum selections"
-      icon={<Bot />}
-    >
+    <>
+      <PageHeader
+        icon={<Bot />}
+        title="LLM Models"
+        description="Manage available LLM model options and set the default model"
+      />
       <LLMModels />
-    </Card>
+    </>
   );
 };
 
