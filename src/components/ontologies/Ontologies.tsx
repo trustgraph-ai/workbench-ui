@@ -1,11 +1,12 @@
 import React, { useState } from "react";
-import { Box, Button, HStack } from "@chakra-ui/react";
-import { ArrowLeft } from "lucide-react";
+import { Box } from "@chakra-ui/react";
 import { OntologiesTable } from "./OntologiesTable";
 import { OntologyEditor } from "./OntologyEditor";
 
 export const Ontologies: React.FC = () => {
-  const [selectedOntologyId, setSelectedOntologyId] = useState<string | null>(null);
+  const [selectedOntologyId, setSelectedOntologyId] = useState<string | null>(
+    null,
+  );
 
   const handleEditOntology = (ontologyId: string) => {
     setSelectedOntologyId(ontologyId);

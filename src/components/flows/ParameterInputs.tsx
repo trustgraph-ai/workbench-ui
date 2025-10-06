@@ -1,5 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { Box, Text, Field, Checkbox, Button, Collapsible, HStack, Badge } from "@chakra-ui/react";
+import {
+  Box,
+  Text,
+  Field,
+  Checkbox,
+  Button,
+  Collapsible,
+  HStack,
+  Badge,
+} from "@chakra-ui/react";
 import { ChevronDown, ChevronRight, Link2 } from "lucide-react";
 import TextField from "../common/TextField";
 import SelectField from "../common/SelectField";
@@ -12,7 +21,7 @@ interface EnumOption {
 }
 
 interface ParameterSchema {
-  type: 'string' | 'number' | 'integer' | 'boolean';
+  type: "string" | "number" | "integer" | "boolean";
   description?: string;
   default?: any;
   enum?: EnumOption[] | string[]; // Can be rich objects or simple strings
@@ -53,32 +62,50 @@ const ParameterInputs: React.FC<ParameterInputsProps> = ({
   contentRef,
 }) => {
   const [showAdvanced, setShowAdvanced] = useState(false);
-  const [explicitlySetParams, setExplicitlySetParams] = useState<Set<string>>(new Set());
+  const [explicitlySetParams, setExplicitlySetParams] = useState<Set<string>>(
+    new Set(),
+  );
 
   // Initialize controlled parameter values when component mounts or dependencies change
   useEffect(() => {
-    if (!parameterMetadata || !parameterDefinitions || Object.keys(parameterMapping).length === 0) {
+    if (
+      !parameterMetadata ||
+      !parameterDefinitions ||
+      Object.keys(parameterMapping).length === 0
+    ) {
       return;
     }
 
-    const needsUpdate = Object.entries(parameterMetadata).some(([paramName, metadata]) => {
-      if (metadata["controlled-by"]) {
-        const hasExplicitValue = parameterValues[paramName] !== undefined && parameterValues[paramName] !== "";
-        if (!hasExplicitValue) {
-          const resolvedValue = resolveParameterValue(paramName, parameterValues);
-          return resolvedValue !== parameterValues[paramName];
+    const needsUpdate = Object.entries(parameterMetadata).some(
+      ([paramName, metadata]) => {
+        if (metadata["controlled-by"]) {
+          const hasExplicitValue =
+            parameterValues[paramName] !== undefined &&
+            parameterValues[paramName] !== "";
+          if (!hasExplicitValue) {
+            const resolvedValue = resolveParameterValue(
+              paramName,
+              parameterValues,
+            );
+            return resolvedValue !== parameterValues[paramName];
+          }
         }
-      }
-      return false;
-    });
+        return false;
+      },
+    );
 
     if (needsUpdate) {
       const updatedValues = { ...parameterValues };
       Object.entries(parameterMetadata).forEach(([paramName, metadata]) => {
         if (metadata["controlled-by"]) {
-          const hasExplicitValue = parameterValues[paramName] !== undefined && parameterValues[paramName] !== "";
+          const hasExplicitValue =
+            parameterValues[paramName] !== undefined &&
+            parameterValues[paramName] !== "";
           if (!hasExplicitValue) {
-            const resolvedValue = resolveParameterValue(paramName, parameterValues);
+            const resolvedValue = resolveParameterValue(
+              paramName,
+              parameterValues,
+            );
             if (resolvedValue !== parameterValues[paramName]) {
               updatedValues[paramName] = resolvedValue;
             }
@@ -95,15 +122,15 @@ const ParameterInputs: React.FC<ParameterInputsProps> = ({
   }
 
   // Debug logging
-  console.log('[ParameterInputs] Parameter metadata:', parameterMetadata);
-  console.log('[ParameterInputs] Parameter mapping:', parameterMapping);
-  console.log('[ParameterInputs] Parameter values:', parameterValues);
+  console.log("[ParameterInputs] Parameter metadata:", parameterMetadata);
+  console.log("[ParameterInputs] Parameter mapping:", parameterMapping);
+  console.log("[ParameterInputs] Parameter values:", parameterValues);
 
   // Detect circular dependencies in controlled-by relationships
   const detectCircularDependencies = (
     paramName: string,
     visited: Set<string> = new Set(),
-    path: string[] = []
+    path: string[] = [],
   ): string[] | null => {
     if (visited.has(paramName)) {
       const cycleStart = path.indexOf(paramName);
@@ -118,30 +145,49 @@ const ParameterInputs: React.FC<ParameterInputsProps> = ({
     visited.add(paramName);
     path.push(paramName);
 
-    return detectCircularDependencies(metadata["controlled-by"], visited, path);
+    return detectCircularDependencies(
+      metadata["controlled-by"],
+      visited,
+      path,
+    );
   };
 
   // Resolve parameter value considering controlled-by relationships
-  const resolveParameterValue = (paramName: string, currentValues: { [key: string]: any }): any => {
+  const resolveParameterValue = (
+    paramName: string,
+    currentValues: { [key: string]: any },
+  ): any => {
     // Check for circular dependencies first
     const cycle = detectCircularDependencies(paramName);
     if (cycle) {
-      console.warn(`Circular dependency detected in controlled-by chain: ${cycle.join(' -> ')}`);
-      return currentValues[paramName] ?? parameterDefinitions[parameterMapping[paramName]]?.default ?? "";
+      console.warn(
+        `Circular dependency detected in controlled-by chain: ${cycle.join(" -> ")}`,
+      );
+      return (
+        currentValues[paramName] ??
+        parameterDefinitions[parameterMapping[paramName]]?.default ??
+        ""
+      );
     }
 
     const metadata = parameterMetadata[paramName];
     const schema = parameterDefinitions[parameterMapping[paramName]];
 
     // If parameter has explicit value, use it
-    if (currentValues[paramName] !== undefined && currentValues[paramName] !== "") {
+    if (
+      currentValues[paramName] !== undefined &&
+      currentValues[paramName] !== ""
+    ) {
       return currentValues[paramName];
     }
 
     // If parameter is controlled by another parameter, inherit its value
     if (metadata && metadata["controlled-by"]) {
       const controllerName = metadata["controlled-by"];
-      const controllerValue = resolveParameterValue(controllerName, currentValues);
+      const controllerValue = resolveParameterValue(
+        controllerName,
+        currentValues,
+      );
       if (controllerValue !== undefined && controllerValue !== "") {
         return controllerValue;
       }
@@ -159,7 +205,10 @@ const ParameterInputs: React.FC<ParameterInputsProps> = ({
   };
 
   const handleParameterChange = (paramName: string, value: any) => {
-    console.log(`[ParameterInputs] Changing parameter ${paramName} to:`, value);
+    console.log(
+      `[ParameterInputs] Changing parameter ${paramName} to:`,
+      value,
+    );
 
     // Mark this parameter as explicitly set by user
     const newExplicitParams = new Set(explicitlySetParams);
@@ -170,20 +219,29 @@ const ParameterInputs: React.FC<ParameterInputsProps> = ({
 
     // Update controlled parameters
     const controlledParams = getControlledParameters(paramName);
-    console.log(`[ParameterInputs] Found ${controlledParams.length} controlled parameters:`, controlledParams);
+    console.log(
+      `[ParameterInputs] Found ${controlledParams.length} controlled parameters:`,
+      controlledParams,
+    );
 
     for (const controlledParam of controlledParams) {
       const currentValue = parameterValues[controlledParam];
       const isExplicitlySet = explicitlySetParams.has(controlledParam);
 
-      console.log(`[ParameterInputs] Controlled param ${controlledParam}: current="${currentValue}", isExplicit=${isExplicitlySet}`);
+      console.log(
+        `[ParameterInputs] Controlled param ${controlledParam}: current="${currentValue}", isExplicit=${isExplicitlySet}`,
+      );
 
       // Only update if the controlled parameter hasn't been explicitly set by user
       if (!isExplicitlySet) {
-        console.log(`[ParameterInputs] Setting ${controlledParam} = ${value} (inherited from ${paramName})`);
+        console.log(
+          `[ParameterInputs] Setting ${controlledParam} = ${value} (inherited from ${paramName})`,
+        );
         newValues[controlledParam] = value;
       } else {
-        console.log(`[ParameterInputs] Skipping ${controlledParam} - user has explicitly set it`);
+        console.log(
+          `[ParameterInputs] Skipping ${controlledParam} - user has explicitly set it`,
+        );
       }
     }
 
@@ -191,19 +249,27 @@ const ParameterInputs: React.FC<ParameterInputsProps> = ({
     onParameterChange(newValues);
   };
 
-  const renderParameterInput = (flowParamName: string, definitionName: string) => {
+  const renderParameterInput = (
+    flowParamName: string,
+    definitionName: string,
+  ) => {
     const schema = parameterDefinitions[definitionName];
     const metadata = parameterMetadata[flowParamName];
     if (!schema) {
       return null;
     }
     const defaultValue = schema.default;
-    const resolvedValue = resolveParameterValue(flowParamName, parameterValues);
+    const resolvedValue = resolveParameterValue(
+      flowParamName,
+      parameterValues,
+    );
     const value = resolvedValue ?? defaultValue ?? "";
     const error = validationErrors[flowParamName];
 
     // Check if this parameter is inheriting its value
-    const isInheriting = metadata && metadata["controlled-by"] &&
+    const isInheriting =
+      metadata &&
+      metadata["controlled-by"] &&
       !explicitlySetParams.has(flowParamName);
     const controllerName = metadata?.["controlled-by"];
 
@@ -217,18 +283,29 @@ const ParameterInputs: React.FC<ParameterInputsProps> = ({
 
       if (!baseHelperText) {
         switch (schema.type) {
-          case 'integer': baseHelperText = 'Enter a whole number'; break;
-          case 'number': baseHelperText = 'Enter a number (decimals allowed)'; break;
-          case 'boolean': baseHelperText = 'Select true or false'; break;
-          case 'string': baseHelperText = schema.enum ? undefined : 'Enter text'; break;
-          default: baseHelperText = undefined;
+          case "integer":
+            baseHelperText = "Enter a whole number";
+            break;
+          case "number":
+            baseHelperText = "Enter a number (decimals allowed)";
+            break;
+          case "boolean":
+            baseHelperText = "Select true or false";
+            break;
+          case "string":
+            baseHelperText = schema.enum ? undefined : "Enter text";
+            break;
+          default:
+            baseHelperText = undefined;
         }
       }
 
       // Add inheritance info if applicable
       if (isInheriting && controllerName) {
         const inheritanceText = `Inherits from "${controllerName}"`;
-        return baseHelperText ? `${baseHelperText}. ${inheritanceText}` : inheritanceText;
+        return baseHelperText
+          ? `${baseHelperText}. ${inheritanceText}`
+          : inheritanceText;
       }
 
       return baseHelperText;
@@ -243,7 +320,7 @@ const ParameterInputs: React.FC<ParameterInputsProps> = ({
 
       return (
         <HStack gap={1} mt={1}>
-          <Link2 size={12} style={{ color: 'var(--colors-fg-muted)' }} />
+          <Link2 size={12} style={{ color: "var(--colors-fg-muted)" }} />
           <Text fontSize="xs" color="fg.muted">
             Inherits from {controllerName}
           </Text>
@@ -253,10 +330,11 @@ const ParameterInputs: React.FC<ParameterInputsProps> = ({
 
     // Enum parameters - handle both rich {id, description} and simple string arrays
     if (schema.enum && schema.enum.length > 0) {
-      const options = schema.enum.map(option => {
+      const options = schema.enum.map((option) => {
         // Handle both rich {id, description} and simple string enums
-        const optionId = typeof option === 'object' ? option.id : option;
-        const optionDesc = typeof option === 'object' ? option.description : option;
+        const optionId = typeof option === "object" ? option.id : option;
+        const optionDesc =
+          typeof option === "object" ? option.description : option;
 
         return {
           value: optionId,
@@ -281,7 +359,11 @@ const ParameterInputs: React.FC<ParameterInputsProps> = ({
             }}
             contentRef={contentRef}
           />
-          {error && <Text color="red.500" fontSize="sm" mt={1}>{error}</Text>}
+          {error && (
+            <Text color="red.500" fontSize="sm" mt={1}>
+              {error}
+            </Text>
+          )}
           {helperText && (
             <Text fontSize="sm" color="fg.muted" mt={1}>
               {helperText}
@@ -293,18 +375,24 @@ const ParameterInputs: React.FC<ParameterInputsProps> = ({
     }
 
     // Boolean parameters - use Checkbox
-    if (schema.type === 'boolean') {
+    if (schema.type === "boolean") {
       return (
         <Box key={flowParamName} mt={5}>
           <Field.Root>
             <Checkbox
               checked={value}
-              onChange={(e) => handleParameterChange(flowParamName, e.target.checked)}
+              onChange={(e) =>
+                handleParameterChange(flowParamName, e.target.checked)
+              }
             >
               {schema.required ? `${label} *` : label}
             </Checkbox>
             {helperText && <Field.HelperText>{helperText}</Field.HelperText>}
-            {error && <Text color="red.500" fontSize="sm" mt={1}>{error}</Text>}
+            {error && (
+              <Text color="red.500" fontSize="sm" mt={1}>
+                {error}
+              </Text>
+            )}
           </Field.Root>
           {renderInheritanceIndicator()}
         </Box>
@@ -312,12 +400,14 @@ const ParameterInputs: React.FC<ParameterInputsProps> = ({
     }
 
     // Number/Integer parameters - use TextField with type="number"
-    if (schema.type === 'number' || schema.type === 'integer') {
+    if (schema.type === "number" || schema.type === "integer") {
       let enhancedHelperText = helperText;
       if (schema.minimum !== undefined || schema.maximum !== undefined) {
         const rangeText = [];
-        if (schema.minimum !== undefined) rangeText.push(`min: ${schema.minimum}`);
-        if (schema.maximum !== undefined) rangeText.push(`max: ${schema.maximum}`);
+        if (schema.minimum !== undefined)
+          rangeText.push(`min: ${schema.minimum}`);
+        if (schema.maximum !== undefined)
+          rangeText.push(`max: ${schema.maximum}`);
         const rangeInfo = rangeText.join(", ");
         enhancedHelperText = enhancedHelperText
           ? `${enhancedHelperText} (${rangeInfo})`
@@ -338,7 +428,11 @@ const ParameterInputs: React.FC<ParameterInputsProps> = ({
             type="number"
             required={schema.required}
           />
-          {error && <Text color="red.500" fontSize="sm" mt={1}>{error}</Text>}
+          {error && (
+            <Text color="red.500" fontSize="sm" mt={1}>
+              {error}
+            </Text>
+          )}
           {renderInheritanceIndicator()}
         </Box>
       );
@@ -355,26 +449,32 @@ const ParameterInputs: React.FC<ParameterInputsProps> = ({
           onValueChange={(val) => handleParameterChange(flowParamName, val)}
           required={schema.required}
         />
-        {error && <Text color="red.500" fontSize="sm" mt={1}>{error}</Text>}
+        {error && (
+          <Text color="red.500" fontSize="sm" mt={1}>
+            {error}
+          </Text>
+        )}
         {renderInheritanceIndicator()}
       </Box>
     );
   };
 
   // Sort parameters by order field from metadata and separate basic vs advanced
-  const sortedParameters = Object.entries(parameterMapping).sort(([paramNameA], [paramNameB]) => {
-    const orderA = parameterMetadata[paramNameA]?.order || 999;
-    const orderB = parameterMetadata[paramNameB]?.order || 999;
-    return orderA - orderB;
-  });
-
-  // Separate basic and advanced parameters
-  const basicParameters = sortedParameters.filter(([paramName]) =>
-    !parameterMetadata[paramName]?.advanced
+  const sortedParameters = Object.entries(parameterMapping).sort(
+    ([paramNameA], [paramNameB]) => {
+      const orderA = parameterMetadata[paramNameA]?.order || 999;
+      const orderB = parameterMetadata[paramNameB]?.order || 999;
+      return orderA - orderB;
+    },
   );
 
-  const advancedParameters = sortedParameters.filter(([paramName]) =>
-    parameterMetadata[paramName]?.advanced === true
+  // Separate basic and advanced parameters
+  const basicParameters = sortedParameters.filter(
+    ([paramName]) => !parameterMetadata[paramName]?.advanced,
+  );
+
+  const advancedParameters = sortedParameters.filter(
+    ([paramName]) => parameterMetadata[paramName]?.advanced === true,
   );
 
   return (
@@ -385,7 +485,7 @@ const ParameterInputs: React.FC<ParameterInputsProps> = ({
 
       {/* Basic Parameters */}
       {basicParameters.map(([flowParamName, definitionName]) =>
-        renderParameterInput(flowParamName, definitionName)
+        renderParameterInput(flowParamName, definitionName),
       )}
 
       {/* Advanced Parameters Section */}
@@ -403,16 +503,25 @@ const ParameterInputs: React.FC<ParameterInputsProps> = ({
             _hover={{ color: "fg" }}
           >
             <HStack gap={1}>
-              {showAdvanced ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+              {showAdvanced ? (
+                <ChevronDown size={16} />
+              ) : (
+                <ChevronRight size={16} />
+              )}
               <Text fontSize="sm">Advanced Settings</Text>
             </HStack>
           </Button>
 
           <Collapsible.Root open={showAdvanced}>
             <Collapsible.Content>
-              <Box mt={3} pl={6} borderLeft="2px solid" borderColor="border.muted">
+              <Box
+                mt={3}
+                pl={6}
+                borderLeft="2px solid"
+                borderColor="border.muted"
+              >
                 {advancedParameters.map(([flowParamName, definitionName]) =>
-                  renderParameterInput(flowParamName, definitionName)
+                  renderParameterInput(flowParamName, definitionName),
                 )}
               </Box>
             </Collapsible.Content>

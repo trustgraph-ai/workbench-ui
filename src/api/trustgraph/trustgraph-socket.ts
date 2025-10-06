@@ -919,7 +919,12 @@ export class FlowsApi {
   /**
    * Starts a new flow instance
    */
-  startFlow(id: string, class_name: string, description: string, parameters?: { [key: string]: any }) {
+  startFlow(
+    id: string,
+    class_name: string,
+    description: string,
+    parameters?: { [key: string]: any },
+  ) {
     const request: any = {
       operation: "start-flow",
       "flow-id": id,
@@ -932,21 +937,20 @@ export class FlowsApi {
       request.parameters = parameters;
     }
 
-    return this.api.makeRequest<FlowRequest, FlowResponse>(
-      "flow",
-      request,
-      30000,
-    ).then((response) => {
-      if (response.error) {
-        const errorMessage = typeof response.error === 'object' && response.error.message
-          ? response.error.message
-          : typeof response.error === 'string'
-          ? response.error
-          : "Flow start failed";
-        throw new Error(errorMessage);
-      }
-      return response;
-    });
+    return this.api
+      .makeRequest<FlowRequest, FlowResponse>("flow", request, 30000)
+      .then((response) => {
+        if (response.error) {
+          const errorMessage =
+            typeof response.error === "object" && response.error.message
+              ? response.error.message
+              : typeof response.error === "string"
+                ? response.error
+                : "Flow start failed";
+          throw new Error(errorMessage);
+        }
+        return response;
+      });
   }
 
   /**
@@ -1549,7 +1553,7 @@ export class CollectionManagementApi {
    * @returns Promise resolving to array of collection metadata
    */
   listCollections(user: string, tagFilter?: string[]) {
-    const request: any = {
+    const request: Record<string, unknown> = {
       operation: "list-collections",
       user,
     };
@@ -1559,7 +1563,11 @@ export class CollectionManagementApi {
     }
 
     return this.api
-      .makeRequest<any, any>("collection-management", request, 30000)
+      .makeRequest<Record<string, unknown>, Record<string, unknown>>(
+        "collection-management",
+        request,
+        30000,
+      )
       .then((r) => r.collections || []);
   }
 
@@ -1579,7 +1587,7 @@ export class CollectionManagementApi {
     description?: string,
     tags?: string[],
   ) {
-    const request: any = {
+    const request: Record<string, unknown> = {
       operation: "update-collection",
       user,
       collection,
@@ -1596,9 +1604,13 @@ export class CollectionManagementApi {
     }
 
     return this.api
-      .makeRequest<any, any>("collection-management", request, 30000)
+      .makeRequest<Record<string, unknown>, Record<string, unknown>>(
+        "collection-management",
+        request,
+        30000,
+      )
       .then((r) => {
-        if (r.collections && r.collections.length > 0) {
+        if (r.collections && Array.isArray(r.collections) && r.collections.length > 0) {
           return r.collections[0];
         }
         throw new Error("Failed to update collection");
@@ -1612,7 +1624,7 @@ export class CollectionManagementApi {
    * @returns Promise resolving when deletion is complete
    */
   deleteCollection(user: string, collection: string) {
-    return this.api.makeRequest<any, any>(
+    return this.api.makeRequest<Record<string, unknown>, Record<string, unknown>>(
       "collection-management",
       {
         operation: "delete-collection",

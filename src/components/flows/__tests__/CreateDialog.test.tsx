@@ -121,7 +121,9 @@ describe("CreateDialog", () => {
     const { getByRole, getByText } = renderComponent();
 
     // Verify the dialog contains the expected elements
-    expect(getByText("Select flow class and configuration:")).toBeInTheDocument();
+    expect(
+      getByText("Select flow class and configuration:"),
+    ).toBeInTheDocument();
 
     // The Create button should be initially disabled due to validation
     const createButton = getByRole("button", { name: /create/i });

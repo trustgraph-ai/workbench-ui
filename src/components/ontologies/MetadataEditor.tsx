@@ -11,7 +11,7 @@ import {
   Badge,
   Alert,
 } from "@chakra-ui/react";
-import { Save, AlertTriangle } from "lucide-react";
+import { Save } from "lucide-react";
 import { OntologyMetadata } from "../../state/ontologies";
 
 interface MetadataEditorProps {
@@ -52,7 +52,13 @@ export const MetadataEditor: React.FC<MetadataEditorProps> = ({
     const creatorChanged = creator !== (metadata.creator || "");
     const namespaceChanged = namespace !== (metadata.namespace || "");
 
-    setHasChanges(nameChanged || descriptionChanged || versionChanged || creatorChanged || namespaceChanged);
+    setHasChanges(
+      nameChanged ||
+        descriptionChanged ||
+        versionChanged ||
+        creatorChanged ||
+        namespaceChanged,
+    );
   }, [name, description, version, creator, namespace, metadata]);
 
   const handleSave = () => {
@@ -82,7 +88,7 @@ export const MetadataEditor: React.FC<MetadataEditorProps> = ({
   const isValidURI = (uri: string): boolean => {
     try {
       new URL(uri);
-      return uri.endsWith('/') || uri.endsWith('#');
+      return uri.endsWith("/") || uri.endsWith("#");
     } catch {
       return false;
     }
@@ -138,8 +144,9 @@ export const MetadataEditor: React.FC<MetadataEditorProps> = ({
               <Alert.Content>
                 <Alert.Title>Namespace Change Warning</Alert.Title>
                 <Alert.Description>
-                  Changing the namespace will affect all existing class and property URIs.
-                  This may break external references to your ontology.
+                  Changing the namespace will affect all existing class and
+                  property URIs. This may break external references to your
+                  ontology.
                 </Alert.Description>
               </Alert.Content>
             </Alert.Root>
@@ -217,11 +224,14 @@ export const MetadataEditor: React.FC<MetadataEditorProps> = ({
                 placeholder="http://example.org/myontology#"
                 isInvalid={!namespaceValid}
               />
-              <Text fontSize="xs" color={namespaceValid ? "gray.500" : "red.500"} mt={1}>
+              <Text
+                fontSize="xs"
+                color={namespaceValid ? "gray.500" : "red.500"}
+                mt={1}
+              >
                 {namespaceValid
                   ? "Base URI for all classes and properties (must end with # or /)"
-                  : "Invalid URI format - must be a valid URL ending with # or /"
-                }
+                  : "Invalid URI format - must be a valid URL ending with # or /"}
               </Text>
             </Field.Root>
 
@@ -258,9 +268,10 @@ export const MetadataEditor: React.FC<MetadataEditorProps> = ({
                   Coming Soon
                 </Text>
                 <Text fontSize="xs" color="gray.500" textAlign="center">
-                  • Import declarations (owl:imports)<br />
-                  • Custom namespace prefixes<br />
-                  • Ontology annotations
+                  • Import declarations (owl:imports)
+                  <br />
+                  • Custom namespace prefixes
+                  <br />• Ontology annotations
                 </Text>
               </VStack>
             </Box>

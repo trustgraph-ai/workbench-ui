@@ -6,23 +6,25 @@ import PageHeader from "../components/common/PageHeader";
 import FlowClassTable from "../components/flow-classes/FlowClassTable";
 import { FlowClassEditorView } from "../components/flow-classes/FlowClassEditorView";
 
-type ViewMode = 'table' | 'editor';
+type ViewMode = "table" | "editor";
 
 const FlowClassesPage = () => {
-  const [viewMode, setViewMode] = useState<ViewMode>('table');
-  const [editingFlowClassId, setEditingFlowClassId] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<ViewMode>("table");
+  const [editingFlowClassId, setEditingFlowClassId] = useState<string | null>(
+    null,
+  );
 
   const handleEditFlowClass = (flowClassId: string) => {
     setEditingFlowClassId(flowClassId);
-    setViewMode('editor');
+    setViewMode("editor");
   };
 
   const handleBackToTable = () => {
-    setViewMode('table');
+    setViewMode("table");
     setEditingFlowClassId(null);
   };
 
-  if (viewMode === 'editor' && editingFlowClassId) {
+  if (viewMode === "editor" && editingFlowClassId) {
     return (
       <FlowClassEditorView
         flowClassId={editingFlowClassId}

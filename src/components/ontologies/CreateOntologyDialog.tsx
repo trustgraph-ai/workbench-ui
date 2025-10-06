@@ -9,7 +9,6 @@ import {
   Input,
   Textarea,
   Field,
-  Text,
   RadioCard,
 } from "@chakra-ui/react";
 import { useOntologies, Ontology } from "../../state/ontologies";
@@ -46,12 +45,16 @@ export const CreateOntologyDialog: React.FC<CreateOntologyDialogProps> = ({
 
     // Basic kebab-case validation for ID
     if (id && !/^[a-z0-9-]+$/.test(id)) {
-      validationErrors.push("ID must be kebab-case (lowercase letters, numbers, and hyphens only)");
+      validationErrors.push(
+        "ID must be kebab-case (lowercase letters, numbers, and hyphens only)",
+      );
     }
 
     // Basic URI validation for namespace
     if (namespace && !namespace.startsWith("http")) {
-      validationErrors.push("Namespace must be a valid URI starting with http");
+      validationErrors.push(
+        "Namespace must be a valid URI starting with http",
+      );
     }
 
     if (validationErrors.length > 0) {
@@ -132,7 +135,10 @@ export const CreateOntologyDialog: React.FC<CreateOntologyDialogProps> = ({
                     bg="red.50"
                   >
                     {errors.map((error, index) => (
-                      <div key={index} style={{ color: "red", fontSize: "14px" }}>
+                      <div
+                        key={index}
+                        style={{ color: "red", fontSize: "14px" }}
+                      >
                         {error}
                       </div>
                     ))}
@@ -146,7 +152,13 @@ export const CreateOntologyDialog: React.FC<CreateOntologyDialogProps> = ({
                   </Field.Label>
                   <Input
                     value={id}
-                    onChange={(e) => setId(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ""))}
+                    onChange={(e) =>
+                      setId(
+                        e.target.value
+                          .toLowerCase()
+                          .replace(/[^a-z0-9-]/g, ""),
+                      )
+                    }
                     placeholder="domain-model"
                   />
                 </Field.Root>
@@ -190,13 +202,20 @@ export const CreateOntologyDialog: React.FC<CreateOntologyDialogProps> = ({
 
                 <Field.Root>
                   <Field.Label>How would you like to start?</Field.Label>
-                  <RadioCard.Root value={startMode} onValueChange={(details) => setStartMode(details.value as StartMode)}>
+                  <RadioCard.Root
+                    value={startMode}
+                    onValueChange={(details) =>
+                      setStartMode(details.value as StartMode)
+                    }
+                  >
                     <VStack gap={2} align="stretch">
                       <RadioCard.Item value="blank">
                         <RadioCard.ItemHiddenInput />
                         <RadioCard.ItemControl>
                           <RadioCard.ItemContent>
-                            <RadioCard.ItemText>Start with blank ontology</RadioCard.ItemText>
+                            <RadioCard.ItemText>
+                              Start with blank ontology
+                            </RadioCard.ItemText>
                             <RadioCard.ItemDescription>
                               Create classes and properties manually
                             </RadioCard.ItemDescription>
@@ -209,9 +228,12 @@ export const CreateOntologyDialog: React.FC<CreateOntologyDialogProps> = ({
                         <RadioCard.ItemHiddenInput />
                         <RadioCard.ItemControl>
                           <RadioCard.ItemContent>
-                            <RadioCard.ItemText>Use AI assistant to bootstrap</RadioCard.ItemText>
+                            <RadioCard.ItemText>
+                              Use AI assistant to bootstrap
+                            </RadioCard.ItemText>
                             <RadioCard.ItemDescription>
-                              Coming in Phase 7 - Let AI suggest initial structure
+                              Coming in Phase 7 - Let AI suggest initial
+                              structure
                             </RadioCard.ItemDescription>
                           </RadioCard.ItemContent>
                           <RadioCard.ItemIndicator />
@@ -222,9 +244,12 @@ export const CreateOntologyDialog: React.FC<CreateOntologyDialogProps> = ({
                         <RadioCard.ItemHiddenInput />
                         <RadioCard.ItemControl>
                           <RadioCard.ItemContent>
-                            <RadioCard.ItemText>Import from file</RadioCard.ItemText>
+                            <RadioCard.ItemText>
+                              Import from file
+                            </RadioCard.ItemText>
                             <RadioCard.ItemDescription>
-                              Coming in Phase 6 - Load existing OWL/RDF ontology
+                              Coming in Phase 6 - Load existing OWL/RDF
+                              ontology
                             </RadioCard.ItemDescription>
                           </RadioCard.ItemContent>
                           <RadioCard.ItemIndicator />

@@ -1,6 +1,6 @@
-import React from 'react';
-import { Box, VStack, Heading, Text, Button } from '@chakra-ui/react';
-import { FileCode, Construction } from 'lucide-react';
+import React from "react";
+import { Box, VStack, Heading, Text, Button } from "@chakra-ui/react";
+import { FileCode, Construction } from "lucide-react";
 
 interface FlowClassEditorProps {
   flowClassId?: string;
@@ -12,10 +12,23 @@ export const FlowClassEditor: React.FC<FlowClassEditorProps> = ({
   onClose,
 }) => {
   return (
-    <Box h="100vh" bg="bg.subtle" display="flex" alignItems="center" justifyContent="center">
-      <VStack gap={6} p={8} bg="bg" borderRadius="lg" boxShadow="lg" maxW="600px">
+    <Box
+      h="100vh"
+      bg="bg.subtle"
+      display="flex"
+      alignItems="center"
+      justifyContent="center"
+    >
+      <VStack
+        gap={6}
+        p={8}
+        bg="bg"
+        borderRadius="lg"
+        boxShadow="lg"
+        maxW="600px"
+      >
         <Construction size={48} color="var(--colors-fg-muted)" />
-        
+
         <VStack gap={2} textAlign="center">
           <Heading size="xl">Flow Class Editor</Heading>
           <Text color="fg.muted" fontSize="lg">

@@ -35,7 +35,6 @@ import {
   Database,
   Network,
   FileSearch,
-  GitBranch,
   Settings,
 } from "lucide-react";
 

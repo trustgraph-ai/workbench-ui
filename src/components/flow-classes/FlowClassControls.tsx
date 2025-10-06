@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Plus } from "lucide-react";
 import { Button, Box } from "@chakra-ui/react";
 import { generateFlowClassId } from "../../state/flow-classes";
@@ -9,7 +9,7 @@ interface FlowClassControlsProps {
 
 const FlowClassControls: React.FC<FlowClassControlsProps> = ({ onNew }) => {
   const handleCreate = () => {
-    const newId = generateFlowClassId('flow-class');
+    const newId = generateFlowClassId("flow-class");
     onNew?.(newId);
   };
 

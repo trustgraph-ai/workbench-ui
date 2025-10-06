@@ -9,11 +9,11 @@ interface FlowClassActionsProps {
   onDelete?: () => void;
 }
 
-const FlowClassActions: React.FC<FlowClassActionsProps> = ({ 
-  selectedCount, 
+const FlowClassActions: React.FC<FlowClassActionsProps> = ({
+  selectedCount,
   onEdit,
   onDuplicate,
-  onDelete 
+  onDelete,
 }) => {
   return (
     <ActionBar.Root open={selectedCount > 0} colorPalette="blue">
@@ -28,7 +28,7 @@ const FlowClassActions: React.FC<FlowClassActionsProps> = ({
               <Check /> {selectedCount} selected
             </ActionBar.SelectionTrigger>
             <ActionBar.Separator />
-            
+
             {selectedCount === 1 && onEdit && (
               <Button
                 variant="outline"
@@ -40,8 +40,8 @@ const FlowClassActions: React.FC<FlowClassActionsProps> = ({
               </Button>
             )}
 
-            { /* false... temporarily disabled this because it doesn't
-                 work */ }
+            {/* false... temporarily disabled this because it doesn't
+                 work */}
             {false && selectedCount === 1 && onDuplicate && (
               <Button
                 variant="outline"
@@ -52,7 +52,7 @@ const FlowClassActions: React.FC<FlowClassActionsProps> = ({
                 <Copy /> Duplicate
               </Button>
             )}
-            
+
             {onDelete && (
               <Button
                 variant="outline"

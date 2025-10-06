@@ -14,7 +14,12 @@ import ProgressSubmitButton from "../common/ProgressSubmitButton";
  * @param {Function} onSave - Callback when saving collection
  * @param {Object} editingCollection - Collection being edited (null for create mode)
  */
-const CollectionDialog = ({ open, onOpenChange, onSave, editingCollection }) => {
+const CollectionDialog = ({
+  open,
+  onOpenChange,
+  onSave,
+  editingCollection,
+}) => {
   const [collection, setCollection] = useState("");
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -92,7 +97,10 @@ const CollectionDialog = ({ open, onOpenChange, onSave, editingCollection }) => 
               <Button variant="outline" onClick={() => onOpenChange(false)}>
                 Cancel
               </Button>
-              <ProgressSubmitButton onClick={handleSubmit} disabled={!isValid}>
+              <ProgressSubmitButton
+                onClick={handleSubmit}
+                disabled={!isValid}
+              >
                 {editingCollection ? "Update" : "Create"}
               </ProgressSubmitButton>
             </Dialog.Footer>

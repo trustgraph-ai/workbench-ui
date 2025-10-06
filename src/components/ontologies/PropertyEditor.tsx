@@ -16,14 +16,22 @@ import SelectField from "../common/SelectField";
 import SelectOptionText from "../common/SelectOptionText";
 import XSDDatatypeSelector from "./XSDDatatypeSelector";
 import { Link, Type, Save, Trash2 } from "lucide-react";
-import { OWLObjectProperty, OWLDatatypeProperty, Ontology } from "../../state/ontologies";
+import {
+  OWLObjectProperty,
+  OWLDatatypeProperty,
+  Ontology,
+} from "../../state/ontologies";
 
 interface PropertyEditorProps {
   propertyId: string;
   property: OWLObjectProperty | OWLDatatypeProperty;
   propertyType: "object" | "datatype";
   ontology: Ontology;
-  onUpdateProperty: (propertyId: string, updatedProperty: OWLObjectProperty | OWLDatatypeProperty, type: "object" | "datatype") => void;
+  onUpdateProperty: (
+    propertyId: string,
+    updatedProperty: OWLObjectProperty | OWLDatatypeProperty,
+    type: "object" | "datatype",
+  ) => void;
   onDeleteProperty: (propertyId: string, type: "object" | "datatype") => void;
 }
 
@@ -40,9 +48,15 @@ export const PropertyEditor: React.FC<PropertyEditorProps> = ({
   const [domain, setDomain] = useState("");
   const [range, setRange] = useState("");
   const [isFunctional, setIsFunctional] = useState(false);
-  const [minCardinality, setMinCardinality] = useState<number | undefined>(undefined);
-  const [maxCardinality, setMaxCardinality] = useState<number | undefined>(undefined);
-  const [exactCardinality, setExactCardinality] = useState<number | undefined>(undefined);
+  const [minCardinality, setMinCardinality] = useState<number | undefined>(
+    undefined,
+  );
+  const [maxCardinality, setMaxCardinality] = useState<number | undefined>(
+    undefined,
+  );
+  const [exactCardinality, setExactCardinality] = useState<
+    number | undefined
+  >(undefined);
   const [inverseOf, setInverseOf] = useState("");
   const [isInverseFunctional, setIsInverseFunctional] = useState(false);
   const [subPropertyOf, setSubPropertyOf] = useState("");
@@ -58,8 +72,14 @@ export const PropertyEditor: React.FC<PropertyEditorProps> = ({
     const currentMinCardinality = property["owl:minCardinality"];
     const currentMaxCardinality = property["owl:maxCardinality"];
     const currentExactCardinality = property["owl:cardinality"];
-    const currentInverseOf = (propertyType === "object" && (property as OWLObjectProperty)["owl:inverseOf"]) || "";
-    const currentIsInverseFunctional = (propertyType === "object" && (property as OWLObjectProperty)["owl:inverseFunctionalProperty"]) || false;
+    const currentInverseOf =
+      (propertyType === "object" &&
+        (property as OWLObjectProperty)["owl:inverseOf"]) ||
+      "";
+    const currentIsInverseFunctional =
+      (propertyType === "object" &&
+        (property as OWLObjectProperty)["owl:inverseFunctionalProperty"]) ||
+      false;
     const currentSubPropertyOf = property["rdfs:subPropertyOf"] || "";
 
     setLabel(currentLabel);
@@ -86,8 +106,14 @@ export const PropertyEditor: React.FC<PropertyEditorProps> = ({
     const currentMinCardinality = property["owl:minCardinality"];
     const currentMaxCardinality = property["owl:maxCardinality"];
     const currentExactCardinality = property["owl:cardinality"];
-    const currentInverseOf = (propertyType === "object" && (property as OWLObjectProperty)["owl:inverseOf"]) || "";
-    const currentIsInverseFunctional = (propertyType === "object" && (property as OWLObjectProperty)["owl:inverseFunctionalProperty"]) || false;
+    const currentInverseOf =
+      (propertyType === "object" &&
+        (property as OWLObjectProperty)["owl:inverseOf"]) ||
+      "";
+    const currentIsInverseFunctional =
+      (propertyType === "object" &&
+        (property as OWLObjectProperty)["owl:inverseFunctionalProperty"]) ||
+      false;
     const currentSubPropertyOf = property["rdfs:subPropertyOf"] || "";
 
     const labelChanged = label !== currentLabel;
@@ -97,18 +123,41 @@ export const PropertyEditor: React.FC<PropertyEditorProps> = ({
     const functionalChanged = isFunctional !== currentIsFunctional;
     const minCardinalityChanged = minCardinality !== currentMinCardinality;
     const maxCardinalityChanged = maxCardinality !== currentMaxCardinality;
-    const exactCardinalityChanged = exactCardinality !== currentExactCardinality;
+    const exactCardinalityChanged =
+      exactCardinality !== currentExactCardinality;
     const inverseOfChanged = inverseOf !== currentInverseOf;
-    const inverseFunctionalChanged = isInverseFunctional !== currentIsInverseFunctional;
+    const inverseFunctionalChanged =
+      isInverseFunctional !== currentIsInverseFunctional;
     const subPropertyOfChanged = subPropertyOf !== currentSubPropertyOf;
 
     setHasChanges(
-      labelChanged || commentChanged || domainChanged || rangeChanged ||
-      functionalChanged || minCardinalityChanged || maxCardinalityChanged ||
-      exactCardinalityChanged || inverseOfChanged || inverseFunctionalChanged ||
-      subPropertyOfChanged
+      labelChanged ||
+        commentChanged ||
+        domainChanged ||
+        rangeChanged ||
+        functionalChanged ||
+        minCardinalityChanged ||
+        maxCardinalityChanged ||
+        exactCardinalityChanged ||
+        inverseOfChanged ||
+        inverseFunctionalChanged ||
+        subPropertyOfChanged,
     );
-  }, [label, comment, domain, range, isFunctional, minCardinality, maxCardinality, exactCardinality, inverseOf, isInverseFunctional, subPropertyOf, property, propertyType]);
+  }, [
+    label,
+    comment,
+    domain,
+    range,
+    isFunctional,
+    minCardinality,
+    maxCardinality,
+    exactCardinality,
+    inverseOf,
+    isInverseFunctional,
+    subPropertyOf,
+    property,
+    propertyType,
+  ]);
 
   const handleSave = () => {
     const baseUpdatedProperty = {
@@ -148,8 +197,14 @@ export const PropertyEditor: React.FC<PropertyEditorProps> = ({
     const currentMinCardinality = property["owl:minCardinality"];
     const currentMaxCardinality = property["owl:maxCardinality"];
     const currentExactCardinality = property["owl:cardinality"];
-    const currentInverseOf = (propertyType === "object" && (property as OWLObjectProperty)["owl:inverseOf"]) || "";
-    const currentIsInverseFunctional = (propertyType === "object" && (property as OWLObjectProperty)["owl:inverseFunctionalProperty"]) || false;
+    const currentInverseOf =
+      (propertyType === "object" &&
+        (property as OWLObjectProperty)["owl:inverseOf"]) ||
+      "";
+    const currentIsInverseFunctional =
+      (propertyType === "object" &&
+        (property as OWLObjectProperty)["owl:inverseFunctionalProperty"]) ||
+      false;
     const currentSubPropertyOf = property["rdfs:subPropertyOf"] || "";
 
     setLabel(currentLabel);
@@ -171,11 +226,7 @@ export const PropertyEditor: React.FC<PropertyEditorProps> = ({
     {
       value: "",
       label: "None",
-      description: (
-        <SelectOptionText>
-          None
-        </SelectOptionText>
-      )
+      description: <SelectOptionText>None</SelectOptionText>,
     },
     ...Object.entries(ontology.classes).map(([id, owlClass]) => ({
       value: id,
@@ -184,8 +235,8 @@ export const PropertyEditor: React.FC<PropertyEditorProps> = ({
         <SelectOptionText>
           {owlClass["rdfs:label"]?.[0]?.value || id}
         </SelectOptionText>
-      )
-    }))
+      ),
+    })),
   ];
 
   // Get available properties for subPropertyOf and inverseOf
@@ -193,14 +244,12 @@ export const PropertyEditor: React.FC<PropertyEditorProps> = ({
     {
       value: "",
       label: "None",
-      description: (
-        <SelectOptionText>
-          None
-        </SelectOptionText>
-      )
+      description: <SelectOptionText>None</SelectOptionText>,
     },
     ...Object.entries(
-      propertyType === "object" ? ontology.objectProperties : ontology.datatypeProperties
+      propertyType === "object"
+        ? ontology.objectProperties
+        : ontology.datatypeProperties,
     )
       .filter(([id]) => id !== propertyId) // Don't allow self-reference
       .map(([id, prop]) => ({
@@ -210,19 +259,15 @@ export const PropertyEditor: React.FC<PropertyEditorProps> = ({
           <SelectOptionText>
             {prop["rdfs:label"]?.[0]?.value || id}
           </SelectOptionText>
-        )
-      }))
+        ),
+      })),
   ];
 
   const objectPropertyOptions = [
     {
       value: "",
       label: "None",
-      description: (
-        <SelectOptionText>
-          None
-        </SelectOptionText>
-      )
+      description: <SelectOptionText>None</SelectOptionText>,
     },
     ...Object.entries(ontology.objectProperties)
       .filter(([id]) => id !== propertyId) // Don't allow self-reference
@@ -233,10 +278,9 @@ export const PropertyEditor: React.FC<PropertyEditorProps> = ({
           <SelectOptionText>
             {prop["rdfs:label"]?.[0]?.value || id}
           </SelectOptionText>
-        )
-      }))
+        ),
+      })),
   ];
-
 
   return (
     <Box h="100%" display="flex" flexDirection="column">
@@ -320,7 +364,8 @@ export const PropertyEditor: React.FC<PropertyEditorProps> = ({
                 rows={3}
               />
               <Text fontSize="xs" color="gray.500" mt={1}>
-                A brief description explaining the purpose and scope of this property
+                A brief description explaining the purpose and scope of this
+                property
               </Text>
             </Field.Root>
           </VStack>
@@ -395,7 +440,8 @@ export const PropertyEditor: React.FC<PropertyEditorProps> = ({
                 onValueChange={(values) => setDomain(values[0] || "")}
               />
               <Text fontSize="xs" color="gray.500" mt={1}>
-                The class that can have this property. Leave empty if any class can have this property.
+                The class that can have this property. Leave empty if any
+                class can have this property.
               </Text>
             </VStack>
 
@@ -417,8 +463,7 @@ export const PropertyEditor: React.FC<PropertyEditorProps> = ({
               <Text fontSize="xs" color="gray.500" mt={1}>
                 {propertyType === "object"
                   ? "The class that this property points to."
-                  : "The datatype of values for this property."
-                }
+                  : "The datatype of values for this property."}
               </Text>
             </VStack>
           </VStack>
@@ -455,7 +500,8 @@ export const PropertyEditor: React.FC<PropertyEditorProps> = ({
                     onValueChange={(values) => setInverseOf(values[0] || "")}
                   />
                   <Text fontSize="xs" color="gray.500" mt={1}>
-                    Specify the inverse relationship (e.g., 'hasParent' inverse of 'hasChild')
+                    Specify the inverse relationship (e.g., 'hasParent'
+                    inverse of 'hasChild')
                   </Text>
                 </VStack>
 
@@ -465,12 +511,11 @@ export const PropertyEditor: React.FC<PropertyEditorProps> = ({
                 >
                   <Checkbox.HiddenInput />
                   <Checkbox.Control />
-                  <Checkbox.Label>
-                    Inverse Functional Property
-                  </Checkbox.Label>
+                  <Checkbox.Label>Inverse Functional Property</Checkbox.Label>
                 </Checkbox.Root>
                 <Text fontSize="xs" color="gray.500" mt={-2}>
-                  At most one subject can have any given object (unique identifier property)
+                  At most one subject can have any given object (unique
+                  identifier property)
                 </Text>
               </>
             )}
@@ -487,9 +532,7 @@ export const PropertyEditor: React.FC<PropertyEditorProps> = ({
               >
                 <Checkbox.HiddenInput />
                 <Checkbox.Control />
-                <Checkbox.Label>
-                  Functional Property
-                </Checkbox.Label>
+                <Checkbox.Label>Functional Property</Checkbox.Label>
               </Checkbox.Root>
               <Text fontSize="xs" color="gray.500" mt={-2}>
                 Each subject can have at most one value for this property
@@ -509,7 +552,11 @@ export const PropertyEditor: React.FC<PropertyEditorProps> = ({
                     type="number"
                     min="0"
                     value={minCardinality || ""}
-                    onChange={(e) => setMinCardinality(e.target.value ? parseInt(e.target.value) : undefined)}
+                    onChange={(e) =>
+                      setMinCardinality(
+                        e.target.value ? parseInt(e.target.value) : undefined,
+                      )
+                    }
                     placeholder="No minimum"
                   />
                 </Field.Root>
@@ -520,7 +567,11 @@ export const PropertyEditor: React.FC<PropertyEditorProps> = ({
                     type="number"
                     min="0"
                     value={maxCardinality || ""}
-                    onChange={(e) => setMaxCardinality(e.target.value ? parseInt(e.target.value) : undefined)}
+                    onChange={(e) =>
+                      setMaxCardinality(
+                        e.target.value ? parseInt(e.target.value) : undefined,
+                      )
+                    }
                     placeholder="No maximum"
                   />
                 </Field.Root>
@@ -532,11 +583,16 @@ export const PropertyEditor: React.FC<PropertyEditorProps> = ({
                   type="number"
                   min="0"
                   value={exactCardinality || ""}
-                  onChange={(e) => setExactCardinality(e.target.value ? parseInt(e.target.value) : undefined)}
+                  onChange={(e) =>
+                    setExactCardinality(
+                      e.target.value ? parseInt(e.target.value) : undefined,
+                    )
+                  }
                   placeholder="No exact requirement"
                 />
                 <Text fontSize="xs" color="gray.500" mt={1}>
-                  If specified, overrides min/max cardinality (exactly N values required)
+                  If specified, overrides min/max cardinality (exactly N
+                  values required)
                 </Text>
               </Field.Root>
             </VStack>

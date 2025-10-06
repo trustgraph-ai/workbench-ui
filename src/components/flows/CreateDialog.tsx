@@ -5,7 +5,10 @@ import { Plus } from "lucide-react";
 import { Portal, Button, Dialog, Box, CloseButton } from "@chakra-ui/react";
 
 import { useFlows } from "../../state/flows";
-import { useFlowParameters, useParameterValidation } from "../../state/flow-parameters";
+import {
+  useFlowParameters,
+  useParameterValidation,
+} from "../../state/flow-parameters";
 import SelectField from "../common/SelectField";
 import SelectOption from "../common/SelectOption";
 import TextField from "../common/TextField";
@@ -26,22 +29,32 @@ const CreateDialog = ({ open, onOpenChange }) => {
     parameterDefinitions,
     parameterMapping,
     parameterMetadata,
-    isLoading: isLoadingParameters
+    isLoading: isLoadingParameters,
   } = useFlowParameters(flowClass);
 
   // Apply default values when parameter definitions change
   useEffect(() => {
-    if (parameterMapping && parameterDefinitions && Object.keys(parameterMapping).length > 0) {
+    if (
+      parameterMapping &&
+      parameterDefinitions &&
+      Object.keys(parameterMapping).length > 0
+    ) {
       const defaultValues = {};
-      Object.entries(parameterMapping).forEach(([flowParamName, definitionName]) => {
-        const schema = parameterDefinitions[definitionName];
-        if (schema && schema.default !== undefined && parameterValues[flowParamName] === undefined) {
-          defaultValues[flowParamName] = schema.default;
-        }
-      });
+      Object.entries(parameterMapping).forEach(
+        ([flowParamName, definitionName]) => {
+          const schema = parameterDefinitions[definitionName];
+          if (
+            schema &&
+            schema.default !== undefined &&
+            parameterValues[flowParamName] === undefined
+          ) {
+            defaultValues[flowParamName] = schema.default;
+          }
+        },
+      );
 
       if (Object.keys(defaultValues).length > 0) {
-        setParameterValues(prev => ({ ...prev, ...defaultValues }));
+        setParameterValues((prev) => ({ ...prev, ...defaultValues }));
       }
     }
   }, [parameterDefinitions, parameterMapping]);
@@ -61,7 +74,10 @@ const CreateDialog = ({ open, onOpenChange }) => {
       const schema = parameterDefinitions[parameterMapping[paramName]];
 
       // If parameter has explicit user value, use it
-      if (parameterValues[paramName] !== undefined && parameterValues[paramName] !== "") {
+      if (
+        parameterValues[paramName] !== undefined &&
+        parameterValues[paramName] !== ""
+      ) {
         resolvedValues[paramName] = parameterValues[paramName];
         return parameterValues[paramName];
       }
@@ -83,7 +99,7 @@ const CreateDialog = ({ open, onOpenChange }) => {
     };
 
     // Resolve all parameters
-    Object.keys(parameterMapping).forEach(paramName => {
+    Object.keys(parameterMapping).forEach((paramName) => {
       resolveValue(paramName);
     });
 
@@ -97,23 +113,32 @@ const CreateDialog = ({ open, onOpenChange }) => {
   };
 
   // Validate form including parameters
-  const { isValid: areParametersValid, errors: parameterErrors } = useParameterValidation(
-    parameterDefinitions,
-    parameterMapping,
-    parameterMetadata,
-    parameterValues
-  );
+  const { isValid: areParametersValid, errors: parameterErrors } =
+    useParameterValidation(
+      parameterDefinitions,
+      parameterMapping,
+      parameterMetadata,
+      parameterValues,
+    );
 
   const onSubmit = () => {
     // Validate required fields before submission
-    if (!flowClass || !id.trim() || !description.trim() || !areParametersValid) {
+    if (
+      !flowClass ||
+      !id.trim() ||
+      !description.trim() ||
+      !areParametersValid
+    ) {
       return;
     }
 
     // Resolve all parameter values including inheritance and defaults
     const resolvedParameters = resolveAllParameters();
 
-    console.log('[CreateDialog] Submitting with resolved parameters:', resolvedParameters);
+    console.log(
+      "[CreateDialog] Submitting with resolved parameters:",
+      resolvedParameters,
+    );
 
     flowState.startFlow({
       id: id,
@@ -132,7 +157,8 @@ const CreateDialog = ({ open, onOpenChange }) => {
   };
 
   // Check if form is valid for submission
-  const isFormValid = flowClass &&
+  const isFormValid =
+    flowClass &&
     id.trim().length > 0 &&
     description.trim().length > 0 &&
     areParametersValid;

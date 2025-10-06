@@ -23,7 +23,10 @@ interface ClassEditorProps {
   ontology: Ontology;
   onUpdateClass: (classId: string, updatedClass: OWLClass) => void;
   onDeleteClass: (classId: string) => void;
-  onNavigateToProperty?: (propertyId: string, propertyType: "objectProperty" | "datatypeProperty") => void;
+  onNavigateToProperty?: (
+    propertyId: string,
+    propertyType: "objectProperty" | "datatypeProperty",
+  ) => void;
 }
 
 export const ClassEditor: React.FC<ClassEditorProps> = ({
@@ -34,7 +37,9 @@ export const ClassEditor: React.FC<ClassEditorProps> = ({
   onDeleteClass,
   onNavigateToProperty,
 }) => {
-  const [labels, setLabels] = useState<Array<{ value: string; lang?: string }>>([]);
+  const [labels, setLabels] = useState<
+    Array<{ value: string; lang?: string }>
+  >([]);
   const [comment, setComment] = useState("");
   const [subClassOf, setSubClassOf] = useState("");
   const [equivalentClasses, setEquivalentClasses] = useState<string[]>([]);
@@ -43,7 +48,9 @@ export const ClassEditor: React.FC<ClassEditorProps> = ({
 
   useEffect(() => {
     // Initialize form with current values
-    const currentLabels = owlClass["rdfs:label"] || [{ value: "", lang: "en" }];
+    const currentLabels = owlClass["rdfs:label"] || [
+      { value: "", lang: "en" },
+    ];
     const currentComment = owlClass["rdfs:comment"] || "";
     const currentSubClassOf = owlClass["rdfs:subClassOf"] || "";
     const currentEquivalentClasses = owlClass["owl:equivalentClass"] || [];
@@ -59,33 +66,57 @@ export const ClassEditor: React.FC<ClassEditorProps> = ({
 
   useEffect(() => {
     // Check for changes
-    const currentLabels = owlClass["rdfs:label"] || [{ value: "", lang: "en" }];
+    const currentLabels = owlClass["rdfs:label"] || [
+      { value: "", lang: "en" },
+    ];
     const currentComment = owlClass["rdfs:comment"] || "";
     const currentSubClassOf = owlClass["rdfs:subClassOf"] || "";
     const currentEquivalentClasses = owlClass["owl:equivalentClass"] || [];
     const currentDisjointClasses = owlClass["owl:disjointWith"] || [];
 
-    const labelsChanged = JSON.stringify(labels) !== JSON.stringify(currentLabels);
+    const labelsChanged =
+      JSON.stringify(labels) !== JSON.stringify(currentLabels);
     const commentChanged = comment !== currentComment;
     const subClassOfChanged = subClassOf !== currentSubClassOf;
-    const equivalentClassesChanged = JSON.stringify(equivalentClasses) !== JSON.stringify(currentEquivalentClasses);
-    const disjointClassesChanged = JSON.stringify(disjointClasses) !== JSON.stringify(currentDisjointClasses);
+    const equivalentClassesChanged =
+      JSON.stringify(equivalentClasses) !==
+      JSON.stringify(currentEquivalentClasses);
+    const disjointClassesChanged =
+      JSON.stringify(disjointClasses) !==
+      JSON.stringify(currentDisjointClasses);
 
-    setHasChanges(labelsChanged || commentChanged || subClassOfChanged || equivalentClassesChanged || disjointClassesChanged);
-  }, [labels, comment, subClassOf, equivalentClasses, disjointClasses, owlClass]);
+    setHasChanges(
+      labelsChanged ||
+        commentChanged ||
+        subClassOfChanged ||
+        equivalentClassesChanged ||
+        disjointClassesChanged,
+    );
+  }, [
+    labels,
+    comment,
+    subClassOf,
+    equivalentClasses,
+    disjointClasses,
+    owlClass,
+  ]);
 
   const handleSave = () => {
-    const validLabels = labels.filter(l => l.value.trim());
-    const validEquivalentClasses = equivalentClasses.filter(c => c.trim());
-    const validDisjointClasses = disjointClasses.filter(c => c.trim());
+    const validLabels = labels.filter((l) => l.value.trim());
+    const validEquivalentClasses = equivalentClasses.filter((c) => c.trim());
+    const validDisjointClasses = disjointClasses.filter((c) => c.trim());
 
     const updatedClass: OWLClass = {
       ...owlClass,
       "rdfs:label": validLabels.length > 0 ? validLabels : [],
       "rdfs:comment": comment.trim(),
       "rdfs:subClassOf": subClassOf.trim() || undefined,
-      "owl:equivalentClass": validEquivalentClasses.length > 0 ? validEquivalentClasses : undefined,
-      "owl:disjointWith": validDisjointClasses.length > 0 ? validDisjointClasses : undefined,
+      "owl:equivalentClass":
+        validEquivalentClasses.length > 0
+          ? validEquivalentClasses
+          : undefined,
+      "owl:disjointWith":
+        validDisjointClasses.length > 0 ? validDisjointClasses : undefined,
     };
 
     onUpdateClass(classId, updatedClass);
@@ -93,7 +124,9 @@ export const ClassEditor: React.FC<ClassEditorProps> = ({
   };
 
   const handleReset = () => {
-    const currentLabels = owlClass["rdfs:label"] || [{ value: "", lang: "en" }];
+    const currentLabels = owlClass["rdfs:label"] || [
+      { value: "", lang: "en" },
+    ];
     const currentComment = owlClass["rdfs:comment"] || "";
     const currentSubClassOf = owlClass["rdfs:subClassOf"] || "";
     const currentEquivalentClasses = owlClass["owl:equivalentClass"] || [];
@@ -116,7 +149,9 @@ export const ClassEditor: React.FC<ClassEditorProps> = ({
             <Hash size={20} color="#666" />
             <VStack align="start" spacing={0}>
               <Text fontSize="lg" fontWeight="semibold">
-                {labels[0]?.value || owlClass["rdfs:label"]?.[0]?.value || classId}
+                {labels[0]?.value ||
+                  owlClass["rdfs:label"]?.[0]?.value ||
+                  classId}
               </Text>
               <Text fontSize="sm" color="gray.500" fontFamily="mono">
                 {owlClass.uri}
@@ -176,7 +211,8 @@ export const ClassEditor: React.FC<ClassEditorProps> = ({
                 rows={3}
               />
               <Text fontSize="xs" color="gray.500" mt={1}>
-                A brief description explaining the purpose and scope of this class
+                A brief description explaining the purpose and scope of this
+                class
               </Text>
             </Field.Root>
           </VStack>
@@ -254,7 +290,7 @@ export const ClassEditor: React.FC<ClassEditorProps> = ({
                       <SelectOptionText>
                         None (top-level class)
                       </SelectOptionText>
-                    )
+                    ),
                   },
                   ...Object.entries(ontology.classes)
                     .filter(([id]) => id !== classId) // Don't allow self-reference
@@ -265,14 +301,15 @@ export const ClassEditor: React.FC<ClassEditorProps> = ({
                         <SelectOptionText>
                           {owlClass["rdfs:label"]?.[0]?.value || id}
                         </SelectOptionText>
-                      )
-                    }))
+                      ),
+                    })),
                 ]}
                 value={[subClassOf]}
                 onValueChange={(values) => setSubClassOf(values[0] || "")}
               />
               <Text fontSize="xs" color="gray.500" mt={1}>
-                Choose a parent class to create a subclass relationship. Leave empty for top-level classes.
+                Choose a parent class to create a subclass relationship. Leave
+                empty for top-level classes.
               </Text>
             </VStack>
 
@@ -294,10 +331,14 @@ export const ClassEditor: React.FC<ClassEditorProps> = ({
                             <SelectOptionText>
                               Select class...
                             </SelectOptionText>
-                          )
+                          ),
                         },
                         ...Object.entries(ontology.classes)
-                          .filter(([id]) => id !== classId && !equivalentClasses.includes(id))
+                          .filter(
+                            ([id]) =>
+                              id !== classId &&
+                              !equivalentClasses.includes(id),
+                          )
                           .map(([id, owlClass]) => ({
                             value: id,
                             label: owlClass["rdfs:label"]?.[0]?.value || id,
@@ -305,8 +346,8 @@ export const ClassEditor: React.FC<ClassEditorProps> = ({
                               <SelectOptionText>
                                 {owlClass["rdfs:label"]?.[0]?.value || id}
                               </SelectOptionText>
-                            )
-                          }))
+                            ),
+                          })),
                       ]}
                       value={[equivalentClassId]}
                       onValueChange={(values) => {
@@ -322,7 +363,9 @@ export const ClassEditor: React.FC<ClassEditorProps> = ({
                       variant="ghost"
                       colorPalette="red"
                       onClick={() => {
-                        const newEquivalentClasses = equivalentClasses.filter((_, i) => i !== index);
+                        const newEquivalentClasses = equivalentClasses.filter(
+                          (_, i) => i !== index,
+                        );
                         setEquivalentClasses(newEquivalentClasses);
                       }}
                     >
@@ -335,7 +378,9 @@ export const ClassEditor: React.FC<ClassEditorProps> = ({
                   size="sm"
                   variant="ghost"
                   colorPalette="blue"
-                  onClick={() => setEquivalentClasses([...equivalentClasses, ""])}
+                  onClick={() =>
+                    setEquivalentClasses([...equivalentClasses, ""])
+                  }
                   alignSelf="flex-start"
                 >
                   <Link size={14} style={{ marginRight: "4px" }} />
@@ -343,7 +388,8 @@ export const ClassEditor: React.FC<ClassEditorProps> = ({
                 </Button>
 
                 <Text fontSize="xs" color="gray.500">
-                  Classes that represent the same concept and have identical sets of instances
+                  Classes that represent the same concept and have identical
+                  sets of instances
                 </Text>
               </VStack>
             </VStack>
@@ -366,10 +412,13 @@ export const ClassEditor: React.FC<ClassEditorProps> = ({
                             <SelectOptionText>
                               Select class...
                             </SelectOptionText>
-                          )
+                          ),
                         },
                         ...Object.entries(ontology.classes)
-                          .filter(([id]) => id !== classId && !disjointClasses.includes(id))
+                          .filter(
+                            ([id]) =>
+                              id !== classId && !disjointClasses.includes(id),
+                          )
                           .map(([id, owlClass]) => ({
                             value: id,
                             label: owlClass["rdfs:label"]?.[0]?.value || id,
@@ -377,8 +426,8 @@ export const ClassEditor: React.FC<ClassEditorProps> = ({
                               <SelectOptionText>
                                 {owlClass["rdfs:label"]?.[0]?.value || id}
                               </SelectOptionText>
-                            )
-                          }))
+                            ),
+                          })),
                       ]}
                       value={[disjointClassId]}
                       onValueChange={(values) => {
@@ -394,7 +443,9 @@ export const ClassEditor: React.FC<ClassEditorProps> = ({
                       variant="ghost"
                       colorPalette="red"
                       onClick={() => {
-                        const newDisjointClasses = disjointClasses.filter((_, i) => i !== index);
+                        const newDisjointClasses = disjointClasses.filter(
+                          (_, i) => i !== index,
+                        );
                         setDisjointClasses(newDisjointClasses);
                       }}
                     >
@@ -430,23 +481,31 @@ export const ClassEditor: React.FC<ClassEditorProps> = ({
             </Text>
 
             {(() => {
-              const objectPropsWithDomain = Object.entries(ontology.objectProperties).filter(
-                ([, prop]) => prop["rdfs:domain"] === classId
-              );
-              const datatypePropsWithDomain = Object.entries(ontology.datatypeProperties).filter(
-                ([, prop]) => prop["rdfs:domain"] === classId
-              );
-              const allPropsWithDomain = [...objectPropsWithDomain, ...datatypePropsWithDomain];
+              const objectPropsWithDomain = Object.entries(
+                ontology.objectProperties,
+              ).filter(([, prop]) => prop["rdfs:domain"] === classId);
+              const datatypePropsWithDomain = Object.entries(
+                ontology.datatypeProperties,
+              ).filter(([, prop]) => prop["rdfs:domain"] === classId);
+              const allPropsWithDomain = [
+                ...objectPropsWithDomain,
+                ...datatypePropsWithDomain,
+              ];
 
               if (allPropsWithDomain.length === 0) {
                 return (
                   <Box p={4} bg="gray.50" borderRadius="md">
                     <VStack spacing={2}>
-                      <Text fontSize="sm" color="gray.600" fontWeight="medium">
+                      <Text
+                        fontSize="sm"
+                        color="gray.600"
+                        fontWeight="medium"
+                      >
                         No properties use this class as domain
                       </Text>
                       <Text fontSize="xs" color="gray.500" textAlign="center">
-                        Properties that specify this class as their domain will appear here
+                        Properties that specify this class as their domain
+                        will appear here
                       </Text>
                     </VStack>
                   </Box>
@@ -474,16 +533,27 @@ export const ClassEditor: React.FC<ClassEditorProps> = ({
                       <HStack spacing={3}>
                         <Link size={16} color="#666" />
                         <VStack align="start" spacing={1} flex="1">
-                          <Text fontSize="sm" fontWeight="medium" color="blue.800">
+                          <Text
+                            fontSize="sm"
+                            fontWeight="medium"
+                            color="blue.800"
+                          >
                             {prop["rdfs:label"]?.[0]?.value || propId}
                           </Text>
                           <HStack spacing={2}>
-                            <Badge colorPalette="blue" variant="subtle" size="sm">
+                            <Badge
+                              colorPalette="blue"
+                              variant="subtle"
+                              size="sm"
+                            >
                               Object Property
                             </Badge>
                             {prop["rdfs:range"] && (
                               <Text fontSize="xs" color="gray.600">
-                                → {ontology.classes[prop["rdfs:range"]]?.["rdfs:label"]?.[0]?.value || prop["rdfs:range"]}
+                                →{" "}
+                                {ontology.classes[prop["rdfs:range"]]?.[
+                                  "rdfs:label"
+                                ]?.[0]?.value || prop["rdfs:range"]}
                               </Text>
                             )}
                           </HStack>
@@ -515,11 +585,19 @@ export const ClassEditor: React.FC<ClassEditorProps> = ({
                       <HStack spacing={3}>
                         <Type size={16} color="#666" />
                         <VStack align="start" spacing={1} flex="1">
-                          <Text fontSize="sm" fontWeight="medium" color="purple.800">
+                          <Text
+                            fontSize="sm"
+                            fontWeight="medium"
+                            color="purple.800"
+                          >
                             {prop["rdfs:label"]?.[0]?.value || propId}
                           </Text>
                           <HStack spacing={2}>
-                            <Badge colorPalette="purple" variant="subtle" size="sm">
+                            <Badge
+                              colorPalette="purple"
+                              variant="subtle"
+                              size="sm"
+                            >
                               Datatype Property
                             </Badge>
                             {prop["rdfs:range"] && (

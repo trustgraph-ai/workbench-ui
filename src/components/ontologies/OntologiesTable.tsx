@@ -1,5 +1,13 @@
 import React, { useState } from "react";
-import { Box, Table, Text, Spinner, Center, Button, HStack } from "@chakra-ui/react";
+import {
+  Box,
+  Table,
+  Text,
+  Spinner,
+  Center,
+  Button,
+  HStack,
+} from "@chakra-ui/react";
 import {
   useReactTable,
   getCoreRowModel,
@@ -7,7 +15,10 @@ import {
   flexRender,
 } from "@tanstack/react-table";
 import { useOntologies } from "../../state/ontologies";
-import { OntologyTableRow, ontologyColumns } from "../../model/ontologies-table";
+import {
+  OntologyTableRow,
+  ontologyColumns,
+} from "../../model/ontologies-table";
 import { CreateOntologyDialog } from "./CreateOntologyDialog";
 import { ConfirmDialog } from "../common/ConfirmDialog";
 import { ImportDialog } from "./ImportDialog";
@@ -17,8 +28,11 @@ interface OntologiesTableProps {
   onEditOntology?: (ontologyId: string) => void;
 }
 
-export const OntologiesTable: React.FC<OntologiesTableProps> = ({ onEditOntology }) => {
-  const { ontologies, ontologiesLoading, ontologiesError, deleteOntology } = useOntologies();
+export const OntologiesTable: React.FC<OntologiesTableProps> = ({
+  onEditOntology,
+}) => {
+  const { ontologies, ontologiesLoading, ontologiesError, deleteOntology } =
+    useOntologies();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
   const [confirmDialog, setConfirmDialog] = useState<{
@@ -82,7 +96,13 @@ export const OntologiesTable: React.FC<OntologiesTableProps> = ({ onEditOntology
 
   if (ontologiesError) {
     return (
-      <Box p={4} borderWidth="1px" borderColor="red.500" borderRadius="md" bg="red.50">
+      <Box
+        p={4}
+        borderWidth="1px"
+        borderColor="red.500"
+        borderRadius="md"
+        bg="red.50"
+      >
         <Text color="red.700">
           Error loading ontologies: {ontologiesError.toString()}
         </Text>

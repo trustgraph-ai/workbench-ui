@@ -19,10 +19,12 @@ export interface FlowClassDefinition {
     };
   };
   interfaces: {
-    [key: string]: string | {
-      request: string;
-      response: string;
-    };
+    [key: string]:
+      | string
+      | {
+          request: string;
+          response: string;
+        };
   };
   description?: string;
   tags?: string[];
@@ -37,10 +39,10 @@ export const useFlowClasses = () => {
   // WebSocket connection for communicating with the config service
   const socket = useSocket();
   const connectionState = useConnectionState();
-  
+
   // React Query client for cache management and invalidation
   const queryClient = useQueryClient();
-  
+
   // Hook for displaying user notifications
   const notify = useNotification();
 
@@ -58,32 +60,39 @@ export const useFlowClasses = () => {
     enabled: isSocketReady,
     staleTime: 0, // Force fresh data
     gcTime: 0, // Don't cache (React Query v5 uses gcTime instead of cacheTime)
-    refetchOnMount: 'always',
+    refetchOnMount: "always",
     queryFn: async (): Promise<FlowClassDefinition[]> => {
       try {
         const response = await socket.config().getConfigAll();
-        
+
         // Handle both array and object responses
         const config = response.config["flow-classes"];
-        
+
         if (Array.isArray(config)) {
           // If it's already an array, check if it's an array of [key, value] pairs
-          if (config.length > 0 && Array.isArray(config[0]) && config[0].length === 2) {
+          if (
+            config.length > 0 &&
+            Array.isArray(config[0]) &&
+            config[0].length === 2
+          ) {
             // It's an array of [id, flowClass] pairs - convert to objects
             const converted = config.map(([id, flowClassData]) => {
               let flowClass = flowClassData;
               // If the flowClass is a JSON string, parse it
-              if (typeof flowClassData === 'string') {
+              if (typeof flowClassData === "string") {
                 try {
                   flowClass = JSON.parse(flowClassData);
                 } catch (error) {
-                  console.error(`Failed to parse flow class JSON for ${id}:`, error);
+                  console.error(
+                    `Failed to parse flow class JSON for ${id}:`,
+                    error,
+                  );
                   flowClass = flowClassData;
                 }
               }
               return {
                 id,
-                ...(flowClass as Omit<FlowClassDefinition, 'id'>)
+                ...(flowClass as Omit<FlowClassDefinition, "id">),
               };
             });
             return converted;
@@ -91,31 +100,36 @@ export const useFlowClasses = () => {
             // It's already an array of flow class objects
             return config;
           }
-        } else if (config && typeof config === 'object') {
+        } else if (config && typeof config === "object") {
           // Convert object to array of flow classes
-          const converted = Object.entries(config).map(([id, flowClassData]) => {
-            let flowClass = flowClassData;
-            // If the flowClass is a JSON string, parse it
-            if (typeof flowClassData === 'string') {
-              try {
-                flowClass = JSON.parse(flowClassData);
-              } catch (error) {
-                console.error(`Failed to parse flow class JSON for ${id}:`, error);
-                flowClass = flowClassData;
+          const converted = Object.entries(config).map(
+            ([id, flowClassData]) => {
+              let flowClass = flowClassData;
+              // If the flowClass is a JSON string, parse it
+              if (typeof flowClassData === "string") {
+                try {
+                  flowClass = JSON.parse(flowClassData);
+                } catch (error) {
+                  console.error(
+                    `Failed to parse flow class JSON for ${id}:`,
+                    error,
+                  );
+                  flowClass = flowClassData;
+                }
               }
-            }
-            return {
-              id,
-              ...(flowClass as Omit<FlowClassDefinition, 'id'>)
-            };
-          });
+              return {
+                id,
+                ...(flowClass as Omit<FlowClassDefinition, "id">),
+              };
+            },
+          );
           return converted;
         }
-        
+
         return [];
       } catch (error) {
-        console.error('Failed to fetch flow classes:', error);
-        throw new Error('Failed to fetch flow classes');
+        console.error("Failed to fetch flow classes:", error);
+        throw new Error("Failed to fetch flow classes");
       }
     },
   });
@@ -127,20 +141,25 @@ export const useFlowClasses = () => {
    * Mutation for creating a new flow class
    */
   const createMutation = useMutation({
-    mutationFn: async ({ id, flowClass }: { 
-      id: string; 
-      flowClass: Omit<FlowClassDefinition, 'id'> 
+    mutationFn: async ({
+      id,
+      flowClass,
+    }: {
+      id: string;
+      flowClass: Omit<FlowClassDefinition, "id">;
     }): Promise<FlowClassDefinition> => {
       try {
-        await socket.config().putConfig([{
-          type: "flow-classes",
-          key: id,
-          value: JSON.stringify(flowClass)
-        }]);
-        
+        await socket.config().putConfig([
+          {
+            type: "flow-classes",
+            key: id,
+            value: JSON.stringify(flowClass),
+          },
+        ]);
+
         return {
           id,
-          ...flowClass
+          ...flowClass,
         };
       } catch (error) {
         console.error(`Failed to create flow class ${id}:`, error);
@@ -150,7 +169,7 @@ export const useFlowClasses = () => {
     onSuccess: (flowClass) => {
       // Invalidate and refetch flow classes
       queryClient.invalidateQueries({ queryKey: ["flow-classes"] });
-      
+
       notify.success(`Flow class "${flowClass.id}" created successfully`);
     },
     onError: (error: Error) => {
@@ -162,31 +181,38 @@ export const useFlowClasses = () => {
    * Mutation for updating an existing flow class
    */
   const updateMutation = useMutation({
-    mutationFn: async ({ id, flowClass }: { 
-      id: string; 
-      flowClass: Partial<Omit<FlowClassDefinition, 'id'>>
+    mutationFn: async ({
+      id,
+      flowClass,
+    }: {
+      id: string;
+      flowClass: Partial<Omit<FlowClassDefinition, "id">>;
     }): Promise<FlowClassDefinition> => {
       try {
         // Get current flow class to merge changes
-        const currentResponse = await socket.config().getConfig([{
-          type: "flow-classes",
-          key: id
-        }]);
-        
+        const currentResponse = await socket.config().getConfig([
+          {
+            type: "flow-classes",
+            key: id,
+          },
+        ]);
+
         const updatedFlowClass = {
           ...currentResponse.config["flow-classes"][id],
-          ...flowClass
+          ...flowClass,
         };
 
-        await socket.config().putConfig([{
-          type: "flow-classes",
-          key: id,
-          value: JSON.stringify(updatedFlowClass)
-        }]);
-        
+        await socket.config().putConfig([
+          {
+            type: "flow-classes",
+            key: id,
+            value: JSON.stringify(updatedFlowClass),
+          },
+        ]);
+
         return {
           id,
-          ...updatedFlowClass
+          ...updatedFlowClass,
         };
       } catch (error) {
         console.error(`Failed to update flow class ${id}:`, error);
@@ -196,7 +222,7 @@ export const useFlowClasses = () => {
     onSuccess: (flowClass) => {
       // Update cache
       queryClient.invalidateQueries({ queryKey: ["flow-classes"] });
-      
+
       notify.success(`Flow class "${flowClass.id}" updated successfully`);
     },
     onError: (error: Error) => {
@@ -220,12 +246,14 @@ export const useFlowClasses = () => {
     onSuccess: (_, id) => {
       // Remove from cache
       queryClient.invalidateQueries({ queryKey: ["flow-classes"] });
-      
+
       notify.success(`Flow class "${id}" deleted successfully`);
     },
     onError: (error: Error) => {
       // Show the actual API error message without additional prefixes
-      notify.error(error.message || 'Unknown error occurred while deleting flow class');
+      notify.error(
+        error.message || "Unknown error occurred while deleting flow class",
+      );
     },
   });
 
@@ -233,36 +261,45 @@ export const useFlowClasses = () => {
    * Mutation for duplicating a flow class
    */
   const duplicateMutation = useMutation({
-    mutationFn: async ({ sourceId, targetId }: { 
-      sourceId: string; 
+    mutationFn: async ({
+      sourceId,
+      targetId,
+    }: {
+      sourceId: string;
       targetId: string;
     }): Promise<FlowClassDefinition> => {
       try {
         // Get source flow class
-        const sourceResponse = await socket.config().getConfig([{
-          type: "flow-classes",
-          key: sourceId
-        }]);
-        
-        const sourceFlowClass = sourceResponse.config["flow-classes"][sourceId] as Omit<FlowClassDefinition, 'id'>;
-        
+        const sourceResponse = await socket.config().getConfig([
+          {
+            type: "flow-classes",
+            key: sourceId,
+          },
+        ]);
+
+        const sourceFlowClass = sourceResponse.config["flow-classes"][
+          sourceId
+        ] as Omit<FlowClassDefinition, "id">;
+
         // Create duplicate with updated description
         const duplicatedFlowClass = {
           ...sourceFlowClass,
           description: `${sourceFlowClass.description || sourceId} (Copy)`,
-          tags: [...(sourceFlowClass.tags || []), 'copy']
+          tags: [...(sourceFlowClass.tags || []), "copy"],
         };
 
         // Save as new flow class
-        await socket.config().putConfig([{
-          type: "flow-classes",
-          key: targetId,
-          value: JSON.stringify(duplicatedFlowClass)
-        }]);
-        
+        await socket.config().putConfig([
+          {
+            type: "flow-classes",
+            key: targetId,
+            value: JSON.stringify(duplicatedFlowClass),
+          },
+        ]);
+
         return {
           id: targetId,
-          ...duplicatedFlowClass
+          ...duplicatedFlowClass,
         };
       } catch (error) {
         console.error(`Failed to duplicate flow class ${sourceId}:`, error);
@@ -271,7 +308,7 @@ export const useFlowClasses = () => {
     },
     onSuccess: (flowClass) => {
       queryClient.invalidateQueries({ queryKey: ["flow-classes"] });
-      
+
       notify.success(`Flow class duplicated as "${flowClass.id}"`);
     },
     onError: (error: Error) => {
@@ -294,13 +331,13 @@ export const useFlowClasses = () => {
 
     // Utilities
     getFlowClass: (id: string): FlowClassDefinition | undefined => {
-      const found = query.data?.find(fc => {
+      const found = query.data?.find((fc) => {
         return fc.id === id;
       });
       return found;
     },
     exists: (id: string): boolean => {
-      return query.data?.some(fc => fc.id === id) ?? false;
+      return query.data?.some((fc) => fc.id === id) ?? false;
     },
 
     // Mutations
@@ -320,7 +357,7 @@ export const useFlowClasses = () => {
 /**
  * Generate a unique flow class ID
  */
-export const generateFlowClassId = (baseName = 'flow-class'): string => {
+export const generateFlowClassId = (baseName = "flow-class"): string => {
   const timestamp = Date.now();
   const random = Math.random().toString(36).substring(2, 8);
   return `${baseName}-${timestamp}-${random}`;

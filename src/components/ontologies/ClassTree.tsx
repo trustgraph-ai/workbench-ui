@@ -1,6 +1,20 @@
 import React, { useState } from "react";
-import { Box, VStack, HStack, Text, Button, Input, IconButton } from "@chakra-ui/react";
-import { Plus, ChevronRight, ChevronDown, Hash, Trash2, MoreVertical } from "lucide-react";
+import {
+  Box,
+  VStack,
+  HStack,
+  Text,
+  Button,
+  Input,
+  IconButton,
+} from "@chakra-ui/react";
+import {
+  Plus,
+  ChevronRight,
+  ChevronDown,
+  Hash,
+  Trash2,
+} from "lucide-react";
 import { OWLClass } from "../../state/ontologies";
 import { useNotification } from "../../state/notify";
 
@@ -23,7 +37,9 @@ export const ClassTree: React.FC<ClassTreeProps> = ({
 }) => {
   const [isCreating, setIsCreating] = useState(false);
   const [newClassName, setNewClassName] = useState("");
-  const [expandedClasses, setExpandedClasses] = useState<Set<string>>(new Set());
+  const [expandedClasses, setExpandedClasses] = useState<Set<string>>(
+    new Set(),
+  );
   const [draggedClassId, setDraggedClassId] = useState<string | null>(null);
   const [dragOverClassId, setDragOverClassId] = useState<string | null>(null);
   const notify = useNotification();
@@ -111,7 +127,9 @@ export const ClassTree: React.FC<ClassTreeProps> = ({
     if (sourceClassId && sourceClassId !== targetClassId && draggedClassId) {
       // Check for circular dependency
       if (isCircularDependency(sourceClassId, targetClassId)) {
-        notify.warning("Cannot create circular dependency: this would make a class a subclass of itself.");
+        notify.warning(
+          "Cannot create circular dependency: this would make a class a subclass of itself.",
+        );
         setDraggedClassId(null);
         return;
       }
@@ -152,7 +170,10 @@ export const ClassTree: React.FC<ClassTreeProps> = ({
   };
 
   // Check if making sourceClassId a child of targetClassId would create a circular dependency
-  const isCircularDependency = (sourceClassId: string, targetClassId: string): boolean => {
+  const isCircularDependency = (
+    sourceClassId: string,
+    targetClassId: string,
+  ): boolean => {
     const visited = new Set<string>();
 
     const checkPath = (currentId: string): boolean => {
@@ -174,7 +195,10 @@ export const ClassTree: React.FC<ClassTreeProps> = ({
   };
 
   // Recursive component to render class hierarchy
-  const renderClassNode = (classId: string, depth: number = 0): React.ReactNode => {
+  const renderClassNode = (
+    classId: string,
+    depth: number = 0,
+  ): React.ReactNode => {
     const owlClass = classes[classId];
     if (!owlClass) return null;
 
@@ -205,7 +229,13 @@ export const ClassTree: React.FC<ClassTreeProps> = ({
           borderStyle="dashed"
           cursor={isDragging ? "grabbing" : "grab"}
           opacity={isDragging ? 0.5 : 1}
-          _hover={{ bg: isDraggedOver ? "green.100" : isSelected ? "blue.100" : "gray.50" }}
+          _hover={{
+            bg: isDraggedOver
+              ? "green.100"
+              : isSelected
+                ? "blue.100"
+                : "gray.50",
+          }}
           onClick={() => onSelectClass(classId)}
           draggable
           onDragStart={(e) => handleDragStart(e, classId)}
@@ -222,7 +252,11 @@ export const ClassTree: React.FC<ClassTreeProps> = ({
                 toggleExpanded(classId);
               }}
             >
-              {isExpanded ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
+              {isExpanded ? (
+                <ChevronDown size={12} />
+              ) : (
+                <ChevronRight size={12} />
+              )}
             </IconButton>
           ) : (
             <Box w={6} /> // Spacer for alignment
@@ -269,7 +303,9 @@ export const ClassTree: React.FC<ClassTreeProps> = ({
         {/* Render subclasses when expanded */}
         {hasSubclasses && isExpanded && (
           <Box>
-            {children[classId].map((childId) => renderClassNode(childId, depth + 1))}
+            {children[classId].map((childId) =>
+              renderClassNode(childId, depth + 1),
+            )}
           </Box>
         )}
       </Box>
@@ -322,10 +358,18 @@ export const ClassTree: React.FC<ClassTreeProps> = ({
                   autoFocus
                 />
                 <HStack spacing={2}>
-                  <Button size="xs" colorPalette="blue" onClick={handleCreateClass}>
+                  <Button
+                    size="xs"
+                    colorPalette="blue"
+                    onClick={handleCreateClass}
+                  >
                     Create
                   </Button>
-                  <Button size="xs" variant="ghost" onClick={handleCancelCreate}>
+                  <Button
+                    size="xs"
+                    variant="ghost"
+                    onClick={handleCancelCreate}
+                  >
                     Cancel
                   </Button>
                 </HStack>
@@ -347,7 +391,10 @@ export const ClassTree: React.FC<ClassTreeProps> = ({
               textAlign="center"
             >
               <Text fontSize="xs" color="green.600" fontWeight="medium">
-                Drop here to make "{classes[draggedClassId] && getClassLabel(classes[draggedClassId])}" a top-level class
+                Drop here to make "
+                {classes[draggedClassId] &&
+                  getClassLabel(classes[draggedClassId])}
+                " a top-level class
               </Text>
             </Box>
           )}

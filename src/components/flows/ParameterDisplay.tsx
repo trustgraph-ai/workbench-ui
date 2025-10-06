@@ -13,15 +13,23 @@ interface ParameterDisplayProps {
  * Looks up parameter metadata from flow class to show descriptions instead of identifiers
  * Also maps enum values to their descriptions when available
  */
-const ParameterDisplay: React.FC<ParameterDisplayProps> = ({ flowClassName, parameters }) => {
+const ParameterDisplay: React.FC<ParameterDisplayProps> = ({
+  flowClassName,
+  parameters,
+}) => {
   const { flowClasses } = useFlows();
 
   // Fetch parameter definitions to get enum mappings
-  const { parameterDefinitions, parameterMapping } = useFlowParameters(flowClassName);
+  const { parameterDefinitions, parameterMapping } =
+    useFlowParameters(flowClassName);
 
   // If no parameters, show "None"
   if (!parameters || Object.keys(parameters).length === 0) {
-    return <Text color="fg.muted" fontSize="sm">None</Text>;
+    return (
+      <Text color="fg.muted" fontSize="sm">
+        None
+      </Text>
+    );
   }
 
   // Find the flow class metadata
@@ -35,19 +43,24 @@ const ParameterDisplay: React.FC<ParameterDisplayProps> = ({ flowClassName, para
     Object.entries(parameters).forEach(([paramName, paramValue]) => {
       // Get the parameter definition name from mapping
       const definitionName = parameterMapping[paramName];
-      const definition = definitionName ? parameterDefinitions[definitionName] : null;
+      const definition = definitionName
+        ? parameterDefinitions[definitionName]
+        : null;
 
       // If parameter has enum options, try to find the description
       if (definition?.enum && Array.isArray(definition.enum)) {
-        const enumOption = definition.enum.find(option => {
+        const enumOption = definition.enum.find((option) => {
           // Handle both rich {id, description} and simple string enums
-          const optionId = typeof option === 'object' ? option.id : option;
+          const optionId = typeof option === "object" ? option.id : option;
           return optionId === paramValue;
         });
 
         if (enumOption) {
           // Use description if available, otherwise use the value itself
-          result[paramName] = typeof enumOption === 'object' ? enumOption.description : enumOption;
+          result[paramName] =
+            typeof enumOption === "object"
+              ? enumOption.description
+              : enumOption;
         } else {
           result[paramName] = String(paramValue);
         }
@@ -69,7 +82,15 @@ const ParameterDisplay: React.FC<ParameterDisplayProps> = ({ flowClassName, para
   }, [parameters, parameterMetadata]);
 
   // Array of color palettes to cycle through for visual distinction
-  const colorPalettes = ["blue", "teal", "purple", "green", "orange", "pink", "cyan"];
+  const colorPalettes = [
+    "blue",
+    "teal",
+    "purple",
+    "green",
+    "orange",
+    "pink",
+    "cyan",
+  ];
 
   // Display parameters as compact badges that can wrap
   return (
@@ -92,7 +113,9 @@ const ParameterDisplay: React.FC<ParameterDisplayProps> = ({ flowClassName, para
             borderRadius="md"
           >
             <Text fontSize="xs">
-              <Text as="span" fontWeight="semibold">{displayName}:</Text>{" "}
+              <Text as="span" fontWeight="semibold">
+                {displayName}:
+              </Text>{" "}
               <Text as="span">{displayValue}</Text>
             </Text>
           </Badge>
