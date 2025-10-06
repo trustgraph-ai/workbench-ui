@@ -263,7 +263,7 @@ const ParameterInputs: React.FC<ParameterInputsProps> = ({
           label: optionDesc,
           description: (
             <SelectOptionText title={optionDesc}>
-              {optionId}
+              {optionDesc}
             </SelectOptionText>
           ),
         };
