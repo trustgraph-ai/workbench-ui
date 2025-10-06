@@ -22,19 +22,9 @@ This feature is controlled by a feature switch in Settings:
 
 ### Key Behavior
 
-The parameter type format automatically switches based on enum content:
+The LLM Models editor manages the `enum` array within existing parameter type definitions. When the enum array is empty, parameters render as text input fields. When populated, they render as dropdowns.
 
-**Text Input Mode** (Empty enum table):
-```json
-{
-  "type": "string",
-  "description": "LLM model to use",
-  "default": "gpt-4o",
-  "required": true
-}
-```
-
-**Dropdown Mode** (Populated enum table):
+**Example: OpenAI Models Parameter Type**
 ```json
 {
   "type": "string",
@@ -42,21 +32,25 @@ The parameter type format automatically switches based on enum content:
   "default": "gpt-4o",
   "enum": [
     {"id": "gpt-4o", "description": "GPT-4o (latest)"},
-    {"id": "gpt-4o-mini", "description": "GPT-4o Mini"}
+    {"id": "gpt-4o-mini", "description": "GPT-4o Mini"},
+    {"id": "gpt-4-turbo", "description": "GPT-4 Turbo"},
+    {"id": "gpt-4", "description": "GPT-4"}
   ],
   "required": true
 }
 ```
 
+The editor focuses on managing the `enum` array and `default` value - the root-level `description` and `required` fields are not editable through this UI.
+
 ## Goals
 
-- **Parameter Type Management**: CRUD operations for parameter type definitions
-- **Enum Editor**: Table-based editor for adding/removing enum options
-- **Automatic Mode Switching**: Toggle between text input and dropdown based on enum entries
-- **Validation**: Ensure parameter type definitions are valid before saving
-- **User-Friendly Interface**: Intuitive UI for non-technical users
-- **Real-Time Preview**: Show how parameters will appear in flow dialogs
-- **Reusability**: Parameter types can be referenced by multiple flow classes
+- **Simple Model Management**: Easy-to-use table for adding/removing LLM model options
+- **Default Selection**: Mark one model as the default choice
+- **Parameter Type Selection**: Choose which parameter type to edit (e.g., "llm-model", "llm-rag-model")
+- **Reordering**: Drag or use up/down buttons to reorder model options
+- **Validation**: Prevent duplicate model IDs and empty values
+- **Feature Switch**: Enable/disable via Settings page
+- **Read-Only Mode**: Non-editable fields (description, type, required) shown for context
 
 ## Technical Design
 
