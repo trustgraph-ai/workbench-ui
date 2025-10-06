@@ -5,7 +5,6 @@ import {
   Button,
   HStack,
   IconButton,
-  RadioGroup,
 } from "@chakra-ui/react";
 import { Trash2, Plus, Check } from "lucide-react";
 import { EnumOption } from "../../model/llm-models";
@@ -61,6 +60,7 @@ const ModelsTable: React.FC<ModelsTableProps> = ({
   };
 
   const handleDefaultChange = (value: string) => {
+    console.log("Radio changed to:", value);
     setEditingDefault(value);
     setHasChanges(true);
   };
@@ -84,14 +84,14 @@ const ModelsTable: React.FC<ModelsTableProps> = ({
           {editingModels.map((model, index) => (
             <Table.Row key={index}>
               <Table.Cell>
-                <RadioGroup.Root
-                  value={editingDefault}
-                  onValueChange={(e) => handleDefaultChange(e.value)}
-                >
-                  <RadioGroup.Item value={model.id} disabled={!model.id}>
-                    <RadioGroup.ItemControl />
-                  </RadioGroup.Item>
-                </RadioGroup.Root>
+                <input
+                  type="radio"
+                  name="default-model"
+                  checked={editingDefault === model.id}
+                  disabled={!model.id}
+                  onChange={() => model.id && handleDefaultChange(model.id)}
+                  style={{ cursor: model.id ? "pointer" : "not-allowed" }}
+                />
               </Table.Cell>
               <Table.Cell>
                 <Input

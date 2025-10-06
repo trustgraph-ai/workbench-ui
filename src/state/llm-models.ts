@@ -14,37 +14,30 @@ export const useLLMModels = () => {
     connectionState?.status === "authenticated" ||
     connectionState?.status === "unauthenticated";
 
-  // Fetch all parameter types that have enum arrays (LLM model types)
+  // Fetch the llm-model parameter type
   const paramTypesQuery = useQuery({
     queryKey: ["llm-models"],
     enabled: isSocketReady,
     queryFn: async () => {
-      const response = await socket.config().getValues("parameter-types");
+      const response = await socket.config().getConfig([
+        { type: "parameter-types", key: "llm-model" }
+      ]);
 
-      // Filter to only parameter types with enum arrays
-      const llmParams: LLMModelParameter[] = [];
+      if (!response.values || response.values.length === 0) {
+        return [];
+      }
 
-      response.values?.forEach((item) => {
-        try {
-          const paramDef = JSON.parse(item.value);
+      const item = response.values[0];
+      const paramDef = JSON.parse(item.value);
 
-          // Only include if it has an enum array
-          if (paramDef.enum && Array.isArray(paramDef.enum)) {
-            llmParams.push({
-              name: item.key,
-              type: paramDef.type || "string",
-              description: paramDef.description || item.key,
-              default: paramDef.default || "",
-              enum: paramDef.enum,
-              required: paramDef.required || false,
-            });
-          }
-        } catch (error) {
-          console.error(`Failed to parse parameter type ${item.key}:`, error);
-        }
-      });
-
-      return llmParams;
+      return [{
+        name: item.key,
+        type: paramDef.type || "string",
+        description: paramDef.description || item.key,
+        default: paramDef.default || "",
+        enum: paramDef.enum || [],
+        required: paramDef.required || false,
+      }];
     },
   });
 
