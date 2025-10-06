@@ -12,6 +12,7 @@ interface FeatureSwitchesSectionProps {
   tokenCost: boolean;
   flowClasses: boolean;
   structuredQuery: boolean;
+  llmModels: boolean;
   onOntologyEditorChange: (enabled: boolean) => void;
   onSubmissionsChange: (enabled: boolean) => void;
   onAgentToolsChange: (enabled: boolean) => void;
@@ -20,6 +21,7 @@ interface FeatureSwitchesSectionProps {
   onTokenCostChange: (enabled: boolean) => void;
   onFlowClassesChange: (enabled: boolean) => void;
   onStructuredQueryChange: (enabled: boolean) => void;
+  onLlmModelsChange: (enabled: boolean) => void;
 }
 
 const FeatureSwitchesSection: React.FC<FeatureSwitchesSectionProps> = ({
@@ -31,6 +33,7 @@ const FeatureSwitchesSection: React.FC<FeatureSwitchesSectionProps> = ({
   tokenCost,
   flowClasses,
   structuredQuery,
+  llmModels,
   onOntologyEditorChange,
   onSubmissionsChange,
   onAgentToolsChange,
@@ -39,6 +42,7 @@ const FeatureSwitchesSection: React.FC<FeatureSwitchesSectionProps> = ({
   onTokenCostChange,
   onFlowClassesChange,
   onStructuredQueryChange,
+  onLlmModelsChange,
 }) => {
   return (
     <Card
@@ -198,6 +202,24 @@ const FeatureSwitchesSection: React.FC<FeatureSwitchesSectionProps> = ({
             onCheckedChange={(details) =>
               onStructuredQueryChange(details.checked)
             }
+          >
+            <Switch.HiddenInput />
+            <Switch.Control>
+              <Switch.Thumb />
+            </Switch.Control>
+          </Switch.Root>
+        </HStack>
+
+        <HStack justify="space-between" align="center">
+          <VStack gap={1} align="start">
+            <Text fontWeight="medium">LLM Models</Text>
+            <Text fontSize="sm" color="fg.muted">
+              Enable the LLM models editor for managing available model options
+            </Text>
+          </VStack>
+          <Switch.Root
+            checked={llmModels}
+            onCheckedChange={(details) => onLlmModelsChange(details.checked)}
           >
             <Switch.HiddenInput />
             <Switch.Control>
