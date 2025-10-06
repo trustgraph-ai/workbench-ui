@@ -45,14 +45,11 @@ const ModelsTable: React.FC<ModelsTableProps> = ({
 
     // If this is the ID field, update the default accordingly
     if (field === "id") {
-      console.log("ID changed:", { oldId, value, editingDefault });
       if (!editingDefault && value) {
         // No default set and we're adding an ID - make it the default
-        console.log("Setting default to:", value);
         setEditingDefault(value);
       } else if (editingDefault === oldId) {
         // We're changing the ID of the current default - update the default to the new ID
-        console.log("Updating default from", oldId, "to", value);
         setEditingDefault(value);
       }
     }
@@ -86,7 +83,6 @@ const ModelsTable: React.FC<ModelsTableProps> = ({
   };
 
   const handleDefaultChange = (value: string) => {
-    console.log("Radio changed to:", value);
     setEditingDefault(value);
     setHasChanges(true);
   };

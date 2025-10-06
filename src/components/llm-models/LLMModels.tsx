@@ -30,24 +30,12 @@ const LLMModels: React.FC = () => {
 
   return (
     <Box>
-      <VStack gap={6} align="stretch">
-        <VStack gap={1} align="start">
-          <Text fontSize="sm" fontWeight="medium">
-            {llmModelParam.description}
-          </Text>
-          <Text fontSize="xs" color="fg.muted">
-            Type: {llmModelParam.type} | Required:{" "}
-            {llmModelParam.required ? "Yes" : "No"}
-          </Text>
-        </VStack>
-
-        <ModelsTable
-          models={llmModelParam.enum}
-          defaultValue={llmModelParam.default}
-          onUpdate={handleUpdate}
-          isUpdating={isUpdating}
-        />
-      </VStack>
+      <ModelsTable
+        models={llmModelParam.enum}
+        defaultValue={llmModelParam.default}
+        onUpdate={handleUpdate}
+        isUpdating={isUpdating}
+      />
     </Box>
   );
 };
