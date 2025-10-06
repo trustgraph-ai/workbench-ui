@@ -1,13 +1,10 @@
 import React from "react";
-import { HStack, VStack, Text } from "@chakra-ui/react";
 import {
-  SelectContent,
-  SelectItem,
-  SelectRoot,
-  SelectTrigger,
-  SelectValueText,
-} from "../ui/select";
-import { createListCollection } from "@chakra-ui/react";
+  VStack,
+  Text,
+  Select,
+  createListCollection,
+} from "@chakra-ui/react";
 import { LLMModelParameter } from "../../model/llm-models";
 
 interface ParameterTypeSelectorProps {
@@ -33,24 +30,33 @@ const ParameterTypeSelector: React.FC<ParameterTypeSelectorProps> = ({
       <Text fontSize="sm" fontWeight="medium">
         Parameter Type
       </Text>
-      <SelectRoot
+      <Select.Root
         collection={collection}
         value={[selectedType]}
         onValueChange={(e) => onSelectType(e.value[0])}
         size="sm"
         width="300px"
       >
-        <SelectTrigger>
-          <SelectValueText placeholder="Select a parameter type" />
-        </SelectTrigger>
-        <SelectContent>
-          {parameterTypes.map((pt) => (
-            <SelectItem key={pt.name} item={pt.name}>
-              {pt.name}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </SelectRoot>
+        <Select.HiddenSelect />
+        <Select.Control>
+          <Select.Trigger>
+            <Select.ValueText placeholder="Select a parameter type" />
+          </Select.Trigger>
+          <Select.IndicatorGroup>
+            <Select.Indicator />
+          </Select.IndicatorGroup>
+        </Select.Control>
+        <Select.Positioner>
+          <Select.Content>
+            {parameterTypes.map((pt) => (
+              <Select.Item key={pt.name} item={pt.name}>
+                {pt.name}
+                <Select.ItemIndicator />
+              </Select.Item>
+            ))}
+          </Select.Content>
+        </Select.Positioner>
+      </Select.Root>
     </VStack>
   );
 };

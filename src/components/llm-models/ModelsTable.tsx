@@ -1,8 +1,14 @@
 import React, { useState } from "react";
-import { Table, Input, Button, HStack, IconButton } from "@chakra-ui/react";
+import {
+  Table,
+  Input,
+  Button,
+  HStack,
+  IconButton,
+  RadioGroup,
+} from "@chakra-ui/react";
 import { Trash2, Plus, Check } from "lucide-react";
 import { EnumOption } from "../../model/llm-models";
-import { Radio, RadioGroup } from "../ui/radio";
 
 interface ModelsTableProps {
   models: EnumOption[];
@@ -82,7 +88,9 @@ const ModelsTable: React.FC<ModelsTableProps> = ({
                   value={editingDefault}
                   onValueChange={(e) => handleDefaultChange(e.value)}
                 >
-                  <Radio value={model.id} disabled={!model.id} />
+                  <RadioGroup.Item value={model.id} disabled={!model.id}>
+                    <RadioGroup.ItemControl />
+                  </RadioGroup.Item>
                 </RadioGroup.Root>
               </Table.Cell>
               <Table.Cell>

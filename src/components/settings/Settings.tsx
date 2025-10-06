@@ -142,6 +142,7 @@ const Settings: React.FC = () => {
         tokenCost={settings.featureSwitches.tokenCost}
         flowClasses={settings.featureSwitches.flowClasses}
         structuredQuery={settings.featureSwitches.structuredQuery}
+        llmModels={settings.featureSwitches.llmModels}
         onOntologyEditorChange={(value) =>
           updateSetting("featureSwitches.ontologyEditor", value)
         }
@@ -165,6 +166,9 @@ const Settings: React.FC = () => {
         }
         onStructuredQueryChange={(value) =>
           updateSetting("featureSwitches.structuredQuery", value)
+        }
+        onLlmModelsChange={(value) =>
+          updateSetting("featureSwitches.llmModels", value)
         }
       />
     </VStack>
