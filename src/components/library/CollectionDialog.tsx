@@ -84,9 +84,8 @@ const CollectionDialog = ({ open, onOpenChange, onSave, editingCollection }) => 
               />
               <ChipInputField
                 label="Tags"
-                value={tags}
-                onValueChange={setTags}
-                helperText="Press Enter to add tags"
+                values={tags}
+                onValuesChange={setTags}
               />
             </Dialog.Body>
             <Dialog.Footer>
