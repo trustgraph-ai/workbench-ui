@@ -11,15 +11,19 @@ import {
   Portal,
 } from "@chakra-ui/react";
 
-import { Database, Workflow, Save, X } from "lucide-react";
+import { Database, Workflow } from "lucide-react";
 
 import { useSessionStore } from "../../state/session";
 import { useFlows } from "../../state/flows";
 import { useSettings } from "../../state/settings";
+import { useCollections } from "../../state/collections";
 
 const FlowSelector = () => {
   const flowState = useFlows();
   const flows = flowState.flows ? flowState.flows : [];
+
+  const collectionsState = useCollections();
+  const collections = collectionsState.collections || [];
 
   const flowId = useSessionStore((state) => state.flowId);
 
@@ -29,31 +33,6 @@ const FlowSelector = () => {
   const { settings, updateSetting } = useSettings();
 
   const [open, setOpen] = useState(false);
-  const [editingCollection, setEditingCollection] = useState(false);
-  const [collectionValue, setCollectionValue] = useState(settings.collection);
-
-  // Keep staged value in sync with saved value
-  useEffect(() => {
-    setCollectionValue(settings.collection);
-  }, [settings.collection]);
-
-  const handleCollectionSave = () => {
-    const trimmedValue = collectionValue.trim();
-    if (trimmedValue) {
-      updateSetting("collection", trimmedValue);
-      setEditingCollection(false);
-    }
-  };
-
-  const handleCollectionCancel = () => {
-    setCollectionValue(settings.collection);
-    setEditingCollection(false);
-  };
-
-  const handleCollectionEdit = () => {
-    setCollectionValue(settings.collection);
-    setEditingCollection(true);
-  };
 
   return (
     <Popover.Root
@@ -100,66 +79,96 @@ const FlowSelector = () => {
             <Popover.Arrow />
             <Popover.Body>
               <Stack gap={4} p={4}>
-                {/* Current Information Display */}
+                {/* Collection Selection */}
                 <Stack gap={3}>
-                  <Text fontWeight="semibold" fontSize="sm" color="fg.muted">
-                    Current Settings
+                  <Text
+                    fontSize="sm"
+                    fontWeight="semibold"
+                    color="fg.muted"
+                    mb={2}
+                  >
+                    Select Collection
                   </Text>
-
-                  <HStack gap={3} align="center">
-                    <Database size={16} color="currentColor" />
-                    <Box flex="1">
-                      <Text fontSize="sm" fontWeight="medium">
-                        Collection
-                      </Text>
-                      {editingCollection ? (
-                        <HStack gap={2} mt={1}>
-                          <Input
-                            size="xs"
-                            value={collectionValue}
-                            onChange={(e) =>
-                              setCollectionValue(e.target.value)
-                            }
-                            onKeyDown={(e) => {
-                              if (e.key === "Enter") handleCollectionSave();
-                              if (e.key === "Escape")
-                                handleCollectionCancel();
-                            }}
-                            placeholder="Enter collection name"
-                            autoFocus
-                          />
-                          <Button
-                            size="xs"
-                            colorPalette="primary"
-                            onClick={handleCollectionSave}
-                            disabled={!collectionValue.trim()}
-                          >
-                            <Save size={12} />
-                          </Button>
-                          <Button
-                            size="xs"
-                            variant="outline"
-                            onClick={handleCollectionCancel}
-                          >
-                            <X size={12} />
-                          </Button>
-                        </HStack>
-                      ) : (
-                        <HStack gap={2} mt={1}>
-                          <Text fontSize="xs" color="fg.muted" flex="1">
-                            {settings.collection}
-                          </Text>
-                          <Button
-                            size="xs"
-                            variant="ghost"
-                            onClick={handleCollectionEdit}
-                          >
-                            Edit
-                          </Button>
-                        </HStack>
-                      )}
-                    </Box>
-                  </HStack>
+                  <Stack gap="1">
+                    {collections.map((collection) => {
+                      const isSelected = settings.collection === collection.collection;
+                      return (
+                        <Box
+                          key={collection.collection}
+                          p={3}
+                          borderRadius="md"
+                          borderWidth="1px"
+                          borderColor={
+                            isSelected ? "primary.500" : "border.subtle"
+                          }
+                          backgroundColor={
+                            isSelected ? "primary.50" : "transparent"
+                          }
+                          _hover={{
+                            borderColor: "primary.300",
+                            backgroundColor: isSelected
+                              ? "primary.100"
+                              : "bg.subtle",
+                          }}
+                          cursor="pointer"
+                          onClick={() => {
+                            updateSetting("collection", collection.collection);
+                          }}
+                        >
+                          <HStack gap={3} align="start">
+                            <Box
+                              w={4}
+                              h={4}
+                              borderRadius="full"
+                              borderWidth="2px"
+                              borderColor={
+                                isSelected
+                                  ? "colorPalette.500"
+                                  : "border.emphasized"
+                              }
+                              backgroundColor={
+                                isSelected
+                                  ? "colorPalette.500"
+                                  : "transparent"
+                              }
+                              mt={0.5}
+                              flexShrink={0}
+                              position="relative"
+                            >
+                              {isSelected && (
+                                <Box
+                                  w="6px"
+                                  h="6px"
+                                  borderRadius="full"
+                                  backgroundColor="bg"
+                                  position="absolute"
+                                  top="50%"
+                                  left="50%"
+                                  transform="translate(-50%, -50%)"
+                                />
+                              )}
+                            </Box>
+                            <Box flex="1">
+                              <Text
+                                fontWeight="semibold"
+                                fontSize="sm"
+                                mb={1}
+                              >
+                                {collection.name}
+                              </Text>
+                              <Text
+                                fontSize="xs"
+                                color="fg.muted"
+                                lineHeight="1.4"
+                              >
+                                {collection.description}
+                              </Text>
+                            </Box>
+                          </HStack>
+                        </Box>
+                      );
+                    })}
+                  </Stack>
                 </Stack>
 
                 {/* Flow Selection */}
