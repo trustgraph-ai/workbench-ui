@@ -92,7 +92,12 @@ export const columns = [
       const parameters = info.getValue();
 
       // Use the ParameterDisplay component to show parameters with descriptions
-      return <ParameterDisplay flowClassName={row["class-name"]} parameters={parameters} />;
+      return (
+        <ParameterDisplay
+          flowClassName={row["class-name"]}
+          parameters={parameters}
+        />
+      );
     },
   }),
 ];

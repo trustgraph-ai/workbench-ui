@@ -42,15 +42,15 @@ const FlowClassEditPanel: React.FC<FlowClassEditPanelProps> = ({
       description: description.trim() || undefined,
       tags: tags
         .split(",")
-        .map(tag => tag.trim())
-        .filter(tag => tag.length > 0)
+        .map((tag) => tag.trim())
+        .filter((tag) => tag.length > 0)
         .slice(0, 10), // Limit to 10 tags
     };
-    
+
     onSave?.(updatedFlowClass);
   };
 
-  const hasChanges = 
+  const hasChanges =
     description !== (flowClass.description || "") ||
     tags !== (flowClass.tags || []).join(", ");
 
@@ -127,10 +127,13 @@ const FlowClassEditPanel: React.FC<FlowClassEditPanelProps> = ({
                       resize="none"
                     />
                   </Box>
-                  
+
                   <Box>
                     <Text fontSize="sm" fontWeight="medium" mb={2}>
-                      Tags <Text as="span" color="fg.muted">(comma-separated)</Text>
+                      Tags{" "}
+                      <Text as="span" color="fg.muted">
+                        (comma-separated)
+                      </Text>
                     </Text>
                     <Input
                       value={tags}
@@ -153,20 +156,22 @@ const FlowClassEditPanel: React.FC<FlowClassEditPanelProps> = ({
                     <Text fontSize="sm">Class Processors:</Text>
                     <Badge colorPalette="blue">{classCount}</Badge>
                   </HStack>
-                  
+
                   <HStack justify="space-between">
                     <Text fontSize="sm">Flow Processors:</Text>
                     <Badge colorPalette="green">{flowCount}</Badge>
                   </HStack>
-                  
+
                   <HStack justify="space-between">
                     <Text fontSize="sm">Interfaces:</Text>
                     <Badge colorPalette="purple">{interfaceCount}</Badge>
                   </HStack>
-                  
+
                   <HStack justify="space-between">
                     <Text fontSize="sm">Total Components:</Text>
-                    <Badge colorPalette="gray">{classCount + flowCount + interfaceCount}</Badge>
+                    <Badge colorPalette="gray">
+                      {classCount + flowCount + interfaceCount}
+                    </Badge>
                   </HStack>
                 </VStack>
               </Fieldset.Content>
@@ -180,7 +185,12 @@ const FlowClassEditPanel: React.FC<FlowClassEditPanelProps> = ({
                 </Text>
                 <HStack gap={1} flexWrap="wrap">
                   {flowClass.tags.map((tag, index) => (
-                    <Badge key={index} colorPalette="gray" size="sm" variant="outline">
+                    <Badge
+                      key={index}
+                      colorPalette="gray"
+                      size="sm"
+                      variant="outline"
+                    >
                       {tag}
                     </Badge>
                   ))}

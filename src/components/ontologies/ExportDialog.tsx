@@ -26,7 +26,7 @@ export const ExportDialog: React.FC<ExportDialogProps> = ({
   isOpen,
   onClose,
 }) => {
-  const [format, setFormat] = useState<ExportOptions['format']>("owl");
+  const [format, setFormat] = useState<ExportOptions["format"]>("owl");
   const [includeComments, setIncludeComments] = useState(true);
   const [includeNamespaces, setIncludeNamespaces] = useState(true);
   const [isExporting, setIsExporting] = useState(false);
@@ -36,29 +36,17 @@ export const ExportDialog: React.FC<ExportDialogProps> = ({
     {
       value: "owl",
       label: "OWL/XML (.owl)",
-      description: (
-        <SelectOptionText>
-          OWL/XML (.owl)
-        </SelectOptionText>
-      )
+      description: <SelectOptionText>OWL/XML (.owl)</SelectOptionText>,
     },
     {
       value: "rdf",
       label: "RDF/XML (.rdf)",
-      description: (
-        <SelectOptionText>
-          RDF/XML (.rdf)
-        </SelectOptionText>
-      )
+      description: <SelectOptionText>RDF/XML (.rdf)</SelectOptionText>,
     },
     {
       value: "turtle",
       label: "Turtle (.ttl)",
-      description: (
-        <SelectOptionText>
-          Turtle (.ttl)
-        </SelectOptionText>
-      )
+      description: <SelectOptionText>Turtle (.ttl)</SelectOptionText>,
     },
   ];
 
@@ -73,18 +61,22 @@ export const ExportDialog: React.FC<ExportDialogProps> = ({
       };
 
       const content = OntologyExporter.export(ontology, options);
-      const filename = `${ontology.metadata.name || 'ontology'}${OntologyExporter.getFileExtension(format)}`;
+      const filename = `${ontology.metadata.name || "ontology"}${OntologyExporter.getFileExtension(format)}`;
       const mimeType = OntologyExporter.getMimeType(format);
 
       OntologyExporter.downloadFile(content, filename, mimeType);
 
-      notify.success(`Successfully exported "${ontology.metadata.name}" as ${format.toUpperCase()}`);
+      notify.success(
+        `Successfully exported "${ontology.metadata.name}" as ${format.toUpperCase()}`,
+      );
 
       // Close dialog after successful export
       onClose();
     } catch (error) {
       console.error("Export failed:", error);
-      notify.error(`Failed to export ontology: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      notify.error(
+        `Failed to export ontology: ${error instanceof Error ? error.message : "Unknown error"}`,
+      );
     } finally {
       setIsExporting(false);
     }
@@ -134,7 +126,8 @@ export const ExportDialog: React.FC<ExportDialogProps> = ({
                 Export "{ontology.metadata.name}"
               </Text>
               <Text fontSize="sm" color="gray.600">
-                Choose your export format and options below. Your ontology will be downloaded as a file.
+                Choose your export format and options below. Your ontology
+                will be downloaded as a file.
               </Text>
             </VStack>
 
@@ -144,7 +137,9 @@ export const ExportDialog: React.FC<ExportDialogProps> = ({
                 <SelectField
                   items={formatOptions}
                   value={[format]}
-                  onValueChange={(values) => setFormat((values[0] || "ttl") as ExportOptions['format'])}
+                  onValueChange={(values) =>
+                    setFormat((values[0] || "ttl") as ExportOptions["format"])
+                  }
                 />
                 <Text fontSize="xs" color="gray.500" mt={1}>
                   Choose the format for your exported ontology file
@@ -179,7 +174,13 @@ export const ExportDialog: React.FC<ExportDialogProps> = ({
                 </Checkbox.Root>
               </VStack>
 
-              <Box p={3} bg="blue.50" borderRadius="md" borderLeftWidth="3px" borderLeftColor="blue.500">
+              <Box
+                p={3}
+                bg="blue.50"
+                borderRadius="md"
+                borderLeftWidth="3px"
+                borderLeftColor="blue.500"
+              >
                 <VStack align="stretch" spacing={1}>
                   <Text fontSize="sm" fontWeight="medium" color="blue.800">
                     Export Summary
@@ -188,10 +189,12 @@ export const ExportDialog: React.FC<ExportDialogProps> = ({
                     • {Object.keys(ontology.classes).length} classes
                   </Text>
                   <Text fontSize="xs" color="blue.700">
-                    • {Object.keys(ontology.objectProperties).length} object properties
+                    • {Object.keys(ontology.objectProperties).length} object
+                    properties
                   </Text>
                   <Text fontSize="xs" color="blue.700">
-                    • {Object.keys(ontology.datatypeProperties).length} datatype properties
+                    • {Object.keys(ontology.datatypeProperties).length}{" "}
+                    datatype properties
                   </Text>
                 </VStack>
               </Box>

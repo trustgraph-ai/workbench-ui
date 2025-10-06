@@ -9,7 +9,7 @@ interface FlowClassControlsProps {
 
 const FlowClassControls: React.FC<FlowClassControlsProps> = ({ onNew }) => {
   const handleCreate = () => {
-    const newId = generateFlowClassId('flow-class');
+    const newId = generateFlowClassId("flow-class");
     onNew?.(newId);
   };
 

@@ -93,10 +93,18 @@ export const WelcomePanel: React.FC<WelcomePanelProps> = ({
                   autoFocus
                 />
                 <HStack spacing={2}>
-                  <Button size="sm" colorPalette="blue" onClick={handleCreateClass}>
+                  <Button
+                    size="sm"
+                    colorPalette="blue"
+                    onClick={handleCreateClass}
+                  >
                     Create Class
                   </Button>
-                  <Button size="sm" variant="ghost" onClick={() => setIsCreating(false)}>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => setIsCreating(false)}
+                  >
                     Cancel
                   </Button>
                 </HStack>
@@ -116,7 +124,13 @@ export const WelcomePanel: React.FC<WelcomePanelProps> = ({
               </Text>
 
               <HStack spacing={2} flexWrap="wrap">
-                {["Document", "Person", "Organization", "Product", "Event"].map((className) => (
+                {[
+                  "Document",
+                  "Person",
+                  "Organization",
+                  "Product",
+                  "Event",
+                ].map((className) => (
                   <Button
                     key={className}
                     size="sm"

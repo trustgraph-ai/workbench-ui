@@ -1,7 +1,28 @@
 import React, { useState, useEffect } from "react";
-import { Box, VStack, HStack, Heading, Button, Text, Tabs } from "@chakra-ui/react";
-import { Save, ArrowLeft, CheckCircle2, AlertTriangle, Download } from "lucide-react";
-import { useOntologies, Ontology, OWLClass, OWLObjectProperty, OWLDatatypeProperty, OntologyMetadata } from "../../state/ontologies";
+import {
+  Box,
+  VStack,
+  HStack,
+  Heading,
+  Button,
+  Text,
+  Tabs,
+} from "@chakra-ui/react";
+import {
+  Save,
+  ArrowLeft,
+  CheckCircle2,
+  AlertTriangle,
+  Download,
+} from "lucide-react";
+import {
+  useOntologies,
+  Ontology,
+  OWLClass,
+  OWLObjectProperty,
+  OWLDatatypeProperty,
+  OntologyMetadata,
+} from "../../state/ontologies";
 import { ClassTree } from "./ClassTree";
 import { ClassEditor } from "./ClassEditor";
 import { PropertyTree } from "./PropertyTree";
@@ -24,11 +45,18 @@ export const OntologyEditor: React.FC<OntologyEditorProps> = ({
 }) => {
   const { ontologies, updateOntology } = useOntologies();
   const [selectedClassId, setSelectedClassId] = useState<string | null>(null);
-  const [selectedPropertyId, setSelectedPropertyId] = useState<string | null>(null);
-  const [selectedPropertyType, setSelectedPropertyType] = useState<"object" | "datatype" | null>(null);
-  const [activeTab, setActiveTab] = useState<"classes" | "properties" | "metadata">("classes");
+  const [selectedPropertyId, setSelectedPropertyId] = useState<string | null>(
+    null,
+  );
+  const [selectedPropertyType, setSelectedPropertyType] = useState<
+    "object" | "datatype" | null
+  >(null);
+  const [activeTab, setActiveTab] = useState<
+    "classes" | "properties" | "metadata"
+  >("classes");
   const [showWelcome, setShowWelcome] = useState(false);
-  const [validationResult, setValidationResult] = useState<ValidationResult | null>(null);
+  const [validationResult, setValidationResult] =
+    useState<ValidationResult | null>(null);
   const [showValidation, setShowValidation] = useState(false);
   const [showExportDialog, setShowExportDialog] = useState(false);
   const [confirmDialog, setConfirmDialog] = useState<{
@@ -87,7 +115,10 @@ export const OntologyEditor: React.FC<OntologyEditorProps> = ({
     setShowValidation(true);
   };
 
-  const handleNavigateToItem = (itemId: string, itemType: "class" | "objectProperty" | "datatypeProperty") => {
+  const handleNavigateToItem = (
+    itemId: string,
+    itemType: "class" | "objectProperty" | "datatypeProperty",
+  ) => {
     if (itemType === "class") {
       setSelectedClassId(itemId);
       setSelectedPropertyId(null);
@@ -95,7 +126,9 @@ export const OntologyEditor: React.FC<OntologyEditorProps> = ({
       setActiveTab("classes");
     } else {
       setSelectedPropertyId(itemId);
-      setSelectedPropertyType(itemType === "objectProperty" ? "object" : "datatype");
+      setSelectedPropertyType(
+        itemType === "objectProperty" ? "object" : "datatype",
+      );
       setSelectedClassId(null);
       setActiveTab("properties");
     }
@@ -169,10 +202,12 @@ export const OntologyEditor: React.FC<OntologyEditorProps> = ({
     const className = classToDelete["rdfs:label"]?.[0]?.value || classId;
 
     if (dependencies.length > 0) {
-      const dependencyList = dependencies.map(dep => {
-        const depClass = ontologyData.classes[dep];
-        return depClass?.["rdfs:label"]?.[0]?.value || dep;
-      }).join(", ");
+      const dependencyList = dependencies
+        .map((dep) => {
+          const depClass = ontologyData.classes[dep];
+          return depClass?.["rdfs:label"]?.[0]?.value || dep;
+        })
+        .join(", ");
 
       setConfirmDialog({
         isOpen: true,
@@ -202,7 +237,7 @@ export const OntologyEditor: React.FC<OntologyEditorProps> = ({
     delete updatedClasses[classId];
 
     // Remove references to this class from subClassOf relationships
-    Object.keys(updatedClasses).forEach(otherClassId => {
+    Object.keys(updatedClasses).forEach((otherClassId) => {
       const otherClass = updatedClasses[otherClassId];
       if (otherClass["rdfs:subClassOf"] === classId) {
         updatedClasses[otherClassId] = {
@@ -214,25 +249,34 @@ export const OntologyEditor: React.FC<OntologyEditorProps> = ({
 
     // Remove references from properties' domain/range
     const updatedObjectProperties = { ...ontologyData.objectProperties };
-    Object.keys(updatedObjectProperties).forEach(propId => {
+    Object.keys(updatedObjectProperties).forEach((propId) => {
       const prop = updatedObjectProperties[propId];
       let updated = false;
 
       if (prop["rdfs:domain"] === classId) {
-        updatedObjectProperties[propId] = { ...prop, "rdfs:domain": undefined };
+        updatedObjectProperties[propId] = {
+          ...prop,
+          "rdfs:domain": undefined,
+        };
         updated = true;
       }
       if (prop["rdfs:range"] === classId) {
-        updatedObjectProperties[propId] = { ...prop, "rdfs:range": undefined };
+        updatedObjectProperties[propId] = {
+          ...prop,
+          "rdfs:range": undefined,
+        };
         updated = true;
       }
     });
 
     const updatedDatatypeProperties = { ...ontologyData.datatypeProperties };
-    Object.keys(updatedDatatypeProperties).forEach(propId => {
+    Object.keys(updatedDatatypeProperties).forEach((propId) => {
       const prop = updatedDatatypeProperties[propId];
       if (prop["rdfs:domain"] === classId) {
-        updatedDatatypeProperties[propId] = { ...prop, "rdfs:domain": undefined };
+        updatedDatatypeProperties[propId] = {
+          ...prop,
+          "rdfs:domain": undefined,
+        };
       }
     });
 
@@ -264,26 +308,34 @@ export const OntologyEditor: React.FC<OntologyEditorProps> = ({
     const dependencies: string[] = [];
 
     // Check subclass relationships
-    Object.entries(ontologyData.classes).forEach(([otherClassId, otherClass]) => {
-      if (otherClass["rdfs:subClassOf"] === classId) {
-        dependencies.push(otherClassId);
-      }
-    });
+    Object.entries(ontologyData.classes).forEach(
+      ([otherClassId, otherClass]) => {
+        if (otherClass["rdfs:subClassOf"] === classId) {
+          dependencies.push(otherClassId);
+        }
+      },
+    );
 
     return dependencies;
   };
 
-  const handleDeleteProperty = (propertyId: string, type: "object" | "datatype") => {
+  const handleDeleteProperty = (
+    propertyId: string,
+    type: "object" | "datatype",
+  ) => {
     if (!ontologyData) return;
 
-    const propertyToDelete = type === "object"
-      ? ontologyData.objectProperties[propertyId]
-      : ontologyData.datatypeProperties[propertyId];
+    const propertyToDelete =
+      type === "object"
+        ? ontologyData.objectProperties[propertyId]
+        : ontologyData.datatypeProperties[propertyId];
 
     if (!propertyToDelete) return;
 
-    const propertyName = propertyToDelete["rdfs:label"]?.[0]?.value || propertyId;
-    const propertyTypeName = type === "object" ? "object property" : "datatype property";
+    const propertyName =
+      propertyToDelete["rdfs:label"]?.[0]?.value || propertyId;
+    const propertyTypeName =
+      type === "object" ? "object property" : "datatype property";
 
     setConfirmDialog({
       isOpen: true,
@@ -295,7 +347,10 @@ export const OntologyEditor: React.FC<OntologyEditorProps> = ({
     });
   };
 
-  const performDeleteProperty = (propertyId: string, type: "object" | "datatype") => {
+  const performDeleteProperty = (
+    propertyId: string,
+    type: "object" | "datatype",
+  ) => {
     if (!ontologyData) return;
 
     // Remove the property
@@ -410,7 +465,10 @@ export const OntologyEditor: React.FC<OntologyEditorProps> = ({
     setShowWelcome(false);
   };
 
-  const handleSelectProperty = (propertyId: string, type: "object" | "datatype") => {
+  const handleSelectProperty = (
+    propertyId: string,
+    type: "object" | "datatype",
+  ) => {
     setSelectedPropertyId(propertyId);
     setSelectedPropertyType(type);
     setSelectedClassId(null); // Clear class selection
@@ -426,7 +484,7 @@ export const OntologyEditor: React.FC<OntologyEditorProps> = ({
   const handleUpdateProperty = (
     propertyId: string,
     updatedProperty: OWLObjectProperty | OWLDatatypeProperty,
-    type: "object" | "datatype"
+    type: "object" | "datatype",
   ) => {
     if (!ontologyData) return;
 
@@ -471,15 +529,23 @@ export const OntologyEditor: React.FC<OntologyEditorProps> = ({
     });
   };
 
-  const selectedClass = selectedClassId ? ontologyData.classes[selectedClassId] : null;
-  const selectedProperty = selectedPropertyId && selectedPropertyType
-    ? (selectedPropertyType === "object"
-        ? ontologyData.objectProperties[selectedPropertyId]
-        : ontologyData.datatypeProperties[selectedPropertyId])
+  const selectedClass = selectedClassId
+    ? ontologyData.classes[selectedClassId]
     : null;
+  const selectedProperty =
+    selectedPropertyId && selectedPropertyType
+      ? selectedPropertyType === "object"
+        ? ontologyData.objectProperties[selectedPropertyId]
+        : ontologyData.datatypeProperties[selectedPropertyId]
+      : null;
 
   return (
-    <Box h="calc(100vh - 140px)" display="flex" flexDirection="column" bg="gray.25">
+    <Box
+      h="calc(100vh - 140px)"
+      display="flex"
+      flexDirection="column"
+      bg="gray.25"
+    >
       {/* Header */}
       <Box p={6} borderBottomWidth="1px" bg="white" boxShadow="sm">
         <HStack justify="space-between" align="center">
@@ -500,7 +566,13 @@ export const OntologyEditor: React.FC<OntologyEditorProps> = ({
             <Button
               variant="outline"
               onClick={handleValidate}
-              colorPalette={validationResult?.isValid === false ? "red" : validationResult?.isValid === true ? "green" : "gray"}
+              colorPalette={
+                validationResult?.isValid === false
+                  ? "red"
+                  : validationResult?.isValid === true
+                    ? "green"
+                    : "gray"
+              }
             >
               {validationResult?.isValid === false ? (
                 <AlertTriangle size={16} style={{ marginRight: "8px" }} />
@@ -538,7 +610,13 @@ export const OntologyEditor: React.FC<OntologyEditorProps> = ({
       {/* Main Content */}
       <Box flex="1" display="flex" minH="0">
         {showWelcome ? (
-          <Box flex="1" p={6} display="flex" alignItems="center" justifyContent="center">
+          <Box
+            flex="1"
+            p={6}
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+          >
             <WelcomePanel
               ontologyName={ontologyData.metadata.name}
               onCreateClass={handleCreateClass}
@@ -548,8 +626,21 @@ export const OntologyEditor: React.FC<OntologyEditorProps> = ({
         ) : (
           <>
             {/* Left Panel - Tabbed Navigation */}
-            <Box w="380px" borderRightWidth="1px" bg="white" overflow="auto" boxShadow="sm">
-              <Tabs.Root value={activeTab} onValueChange={(details) => setActiveTab(details.value as "classes" | "properties" | "metadata")}>
+            <Box
+              w="380px"
+              borderRightWidth="1px"
+              bg="white"
+              overflow="auto"
+              boxShadow="sm"
+            >
+              <Tabs.Root
+                value={activeTab}
+                onValueChange={(details) =>
+                  setActiveTab(
+                    details.value as "classes" | "properties" | "metadata",
+                  )
+                }
+              >
                 <Tabs.List>
                   <Tabs.Trigger value="classes">Classes</Tabs.Trigger>
                   <Tabs.Trigger value="properties">Properties</Tabs.Trigger>
@@ -583,7 +674,11 @@ export const OntologyEditor: React.FC<OntologyEditorProps> = ({
                 <Tabs.Content value="metadata">
                   <Box p={6}>
                     <VStack spacing={4}>
-                      <Text fontSize="lg" fontWeight="semibold" color="gray.700">
+                      <Text
+                        fontSize="lg"
+                        fontWeight="semibold"
+                        color="gray.700"
+                      >
                         Ontology Information
                       </Text>
                       <Text fontSize="sm" color="gray.600">
@@ -602,7 +697,10 @@ export const OntologyEditor: React.FC<OntologyEditorProps> = ({
                   metadata={ontologyData.metadata}
                   onUpdateMetadata={handleUpdateMetadata}
                   hasClasses={Object.keys(ontologyData.classes).length > 0}
-                  hasProperties={Object.keys(ontologyData.objectProperties).length > 0 || Object.keys(ontologyData.datatypeProperties).length > 0}
+                  hasProperties={
+                    Object.keys(ontologyData.objectProperties).length > 0 ||
+                    Object.keys(ontologyData.datatypeProperties).length > 0
+                  }
                 />
               ) : selectedClass && selectedClassId ? (
                 <ClassEditor
@@ -613,12 +711,18 @@ export const OntologyEditor: React.FC<OntologyEditorProps> = ({
                   onDeleteClass={handleDeleteClass}
                   onNavigateToProperty={(propertyId, propertyType) => {
                     setSelectedPropertyId(propertyId);
-                    setSelectedPropertyType(propertyType === "objectProperty" ? "object" : "datatype");
+                    setSelectedPropertyType(
+                      propertyType === "objectProperty"
+                        ? "object"
+                        : "datatype",
+                    );
                     setSelectedClassId(null);
                     setActiveTab("properties");
                   }}
                 />
-              ) : selectedProperty && selectedPropertyId && selectedPropertyType ? (
+              ) : selectedProperty &&
+                selectedPropertyId &&
+                selectedPropertyType ? (
                 <PropertyEditor
                   propertyId={selectedPropertyId}
                   property={selectedProperty}
@@ -628,15 +732,27 @@ export const OntologyEditor: React.FC<OntologyEditorProps> = ({
                   onDeleteProperty={handleDeleteProperty}
                 />
               ) : (
-                <Box p={6} display="flex" alignItems="center" justifyContent="center" h="100%">
+                <Box
+                  p={6}
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="center"
+                  h="100%"
+                >
                   <VStack spacing={4}>
                     <Text color="gray.500" fontSize="lg">
-                      {activeTab === "classes" ? "Select a class to edit" : activeTab === "properties" ? "Select a property to edit" : "Select an item to edit"}
+                      {activeTab === "classes"
+                        ? "Select a class to edit"
+                        : activeTab === "properties"
+                          ? "Select a property to edit"
+                          : "Select an item to edit"}
                     </Text>
                     <Text color="gray.400" fontSize="sm" textAlign="center">
-                      {activeTab === "classes" ? "Choose a class from the navigation panel or create a new one to get started" :
-                       activeTab === "properties" ? "Choose a property from the navigation panel or create a new one to get started" :
-                       "Choose an item from the navigation panel or create new content to get started"}
+                      {activeTab === "classes"
+                        ? "Choose a class from the navigation panel or create a new one to get started"
+                        : activeTab === "properties"
+                          ? "Choose a property from the navigation panel or create a new one to get started"
+                          : "Choose an item from the navigation panel or create new content to get started"}
                     </Text>
                   </VStack>
                 </Box>

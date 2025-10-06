@@ -91,7 +91,8 @@ const FlowSelector = () => {
                   </Text>
                   <Stack gap="1">
                     {collections.map((collection) => {
-                      const isSelected = settings.collection === collection.collection;
+                      const isSelected =
+                        settings.collection === collection.collection;
                       return (
                         <Box
                           key={collection.collection}
@@ -112,7 +113,10 @@ const FlowSelector = () => {
                           }}
                           cursor="pointer"
                           onClick={() => {
-                            updateSetting("collection", collection.collection);
+                            updateSetting(
+                              "collection",
+                              collection.collection,
+                            );
                           }}
                         >
                           <HStack gap={3} align="start">

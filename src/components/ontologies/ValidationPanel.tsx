@@ -9,12 +9,23 @@ import {
   Separator,
   Alert,
 } from "@chakra-ui/react";
-import { AlertTriangle, CheckCircle, Info, XCircle, Hash, Link, Type } from "lucide-react";
+import {
+  AlertTriangle,
+  CheckCircle,
+  Info,
+  XCircle,
+  Hash,
+  Link,
+  Type,
+} from "lucide-react";
 import { ValidationResult, ValidationIssue } from "./OntologyValidator";
 
 interface ValidationPanelProps {
   validationResult: ValidationResult;
-  onNavigateToItem?: (itemId: string, itemType: "class" | "objectProperty" | "datatypeProperty") => void;
+  onNavigateToItem?: (
+    itemId: string,
+    itemType: "class" | "objectProperty" | "datatypeProperty",
+  ) => void;
   onClose: () => void;
 }
 
@@ -68,7 +79,13 @@ export const ValidationPanel: React.FC<ValidationPanelProps> = ({
 
   if (issues.length === 0) {
     return (
-      <Box p={4} borderWidth="1px" borderRadius="md" bg="green.50" borderColor="green.200">
+      <Box
+        p={4}
+        borderWidth="1px"
+        borderRadius="md"
+        bg="green.50"
+        borderColor="green.200"
+      >
         <HStack spacing={3}>
           <CheckCircle size={20} color="#38A169" />
           <VStack align="start" spacing={1}>
@@ -76,7 +93,8 @@ export const ValidationPanel: React.FC<ValidationPanelProps> = ({
               Ontology is valid
             </Text>
             <Text fontSize="sm" color="green.600">
-              No validation issues found. Your ontology follows best practices.
+              No validation issues found. Your ontology follows best
+              practices.
             </Text>
           </VStack>
         </HStack>
@@ -106,7 +124,8 @@ export const ValidationPanel: React.FC<ValidationPanelProps> = ({
                 <HStack spacing={1}>
                   <AlertTriangle size={14} color="#DD6B20" />
                   <Text fontSize="sm" color="orange.600">
-                    {summary.warnings} warning{summary.warnings !== 1 ? "s" : ""}
+                    {summary.warnings} warning
+                    {summary.warnings !== 1 ? "s" : ""}
                   </Text>
                 </HStack>
               )}
@@ -134,7 +153,9 @@ export const ValidationPanel: React.FC<ValidationPanelProps> = ({
               <Box
                 p={4}
                 _hover={{ bg: "gray.50" }}
-                cursor={issue.itemId && onNavigateToItem ? "pointer" : "default"}
+                cursor={
+                  issue.itemId && onNavigateToItem ? "pointer" : "default"
+                }
                 onClick={() => handleNavigateToItem(issue)}
               >
                 <VStack align="stretch" spacing={2}>
@@ -142,7 +163,10 @@ export const ValidationPanel: React.FC<ValidationPanelProps> = ({
                     {getIssueIcon(issue.type)}
                     <VStack align="start" spacing={1} flex="1">
                       <HStack spacing={2} align="center">
-                        <Text fontWeight="medium" color={`${getIssueColor(issue.type)}.800`}>
+                        <Text
+                          fontWeight="medium"
+                          color={`${getIssueColor(issue.type)}.800`}
+                        >
                           {issue.message}
                         </Text>
                         {issue.itemId && issue.itemType && (
@@ -180,7 +204,8 @@ export const ValidationPanel: React.FC<ValidationPanelProps> = ({
             <Alert.Indicator />
             <Alert.Content>
               <Alert.Description>
-                This ontology has validation issues that should be addressed before export or publication.
+                This ontology has validation issues that should be addressed
+                before export or publication.
               </Alert.Description>
             </Alert.Content>
           </Alert.Root>

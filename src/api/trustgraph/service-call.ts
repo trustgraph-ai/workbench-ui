@@ -82,21 +82,27 @@ export class ServiceCall {
     let errorToHandle = null;
 
     // Check for direct error in response
-    if (resp && typeof resp === 'object' && 'error' in resp) {
+    if (resp && typeof resp === "object" && "error" in resp) {
       errorToHandle = (resp as any).error;
     }
     // Check for nested error under response property
-    else if (resp && typeof resp === 'object' && 'response' in resp) {
+    else if (resp && typeof resp === "object" && "response" in resp) {
       const response = (resp as any).response;
-      if (response && typeof response === 'object' && 'error' in response) {
+      if (response && typeof response === "object" && "error" in response) {
         errorToHandle = response.error;
       }
     }
 
     if (errorToHandle) {
       // Response contains an error - call error callback
-      const errorMessage = errorToHandle.message || errorToHandle.type || 'Unknown error';
-      console.log('ServiceCall: API error detected in response:', errorMessage, 'Full error:', errorToHandle);
+      const errorMessage =
+        errorToHandle.message || errorToHandle.type || "Unknown error";
+      console.log(
+        "ServiceCall: API error detected in response:",
+        errorMessage,
+        "Full error:",
+        errorToHandle,
+      );
       this.error(new Error(errorMessage));
       return;
     }

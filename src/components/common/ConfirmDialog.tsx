@@ -1,11 +1,5 @@
 import React from "react";
-import {
-  Box,
-  VStack,
-  HStack,
-  Text,
-  Button,
-} from "@chakra-ui/react";
+import { Box, VStack, HStack, Text, Button } from "@chakra-ui/react";
 import { AlertTriangle, X } from "lucide-react";
 
 interface ConfirmDialogProps {
@@ -111,7 +105,13 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
         {/* Content */}
         <Box p={6}>
           <VStack align="stretch" spacing={4}>
-            <Box p={4} bg={colors.bg} borderRadius="md" borderWidth="1px" borderColor={colors.border}>
+            <Box
+              p={4}
+              bg={colors.bg}
+              borderRadius="md"
+              borderWidth="1px"
+              borderColor={colors.border}
+            >
               <Text fontSize="sm" color="gray.700" whiteSpace="pre-line">
                 {message}
               </Text>

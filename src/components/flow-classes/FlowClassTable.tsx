@@ -2,7 +2,11 @@ import React, { useState } from "react";
 import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import { Box } from "@chakra-ui/react";
 
-import { useFlowClasses, generateFlowClassId, FlowClassDefinition } from "../../state/flow-classes";
+import {
+  useFlowClasses,
+  generateFlowClassId,
+  FlowClassDefinition,
+} from "../../state/flow-classes";
 import { flowClassColumns, FlowClassRow } from "../../model/flow-class-table";
 
 import SelectableTable from "../common/SelectableTable";
@@ -27,21 +31,24 @@ const FlowClassTable: React.FC<FlowClassTableProps> = ({ onEdit }) => {
     isDuplicating,
   } = useFlowClasses();
 
-
   // No need for selected flow class state - actions handled by ActionBar
 
   // Transform flow classes data if it's in [key, value] format
   const transformedFlowClasses = React.useMemo(() => {
     if (!flowClasses || !Array.isArray(flowClasses)) return [];
-    
+
     // Check if first item is an array [key, value] pair
-    if (flowClasses.length > 0 && Array.isArray(flowClasses[0]) && flowClasses[0].length === 2) {
+    if (
+      flowClasses.length > 0 &&
+      Array.isArray(flowClasses[0]) &&
+      flowClasses[0].length === 2
+    ) {
       return flowClasses.map(([id, flowClass]) => ({
         id,
-        ...(flowClass as Omit<FlowClassDefinition, 'id'>)
+        ...(flowClass as Omit<FlowClassDefinition, "id">),
       }));
     }
-    
+
     // Already transformed
     return flowClasses;
   }, [flowClasses]);
@@ -69,19 +76,19 @@ const FlowClassTable: React.FC<FlowClassTableProps> = ({ onEdit }) => {
     if (selectedRows.length === 1) {
       const sourceId = selectedRows[0].original.id!;
       const targetId = generateFlowClassId(`${sourceId}-copy`);
-      
+
       try {
         await duplicateFlowClass({ sourceId, targetId });
         table.setRowSelection({});
       } catch (error) {
-        console.error('Failed to duplicate flow class:', error);
+        console.error("Failed to duplicate flow class:", error);
       }
     }
   };
 
   const handleDelete = async () => {
     if (selectedIds.length > 0) {
-      await Promise.all(selectedIds.map(id => deleteFlowClass(id)));
+      await Promise.all(selectedIds.map((id) => deleteFlowClass(id)));
       table.setRowSelection({});
     }
   };
@@ -98,7 +105,7 @@ const FlowClassTable: React.FC<FlowClassTableProps> = ({ onEdit }) => {
     try {
       await createFlowClass({ id, flowClass: newFlowClass });
     } catch (error) {
-      console.error('Failed to create flow class:', error);
+      console.error("Failed to create flow class:", error);
     }
   };
 

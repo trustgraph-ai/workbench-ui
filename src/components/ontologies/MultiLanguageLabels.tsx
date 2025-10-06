@@ -51,7 +51,11 @@ export const MultiLanguageLabels: React.FC<MultiLanguageLabelsProps> = ({
     setIsExpanded(true);
   };
 
-  const handleUpdateLabel = (index: number, field: "value" | "lang", value: string) => {
+  const handleUpdateLabel = (
+    index: number,
+    field: "value" | "lang",
+    value: string,
+  ) => {
     const newLabels = [...labels];
     if (field === "value") {
       newLabels[index].value = value;
@@ -108,7 +112,12 @@ export const MultiLanguageLabels: React.FC<MultiLanguageLabelsProps> = ({
             <Text fontSize="sm" fontWeight="medium" color="gray.700">
               Additional Languages
             </Text>
-            <Button size="xs" variant="ghost" onClick={handleAddLabel} colorPalette="blue">
+            <Button
+              size="xs"
+              variant="ghost"
+              onClick={handleAddLabel}
+              colorPalette="blue"
+            >
               <Plus size={12} style={{ marginRight: "4px" }} />
               Add
             </Button>
@@ -119,7 +128,9 @@ export const MultiLanguageLabels: React.FC<MultiLanguageLabelsProps> = ({
               <Select.Root
                 size="sm"
                 value={labelItem.lang || "en"}
-                onValueChange={(e) => handleUpdateLabel(index + 1, "lang", e.value[0])}
+                onValueChange={(e) =>
+                  handleUpdateLabel(index + 1, "lang", e.value[0])
+                }
               >
                 <Select.Trigger minW="120px">
                   <Select.ValueText />
@@ -137,8 +148,10 @@ export const MultiLanguageLabels: React.FC<MultiLanguageLabelsProps> = ({
                 flex="1"
                 size="sm"
                 value={labelItem.value}
-                onChange={(e) => handleUpdateLabel(index + 1, "value", e.target.value)}
-                placeholder={`${label} in ${COMMON_LANGUAGES.find(l => l.value === labelItem.lang)?.label || labelItem.lang}`}
+                onChange={(e) =>
+                  handleUpdateLabel(index + 1, "value", e.target.value)
+                }
+                placeholder={`${label} in ${COMMON_LANGUAGES.find((l) => l.value === labelItem.lang)?.label || labelItem.lang}`}
               />
 
               <IconButton

@@ -1,4 +1,10 @@
-import { Ontology, OWLClass, OWLObjectProperty, OWLDatatypeProperty, OntologyMetadata } from "../../state/ontologies";
+import {
+  Ontology,
+  OWLClass,
+  OWLObjectProperty,
+  OWLDatatypeProperty,
+  OntologyMetadata,
+} from "../../state/ontologies";
 
 export type ImportFormat = "owl" | "rdf" | "turtle";
 
@@ -9,7 +15,10 @@ export interface ImportOptions {
 }
 
 export class OntologyImporter {
-  static async import(content: string, options: ImportOptions): Promise<Ontology> {
+  static async import(
+    content: string,
+    options: ImportOptions,
+  ): Promise<Ontology> {
     switch (options.format) {
       case "owl":
         return this.parseOWL(content);
@@ -27,17 +36,28 @@ export class OntologyImporter {
     const trimmed = content.trim();
 
     // Check for OWL/XML
-    if (trimmed.startsWith("<?xml") || trimmed.includes("<rdf:RDF") || trimmed.includes("<owl:Ontology")) {
+    if (
+      trimmed.startsWith("<?xml") ||
+      trimmed.includes("<rdf:RDF") ||
+      trimmed.includes("<owl:Ontology")
+    ) {
       // Distinguish between OWL and RDF
-      if (trimmed.includes("<owl:Ontology") || trimmed.includes("owl:Class")) {
+      if (
+        trimmed.includes("<owl:Ontology") ||
+        trimmed.includes("owl:Class")
+      ) {
         return "owl";
       }
       return "rdf";
     }
 
     // Check for Turtle
-    if (trimmed.includes("@prefix") || trimmed.includes("@base") ||
-        (trimmed.includes("a owl:") || trimmed.includes("a rdfs:"))) {
+    if (
+      trimmed.includes("@prefix") ||
+      trimmed.includes("@base") ||
+      trimmed.includes("a owl:") ||
+      trimmed.includes("a rdfs:")
+    ) {
       return "turtle";
     }
 
@@ -63,7 +83,10 @@ export class OntologyImporter {
     const classElements = doc.querySelectorAll("Class");
 
     classElements.forEach((classEl) => {
-      const uri = classEl.getAttribute("rdf:about") || classEl.getAttribute("rdf:ID") || "";
+      const uri =
+        classEl.getAttribute("rdf:about") ||
+        classEl.getAttribute("rdf:ID") ||
+        "";
       if (!uri) return;
 
       const classId = this.extractId(uri, metadata.namespace);
@@ -85,7 +108,10 @@ export class OntologyImporter {
     const objectPropElements = doc.querySelectorAll("ObjectProperty");
 
     objectPropElements.forEach((propEl) => {
-      const uri = propEl.getAttribute("rdf:about") || propEl.getAttribute("rdf:ID") || "";
+      const uri =
+        propEl.getAttribute("rdf:about") ||
+        propEl.getAttribute("rdf:ID") ||
+        "";
       if (!uri) return;
 
       const propId = this.extractId(uri, metadata.namespace);
@@ -109,14 +135,19 @@ export class OntologyImporter {
     const datatypePropElements = doc.querySelectorAll("DatatypeProperty");
 
     datatypePropElements.forEach((propEl) => {
-      const uri = propEl.getAttribute("rdf:about") || propEl.getAttribute("rdf:ID") || "";
+      const uri =
+        propEl.getAttribute("rdf:about") ||
+        propEl.getAttribute("rdf:ID") ||
+        "";
       if (!uri) return;
 
       const propId = this.extractId(uri, metadata.namespace);
       const labels = this.extractLabels(propEl);
       const comment = this.extractComment(propEl);
       const domain = this.extractDomain(propEl, metadata.namespace);
-      const range = propEl.querySelector("range")?.getAttribute("rdf:resource") || "xsd:string";
+      const range =
+        propEl.querySelector("range")?.getAttribute("rdf:resource") ||
+        "xsd:string";
 
       datatypeProperties[propId] = {
         uri,
@@ -184,14 +215,22 @@ export class OntologyImporter {
       };
 
       // Try to find label
-      const labelPattern = new RegExp(`:${classId}\\s+rdfs:label\\s+"([^"]+)"`, 'g');
+      const labelPattern = new RegExp(
+        `:${classId}\\s+rdfs:label\\s+"([^"]+)"`,
+        "g",
+      );
       const labelMatch = labelPattern.exec(content);
       if (labelMatch) {
-        classes[classId]["rdfs:label"] = [{ value: labelMatch[1], lang: "en" }];
+        classes[classId]["rdfs:label"] = [
+          { value: labelMatch[1], lang: "en" },
+        ];
       }
 
       // Try to find comment
-      const commentPattern = new RegExp(`:${classId}\\s+rdfs:comment\\s+"([^"]+)"`, 'g');
+      const commentPattern = new RegExp(
+        `:${classId}\\s+rdfs:comment\\s+"([^"]+)"`,
+        "g",
+      );
       const commentMatch = commentPattern.exec(content);
       if (commentMatch) {
         classes[classId]["rdfs:comment"] = commentMatch[1];
@@ -211,13 +250,19 @@ export class OntologyImporter {
       };
 
       // Try to find domain and range
-      const domainPattern = new RegExp(`:${propId}\\s+rdfs:domain\\s+:?(\\w+)`, 'g');
+      const domainPattern = new RegExp(
+        `:${propId}\\s+rdfs:domain\\s+:?(\\w+)`,
+        "g",
+      );
       const domainMatch = domainPattern.exec(content);
       if (domainMatch) {
         objectProperties[propId]["rdfs:domain"] = domainMatch[1];
       }
 
-      const rangePattern = new RegExp(`:${propId}\\s+rdfs:range\\s+:?(\\w+)`, 'g');
+      const rangePattern = new RegExp(
+        `:${propId}\\s+rdfs:range\\s+:?(\\w+)`,
+        "g",
+      );
       const rangeMatch = rangePattern.exec(content);
       if (rangeMatch) {
         objectProperties[propId]["rdfs:range"] = rangeMatch[1];
@@ -246,24 +291,32 @@ export class OntologyImporter {
     };
   }
 
-  private static extractMetadata(doc: Document, ontologyElement: Element | null): OntologyMetadata {
-    const namespace = ontologyElement?.getAttribute("rdf:about") ||
-                     doc.documentElement.getAttribute("xml:base") ||
-                     "http://example.org/ontology#";
+  private static extractMetadata(
+    doc: Document,
+    ontologyElement: Element | null,
+  ): OntologyMetadata {
+    const namespace =
+      ontologyElement?.getAttribute("rdf:about") ||
+      doc.documentElement.getAttribute("xml:base") ||
+      "http://example.org/ontology#";
 
-    const title = doc.querySelector("Ontology > title")?.textContent ||
-                 doc.querySelector("Ontology > label")?.textContent ||
-                 "Imported Ontology";
+    const title =
+      doc.querySelector("Ontology > title")?.textContent ||
+      doc.querySelector("Ontology > label")?.textContent ||
+      "Imported Ontology";
 
-    const description = doc.querySelector("Ontology > comment")?.textContent ||
-                       doc.querySelector("Ontology > description")?.textContent ||
-                       "";
+    const description =
+      doc.querySelector("Ontology > comment")?.textContent ||
+      doc.querySelector("Ontology > description")?.textContent ||
+      "";
 
-    const creator = doc.querySelector("Ontology > creator")?.textContent ||
-                   doc.querySelector("Ontology > contributor")?.textContent ||
-                   "";
+    const creator =
+      doc.querySelector("Ontology > creator")?.textContent ||
+      doc.querySelector("Ontology > contributor")?.textContent ||
+      "";
 
-    const version = doc.querySelector("Ontology > versionInfo")?.textContent || "1.0";
+    const version =
+      doc.querySelector("Ontology > versionInfo")?.textContent || "1.0";
 
     return {
       name: title,
@@ -272,7 +325,10 @@ export class OntologyImporter {
       created: new Date().toISOString(),
       modified: new Date().toISOString(),
       creator,
-      namespace: namespace.endsWith("#") || namespace.endsWith("/") ? namespace : namespace + "#",
+      namespace:
+        namespace.endsWith("#") || namespace.endsWith("/")
+          ? namespace
+          : namespace + "#",
     };
   }
 
@@ -285,7 +341,9 @@ export class OntologyImporter {
     return match ? match[1] : uri;
   }
 
-  private static extractLabels(element: Element): Array<{ value: string; lang?: string }> {
+  private static extractLabels(
+    element: Element,
+  ): Array<{ value: string; lang?: string }> {
     const labels: Array<{ value: string; lang?: string }> = [];
     const labelElements = element.querySelectorAll("label");
 
@@ -304,7 +362,10 @@ export class OntologyImporter {
     return element.querySelector("comment")?.textContent || null;
   }
 
-  private static extractSubClassOf(element: Element, namespace: string): string | null {
+  private static extractSubClassOf(
+    element: Element,
+    namespace: string,
+  ): string | null {
     const subClassElement = element.querySelector("subClassOf");
     if (!subClassElement) return null;
 
@@ -314,7 +375,10 @@ export class OntologyImporter {
     return this.extractId(resource, namespace);
   }
 
-  private static extractDomain(element: Element, namespace: string): string | null {
+  private static extractDomain(
+    element: Element,
+    namespace: string,
+  ): string | null {
     const domainElement = element.querySelector("domain");
     if (!domainElement) return null;
 
@@ -324,7 +388,10 @@ export class OntologyImporter {
     return this.extractId(resource, namespace);
   }
 
-  private static extractRange(element: Element, namespace: string): string | null {
+  private static extractRange(
+    element: Element,
+    namespace: string,
+  ): string | null {
     const rangeElement = element.querySelector("range");
     if (!rangeElement) return null;
 

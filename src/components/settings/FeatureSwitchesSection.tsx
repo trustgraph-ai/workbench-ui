@@ -185,7 +185,7 @@ const FeatureSwitchesSection: React.FC<FeatureSwitchesSectionProps> = ({
           </Switch.Root>
         </HStack>
 
-<HStack justify="space-between" align="center">
+        <HStack justify="space-between" align="center">
           <VStack gap={1} align="start">
             <Text fontWeight="medium">Structured Query</Text>
             <Text fontSize="sm" color="fg.muted">

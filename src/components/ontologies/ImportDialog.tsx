@@ -16,7 +16,11 @@ import { Upload, X, FileText, AlertTriangle } from "lucide-react";
 import SelectField from "../common/SelectField";
 import SelectOptionText from "../common/SelectOptionText";
 import { useOntologies, Ontology } from "../../state/ontologies";
-import { OntologyImporter, ImportFormat, ImportOptions } from "./OntologyImporter";
+import {
+  OntologyImporter,
+  ImportFormat,
+  ImportOptions,
+} from "./OntologyImporter";
 import { useNotification } from "../../state/notify";
 
 interface ImportDialogProps {
@@ -31,12 +35,16 @@ export const ImportDialog: React.FC<ImportDialogProps> = ({
   onImported,
 }) => {
   const [format, setFormat] = useState<ImportFormat | "auto">("auto");
-  const [importMode, setImportMode] = useState<"new" | "merge" | "overwrite">("new");
+  const [importMode, setImportMode] = useState<"new" | "merge" | "overwrite">(
+    "new",
+  );
   const [ontologyId, setOntologyId] = useState("");
   const [fileContent, setFileContent] = useState("");
   const [fileName, setFileName] = useState<string | null>(null);
   const [isImporting, setIsImporting] = useState(false);
-  const [detectedFormat, setDetectedFormat] = useState<ImportFormat | null>(null);
+  const [detectedFormat, setDetectedFormat] = useState<ImportFormat | null>(
+    null,
+  );
   const [parseError, setParseError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -47,42 +55,28 @@ export const ImportDialog: React.FC<ImportDialogProps> = ({
     {
       value: "auto",
       label: "Auto-detect",
-      description: (
-        <SelectOptionText>
-          Auto-detect
-        </SelectOptionText>
-      )
+      description: <SelectOptionText>Auto-detect</SelectOptionText>,
     },
     {
       value: "owl",
       label: "OWL/XML (.owl)",
-      description: (
-        <SelectOptionText>
-          OWL/XML (.owl)
-        </SelectOptionText>
-      )
+      description: <SelectOptionText>OWL/XML (.owl)</SelectOptionText>,
     },
     {
       value: "rdf",
       label: "RDF/XML (.rdf)",
-      description: (
-        <SelectOptionText>
-          RDF/XML (.rdf)
-        </SelectOptionText>
-      )
+      description: <SelectOptionText>RDF/XML (.rdf)</SelectOptionText>,
     },
     {
       value: "turtle",
       label: "Turtle (.ttl)",
-      description: (
-        <SelectOptionText>
-          Turtle (.ttl)
-        </SelectOptionText>
-      )
+      description: <SelectOptionText>Turtle (.ttl)</SelectOptionText>,
     },
   ];
 
-  const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
@@ -100,7 +94,9 @@ export const ImportDialog: React.FC<ImportDialogProps> = ({
         if (detected) {
           setDetectedFormat(detected);
         } else {
-          setParseError("Could not detect file format. Please select the format manually.");
+          setParseError(
+            "Could not detect file format. Please select the format manually.",
+          );
         }
       }
 
@@ -131,7 +127,9 @@ export const ImportDialog: React.FC<ImportDialogProps> = ({
       if (detected) {
         setDetectedFormat(detected);
       } else {
-        setParseError("Could not detect format. Please select the format manually.");
+        setParseError(
+          "Could not detect format. Please select the format manually.",
+        );
       }
     }
   };
@@ -162,13 +160,20 @@ export const ImportDialog: React.FC<ImportDialogProps> = ({
         overwriteExisting: importMode === "overwrite",
       };
 
-      const importedOntology = await OntologyImporter.import(fileContent, options);
+      const importedOntology = await OntologyImporter.import(
+        fileContent,
+        options,
+      );
 
       // Check if ontology ID already exists
-      const existingOntology = ontologies.find(ont => ont[0] === ontologyId);
+      const existingOntology = ontologies.find(
+        (ont) => ont[0] === ontologyId,
+      );
 
       if (existingOntology && importMode === "new") {
-        notify.warning(`Ontology with ID "${ontologyId}" already exists. Use merge or overwrite mode.`);
+        notify.warning(
+          `Ontology with ID "${ontologyId}" already exists. Use merge or overwrite mode.`,
+        );
         setIsImporting(false);
         return;
       }
@@ -224,7 +229,9 @@ export const ImportDialog: React.FC<ImportDialogProps> = ({
     } catch (error) {
       console.error("Import failed:", error);
       setParseError(error instanceof Error ? error.message : "Import failed");
-      notify.error(`Failed to import ontology: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      notify.error(
+        `Failed to import ontology: ${error instanceof Error ? error.message : "Unknown error"}`,
+      );
     } finally {
       setIsImporting(false);
     }
@@ -346,7 +353,9 @@ export const ImportDialog: React.FC<ImportDialogProps> = ({
               <SelectField
                 items={formatOptions}
                 value={[format]}
-                onValueChange={(values) => setFormat((values[0] || "auto") as ImportFormat | "auto")}
+                onValueChange={(values) =>
+                  setFormat((values[0] || "auto") as ImportFormat | "auto")
+                }
               />
               {detectedFormat && format === "auto" && (
                 <HStack mt={2}>
@@ -362,13 +371,17 @@ export const ImportDialog: React.FC<ImportDialogProps> = ({
               <Field.Label>Import Mode</Field.Label>
               <RadioGroup.Root
                 value={importMode}
-                onValueChange={(e) => setImportMode(e.value as "new" | "merge" | "overwrite")}
+                onValueChange={(e) =>
+                  setImportMode(e.value as "new" | "merge" | "overwrite")
+                }
               >
                 <VStack align="stretch" spacing={2}>
                   <RadioGroup.Item value="new">
                     <RadioGroup.ItemControl />
                     <RadioGroup.ItemText>
-                      <Text fontSize="sm" fontWeight="medium">Create New</Text>
+                      <Text fontSize="sm" fontWeight="medium">
+                        Create New
+                      </Text>
                       <Text fontSize="xs" color="gray.600">
                         Create a new ontology (fails if ID exists)
                       </Text>
@@ -378,7 +391,9 @@ export const ImportDialog: React.FC<ImportDialogProps> = ({
                   <RadioGroup.Item value="merge">
                     <RadioGroup.ItemControl />
                     <RadioGroup.ItemText>
-                      <Text fontSize="sm" fontWeight="medium">Merge with Existing</Text>
+                      <Text fontSize="sm" fontWeight="medium">
+                        Merge with Existing
+                      </Text>
                       <Text fontSize="xs" color="gray.600">
                         Merge classes and properties with existing ontology
                       </Text>
@@ -388,7 +403,9 @@ export const ImportDialog: React.FC<ImportDialogProps> = ({
                   <RadioGroup.Item value="overwrite">
                     <RadioGroup.ItemControl />
                     <RadioGroup.ItemText>
-                      <Text fontSize="sm" fontWeight="medium">Overwrite Existing</Text>
+                      <Text fontSize="sm" fontWeight="medium">
+                        Overwrite Existing
+                      </Text>
                       <Text fontSize="xs" color="gray.600">
                         Replace existing ontology completely
                       </Text>
@@ -437,19 +454,34 @@ export const ImportDialog: React.FC<ImportDialogProps> = ({
 
             {/* Summary */}
             {fileContent && !parseError && (
-              <Box p={3} bg="blue.50" borderRadius="md" borderLeftWidth="3px" borderLeftColor="blue.500">
+              <Box
+                p={3}
+                bg="blue.50"
+                borderRadius="md"
+                borderLeftWidth="3px"
+                borderLeftColor="blue.500"
+              >
                 <VStack align="stretch" spacing={1}>
                   <Text fontSize="sm" fontWeight="medium" color="blue.800">
                     Ready to Import
                   </Text>
                   <Text fontSize="xs" color="blue.700">
-                    • Format: {format === "auto" ? (detectedFormat || "detecting...") : format.toUpperCase()}
+                    • Format:{" "}
+                    {format === "auto"
+                      ? detectedFormat || "detecting..."
+                      : format.toUpperCase()}
                   </Text>
                   <Text fontSize="xs" color="blue.700">
-                    • Mode: {importMode === "new" ? "Create new" : importMode === "merge" ? "Merge" : "Overwrite"}
+                    • Mode:{" "}
+                    {importMode === "new"
+                      ? "Create new"
+                      : importMode === "merge"
+                        ? "Merge"
+                        : "Overwrite"}
                   </Text>
                   <Text fontSize="xs" color="blue.700">
-                    • Content size: {fileContent.length.toLocaleString()} characters
+                    • Content size: {fileContent.length.toLocaleString()}{" "}
+                    characters
                   </Text>
                 </VStack>
               </Box>
@@ -469,7 +501,11 @@ export const ImportDialog: React.FC<ImportDialogProps> = ({
               Clear
             </Button>
             <HStack spacing={3}>
-              <Button variant="ghost" onClick={onClose} disabled={isImporting}>
+              <Button
+                variant="ghost"
+                onClick={onClose}
+                disabled={isImporting}
+              >
                 Cancel
               </Button>
               <Button

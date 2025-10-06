@@ -26,13 +26,16 @@ export const ontologyColumns = [
     header: "Classes",
     cell: (info) => info.getValue(),
   }),
-  columnHelper.accessor((row) =>
-    Object.keys(row[1].objectProperties || {}).length +
-    Object.keys(row[1].datatypeProperties || {}).length, {
-    id: "propertyCount",
-    header: "Properties",
-    cell: (info) => info.getValue(),
-  }),
+  columnHelper.accessor(
+    (row) =>
+      Object.keys(row[1].objectProperties || {}).length +
+      Object.keys(row[1].datatypeProperties || {}).length,
+    {
+      id: "propertyCount",
+      header: "Properties",
+      cell: (info) => info.getValue(),
+    },
+  ),
   columnHelper.accessor((row) => row[1].metadata.modified, {
     id: "modified",
     header: "Last Modified",

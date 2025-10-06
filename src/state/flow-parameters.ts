@@ -6,7 +6,7 @@ import { useActivity } from "./activity";
 
 // Parameter schema definition
 interface ParameterSchema {
-  type: 'string' | 'number' | 'integer' | 'boolean';
+  type: "string" | "number" | "integer" | "boolean";
   description?: string;
   default?: any;
   enum?: EnumOption[] | string[];
@@ -66,31 +66,44 @@ export const useFlowParameters = (flowClassName?: string) => {
         const flowClass = await socket.flows().getFlowClass(flowClassName);
 
         // Extract parameter metadata with new structure
-        const parameterMetadata: { [key: string]: FlowParameterMetadata } = flowClass.parameters || {};
+        const parameterMetadata: { [key: string]: FlowParameterMetadata } =
+          flowClass.parameters || {};
         if (Object.keys(parameterMetadata).length === 0) {
-          return { parameterDefinitions: {}, parameterMapping: {}, parameterMetadata: {} };
+          return {
+            parameterDefinitions: {},
+            parameterMapping: {},
+            parameterMetadata: {},
+          };
         }
 
         // Create mapping from flow param names to definition names
         const parameterMapping: { [key: string]: string } = {};
-        Object.entries(parameterMetadata).forEach(([flowParamName, metadata]) => {
-          parameterMapping[flowParamName] = metadata.type;
-        });
+        Object.entries(parameterMetadata).forEach(
+          ([flowParamName, metadata]) => {
+            parameterMapping[flowParamName] = metadata.type;
+          },
+        );
 
         // Fetch parameter definitions from config
         const definitionNames = Object.values(parameterMapping);
-        const configKeys = definitionNames.map(name => ({ type: "parameter-types", key: name }));
+        const configKeys = definitionNames.map((name) => ({
+          type: "parameter-types",
+          key: name,
+        }));
 
         const configResponse = await socket.config().getConfig(configKeys);
         const parameterDefinitions: ParameterDefinitions = {};
 
         // Parse config response to get parameter definitions
-        configResponse.values?.forEach(item => {
+        configResponse.values?.forEach((item) => {
           if (item.type === "parameter-types") {
             try {
               parameterDefinitions[item.key] = JSON.parse(item.value);
             } catch (error) {
-              console.error(`Failed to parse parameter definition for ${item.key}:`, error);
+              console.error(
+                `Failed to parse parameter definition for ${item.key}:`,
+                error,
+              );
             }
           }
         });
@@ -131,26 +144,35 @@ export const useParameterValidation = (
   parameterDefinitions: ParameterDefinitions,
   parameterMapping: { [key: string]: string },
   parameterMetadata: { [key: string]: FlowParameterMetadata },
-  parameterValues: { [key: string]: any }
+  parameterValues: { [key: string]: any },
 ) => {
   return useMemo(() => {
     const errors: { [key: string]: string } = {};
     let isValid = true;
 
     // Resolve parameter value considering controlled-by relationships
-    const resolveParameterValue = (paramName: string, currentValues: { [key: string]: any }): any => {
+    const resolveParameterValue = (
+      paramName: string,
+      currentValues: { [key: string]: any },
+    ): any => {
       const metadata = parameterMetadata[paramName];
       const schema = parameterDefinitions[parameterMapping[paramName]];
 
       // If parameter has explicit value, use it
-      if (currentValues[paramName] !== undefined && currentValues[paramName] !== "") {
+      if (
+        currentValues[paramName] !== undefined &&
+        currentValues[paramName] !== ""
+      ) {
         return currentValues[paramName];
       }
 
       // If parameter is controlled by another parameter, inherit its value
       if (metadata && metadata["controlled-by"]) {
         const controllerName = metadata["controlled-by"];
-        const controllerValue = resolveParameterValue(controllerName, currentValues);
+        const controllerValue = resolveParameterValue(
+          controllerName,
+          currentValues,
+        );
         if (controllerValue !== undefined && controllerValue !== "") {
           return controllerValue;
         }
@@ -160,74 +182,93 @@ export const useParameterValidation = (
       return schema?.default ?? "";
     };
 
-    Object.entries(parameterMapping).forEach(([flowParamName, definitionName]) => {
-      const schema = parameterDefinitions[definitionName];
-      if (!schema) return;
+    Object.entries(parameterMapping).forEach(
+      ([flowParamName, definitionName]) => {
+        const schema = parameterDefinitions[definitionName];
+        if (!schema) return;
 
-      const resolvedValue = resolveParameterValue(flowParamName, parameterValues);
-      const value = resolvedValue;
-
-      // Check required fields
-      if (schema.required && (value === undefined || value === "")) {
-        errors[flowParamName] = `${flowParamName} is required`;
-        isValid = false;
-        return;
-      }
-
-      // Skip validation for empty optional fields
-      if (value === undefined || value === "") {
-        return;
-      }
-
-      // Type validation
-      if (schema.type === 'number' || schema.type === 'integer') {
-        const numValue = typeof value === 'string' ? parseFloat(value) : value;
-        if (isNaN(numValue)) {
-          errors[flowParamName] = `${flowParamName} must be a valid number`;
-          isValid = false;
-          return;
-        }
-
-        if (schema.type === 'integer' && !Number.isInteger(numValue)) {
-          errors[flowParamName] = `${flowParamName} must be an integer`;
-          isValid = false;
-          return;
-        }
-
-        // Range validation
-        if (schema.minimum !== undefined && numValue < schema.minimum) {
-          errors[flowParamName] = `${flowParamName} must be at least ${schema.minimum}`;
-          isValid = false;
-        }
-        if (schema.maximum !== undefined && numValue > schema.maximum) {
-          errors[flowParamName] = `${flowParamName} must be at most ${schema.maximum}`;
-          isValid = false;
-        }
-      }
-
-      // Enum validation
-      if (schema.enum && schema.enum.length > 0) {
-        const validValues = schema.enum.map(option =>
-          typeof option === 'object' ? option.id : option
+        const resolvedValue = resolveParameterValue(
+          flowParamName,
+          parameterValues,
         );
-        if (!validValues.includes(value)) {
-          errors[flowParamName] = `${flowParamName} must be one of: ${validValues.join(', ')}`;
-          isValid = false;
-        }
-      }
+        const value = resolvedValue;
 
-      // Pattern validation for strings
-      if (schema.pattern && schema.type === 'string') {
-        const regex = new RegExp(schema.pattern);
-        if (!regex.test(value.toString())) {
-          errors[flowParamName] = `${flowParamName} format is invalid`;
+        // Check required fields
+        if (schema.required && (value === undefined || value === "")) {
+          errors[flowParamName] = `${flowParamName} is required`;
           isValid = false;
+          return;
         }
-      }
-    });
+
+        // Skip validation for empty optional fields
+        if (value === undefined || value === "") {
+          return;
+        }
+
+        // Type validation
+        if (schema.type === "number" || schema.type === "integer") {
+          const numValue =
+            typeof value === "string" ? parseFloat(value) : value;
+          if (isNaN(numValue)) {
+            errors[flowParamName] = `${flowParamName} must be a valid number`;
+            isValid = false;
+            return;
+          }
+
+          if (schema.type === "integer" && !Number.isInteger(numValue)) {
+            errors[flowParamName] = `${flowParamName} must be an integer`;
+            isValid = false;
+            return;
+          }
+
+          // Range validation
+          if (schema.minimum !== undefined && numValue < schema.minimum) {
+            errors[flowParamName] =
+              `${flowParamName} must be at least ${schema.minimum}`;
+            isValid = false;
+          }
+          if (schema.maximum !== undefined && numValue > schema.maximum) {
+            errors[flowParamName] =
+              `${flowParamName} must be at most ${schema.maximum}`;
+            isValid = false;
+          }
+        }
+
+        // Enum validation
+        if (schema.enum && schema.enum.length > 0) {
+          const validValues = schema.enum.map((option) =>
+            typeof option === "object" ? option.id : option,
+          );
+          if (!validValues.includes(value)) {
+            errors[flowParamName] =
+              `${flowParamName} must be one of: ${validValues.join(", ")}`;
+            isValid = false;
+          }
+        }
+
+        // Pattern validation for strings
+        if (schema.pattern && schema.type === "string") {
+          const regex = new RegExp(schema.pattern);
+          if (!regex.test(value.toString())) {
+            errors[flowParamName] = `${flowParamName} format is invalid`;
+            isValid = false;
+          }
+        }
+      },
+    );
 
     return { isValid, errors };
-  }, [parameterDefinitions, parameterMapping, parameterMetadata, parameterValues]);
+  }, [
+    parameterDefinitions,
+    parameterMapping,
+    parameterMetadata,
+    parameterValues,
+  ]);
 };
 
-export type { ParameterSchema, EnumOption, ParameterDefinitions, FlowParameterMetadata };
+export type {
+  ParameterSchema,
+  EnumOption,
+  ParameterDefinitions,
+  FlowParameterMetadata,
+};

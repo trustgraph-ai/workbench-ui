@@ -1,7 +1,19 @@
 import React, { useState } from "react";
-import { Box, VStack, HStack, Text, Button, Input, IconButton, Tabs } from "@chakra-ui/react";
+import {
+  Box,
+  VStack,
+  HStack,
+  Text,
+  Button,
+  Input,
+  IconButton,
+  Tabs,
+} from "@chakra-ui/react";
 import { Plus, Link, Type, Trash2 } from "lucide-react";
-import { OWLObjectProperty, OWLDatatypeProperty } from "../../state/ontologies";
+import {
+  OWLObjectProperty,
+  OWLDatatypeProperty,
+} from "../../state/ontologies";
 
 interface PropertyTreeProps {
   objectProperties: Record<string, OWLObjectProperty>;
@@ -24,7 +36,9 @@ export const PropertyTree: React.FC<PropertyTreeProps> = ({
   onCreateDatatypeProperty,
   onDeleteProperty,
 }) => {
-  const [isCreating, setIsCreating] = useState<"object" | "datatype" | null>(null);
+  const [isCreating, setIsCreating] = useState<"object" | "datatype" | null>(
+    null,
+  );
   const [newPropertyName, setNewPropertyName] = useState("");
 
   const objectPropertyEntries = Object.entries(objectProperties);
@@ -47,7 +61,9 @@ export const PropertyTree: React.FC<PropertyTreeProps> = ({
     setIsCreating(null);
   };
 
-  const getPropertyLabel = (property: OWLObjectProperty | OWLDatatypeProperty): string => {
+  const getPropertyLabel = (
+    property: OWLObjectProperty | OWLDatatypeProperty,
+  ): string => {
     if (property["rdfs:label"] && property["rdfs:label"].length > 0) {
       return property["rdfs:label"][0].value;
     }
@@ -60,7 +76,7 @@ export const PropertyTree: React.FC<PropertyTreeProps> = ({
     entries: [string, OWLObjectProperty | OWLDatatypeProperty][],
     type: "object" | "datatype",
     icon: React.ReactNode,
-    emptyMessage: string
+    emptyMessage: string,
   ) => (
     <VStack align="stretch" spacing={0}>
       {entries.length === 0 ? (
@@ -71,7 +87,9 @@ export const PropertyTree: React.FC<PropertyTreeProps> = ({
         </Box>
       ) : (
         entries.map(([propertyId, property]) => {
-          const isSelected = propertyId === selectedPropertyId && type === selectedPropertyType;
+          const isSelected =
+            propertyId === selectedPropertyId &&
+            type === selectedPropertyType;
           return (
             <HStack
               key={propertyId}
@@ -129,7 +147,8 @@ export const PropertyTree: React.FC<PropertyTreeProps> = ({
       <Box p={4} borderBottomWidth="1px" bg="gray.50">
         <HStack justify="space-between">
           <Text fontWeight="semibold" fontSize="md" color="gray.800">
-            Properties ({objectPropertyEntries.length + datatypePropertyEntries.length})
+            Properties (
+            {objectPropertyEntries.length + datatypePropertyEntries.length})
           </Text>
         </HStack>
       </Box>
@@ -166,10 +185,18 @@ export const PropertyTree: React.FC<PropertyTreeProps> = ({
                       autoFocus
                     />
                     <HStack spacing={2}>
-                      <Button size="xs" colorPalette="blue" onClick={handleCreateProperty}>
+                      <Button
+                        size="xs"
+                        colorPalette="blue"
+                        onClick={handleCreateProperty}
+                      >
                         Create
                       </Button>
-                      <Button size="xs" variant="ghost" onClick={handleCancelCreate}>
+                      <Button
+                        size="xs"
+                        variant="ghost"
+                        onClick={handleCancelCreate}
+                      >
                         Cancel
                       </Button>
                     </HStack>
@@ -193,7 +220,7 @@ export const PropertyTree: React.FC<PropertyTreeProps> = ({
                 objectPropertyEntries,
                 "object",
                 <Link size={14} color="#666" />,
-                "No object properties"
+                "No object properties",
               )}
             </VStack>
           </Tabs.Content>
@@ -216,10 +243,18 @@ export const PropertyTree: React.FC<PropertyTreeProps> = ({
                       autoFocus
                     />
                     <HStack spacing={2}>
-                      <Button size="xs" colorPalette="blue" onClick={handleCreateProperty}>
+                      <Button
+                        size="xs"
+                        colorPalette="blue"
+                        onClick={handleCreateProperty}
+                      >
                         Create
                       </Button>
-                      <Button size="xs" variant="ghost" onClick={handleCancelCreate}>
+                      <Button
+                        size="xs"
+                        variant="ghost"
+                        onClick={handleCancelCreate}
+                      >
                         Cancel
                       </Button>
                     </HStack>
@@ -243,7 +278,7 @@ export const PropertyTree: React.FC<PropertyTreeProps> = ({
                 datatypePropertyEntries,
                 "datatype",
                 <Type size={14} color="#666" />,
-                "No datatype properties"
+                "No datatype properties",
               )}
             </VStack>
           </Tabs.Content>

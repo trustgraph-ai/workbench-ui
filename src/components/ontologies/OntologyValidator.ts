@@ -36,9 +36,9 @@ export class OntologyValidator {
     issues.push(...this.validateStructure(ontology));
 
     const summary = {
-      errors: issues.filter(i => i.type === "error").length,
-      warnings: issues.filter(i => i.type === "warning").length,
-      info: issues.filter(i => i.type === "info").length,
+      errors: issues.filter((i) => i.type === "error").length,
+      warnings: issues.filter((i) => i.type === "warning").length,
+      info: issues.filter((i) => i.type === "info").length,
     };
 
     return {
@@ -57,7 +57,7 @@ export class OntologyValidator {
         type: "error",
         category: "metadata",
         message: "Ontology name is required",
-        suggestion: "Add a descriptive name for your ontology"
+        suggestion: "Add a descriptive name for your ontology",
       });
     }
 
@@ -66,7 +66,8 @@ export class OntologyValidator {
         type: "warning",
         category: "metadata",
         message: "Ontology description is missing",
-        suggestion: "Add a description to help others understand the purpose of this ontology"
+        suggestion:
+          "Add a description to help others understand the purpose of this ontology",
       });
     }
 
@@ -76,14 +77,16 @@ export class OntologyValidator {
         type: "error",
         category: "metadata",
         message: "Namespace URI is required",
-        suggestion: "Set a valid namespace URI (e.g., http://example.org/myontology#)"
+        suggestion:
+          "Set a valid namespace URI (e.g., http://example.org/myontology#)",
       });
     } else if (!this.isValidURI(ontology.metadata.namespace)) {
       issues.push({
         type: "error",
         category: "metadata",
         message: "Invalid namespace URI format",
-        suggestion: "Use a valid URI format starting with http:// or https://"
+        suggestion:
+          "Use a valid URI format starting with http:// or https://",
       });
     }
 
@@ -95,14 +98,19 @@ export class OntologyValidator {
 
     Object.entries(ontology.classes).forEach(([classId, owlClass]) => {
       // Check for missing labels
-      if (!owlClass["rdfs:label"] || owlClass["rdfs:label"].length === 0 || !owlClass["rdfs:label"][0]?.value?.trim()) {
+      if (
+        !owlClass["rdfs:label"] ||
+        owlClass["rdfs:label"].length === 0 ||
+        !owlClass["rdfs:label"][0]?.value?.trim()
+      ) {
         issues.push({
           type: "warning",
           category: "classes",
           itemId: classId,
           itemType: "class",
           message: `Class "${classId}" has no label`,
-          suggestion: "Add a human-readable label to make the class easier to understand"
+          suggestion:
+            "Add a human-readable label to make the class easier to understand",
         });
       }
 
@@ -114,7 +122,7 @@ export class OntologyValidator {
           itemId: classId,
           itemType: "class",
           message: `Class "${classId}" has no description`,
-          suggestion: "Add a comment to explain what this class represents"
+          suggestion: "Add a comment to explain what this class represents",
         });
       }
 
@@ -127,7 +135,8 @@ export class OntologyValidator {
           itemId: classId,
           itemType: "class",
           message: `Class "${classId}" references non-existent parent class "${subClassOf}"`,
-          suggestion: "Remove the invalid parent reference or create the missing class"
+          suggestion:
+            "Remove the invalid parent reference or create the missing class",
         });
       }
 
@@ -139,19 +148,20 @@ export class OntologyValidator {
           itemId: classId,
           itemType: "class",
           message: `Class "${classId}" has invalid URI format`,
-          suggestion: "Ensure the URI follows a valid format"
+          suggestion: "Ensure the URI follows a valid format",
         });
       }
     });
 
     // Check for circular dependencies
     const circularDeps = this.findCircularDependencies(ontology);
-    circularDeps.forEach(cycle => {
+    circularDeps.forEach((cycle) => {
       issues.push({
         type: "error",
         category: "structure",
         message: `Circular dependency detected in class hierarchy: ${cycle.join(" → ")}`,
-        suggestion: "Remove one of the subclass relationships to break the cycle"
+        suggestion:
+          "Remove one of the subclass relationships to break the cycle",
       });
     });
 
@@ -162,14 +172,32 @@ export class OntologyValidator {
     const issues: ValidationIssue[] = [];
 
     // Validate object properties
-    Object.entries(ontology.objectProperties).forEach(([propId, property]) => {
-      issues.push(...this.validateProperty(propId, property, "objectProperty", ontology));
-    });
+    Object.entries(ontology.objectProperties).forEach(
+      ([propId, property]) => {
+        issues.push(
+          ...this.validateProperty(
+            propId,
+            property,
+            "objectProperty",
+            ontology,
+          ),
+        );
+      },
+    );
 
     // Validate datatype properties
-    Object.entries(ontology.datatypeProperties).forEach(([propId, property]) => {
-      issues.push(...this.validateProperty(propId, property, "datatypeProperty", ontology));
-    });
+    Object.entries(ontology.datatypeProperties).forEach(
+      ([propId, property]) => {
+        issues.push(
+          ...this.validateProperty(
+            propId,
+            property,
+            "datatypeProperty",
+            ontology,
+          ),
+        );
+      },
+    );
 
     return issues;
   }
@@ -178,19 +206,24 @@ export class OntologyValidator {
     propId: string,
     property: any,
     propType: "objectProperty" | "datatypeProperty",
-    ontology: Ontology
+    ontology: Ontology,
   ): ValidationIssue[] {
     const issues: ValidationIssue[] = [];
 
     // Check for missing labels
-    if (!property["rdfs:label"] || property["rdfs:label"].length === 0 || !property["rdfs:label"][0]?.value?.trim()) {
+    if (
+      !property["rdfs:label"] ||
+      property["rdfs:label"].length === 0 ||
+      !property["rdfs:label"][0]?.value?.trim()
+    ) {
       issues.push({
         type: "warning",
         category: "properties",
         itemId: propId,
         itemType: propType,
         message: `${propType === "objectProperty" ? "Object" : "Datatype"} property "${propId}" has no label`,
-        suggestion: "Add a human-readable label to make the property easier to understand"
+        suggestion:
+          "Add a human-readable label to make the property easier to understand",
       });
     }
 
@@ -202,7 +235,7 @@ export class OntologyValidator {
         itemId: propId,
         itemType: propType,
         message: `${propType === "objectProperty" ? "Object" : "Datatype"} property "${propId}" has no description`,
-        suggestion: "Add a comment to explain what this property represents"
+        suggestion: "Add a comment to explain what this property represents",
       });
     }
 
@@ -215,7 +248,8 @@ export class OntologyValidator {
         itemId: propId,
         itemType: propType,
         message: `Property "${propId}" references non-existent domain class "${domain}"`,
-        suggestion: "Remove the invalid domain reference or create the missing class"
+        suggestion:
+          "Remove the invalid domain reference or create the missing class",
       });
     }
 
@@ -229,7 +263,8 @@ export class OntologyValidator {
           itemId: propId,
           itemType: propType,
           message: `Object property "${propId}" references non-existent range class "${range}"`,
-          suggestion: "Remove the invalid range reference or create the missing class"
+          suggestion:
+            "Remove the invalid range reference or create the missing class",
         });
       }
     }
@@ -242,7 +277,7 @@ export class OntologyValidator {
         itemId: propId,
         itemType: propType,
         message: `Property "${propId}" has invalid URI format`,
-        suggestion: "Ensure the URI follows a valid format"
+        suggestion: "Ensure the URI follows a valid format",
       });
     }
 
@@ -254,29 +289,31 @@ export class OntologyValidator {
 
     // Check for empty ontology
     const hasClasses = Object.keys(ontology.classes).length > 0;
-    const hasProperties = Object.keys(ontology.objectProperties).length > 0 ||
-                         Object.keys(ontology.datatypeProperties).length > 0;
+    const hasProperties =
+      Object.keys(ontology.objectProperties).length > 0 ||
+      Object.keys(ontology.datatypeProperties).length > 0;
 
     if (!hasClasses && !hasProperties) {
       issues.push({
         type: "info",
         category: "structure",
         message: "Ontology is empty",
-        suggestion: "Add some classes and properties to define your domain model"
+        suggestion:
+          "Add some classes and properties to define your domain model",
       });
     } else if (!hasClasses) {
       issues.push({
         type: "warning",
         category: "structure",
         message: "Ontology has no classes",
-        suggestion: "Add classes to define the main concepts in your domain"
+        suggestion: "Add classes to define the main concepts in your domain",
       });
     } else if (!hasProperties) {
       issues.push({
         type: "info",
         category: "structure",
         message: "Ontology has no properties",
-        suggestion: "Add properties to define relationships between classes"
+        suggestion: "Add properties to define relationships between classes",
       });
     }
 
@@ -285,33 +322,37 @@ export class OntologyValidator {
       const referencedClasses = new Set<string>();
 
       // Collect classes referenced in subclass relationships
-      Object.values(ontology.classes).forEach(cls => {
+      Object.values(ontology.classes).forEach((cls) => {
         if (cls["rdfs:subClassOf"]) {
           referencedClasses.add(cls["rdfs:subClassOf"]);
         }
       });
 
       // Collect classes referenced in property domains/ranges
-      [...Object.values(ontology.objectProperties), ...Object.values(ontology.datatypeProperties)]
-        .forEach(prop => {
-          if (prop["rdfs:domain"]) referencedClasses.add(prop["rdfs:domain"]);
-          if (prop["rdfs:range"]) referencedClasses.add(prop["rdfs:range"]);
-        });
+      [
+        ...Object.values(ontology.objectProperties),
+        ...Object.values(ontology.datatypeProperties),
+      ].forEach((prop) => {
+        if (prop["rdfs:domain"]) referencedClasses.add(prop["rdfs:domain"]);
+        if (prop["rdfs:range"]) referencedClasses.add(prop["rdfs:range"]);
+      });
 
-      const orphanedClasses = Object.keys(ontology.classes).filter(classId =>
-        !referencedClasses.has(classId) &&
-        !ontology.classes[classId]["rdfs:subClassOf"] &&
-        !this.hasPropertiesWithDomainOrRange(classId, ontology)
+      const orphanedClasses = Object.keys(ontology.classes).filter(
+        (classId) =>
+          !referencedClasses.has(classId) &&
+          !ontology.classes[classId]["rdfs:subClassOf"] &&
+          !this.hasPropertiesWithDomainOrRange(classId, ontology),
       );
 
-      orphanedClasses.forEach(classId => {
+      orphanedClasses.forEach((classId) => {
         issues.push({
           type: "info",
           category: "structure",
           itemId: classId,
           itemType: "class",
           message: `Class "${classId}" is not connected to other classes`,
-          suggestion: "Consider adding subclass relationships or properties that use this class"
+          suggestion:
+            "Consider adding subclass relationships or properties that use this class",
         });
       });
     }
@@ -352,7 +393,7 @@ export class OntologyValidator {
       return false;
     };
 
-    Object.keys(ontology.classes).forEach(classId => {
+    Object.keys(ontology.classes).forEach((classId) => {
       if (!visited.has(classId)) {
         dfs(classId, []);
       }
@@ -361,10 +402,17 @@ export class OntologyValidator {
     return cycles;
   }
 
-  private static hasPropertiesWithDomainOrRange(classId: string, ontology: Ontology): boolean {
-    const allProperties = [...Object.values(ontology.objectProperties), ...Object.values(ontology.datatypeProperties)];
-    return allProperties.some(prop =>
-      prop["rdfs:domain"] === classId || prop["rdfs:range"] === classId
+  private static hasPropertiesWithDomainOrRange(
+    classId: string,
+    ontology: Ontology,
+  ): boolean {
+    const allProperties = [
+      ...Object.values(ontology.objectProperties),
+      ...Object.values(ontology.datatypeProperties),
+    ];
+    return allProperties.some(
+      (prop) =>
+        prop["rdfs:domain"] === classId || prop["rdfs:range"] === classId,
     );
   }
 

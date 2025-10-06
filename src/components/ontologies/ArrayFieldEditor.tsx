@@ -85,7 +85,9 @@ export const ArrayFieldEditor: React.FC<ArrayFieldEditorProps> = ({
                     })),
                   ]}
                   value={[item || ""]}
-                  onValueChange={(values) => onUpdateItem(field, index, values[0] || "")}
+                  onValueChange={(values) =>
+                    onUpdateItem(field, index, values[0] || "")
+                  }
                 />
               </Box>
             ) : (
