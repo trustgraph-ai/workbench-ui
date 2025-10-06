@@ -21,6 +21,7 @@ import McpToolsPage from "./pages/McpToolsPage";
 import { SchemasPage } from "./pages/SchemasPage";
 import OntologiesPage from "./pages/OntologiesPage";
 import StructuredQueryPage from "./pages/StructuredQueryPage";
+import LLMModelsPage from "./pages/LLMModelsPage";
 import SettingsPage from "./pages/SettingsPage";
 
 import CenterSpinner from "./components/common/CenterSpinner";
@@ -126,6 +127,7 @@ const App = () => {
             />
             <Route path="/agents" element={<ToolsPage />} />
             <Route path="/mcp-tools" element={<McpToolsPage />} />
+            <Route path="/llm-models" element={<LLMModelsPage />} />
             <Route path="/settings" element={<SettingsPage />} />
           </Routes>
         </Layout>

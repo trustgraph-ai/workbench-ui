@@ -20,6 +20,7 @@ export interface Settings {
     flowClasses: boolean;
     flowClassEditor: boolean;
     structuredQuery: boolean;
+    llmModels: boolean;
   };
 }
 
@@ -45,6 +46,7 @@ export const DEFAULT_SETTINGS: Settings = {
     flowClasses: false, // Off by default
     flowClassEditor: false, // Off by default - experimental feature
     structuredQuery: false, // Off by default
+    llmModels: false, // Off by default
   },
 };
 
