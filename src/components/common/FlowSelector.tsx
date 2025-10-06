@@ -1,12 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 import {
   Text,
   Box,
   Stack,
   HStack,
-  Button,
-  Input,
   Popover,
   Portal,
 } from "@chakra-ui/react";
