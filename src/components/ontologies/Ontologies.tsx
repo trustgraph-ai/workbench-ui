@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import { Box, Button, HStack } from "@chakra-ui/react";
-import { ArrowLeft } from "lucide-react";
+import { Box } from "@chakra-ui/react";
 import { OntologiesTable } from "./OntologiesTable";
 import { OntologyEditor } from "./OntologyEditor";
 

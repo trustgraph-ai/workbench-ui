@@ -10,7 +10,6 @@ import {
   Alert,
   Badge,
   RadioGroup,
-  Radio,
 } from "@chakra-ui/react";
 import { Upload, X, FileText, AlertTriangle } from "lucide-react";
 import SelectField from "../common/SelectField";

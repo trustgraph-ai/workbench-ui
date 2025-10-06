@@ -11,7 +11,7 @@ import {
   Badge,
   Alert,
 } from "@chakra-ui/react";
-import { Save, AlertTriangle } from "lucide-react";
+import { Save } from "lucide-react";
 import { OntologyMetadata } from "../../state/ontologies";
 
 interface MetadataEditorProps {

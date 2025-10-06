@@ -1,5 +1,5 @@
 import { createColumnHelper } from "@tanstack/react-table";
-import { Checkbox, Box } from "@chakra-ui/react";
+import { Checkbox } from "@chakra-ui/react";
 import ParameterDisplay from "../components/flows/ParameterDisplay";
 
 /**

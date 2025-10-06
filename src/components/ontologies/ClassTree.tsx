@@ -14,7 +14,6 @@ import {
   ChevronDown,
   Hash,
   Trash2,
-  MoreVertical,
 } from "lucide-react";
 import { OWLClass } from "../../state/ontologies";
 import { useNotification } from "../../state/notify";

@@ -9,7 +9,6 @@ import {
   Input,
   Textarea,
   Field,
-  Text,
   RadioCard,
 } from "@chakra-ui/react";
 import { useOntologies, Ontology } from "../../state/ontologies";
