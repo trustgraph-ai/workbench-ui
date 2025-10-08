@@ -10,7 +10,7 @@ import {
   parseFromSKOS,
 } from "../skos";
 import { validateOntology } from "../skos-validation";
-import { Ontology } from "../../state/ontologies";
+import { Ontology } from "@trustgraph/react-state";
 
 // Sample ontology for testing
 const sampleOntology: Ontology = {
@@ -75,9 +75,7 @@ describe("SKOS Serializer", () => {
     // Check basic structure
     expect(rdf).toContain('<?xml version="1.0" encoding="UTF-8"?>');
     expect(rdf).toContain("<rdf:RDF");
-    expect(rdf).toContain(
-      'xmlns:skos="http://www.w3.org/2004/02/skos/core#"',
-    );
+    expect(rdf).toContain('xmlns:skos="http://www.w3.org/2004/02/skos/core#"');
 
     // Check scheme
     expect(rdf).toContain(

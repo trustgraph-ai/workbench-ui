@@ -1,9 +1,9 @@
 // Import state management hooks for different parts of the application
 import React, { useState } from "react";
-import { useWorkbenchStateStore } from "../../state/workbench";
-import { useSearchStateStore } from "../../state/search";
-import { useSessionStore } from "../../state/session";
-import { useVectorSearch } from "../../state/vector-search";
+import { useWorkbenchStateStore } from "@trustgraph/react-state";
+import { useSearchStateStore } from "@trustgraph/react-state";
+import { useSessionStore } from "@trustgraph/react-state";
+import { useVectorSearch } from "@trustgraph/react-state";
 
 // Import child components for search functionality
 import SearchInput from "./SearchInput";

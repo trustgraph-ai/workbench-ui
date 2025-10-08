@@ -57,9 +57,7 @@ export const validateSchema = (
   schema.fields.forEach((field) => {
     if (field.type === "enum") {
       if (!field.enum || field.enum.length === 0) {
-        errors.push(
-          `Enum field "${field.name}" must have at least one value`,
-        );
+        errors.push(`Enum field "${field.name}" must have at least one value`);
       }
     }
   });

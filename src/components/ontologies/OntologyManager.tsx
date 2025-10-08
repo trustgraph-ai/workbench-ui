@@ -4,12 +4,12 @@ import { OntologyManagerHeader } from "./OntologyManagerHeader";
 import { ConceptDetailView } from "./ConceptDetailView";
 import { OntologyEmptyStates } from "./OntologyEmptyStates";
 import { SKOSDialog } from "./SKOSDialog";
-import { useNotification } from "../../state/notify";
+import { useNotification } from "@trustgraph/react-state";
 import {
   useOntologies,
   Ontology,
   OntologyConcept,
-} from "../../state/ontologies";
+} from "@trustgraph/react-state";
 import { OntologyTree } from "./OntologyTree";
 import { ConceptEditor } from "./ConceptEditor";
 
@@ -31,8 +31,9 @@ export const OntologyManager: React.FC<OntologyManagerProps> = ({
   const [selectedConceptId, setSelectedConceptId] = useState<string | null>(
     null,
   );
-  const [editingConcept, setEditingConcept] =
-    useState<OntologyConcept | null>(null);
+  const [editingConcept, setEditingConcept] = useState<OntologyConcept | null>(
+    null,
+  );
   const [isCreatingConcept, setIsCreatingConcept] = useState(false);
   const [exportDialogOpen, setExportDialogOpen] = useState(false);
   const [importDialogOpen, setImportDialogOpen] = useState(false);
@@ -162,9 +163,7 @@ export const OntologyManager: React.FC<OntologyManagerProps> = ({
       // Remove from parent's narrower list
       Object.values(remainingConcepts).forEach((concept) => {
         if (concept.narrower?.includes(conceptId)) {
-          concept.narrower = concept.narrower.filter(
-            (id) => id !== conceptId,
-          );
+          concept.narrower = concept.narrower.filter((id) => id !== conceptId);
         }
         if (concept.related?.includes(conceptId)) {
           concept.related = concept.related.filter((id) => id !== conceptId);

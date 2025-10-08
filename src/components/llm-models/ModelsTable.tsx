@@ -1,13 +1,7 @@
 import React, { useState } from "react";
-import {
-  Table,
-  Input,
-  Button,
-  HStack,
-  IconButton,
-} from "@chakra-ui/react";
+import { Table, Input, Button, HStack, IconButton } from "@chakra-ui/react";
 import { Trash2, Plus, Check } from "lucide-react";
-import { EnumOption } from "../../model/llm-models";
+import { EnumOption } from "@trustgraph/react-state";
 
 interface ModelsTableProps {
   models: EnumOption[];
@@ -35,7 +29,7 @@ const ModelsTable: React.FC<ModelsTableProps> = ({
   const handleModelChange = (
     index: number,
     field: keyof EnumOption,
-    value: string
+    value: string,
   ) => {
     const updated = [...editingModels];
     const oldId = updated[index].id;

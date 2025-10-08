@@ -2,17 +2,14 @@ import React from "react";
 import { VStack } from "@chakra-ui/react";
 import TextField from "../common/TextField";
 import TextAreaField from "../common/TextAreaField";
-import { Ontology } from "../../state/ontologies";
+import { Ontology } from "@trustgraph/react-state";
 
 interface OntologyMetadataTabProps {
   ontologyId: string;
   ontology: Ontology;
   mode: "create" | "edit";
   onOntologyIdChange: (value: string) => void;
-  onMetadataChange: (
-    field: keyof Ontology["metadata"],
-    value: string,
-  ) => void;
+  onMetadataChange: (field: keyof Ontology["metadata"], value: string) => void;
 }
 
 export const OntologyMetadataTab: React.FC<OntologyMetadataTabProps> = ({

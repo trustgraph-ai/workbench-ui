@@ -1,5 +1,5 @@
 import { createColumnHelper } from "@tanstack/react-table";
-import { Ontology } from "../state/ontologies";
+import { Ontology } from "@trustgraph/react-state";
 
 export type OntologyTableRow = [string, Ontology];
 

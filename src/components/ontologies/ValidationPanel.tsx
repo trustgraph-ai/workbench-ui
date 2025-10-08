@@ -93,8 +93,7 @@ export const ValidationPanel: React.FC<ValidationPanelProps> = ({
               Ontology is valid
             </Text>
             <Text fontSize="sm" color="green.600">
-              No validation issues found. Your ontology follows best
-              practices.
+              No validation issues found. Your ontology follows best practices.
             </Text>
           </VStack>
         </HStack>

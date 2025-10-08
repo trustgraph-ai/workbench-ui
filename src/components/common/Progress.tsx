@@ -2,7 +2,7 @@ import React from "react";
 
 import { Box, Text } from "@chakra-ui/react";
 
-import { useProgressStateStore } from "../../state/progress";
+import { useProgressStateStore } from "@trustgraph/react-state";
 
 const Progress: React.FC = () => {
   const activity = useProgressStateStore((state) => state.activity);

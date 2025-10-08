@@ -1,114 +1,35 @@
-import React, { useEffect, useState, createContext, useContext } from "react";
+import React from "react";
 import { Box, Text } from "@chakra-ui/react";
 import {
-  createTrustGraphSocket,
-  type ConnectionState,
-} from "./trustgraph-socket";
-import { useSettings } from "../../state/settings";
+  SocketProvider as BaseSocketProvider,
+  useSocket,
+  useConnectionState,
+} from "@trustgraph/react-provider";
+import { useSettings } from "@trustgraph/react-state";
 import CenterSpinner from "../../components/common/CenterSpinner";
-import type { Socket } from "./trustgraph-socket";
 
-// Create contexts for socket and connection state
-export const SocketContext = createContext<Socket | null>(null);
-export const ConnectionStateContext = createContext<ConnectionState | null>(
-  null,
-);
-
-// Hook to use the socket context
-export const useSocket = () => {
-  const socket = useContext(SocketContext);
-
-  if (!socket) {
-    throw new Error("useSocket must be used within a SocketProvider");
-  }
-
-  return socket;
-};
-
-// Hook to use the connection state context
-export const useConnectionState = () => {
-  const state = useContext(ConnectionStateContext);
-
-  if (!state) {
-    throw new Error(
-      "useConnectionState must be used within a SocketProvider",
-    );
-  }
-
-  return state;
-};
+// Re-export hooks for backward compatibility
+export { useSocket, useConnectionState };
 
 interface SocketProviderProps {
   children: React.ReactNode;
 }
 
 /**
- * SocketProvider - Manages WebSocket connection with authentication
+ * Workbench-specific SocketProvider that integrates with settings
  *
- * Critical requirements:
- * 1. Wait for settings to load before creating socket
- * 2. Create socket with user and token if apiKey is present
- * 3. Reconnect when user or authentication settings change
+ * This wraps SocketProvider to provide:
+ * 1. Settings management
+ * 2. WebSocket connection with user authentication
+ * 3. Custom loading UI with CenterSpinner
  */
 export const SocketProvider: React.FC<SocketProviderProps> = ({
   children,
 }) => {
   const { settings, isLoaded } = useSettings();
-  const [socket, setSocket] = useState<Socket | null>(null);
-  const [isSocketReady, setIsSocketReady] = useState(false);
-  const [connectionState, setConnectionState] =
-    useState<ConnectionState | null>(null);
 
-  useEffect(() => {
-    // CRITICAL: Wait for settings to load before creating socket
-    if (!isLoaded) {
-      console.log("SocketProvider: Waiting for settings to load...");
-      return;
-    }
-
-    console.log(
-      "SocketProvider: Settings loaded, creating socket with auth:",
-      settings.authentication.apiKey ? "enabled" : "disabled",
-      "user:",
-      settings.user,
-    );
-
-    // Clean up existing socket before creating new one (for reconnection)
-    if (socket) {
-      console.log(
-        "SocketProvider: User or API key changed, closing existing socket...",
-      );
-      socket.close();
-      setIsSocketReady(false);
-    }
-
-    // Create socket with current auth settings and user
-    const apiKey = settings.authentication.apiKey;
-    const user = settings.user;
-    const newSocket = createTrustGraphSocket(user, apiKey || undefined);
-
-    // Subscribe to connection state changes
-    const unsubscribe = newSocket.onConnectionStateChange(setConnectionState);
-
-    setSocket(newSocket);
-
-    // Mark socket as ready (we don't wait for connection since the socket
-    // handles reconnection internally)
-    setIsSocketReady(true);
-
-    return () => {
-      if (newSocket) {
-        console.log("SocketProvider: Cleaning up socket on unmount");
-        unsubscribe(); // Unsubscribe from state changes
-        newSocket.close();
-      }
-      setIsSocketReady(false);
-      setConnectionState(null);
-    };
-  }, [isLoaded, settings.user, settings.authentication.apiKey]); // Reconnects when user or API key changes
-
-  // Show loading state until both settings and socket are ready
-  if (!isSocketReady) {
+  // Show loading state while settings load
+  if (!isLoaded) {
     return (
       <Box
         width="100%"
@@ -120,18 +41,31 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
         gap={4}
       >
         <CenterSpinner />
-        <Text color="fg.muted">
-          {!isLoaded ? "Loading settings..." : "Connecting to server..."}
-        </Text>
+        <Text color="fg.muted">Loading settings...</Text>
       </Box>
     );
   }
 
   return (
-    <SocketContext.Provider value={socket}>
-      <ConnectionStateContext.Provider value={connectionState}>
-        {children}
-      </ConnectionStateContext.Provider>
-    </SocketContext.Provider>
+    <BaseSocketProvider
+      user={settings.user}
+      apiKey={settings.authentication.apiKey || undefined}
+      loadingComponent={
+        <Box
+          width="100%"
+          height="100vh"
+          display="flex"
+          flexDirection="column"
+          alignItems="center"
+          justifyContent="center"
+          gap={4}
+        >
+          <CenterSpinner />
+          <Text color="fg.muted">Connecting to server...</Text>
+        </Box>
+      }
+    >
+      {children}
+    </BaseSocketProvider>
   );
 };

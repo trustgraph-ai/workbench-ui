@@ -1,8 +1,8 @@
 import React from "react";
 import { VStack, HStack, Button } from "@chakra-ui/react";
 import { RotateCcw, Download, Upload } from "lucide-react";
-import { useSettings } from "../../state/settings";
-import { useNotification } from "../../state/notify";
+import { useSettings } from "@trustgraph/react-state";
+import { useNotification } from "@trustgraph/react-state";
 import UserSection from "./UserSection";
 import AuthenticationSection from "./AuthenticationSection";
 import GraphRagSection from "./GraphRagSection";
@@ -76,11 +76,7 @@ const Settings: React.FC = () => {
   return (
     <VStack gap={6} align="stretch" p={6} maxW="4xl" mx="auto">
       <HStack justify="flex-end" gap={2}>
-        <Button
-          variant="outline"
-          onClick={handleImport}
-          leftIcon={<Upload />}
-        >
+        <Button variant="outline" onClick={handleImport} leftIcon={<Upload />}>
           Import
         </Button>
         <Button

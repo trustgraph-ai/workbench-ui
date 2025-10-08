@@ -11,7 +11,7 @@ import {
   Field,
   RadioCard,
 } from "@chakra-ui/react";
-import { useOntologies, Ontology } from "../../state/ontologies";
+import { useOntologies, Ontology } from "@trustgraph/react-state";
 
 interface CreateOntologyDialogProps {
   isOpen: boolean;

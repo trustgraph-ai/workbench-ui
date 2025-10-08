@@ -4,7 +4,7 @@ import { Trash, SendHorizontal } from "lucide-react";
 
 import { Portal, Button, Dialog, CloseButton } from "@chakra-ui/react";
 
-import { useTokenCosts } from "../../state/token-costs";
+import { useTokenCosts } from "@trustgraph/react-state";
 import TextField from "../common/TextField";
 
 const EditDialog = ({ open, onOpenChange, model, create }) => {

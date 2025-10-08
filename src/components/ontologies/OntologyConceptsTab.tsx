@@ -10,7 +10,7 @@ import {
 import { Plus, Trash2 } from "lucide-react";
 import TextField from "../common/TextField";
 import TextAreaField from "../common/TextAreaField";
-import { Ontology, OntologyConcept } from "../../state/ontologies";
+import { Ontology, OntologyConcept } from "@trustgraph/react-state";
 
 interface OntologyConceptsTabProps {
   ontology: Ontology;

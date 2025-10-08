@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import { Box } from "@chakra-ui/react";
 
@@ -6,7 +6,7 @@ import {
   useFlowClasses,
   generateFlowClassId,
   FlowClassDefinition,
-} from "../../state/flow-classes";
+} from "@trustgraph/react-state";
 import { flowClassColumns, FlowClassRow } from "../../model/flow-class-table";
 
 import SelectableTable from "../common/SelectableTable";
@@ -18,18 +18,8 @@ interface FlowClassTableProps {
 }
 
 const FlowClassTable: React.FC<FlowClassTableProps> = ({ onEdit }) => {
-  const {
-    flowClasses,
-    isLoading,
-    error,
-    createFlowClass,
-    updateFlowClass,
-    deleteFlowClass,
-    duplicateFlowClass,
-    isUpdating,
-    isDeleting,
-    isDuplicating,
-  } = useFlowClasses();
+  const { flowClasses, createFlowClass, deleteFlowClass, duplicateFlowClass } =
+    useFlowClasses();
 
   // No need for selected flow class state - actions handled by ActionBar
 

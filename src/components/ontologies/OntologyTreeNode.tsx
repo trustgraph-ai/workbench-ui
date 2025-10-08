@@ -18,7 +18,7 @@ import {
   Trash2,
   Move,
 } from "lucide-react";
-import { OntologyConcept, Ontology } from "../../state/ontologies";
+import { OntologyConcept, Ontology } from "@trustgraph/react-state";
 
 interface OntologyTreeNodeProps {
   concept: OntologyConcept;
@@ -153,10 +153,7 @@ export const OntologyTreeNode: React.FC<OntologyTreeNodeProps> = ({
                 <Menu.Item onClick={() => onMove(concept.id)}>
                   <Move /> Move Concept
                 </Menu.Item>
-                <Menu.Item
-                  onClick={() => onDelete(concept.id)}
-                  color="red.fg"
-                >
+                <Menu.Item onClick={() => onDelete(concept.id)} color="red.fg">
                   <Trash2 /> Delete Concept
                 </Menu.Item>
               </Menu.Content>

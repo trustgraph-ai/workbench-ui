@@ -14,8 +14,8 @@ import {
   IconButton,
 } from "@chakra-ui/react";
 import { Download, Upload, Copy, Check } from "lucide-react";
-import { useNotification } from "../../state/notify";
-import { Ontology } from "../../state/ontologies";
+import { useNotification } from "@trustgraph/react-state";
+import { Ontology } from "@trustgraph/react-state";
 import { serializeToSKOS, parseFromSKOS } from "../../utils/skos";
 import {
   validateOntology,
@@ -227,9 +227,7 @@ export const SKOSDialog: React.FC<SKOSDialogProps> = ({
               <VStack gap={4} align="stretch">
                 {/* Format Selection */}
                 <SelectField
-                  label={
-                    mode === "export" ? "Export Format" : "Import Format"
-                  }
+                  label={mode === "export" ? "Export Format" : "Import Format"}
                   items={Object.entries(EXPORT_FORMATS)
                     .filter(
                       ([key]) =>
@@ -312,9 +310,7 @@ export const SKOSDialog: React.FC<SKOSDialogProps> = ({
                         Validation
                         <Badge
                           ml={2}
-                          colorPalette={
-                            validation.isValid ? "primary" : "red"
-                          }
+                          colorPalette={validation.isValid ? "primary" : "red"}
                           size="xs"
                         >
                           {validation.errors.length > 0

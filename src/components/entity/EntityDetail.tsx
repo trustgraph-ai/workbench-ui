@@ -4,9 +4,9 @@ import { Rotate3d, ArrowBigRight } from "lucide-react";
 
 import { Box, Alert, Button, Stack, Heading, HStack } from "@chakra-ui/react";
 
-import { useWorkbenchStateStore } from "../../state/workbench";
-import { useSessionStore } from "../../state/session";
-import { useEntityDetail } from "../../state/entity-query";
+import { useWorkbenchStateStore } from "@trustgraph/react-state";
+import { useSessionStore } from "@trustgraph/react-state";
+import { useEntityDetail } from "@trustgraph/react-state";
 
 import EntityHelp from "./EntityHelp";
 import ElementNode from "./ElementNode";

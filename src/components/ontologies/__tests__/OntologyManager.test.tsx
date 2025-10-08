@@ -12,24 +12,22 @@ import {
   Ontology,
   OntologyConcept,
   useOntologies,
-} from "../../../state/ontologies";
-import { useNotification } from "../../../state/notify";
+  useNotification,
+} from "@trustgraph/react-state";
 
 // Mock dependencies
-vi.mock("../../../state/notify", () => ({
-  useNotification: vi.fn(() => ({
-    error: vi.fn(),
-    success: vi.fn(),
-    info: vi.fn(),
-  })),
-}));
-
-vi.mock("../../../state/ontologies", () => ({
-  useOntologies: vi.fn(),
-  // Re-export types for type checking
-  Ontology: null,
-  OntologyConcept: null,
-}));
+vi.mock("@trustgraph/react-state", async () => {
+  const actual = await vi.importActual("@trustgraph/react-state");
+  return {
+    ...actual,
+    useNotification: vi.fn(() => ({
+      error: vi.fn(),
+      success: vi.fn(),
+      info: vi.fn(),
+    })),
+    useOntologies: vi.fn(),
+  };
+});
 
 interface OntologyManagerHeaderProps {
   currentOntology: Ontology | null;
@@ -227,10 +225,7 @@ vi.mock("../SKOSDialog", () => ({
     open ? (
       <div data-testid={`skos-dialog-${mode}`}>
         <span>{mode} Dialog</span>
-        <button
-          onClick={() => onOpenChange(false)}
-          data-testid="close-dialog"
-        >
+        <button onClick={() => onOpenChange(false)} data-testid="close-dialog">
           Close
         </button>
         {mode === "import" && (
@@ -441,9 +436,7 @@ describe("OntologyManager", () => {
     await user.click(editBtn);
 
     expect(screen.getByTestId("concept-editor")).toBeInTheDocument();
-    expect(screen.getByTestId("editing-concept")).toHaveTextContent(
-      "Animals",
-    );
+    expect(screen.getByTestId("editing-concept")).toHaveTextContent("Animals");
   });
 
   test("saves concept updates", async () => {
@@ -639,9 +632,7 @@ describe("OntologyManager", () => {
     const closeBtn = screen.getByTestId("close-dialog");
     await user.click(closeBtn);
 
-    expect(
-      screen.queryByTestId("skos-dialog-export"),
-    ).not.toBeInTheDocument();
+    expect(screen.queryByTestId("skos-dialog-export")).not.toBeInTheDocument();
   });
 
   test("handles concept move notification", async () => {

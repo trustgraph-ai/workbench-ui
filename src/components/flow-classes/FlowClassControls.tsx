@@ -1,7 +1,7 @@
 import React from "react";
 import { Plus } from "lucide-react";
 import { Button, Box } from "@chakra-ui/react";
-import { generateFlowClassId } from "../../state/flow-classes";
+import { generateFlowClassId } from "@trustgraph/react-state";
 
 interface FlowClassControlsProps {
   onNew?: (id: string) => void;

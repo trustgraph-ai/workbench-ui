@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-import { useAgentTools } from "../../state/agent-tools";
+import { useAgentTools } from "@trustgraph/react-state";
 import EditDialog from "./EditDialog";
 import Controls from "./Controls";
 import ToolsTable from "./ToolsTable";

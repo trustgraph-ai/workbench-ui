@@ -1,7 +1,6 @@
 import similarity from "compute-cosine-similarity";
 
-import { Value } from "./Triple";
-import { Socket } from "../socket/trustgraph-socket";
+import { Value, BaseApi } from "@trustgraph/client";
 import { RDFS_LABEL, SKOS_DEFINITION } from "./knowledge-graph";
 
 export interface Row {
@@ -17,7 +16,7 @@ export interface Row {
 // embeddings, add embedding to each entity row, just an easy
 // place to put it
 export const getGraphEmbeddings = (
-  socket: Socket,
+  socket: BaseApi,
   add: (s: string) => void,
   remove: (s: string) => void,
   limit?: number,
@@ -48,7 +47,7 @@ export const getGraphEmbeddings = (
 // For entities, lookup labels
 export const addRowLabels =
   (
-    socket: Socket,
+    socket: BaseApi,
     add: (s: string) => void,
     remove: (s: string) => void,
     collection?: string,
@@ -94,7 +93,7 @@ export const addRowLabels =
 // For entities, lookup definitions
 export const addRowDefinitions =
   (
-    socket: Socket,
+    socket: BaseApi,
     add: (s: string) => void,
     remove: (s: string) => void,
     collection?: string,
@@ -135,7 +134,7 @@ export const addRowDefinitions =
 
 // Compute an embedding for each entity based on its definition or label
 export const addRowEmbeddings =
-  (socket: Socket, add: (s: string) => void, remove: (s: string) => void) =>
+  (socket: BaseApi, add: (s: string) => void, remove: (s: string) => void) =>
   (entities: Row[]) => {
     return Promise.all<Row>(
       entities.map((ent) => {

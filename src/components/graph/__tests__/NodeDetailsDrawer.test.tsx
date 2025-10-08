@@ -8,19 +8,20 @@ import { render, screen, fireEvent } from "../../../test/test-utils";
 import userEvent from "@testing-library/user-event";
 import { describe, test, expect, vi, beforeEach } from "vitest";
 import NodeDetailsDrawer from "../NodeDetailsDrawer";
-import { useNodeDetails } from "../../../state/node-details";
+import { useNodeDetails } from "@trustgraph/react-state";
 
 // Mock dependencies
-vi.mock("../../../state/node-details", () => ({
-  useNodeDetails: vi.fn(),
-}));
-
-vi.mock("../../../state/session", () => ({
-  useSessionStore: vi.fn((selector) => {
-    const state = { flowId: "test-flow-123" };
-    return selector(state);
-  }),
-}));
+vi.mock("@trustgraph/react-state", async () => {
+  const actual = await vi.importActual("@trustgraph/react-state");
+  return {
+    ...actual,
+    useNodeDetails: vi.fn(),
+    useSessionStore: vi.fn((selector) => {
+      const state = { flowId: "test-flow-123" };
+      return selector(state);
+    }),
+  };
+});
 
 vi.mock("../NodePropertiesTable", () => ({
   __esModule: true,

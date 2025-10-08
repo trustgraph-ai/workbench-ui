@@ -2,8 +2,8 @@ import React from "react";
 import { Drawer, VStack, Heading } from "@chakra-ui/react";
 import { X } from "lucide-react";
 
-import { useNodeDetails } from "../../state/node-details";
-import { useSessionStore } from "../../state/session";
+import { useNodeDetails } from "@trustgraph/react-state";
+import { useSessionStore } from "@trustgraph/react-state";
 import NodePropertiesTable from "./NodePropertiesTable";
 import RelationshipsTable from "./RelationshipsTable";
 

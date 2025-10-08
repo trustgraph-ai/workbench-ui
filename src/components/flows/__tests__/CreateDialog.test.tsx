@@ -12,28 +12,28 @@ const mockFlowClasses = [
   ["class2", { description: "Class 2 Description" }],
 ];
 
-vi.mock("../../../state/flows", () => ({
-  useFlows: () => ({
-    flowClasses: mockFlowClasses,
-    startFlow: mockStartFlow,
-  }),
-}));
-
-// Mock the useFlowParameters hook
-vi.mock("../../../state/flow-parameters", () => ({
-  useFlowParameters: () => ({
-    parameterDefinitions: {},
-    parameterMapping: {},
-    parameterMetadata: {},
-    isLoading: false,
-    isError: false,
-    error: null,
-  }),
-  useParameterValidation: () => ({
-    isValid: true,
-    errors: {},
-  }),
-}));
+vi.mock("@trustgraph/react-state", async () => {
+  const actual = await vi.importActual("@trustgraph/react-state");
+  return {
+    ...actual,
+    useFlows: () => ({
+      flowClasses: mockFlowClasses,
+      startFlow: mockStartFlow,
+    }),
+    useFlowParameters: () => ({
+      parameterDefinitions: {},
+      parameterMapping: {},
+      parameterMetadata: {},
+      isLoading: false,
+      isError: false,
+      error: null,
+    }),
+    useParameterValidation: () => ({
+      isValid: true,
+      errors: {},
+    }),
+  };
+});
 
 // Since SelectField is complex and we've documented its behavior,
 // we'll mock it to test the integration properly

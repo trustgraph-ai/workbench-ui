@@ -22,7 +22,7 @@ import {
   OWLObjectProperty,
   OWLDatatypeProperty,
   OntologyMetadata,
-} from "../../state/ontologies";
+} from "@trustgraph/react-state";
 import { ClassTree } from "./ClassTree";
 import { ClassEditor } from "./ClassEditor";
 import { PropertyTree } from "./PropertyTree";
@@ -251,21 +251,18 @@ export const OntologyEditor: React.FC<OntologyEditorProps> = ({
     const updatedObjectProperties = { ...ontologyData.objectProperties };
     Object.keys(updatedObjectProperties).forEach((propId) => {
       const prop = updatedObjectProperties[propId];
-      let updated = false;
 
       if (prop["rdfs:domain"] === classId) {
         updatedObjectProperties[propId] = {
           ...prop,
           "rdfs:domain": undefined,
         };
-        updated = true;
       }
       if (prop["rdfs:range"] === classId) {
         updatedObjectProperties[propId] = {
           ...prop,
           "rdfs:range": undefined,
         };
-        updated = true;
       }
     });
 

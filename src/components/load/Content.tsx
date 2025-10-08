@@ -2,7 +2,7 @@ import React from "react";
 
 import TextBuffer from "./TextBuffer";
 import FileUpload from "./FileUpload";
-import { useLoadStateStore } from "../../state/load";
+import { useLoadStateStore } from "@trustgraph/react-state";
 
 const Content = () => {
   const operation = useLoadStateStore((state) => state.operation);

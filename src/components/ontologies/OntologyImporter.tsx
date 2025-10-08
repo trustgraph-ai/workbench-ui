@@ -4,7 +4,7 @@ import {
   OWLObjectProperty,
   OWLDatatypeProperty,
   OntologyMetadata,
-} from "../../state/ontologies";
+} from "@trustgraph/react-state";
 
 export type ImportFormat = "owl" | "rdf" | "turtle";
 
@@ -42,10 +42,7 @@ export class OntologyImporter {
       trimmed.includes("<owl:Ontology")
     ) {
       // Distinguish between OWL and RDF
-      if (
-        trimmed.includes("<owl:Ontology") ||
-        trimmed.includes("owl:Class")
-      ) {
+      if (trimmed.includes("<owl:Ontology") || trimmed.includes("owl:Class")) {
         return "owl";
       }
       return "rdf";

@@ -2,8 +2,8 @@ import React from "react";
 
 import { Button, Tag } from "@chakra-ui/react";
 
-import { useWorkbenchStateStore } from "../../state/workbench";
-import { Value } from "../../state/Triple";
+import { useWorkbenchStateStore } from "@trustgraph/react-state";
+import { Value } from "@trustgraph/react-state";
 
 const EntityNode: React.FC<{ value: Value }> = ({ value }) => {
   const setSelected = useWorkbenchStateStore((state) => state.setSelected);

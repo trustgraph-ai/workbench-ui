@@ -5,7 +5,7 @@
  * and enhancing ontology quality.
  */
 
-import { Ontology } from "../state/ontologies";
+import { Ontology } from "@trustgraph/react-state";
 import { validateOntology, ValidationError } from "./skos-validation";
 
 export interface QAFix {
@@ -458,10 +458,7 @@ export class OntologyQA {
 
     let maxDepth = 1;
 
-    const calculateDepth = (
-      conceptId: string,
-      currentDepth: number,
-    ): void => {
+    const calculateDepth = (conceptId: string, currentDepth: number): void => {
       const concept = concepts[conceptId];
       if (!concept) return;
 

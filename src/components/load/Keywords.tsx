@@ -1,6 +1,6 @@
 import React from "react";
 
-import { useLoadStateStore } from "../../state/load";
+import { useLoadStateStore } from "@trustgraph/react-state";
 import ChipInputField from "../common/ChipInputField";
 
 const Keywords = () => {

@@ -1,14 +1,7 @@
 import React, { useState, useMemo } from "react";
-import {
-  VStack,
-  HStack,
-  Button,
-  Textarea,
-  Text,
-  Box,
-} from "@chakra-ui/react";
+import { VStack, HStack, Button, Textarea, Text, Box } from "@chakra-ui/react";
 import { Play } from "lucide-react";
-import { useObjectsQuery } from "../../state/objects-query";
+import { useObjectsQuery } from "@trustgraph/react-state";
 import {
   createColumnHelper,
   useReactTable,

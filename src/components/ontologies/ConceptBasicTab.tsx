@@ -2,7 +2,7 @@ import React from "react";
 import { VStack } from "@chakra-ui/react";
 import TextField from "../common/TextField";
 import { ArrayFieldEditor } from "./ArrayFieldEditor";
-import { OntologyConcept } from "../../state/ontologies";
+import { OntologyConcept } from "@trustgraph/react-state";
 
 interface ConceptBasicTabProps {
   editedConcept: OntologyConcept;

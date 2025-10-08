@@ -2,7 +2,7 @@ import React from "react";
 
 import { Box, Spinner } from "@chakra-ui/react";
 
-import { useProgressStateStore } from "../../state/progress";
+import { useProgressStateStore } from "@trustgraph/react-state";
 
 const CenterSpinner: React.FC = () => {
   const activity = useProgressStateStore((state) => state.activity);

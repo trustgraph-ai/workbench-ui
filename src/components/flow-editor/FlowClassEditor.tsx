@@ -1,6 +1,6 @@
 import React from "react";
 import { Box, VStack, Heading, Text, Button } from "@chakra-ui/react";
-import { FileCode, Construction } from "lucide-react";
+import { Construction } from "lucide-react";
 
 interface FlowClassEditorProps {
   flowClassId?: string;

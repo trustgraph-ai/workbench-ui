@@ -1,7 +1,7 @@
 import React from "react";
 import { HStack, Text, Button } from "@chakra-ui/react";
 import { Save } from "lucide-react";
-import { OntologyConcept } from "../../state/ontologies";
+import { OntologyConcept } from "@trustgraph/react-state";
 
 interface ConceptEditorHeaderProps {
   concept?: OntologyConcept;

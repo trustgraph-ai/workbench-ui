@@ -7,20 +7,23 @@ import React from "react";
 import { render, screen, waitFor } from "../../../test/test-utils";
 import { describe, test, expect, vi, beforeEach } from "vitest";
 import { SKOSDialog } from "../SKOSDialog";
-import { Ontology } from "../../../state/ontologies";
-import { useNotification } from "../../../state/notify";
+import { Ontology, useNotification } from "@trustgraph/react-state";
 import { serializeToSKOS, parseFromSKOS } from "../../../utils/skos";
 import { validateOntology } from "../../../utils/skos-validation";
 import { exportOntology } from "../../../utils/export-formats";
 
 // Mock dependencies
-vi.mock("../../../state/notify", () => ({
-  useNotification: vi.fn(() => ({
-    error: vi.fn(),
-    success: vi.fn(),
-    info: vi.fn(),
-  })),
-}));
+vi.mock("@trustgraph/react-state", async () => {
+  const actual = await vi.importActual("@trustgraph/react-state");
+  return {
+    ...actual,
+    useNotification: vi.fn(() => ({
+      error: vi.fn(),
+      success: vi.fn(),
+      info: vi.fn(),
+    })),
+  };
+});
 
 vi.mock("../../../utils/skos", () => ({
   serializeToSKOS: vi.fn(),

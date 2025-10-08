@@ -3,8 +3,8 @@ import React, { useState } from "react";
 import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
 
 import { columns } from "../../model/document-table";
-import { useLibrary } from "../../state/library.ts";
-import { useNotification } from "../../state/notify.ts";
+import { useLibrary } from "@trustgraph/react-state";
+import { useNotification } from "@trustgraph/react-state";
 
 import Actions from "./Actions";
 import SubmitDialog from "./SubmitDialog";

@@ -14,7 +14,7 @@ import {
 import SelectField from "../common/SelectField";
 import SelectOptionText from "../common/SelectOptionText";
 import { Hash, Save, Trash2, Link, Type, AlertTriangle } from "lucide-react";
-import { OWLClass, Ontology } from "../../state/ontologies";
+import { OWLClass, Ontology } from "@trustgraph/react-state";
 import { MultiLanguageLabels } from "./MultiLanguageLabels";
 
 interface ClassEditorProps {
@@ -112,9 +112,7 @@ export const ClassEditor: React.FC<ClassEditorProps> = ({
       "rdfs:comment": comment.trim(),
       "rdfs:subClassOf": subClassOf.trim() || undefined,
       "owl:equivalentClass":
-        validEquivalentClasses.length > 0
-          ? validEquivalentClasses
-          : undefined,
+        validEquivalentClasses.length > 0 ? validEquivalentClasses : undefined,
       "owl:disjointWith":
         validDisjointClasses.length > 0 ? validDisjointClasses : undefined,
     };
@@ -496,16 +494,12 @@ export const ClassEditor: React.FC<ClassEditorProps> = ({
                 return (
                   <Box p={4} bg="gray.50" borderRadius="md">
                     <VStack spacing={2}>
-                      <Text
-                        fontSize="sm"
-                        color="gray.600"
-                        fontWeight="medium"
-                      >
+                      <Text fontSize="sm" color="gray.600" fontWeight="medium">
                         No properties use this class as domain
                       </Text>
                       <Text fontSize="xs" color="gray.500" textAlign="center">
-                        Properties that specify this class as their domain
-                        will appear here
+                        Properties that specify this class as their domain will
+                        appear here
                       </Text>
                     </VStack>
                   </Box>

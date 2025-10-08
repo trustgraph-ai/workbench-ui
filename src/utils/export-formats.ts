@@ -5,7 +5,7 @@
  * ontology export formats beyond SKOS.
  */
 
-import { Ontology, OntologyConcept } from "../state/ontologies";
+import { Ontology, OntologyConcept } from "@trustgraph/react-state";
 
 /**
  * Export ontology as CSV
@@ -166,9 +166,7 @@ export function exportToGraphML(ontology: Ontology): string {
   // GraphML header
   lines.push('<?xml version="1.0" encoding="UTF-8"?>');
   lines.push('<graphml xmlns="http://graphml.graphdrawing.org/xmlns"');
-  lines.push(
-    '         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"',
-  );
+  lines.push('         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"');
   lines.push(
     '         xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns',
   );

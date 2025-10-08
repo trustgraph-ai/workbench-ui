@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-import { useMcpTools } from "../../state/mcp-tools";
+import { useMcpTools } from "@trustgraph/react-state";
 import EditDialog from "./EditDialog";
 import Controls from "./Controls";
 import McpToolsTable from "./McpToolsTable";

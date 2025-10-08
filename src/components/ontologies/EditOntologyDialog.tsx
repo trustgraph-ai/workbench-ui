@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Portal, Button, Dialog, CloseButton, Tabs } from "@chakra-ui/react";
-import { useNotification } from "../../state/notify";
+import { useNotification } from "@trustgraph/react-state";
 import {
   useOntologies,
   Ontology,
   OntologyConcept,
-} from "../../state/ontologies";
+} from "@trustgraph/react-state";
 import { validateOntology } from "../../utils/skos-validation";
 import { OntologyMetadataTab } from "./OntologyMetadataTab";
 import { OntologyConceptsTab } from "./OntologyConceptsTab";
@@ -88,8 +88,7 @@ export const EditOntologyDialog: React.FC<EditOntologyDialogProps> = ({
       scheme: {
         ...ontology.scheme,
         uri:
-          ontology.scheme.uri ||
-          `${ontology.metadata.namespace}${ontologyId}`,
+          ontology.scheme.uri || `${ontology.metadata.namespace}${ontologyId}`,
         prefLabel: ontology.scheme.prefLabel || ontology.metadata.name,
       },
     };
@@ -172,11 +171,7 @@ export const EditOntologyDialog: React.FC<EditOntologyDialogProps> = ({
     });
   };
 
-  const updateConcept = (
-    conceptId: string,
-    field: string,
-    value: unknown,
-  ) => {
+  const updateConcept = (conceptId: string, field: string, value: unknown) => {
     setOntology({
       ...ontology,
       concepts: {

@@ -1,11 +1,11 @@
 import React, { useMemo } from "react";
-import { Text, Box, Badge, Flex } from "@chakra-ui/react";
-import { useFlows } from "../../state/flows";
-import { useFlowParameters } from "../../state/flow-parameters";
+import { Text, Badge, Flex } from "@chakra-ui/react";
+import { useFlows } from "@trustgraph/react-state";
+import { useFlowParameters } from "@trustgraph/react-state";
 
 interface ParameterDisplayProps {
   flowClassName: string;
-  parameters: { [key: string]: any } | undefined;
+  parameters: { [key: string]: unknown } | undefined;
 }
 
 /**
@@ -23,18 +23,12 @@ const ParameterDisplay: React.FC<ParameterDisplayProps> = ({
   const { parameterDefinitions, parameterMapping } =
     useFlowParameters(flowClassName);
 
-  // If no parameters, show "None"
-  if (!parameters || Object.keys(parameters).length === 0) {
-    return (
-      <Text color="fg.muted" fontSize="sm">
-        None
-      </Text>
-    );
-  }
-
   // Find the flow class metadata
   const flowClass = flowClasses?.find(([id]) => id === flowClassName)?.[1];
-  const parameterMetadata = flowClass?.parameters || {};
+  const parameterMetadata = useMemo(
+    () => flowClass?.parameters || {},
+    [flowClass],
+  );
 
   // Create a mapping of parameter values to display values
   const displayValues = useMemo(() => {

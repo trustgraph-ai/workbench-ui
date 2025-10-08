@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Box, VStack, Tabs } from "@chakra-ui/react";
-import { useNotification } from "../../state/notify";
-import { OntologyConcept, Ontology } from "../../state/ontologies";
+import { useNotification } from "@trustgraph/react-state";
+import { OntologyConcept, Ontology } from "@trustgraph/react-state";
 import TextAreaField from "../common/TextAreaField";
 import { ConceptEditorHeader } from "./ConceptEditorHeader";
 import { ConceptMetadataTab } from "./ConceptMetadataTab";

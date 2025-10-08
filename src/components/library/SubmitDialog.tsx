@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useMemo } from "react";
 
 import { SendHorizontal } from "lucide-react";
-import { useFlows } from "../../state/flows";
+import { useFlows } from "@trustgraph/react-state";
 
 import {
   List,

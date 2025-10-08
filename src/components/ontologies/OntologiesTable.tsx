@@ -14,7 +14,7 @@ import {
   getSortedRowModel,
   flexRender,
 } from "@tanstack/react-table";
-import { useOntologies } from "../../state/ontologies";
+import { useOntologies } from "@trustgraph/react-state";
 import {
   OntologyTableRow,
   ontologyColumns,

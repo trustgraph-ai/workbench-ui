@@ -1,14 +1,7 @@
 import React, { useState, useMemo } from "react";
-import {
-  VStack,
-  HStack,
-  Button,
-  Text,
-  Box,
-  Textarea,
-} from "@chakra-ui/react";
+import { VStack, HStack, Button, Text, Box, Textarea } from "@chakra-ui/react";
 import { Search } from "lucide-react";
-import { useStructuredQuery } from "../../state/structured-query";
+import { useStructuredQuery } from "@trustgraph/react-state";
 import TextField from "../common/TextField";
 import {
   createColumnHelper,

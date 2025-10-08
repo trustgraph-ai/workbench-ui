@@ -85,9 +85,7 @@ const FeatureSwitchesSection: React.FC<FeatureSwitchesSectionProps> = ({
           </VStack>
           <Switch.Root
             checked={submissions}
-            onCheckedChange={(details) =>
-              onSubmissionsChange(details.checked)
-            }
+            onCheckedChange={(details) => onSubmissionsChange(details.checked)}
           >
             <Switch.HiddenInput />
             <Switch.Control>
@@ -178,9 +176,7 @@ const FeatureSwitchesSection: React.FC<FeatureSwitchesSectionProps> = ({
           </VStack>
           <Switch.Root
             checked={flowClasses}
-            onCheckedChange={(details) =>
-              onFlowClassesChange(details.checked)
-            }
+            onCheckedChange={(details) => onFlowClassesChange(details.checked)}
           >
             <Switch.HiddenInput />
             <Switch.Control>

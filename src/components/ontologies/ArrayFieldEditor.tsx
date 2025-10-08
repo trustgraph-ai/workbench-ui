@@ -10,7 +10,7 @@ import {
 } from "@chakra-ui/react";
 import { Plus, X } from "lucide-react";
 import SelectField from "../common/SelectField";
-import { OntologyConcept } from "../../state/ontologies";
+import { OntologyConcept } from "@trustgraph/react-state";
 
 interface ArrayFieldEditorProps {
   label: string;
@@ -55,8 +55,8 @@ export const ArrayFieldEditor: React.FC<ArrayFieldEditorProps> = ({
       <Field.Root>
         <Field.Label>{label}</Field.Label>
         <Text fontSize="sm" color="fg.muted">
-          No other concepts available. Create more concepts in this ontology
-          to establish relationships.
+          No other concepts available. Create more concepts in this ontology to
+          establish relationships.
         </Text>
       </Field.Root>
     );

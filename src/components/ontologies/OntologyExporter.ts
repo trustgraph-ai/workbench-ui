@@ -1,4 +1,4 @@
-import { Ontology } from "../../state/ontologies";
+import { Ontology } from "@trustgraph/react-state";
 
 export interface ExportOptions {
   format: "owl" | "rdf" | "turtle";
@@ -31,9 +31,7 @@ export class OntologyExporter {
     lines.push('<rdf:RDF xmlns="' + ontology.metadata.namespace + '"');
     lines.push('     xml:base="' + ontology.metadata.namespace + '"');
     lines.push('     xmlns:owl="http://www.w3.org/2002/07/owl#"');
-    lines.push(
-      '     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"',
-    );
+    lines.push('     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"');
     lines.push('     xmlns:xml="http://www.w3.org/XML/1998/namespace"');
     lines.push('     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"');
     lines.push('     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">');
@@ -69,7 +67,7 @@ export class OntologyExporter {
     lines.push("");
 
     // Export Classes
-    Object.entries(ontology.classes).forEach(([classId, owlClass]) => {
+    Object.entries(ontology.classes).forEach(([_classId, owlClass]) => {
       lines.push("    <!-- " + owlClass.uri + " -->");
       lines.push('    <owl:Class rdf:about="' + owlClass.uri + '">');
 
@@ -114,7 +112,7 @@ export class OntologyExporter {
 
     // Export Object Properties
     Object.entries(ontology.objectProperties).forEach(
-      ([propId, property]) => {
+      ([_propId, property]) => {
         lines.push("    <!-- " + property.uri + " -->");
         lines.push(
           '    <owl:ObjectProperty rdf:about="' + property.uri + '">',
@@ -233,7 +231,7 @@ export class OntologyExporter {
 
     // Export Datatype Properties
     Object.entries(ontology.datatypeProperties).forEach(
-      ([propId, property]) => {
+      ([_propId, property]) => {
         lines.push("    <!-- " + property.uri + " -->");
         lines.push(
           '    <owl:DatatypeProperty rdf:about="' + property.uri + '">',
@@ -352,9 +350,7 @@ export class OntologyExporter {
     // Prefixes
     lines.push("@prefix : <" + ontology.metadata.namespace + "> .");
     lines.push("@prefix owl: <http://www.w3.org/2002/07/owl#> .");
-    lines.push(
-      "@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .",
-    );
+    lines.push("@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .");
     lines.push("@prefix xml: <http://www.w3.org/XML/1998/namespace> .");
     lines.push("@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .");
     lines.push("@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .");
@@ -424,47 +420,45 @@ export class OntologyExporter {
     });
 
     // Export Object Properties
-    Object.entries(ontology.objectProperties).forEach(
-      ([propId, property]) => {
-        lines.push("###  " + property.uri);
-        lines.push(":" + propId + " rdf:type owl:ObjectProperty");
+    Object.entries(ontology.objectProperties).forEach(([propId, property]) => {
+      lines.push("###  " + property.uri);
+      lines.push(":" + propId + " rdf:type owl:ObjectProperty");
 
-        // rdfs:label
-        if (property["rdfs:label"] && property["rdfs:label"].length > 0) {
-          property["rdfs:label"].forEach((label) => {
-            const langTag = label.lang ? `@${label.lang}` : "";
-            lines.push(
-              '    ; rdfs:label "' +
-                this.escapeTurtle(label.value) +
-                '"' +
-                langTag,
-            );
-          });
-        }
-
-        // rdfs:comment
-        if (property["rdfs:comment"] && options.includeComments !== false) {
+      // rdfs:label
+      if (property["rdfs:label"] && property["rdfs:label"].length > 0) {
+        property["rdfs:label"].forEach((label) => {
+          const langTag = label.lang ? `@${label.lang}` : "";
           lines.push(
-            '    ; rdfs:comment "' +
-              this.escapeTurtle(property["rdfs:comment"]) +
-              '"@en',
+            '    ; rdfs:label "' +
+              this.escapeTurtle(label.value) +
+              '"' +
+              langTag,
           );
-        }
+        });
+      }
 
-        // rdfs:domain
-        if (property["rdfs:domain"]) {
-          lines.push("    ; rdfs:domain :" + property["rdfs:domain"]);
-        }
+      // rdfs:comment
+      if (property["rdfs:comment"] && options.includeComments !== false) {
+        lines.push(
+          '    ; rdfs:comment "' +
+            this.escapeTurtle(property["rdfs:comment"]) +
+            '"@en',
+        );
+      }
 
-        // rdfs:range
-        if (property["rdfs:range"]) {
-          lines.push("    ; rdfs:range :" + property["rdfs:range"]);
-        }
+      // rdfs:domain
+      if (property["rdfs:domain"]) {
+        lines.push("    ; rdfs:domain :" + property["rdfs:domain"]);
+      }
 
-        lines.push("    .");
-        lines.push("");
-      },
-    );
+      // rdfs:range
+      if (property["rdfs:range"]) {
+        lines.push("    ; rdfs:range :" + property["rdfs:range"]);
+      }
+
+      lines.push("    .");
+      lines.push("");
+    });
 
     // Export Datatype Properties
     Object.entries(ontology.datatypeProperties).forEach(

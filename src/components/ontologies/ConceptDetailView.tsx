@@ -1,6 +1,6 @@
 import React from "react";
 import { Box, VStack, HStack, Text, Button, Heading } from "@chakra-ui/react";
-import { OntologyConcept } from "../../state/ontologies";
+import { OntologyConcept } from "@trustgraph/react-state";
 
 interface ConceptDetailViewProps {
   concept: OntologyConcept;

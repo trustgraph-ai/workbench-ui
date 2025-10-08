@@ -311,9 +311,7 @@ describe("SchemaFieldEditor", () => {
       />,
     );
 
-    expect(
-      screen.queryByTestId("enum-value-manager"),
-    ).not.toBeInTheDocument();
+    expect(screen.queryByTestId("enum-value-manager")).not.toBeInTheDocument();
   });
 
   test("adds enum values", async () => {

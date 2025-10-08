@@ -14,13 +14,13 @@ import {
 import { Upload, X, FileText, AlertTriangle } from "lucide-react";
 import SelectField from "../common/SelectField";
 import SelectOptionText from "../common/SelectOptionText";
-import { useOntologies, Ontology } from "../../state/ontologies";
+import { useOntologies, Ontology } from "@trustgraph/react-state";
 import {
   OntologyImporter,
   ImportFormat,
   ImportOptions,
 } from "./OntologyImporter";
-import { useNotification } from "../../state/notify";
+import { useNotification } from "@trustgraph/react-state";
 
 interface ImportDialogProps {
   isOpen: boolean;
@@ -165,9 +165,7 @@ export const ImportDialog: React.FC<ImportDialogProps> = ({
       );
 
       // Check if ontology ID already exists
-      const existingOntology = ontologies.find(
-        (ont) => ont[0] === ontologyId,
-      );
+      const existingOntology = ontologies.find((ont) => ont[0] === ontologyId);
 
       if (existingOntology && importMode === "new") {
         notify.warning(
@@ -500,11 +498,7 @@ export const ImportDialog: React.FC<ImportDialogProps> = ({
               Clear
             </Button>
             <HStack spacing={3}>
-              <Button
-                variant="ghost"
-                onClick={onClose}
-                disabled={isImporting}
-              >
+              <Button variant="ghost" onClick={onClose} disabled={isImporting}>
                 Cancel
               </Button>
               <Button

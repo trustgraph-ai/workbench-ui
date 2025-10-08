@@ -4,7 +4,7 @@ import {
   getCoreRowModel,
   getSortedRowModel,
 } from "@tanstack/react-table";
-import { useSchemas } from "../../state/schemas";
+import { useSchemas } from "@trustgraph/react-state";
 import { SchemaTableRow, schemaColumns } from "../../model/schemas-table";
 import { EditSchemaDialog } from "./EditSchemaDialog";
 import TableWithStates from "../common/TableWithStates";

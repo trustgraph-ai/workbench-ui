@@ -1,4 +1,4 @@
-import { Ontology } from "../../state/ontologies";
+import { Ontology } from "@trustgraph/react-state";
 
 export interface ValidationIssue {
   type: "error" | "warning" | "info";
@@ -85,8 +85,7 @@ export class OntologyValidator {
         type: "error",
         category: "metadata",
         message: "Invalid namespace URI format",
-        suggestion:
-          "Use a valid URI format starting with http:// or https://",
+        suggestion: "Use a valid URI format starting with http:// or https://",
       });
     }
 
@@ -172,18 +171,11 @@ export class OntologyValidator {
     const issues: ValidationIssue[] = [];
 
     // Validate object properties
-    Object.entries(ontology.objectProperties).forEach(
-      ([propId, property]) => {
-        issues.push(
-          ...this.validateProperty(
-            propId,
-            property,
-            "objectProperty",
-            ontology,
-          ),
-        );
-      },
-    );
+    Object.entries(ontology.objectProperties).forEach(([propId, property]) => {
+      issues.push(
+        ...this.validateProperty(propId, property, "objectProperty", ontology),
+      );
+    });
 
     // Validate datatype properties
     Object.entries(ontology.datatypeProperties).forEach(
@@ -204,7 +196,7 @@ export class OntologyValidator {
 
   private static validateProperty(
     propId: string,
-    property: any,
+    property: unknown,
     propType: "objectProperty" | "datatypeProperty",
     ontology: Ontology,
   ): ValidationIssue[] {

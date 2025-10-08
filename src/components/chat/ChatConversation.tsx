@@ -4,8 +4,8 @@ import ChatHistory from "./ChatHistory";
 import InputArea from "./InputArea";
 import EntityList from "../common/EntityList";
 
-import { useChatStateStore } from "../../state/chat";
-import { useChat } from "../../state/chat-query";
+import { useChatStateStore } from "@trustgraph/react-state";
+import { useChat } from "@trustgraph/react-state";
 
 const ChatConversation = () => {
   const input = useChatStateStore((state) => state.input);

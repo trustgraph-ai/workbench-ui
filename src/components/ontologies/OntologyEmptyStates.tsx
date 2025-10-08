@@ -1,7 +1,7 @@
 import React from "react";
 import { Box, VStack, Text } from "@chakra-ui/react";
 import SelectField from "../common/SelectField";
-import { Ontology } from "../../state/ontologies";
+import { Ontology } from "@trustgraph/react-state";
 
 interface EmptyStatesProps {
   type: "no-ontologies" | "no-ontology-selected" | "no-concept-selected";
@@ -17,9 +17,7 @@ export const OntologyEmptyStates: React.FC<EmptyStatesProps> = ({
   if (type === "no-ontologies") {
     return (
       <Box p={8} textAlign="center" color="fg.muted">
-        <Text mb={4}>
-          No ontologies available. Create one to get started.
-        </Text>
+        <Text mb={4}>No ontologies available. Create one to get started.</Text>
       </Box>
     );
   }

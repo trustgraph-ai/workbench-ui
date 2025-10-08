@@ -4,8 +4,8 @@ import { Upload, FilePlus } from "lucide-react";
 
 import { Portal, Button, Dialog, Box, CloseButton } from "@chakra-ui/react";
 
-import { useKnowledgeCores } from "../../state/knowledge-cores";
-import { useSettings } from "../../state/settings";
+import { useKnowledgeCores } from "@trustgraph/react-state";
+import { useSettings } from "@trustgraph/react-state";
 import { createAuthenticatedFetch } from "../../api/authenticated-fetch";
 import TextField from "../common/TextField";
 
