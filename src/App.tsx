@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, lazy, Suspense } from "react";
 
 import { Box } from "@chakra-ui/react";
 import { BrowserRouter as Router, Routes, Route } from "react-router";
@@ -8,9 +8,12 @@ import Layout from "./components/Layout";
 import ChatPage from "./pages/ChatPage";
 import SearchPage from "./pages/SearchPage";
 import EntityPage from "./pages/EntityPage";
-import GraphPage from "./pages/GraphPage";
+
+// Lazy load GraphPage since it includes heavy 3D visualization library (react-force-graph/Three.js)
+const GraphPage = lazy(() => import("./pages/GraphPage"));
+// Lazy load FlowClassesPage since it includes reactflow library
+const FlowClassesPage = lazy(() => import("./pages/FlowClassesPage"));
 import FlowsPage from "./pages/FlowsPage";
-import FlowClassesPage from "./pages/FlowClassesPage";
 import LibraryPage from "./pages/LibraryPage";
 import KnowledgeCoresPage from "./pages/KnowledgeCoresPage";
 import ProcessingPage from "./pages/ProcessingPage";
@@ -113,9 +116,23 @@ const App = () => {
             <Route path="/chat" element={<ChatPage />} />
             <Route path="/search" element={<SearchPage />} />
             <Route path="/entity" element={<EntityPage />} />
-            <Route path="/graph" element={<GraphPage />} />
+            <Route
+              path="/graph"
+              element={
+                <Suspense fallback={<CenterSpinner />}>
+                  <GraphPage />
+                </Suspense>
+              }
+            />
             <Route path="/flows" element={<FlowsPage />} />
-            <Route path="/flow-classes" element={<FlowClassesPage />} />
+            <Route
+              path="/flow-classes"
+              element={
+                <Suspense fallback={<CenterSpinner />}>
+                  <FlowClassesPage />
+                </Suspense>
+              }
+            />
             <Route path="/library" element={<LibraryPage />} />
             <Route path="/kc" element={<KnowledgeCoresPage />} />
             <Route path="/procs" element={<ProcessingPage />} />
