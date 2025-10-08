@@ -2,7 +2,7 @@ import { Database } from "lucide-react";
 import PageHeader from "../components/common/PageHeader";
 import { Schemas } from "../components/schemas/Schemas";
 
-export const SchemasPage = () => {
+const SchemasPage = () => {
   return (
     <>
       <PageHeader
@@ -14,3 +14,5 @@ export const SchemasPage = () => {
     </>
   );
 };
+
+export default SchemasPage;
