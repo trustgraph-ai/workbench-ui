@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, lazy, Suspense } from "react";
 
 import { Box } from "@chakra-ui/react";
 import { BrowserRouter as Router, Routes, Route } from "react-router";
@@ -8,21 +8,26 @@ import Layout from "./components/Layout";
 import ChatPage from "./pages/ChatPage";
 import SearchPage from "./pages/SearchPage";
 import EntityPage from "./pages/EntityPage";
-import GraphPage from "./pages/GraphPage";
+
+// Lazy load GraphPage since it includes heavy 3D visualization library (react-force-graph/Three.js)
+const GraphPage = lazy(() => import("./pages/GraphPage"));
+// Lazy load FlowClassesPage since it includes reactflow library
+const FlowClassesPage = lazy(() => import("./pages/FlowClassesPage"));
+// Lazy load less frequently used pages
+const OntologiesPage = lazy(() => import("./pages/OntologiesPage"));
+const StructuredQueryPage = lazy(() => import("./pages/StructuredQueryPage"));
+const SettingsPage = lazy(() => import("./pages/SettingsPage"));
+const SchemasPage = lazy(() => import("./pages/SchemasPage"));
+const LLMModelsPage = lazy(() => import("./pages/LLMModelsPage"));
+const McpToolsPage = lazy(() => import("./pages/McpToolsPage"));
+
 import FlowsPage from "./pages/FlowsPage";
-import FlowClassesPage from "./pages/FlowClassesPage";
 import LibraryPage from "./pages/LibraryPage";
 import KnowledgeCoresPage from "./pages/KnowledgeCoresPage";
 import ProcessingPage from "./pages/ProcessingPage";
 import TokenCostPage from "./pages/TokenCostPage";
 import PromptsPage from "./pages/PromptsPage";
 import ToolsPage from "./pages/ToolsPage";
-import McpToolsPage from "./pages/McpToolsPage";
-import { SchemasPage } from "./pages/SchemasPage";
-import OntologiesPage from "./pages/OntologiesPage";
-import StructuredQueryPage from "./pages/StructuredQueryPage";
-import LLMModelsPage from "./pages/LLMModelsPage";
-import SettingsPage from "./pages/SettingsPage";
 
 import CenterSpinner from "./components/common/CenterSpinner";
 import Progress from "./components/common/Progress";
@@ -113,24 +118,77 @@ const App = () => {
             <Route path="/chat" element={<ChatPage />} />
             <Route path="/search" element={<SearchPage />} />
             <Route path="/entity" element={<EntityPage />} />
-            <Route path="/graph" element={<GraphPage />} />
+            <Route
+              path="/graph"
+              element={
+                <Suspense fallback={<CenterSpinner />}>
+                  <GraphPage />
+                </Suspense>
+              }
+            />
             <Route path="/flows" element={<FlowsPage />} />
-            <Route path="/flow-classes" element={<FlowClassesPage />} />
+            <Route
+              path="/flow-classes"
+              element={
+                <Suspense fallback={<CenterSpinner />}>
+                  <FlowClassesPage />
+                </Suspense>
+              }
+            />
             <Route path="/library" element={<LibraryPage />} />
             <Route path="/kc" element={<KnowledgeCoresPage />} />
             <Route path="/procs" element={<ProcessingPage />} />
             <Route path="/tokencost" element={<TokenCostPage />} />
             <Route path="/prompts" element={<PromptsPage />} />
-            <Route path="/schemas" element={<SchemasPage />} />
-            <Route path="/ontologies" element={<OntologiesPage />} />
+            <Route
+              path="/schemas"
+              element={
+                <Suspense fallback={<CenterSpinner />}>
+                  <SchemasPage />
+                </Suspense>
+              }
+            />
+            <Route
+              path="/ontologies"
+              element={
+                <Suspense fallback={<CenterSpinner />}>
+                  <OntologiesPage />
+                </Suspense>
+              }
+            />
             <Route
               path="/structured-query"
-              element={<StructuredQueryPage />}
+              element={
+                <Suspense fallback={<CenterSpinner />}>
+                  <StructuredQueryPage />
+                </Suspense>
+              }
             />
             <Route path="/agents" element={<ToolsPage />} />
-            <Route path="/mcp-tools" element={<McpToolsPage />} />
-            <Route path="/llm-models" element={<LLMModelsPage />} />
-            <Route path="/settings" element={<SettingsPage />} />
+            <Route
+              path="/mcp-tools"
+              element={
+                <Suspense fallback={<CenterSpinner />}>
+                  <McpToolsPage />
+                </Suspense>
+              }
+            />
+            <Route
+              path="/llm-models"
+              element={
+                <Suspense fallback={<CenterSpinner />}>
+                  <LLMModelsPage />
+                </Suspense>
+              }
+            />
+            <Route
+              path="/settings"
+              element={
+                <Suspense fallback={<CenterSpinner />}>
+                  <SettingsPage />
+                </Suspense>
+              }
+            />
           </Routes>
         </Layout>
       </Router>

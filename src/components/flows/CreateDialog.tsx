@@ -160,17 +160,19 @@ const CreateDialog = ({ open, onOpenChange }) => {
     description.trim().length > 0 &&
     areParametersValid;
 
-  const flowClassOptions = flowClasses.map((flowClass) => {
-    return {
-      value: flowClass[0],
-      label: flowClass[1].description,
-      description: (
-        <SelectOption title={flowClass[1].description}>
-          {flowClass[0]}
-        </SelectOption>
-      ),
-    };
-  });
+  const flowClassOptions = flowClasses
+    .filter((flowClass) => flowClass[1]) // Filter out incomplete data
+    .map((flowClass) => {
+      return {
+        value: flowClass[0],
+        label: flowClass[1].description,
+        description: (
+          <SelectOption title={flowClass[1].description}>
+            {flowClass[0]}
+          </SelectOption>
+        ),
+      };
+    });
 
   const contentRef = useRef<HTMLDivElement>(null);
 
