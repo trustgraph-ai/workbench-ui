@@ -25,7 +25,9 @@ const ParameterDisplay: React.FC<ParameterDisplayProps> = ({
 
   // Find the flow class metadata
   const flowClass = Array.isArray(flowClasses)
-    ? flowClasses.find((fc) => Array.isArray(fc) && fc[0] === flowClassName)?.[1]
+    ? flowClasses.find(
+        (fc) => Array.isArray(fc) && fc[0] === flowClassName,
+      )?.[1]
     : undefined;
   const parameterMetadata = useMemo(
     () => flowClass?.parameters || {},
