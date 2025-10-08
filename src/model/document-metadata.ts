@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
 
-import { Triple } from "../api/trustgraph/Triple";
+import { Triple } from "@trustgraph/client";
 
 export const RDF_TYPE = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
 export const RDFS_LABEL = "http://www.w3.org/2000/01/rdf-schema#label";

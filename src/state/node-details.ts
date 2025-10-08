@@ -5,7 +5,7 @@ import { useSocket } from "../api/trustgraph/socket";
 import { useNotification } from "./notify";
 import { useActivity } from "./activity";
 import { useSettings } from "./settings";
-import { Value } from "../api/trustgraph/Triple";
+import { Value } from "@trustgraph/client";
 import { RDFS_LABEL } from "../utils/knowledge-graph";
 
 /**
