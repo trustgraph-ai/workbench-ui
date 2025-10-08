@@ -111,7 +111,12 @@ class Api:
                     text=t, content_type="text/html"
                 )
 
-            return web.HTTPNotFound()
+            # Fallback to index.html for client-side routing (SPA)
+            # This allows React Router routes like /flows, /ontologies to work
+            t = self.open("index.html")
+            return web.Response(
+                text=t, content_type="text/html"
+            )
 
         except Exception as e:
             logging.error(f"Exception: {e}")
