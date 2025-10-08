@@ -24,7 +24,9 @@ const ParameterDisplay: React.FC<ParameterDisplayProps> = ({
     useFlowParameters(flowClassName);
 
   // Find the flow class metadata
-  const flowClass = flowClasses?.find(([id]) => id === flowClassName)?.[1];
+  const flowClass = Array.isArray(flowClasses)
+    ? flowClasses.find((fc) => Array.isArray(fc) && fc[0] === flowClassName)?.[1]
+    : undefined;
   const parameterMetadata = useMemo(
     () => flowClass?.parameters || {},
     [flowClass],
@@ -33,6 +35,8 @@ const ParameterDisplay: React.FC<ParameterDisplayProps> = ({
   // Create a mapping of parameter values to display values
   const displayValues = useMemo(() => {
     const result: { [key: string]: string } = {};
+
+    if (!parameters) return result;
 
     Object.entries(parameters).forEach(([paramName, paramValue]) => {
       // Get the parameter definition name from mapping
