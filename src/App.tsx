@@ -13,6 +13,11 @@ import EntityPage from "./pages/EntityPage";
 const GraphPage = lazy(() => import("./pages/GraphPage"));
 // Lazy load FlowClassesPage since it includes reactflow library
 const FlowClassesPage = lazy(() => import("./pages/FlowClassesPage"));
+// Lazy load less frequently used pages
+const OntologiesPage = lazy(() => import("./pages/OntologiesPage"));
+const StructuredQueryPage = lazy(() => import("./pages/StructuredQueryPage"));
+const SettingsPage = lazy(() => import("./pages/SettingsPage"));
+
 import FlowsPage from "./pages/FlowsPage";
 import LibraryPage from "./pages/LibraryPage";
 import KnowledgeCoresPage from "./pages/KnowledgeCoresPage";
@@ -22,10 +27,7 @@ import PromptsPage from "./pages/PromptsPage";
 import ToolsPage from "./pages/ToolsPage";
 import McpToolsPage from "./pages/McpToolsPage";
 import { SchemasPage } from "./pages/SchemasPage";
-import OntologiesPage from "./pages/OntologiesPage";
-import StructuredQueryPage from "./pages/StructuredQueryPage";
 import LLMModelsPage from "./pages/LLMModelsPage";
-import SettingsPage from "./pages/SettingsPage";
 
 import CenterSpinner from "./components/common/CenterSpinner";
 import Progress from "./components/common/Progress";
@@ -139,15 +141,33 @@ const App = () => {
             <Route path="/tokencost" element={<TokenCostPage />} />
             <Route path="/prompts" element={<PromptsPage />} />
             <Route path="/schemas" element={<SchemasPage />} />
-            <Route path="/ontologies" element={<OntologiesPage />} />
+            <Route
+              path="/ontologies"
+              element={
+                <Suspense fallback={<CenterSpinner />}>
+                  <OntologiesPage />
+                </Suspense>
+              }
+            />
             <Route
               path="/structured-query"
-              element={<StructuredQueryPage />}
+              element={
+                <Suspense fallback={<CenterSpinner />}>
+                  <StructuredQueryPage />
+                </Suspense>
+              }
             />
             <Route path="/agents" element={<ToolsPage />} />
             <Route path="/mcp-tools" element={<McpToolsPage />} />
             <Route path="/llm-models" element={<LLMModelsPage />} />
-            <Route path="/settings" element={<SettingsPage />} />
+            <Route
+              path="/settings"
+              element={
+                <Suspense fallback={<CenterSpinner />}>
+                  <SettingsPage />
+                </Suspense>
+              }
+            />
           </Routes>
         </Layout>
       </Router>
