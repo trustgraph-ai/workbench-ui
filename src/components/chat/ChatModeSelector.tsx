@@ -1,6 +1,6 @@
 import React from "react";
 import { Select, Portal, createListCollection } from "@chakra-ui/react";
-import { useChatStateStore, ChatMode } from "../../state/chat";
+import { useChatStateStore, ChatMode } from "@trustgraph/react-state";
 
 const ChatModeSelector = () => {
   const chatMode = useChatStateStore((state) => state.chatMode);

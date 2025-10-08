@@ -11,9 +11,9 @@ import {
 import { Download, X } from "lucide-react";
 import SelectField from "../common/SelectField";
 import SelectOptionText from "../common/SelectOptionText";
-import { Ontology } from "../../state/ontologies";
+import { Ontology } from "@trustgraph/react-state";
 import { OntologyExporter, ExportOptions } from "./OntologyExporter";
-import { useNotification } from "../../state/notify";
+import { useNotification } from "@trustgraph/react-state";
 
 interface ExportDialogProps {
   ontology: Ontology;
@@ -126,8 +126,8 @@ export const ExportDialog: React.FC<ExportDialogProps> = ({
                 Export "{ontology.metadata.name}"
               </Text>
               <Text fontSize="sm" color="gray.600">
-                Choose your export format and options below. Your ontology
-                will be downloaded as a file.
+                Choose your export format and options below. Your ontology will
+                be downloaded as a file.
               </Text>
             </VStack>
 

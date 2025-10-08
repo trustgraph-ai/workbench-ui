@@ -16,9 +16,7 @@ const ChatHelp = () => {
           <Popover.Content w="25rem">
             <Popover.Arrow />
             <Popover.Body p={5}>
-              <Popover.Title fontWeight="medium">
-                Chat assistant
-              </Popover.Title>
+              <Popover.Title fontWeight="medium">Chat assistant</Popover.Title>
               <Text m={2}>
                 The Chat assistant lets you converse with the assistant in
                 natural language. The assistant has access to all of the

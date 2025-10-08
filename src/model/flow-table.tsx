@@ -10,7 +10,7 @@ export type Flow = {
   id: string; // Unique identifier for the flow
   "class-name": string; // Flow class ID
   description: string; // Human-readable description
-  parameters?: { [key: string]: any }; // Flow parameters
+  parameters?: { [key: string]: unknown }; // Flow parameters
 };
 
 // Create a column helper instance for type-safe column definitions

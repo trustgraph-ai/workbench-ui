@@ -7,7 +7,6 @@ import {
   Button,
   Collapsible,
   HStack,
-  Badge,
 } from "@chakra-ui/react";
 import { ChevronDown, ChevronRight, Link2 } from "lucide-react";
 import TextField from "../common/TextField";
@@ -23,7 +22,7 @@ interface EnumOption {
 interface ParameterSchema {
   type: "string" | "number" | "integer" | "boolean";
   description?: string;
-  default?: any;
+  default?: unknown;
   enum?: EnumOption[] | string[]; // Can be rich objects or simple strings
   minimum?: number;
   maximum?: number;
@@ -46,8 +45,8 @@ interface ParameterInputsProps {
   parameterDefinitions: { [key: string]: ParameterSchema }; // The actual definitions
   parameterMapping: { [key: string]: string }; // Maps flow param names to definition names
   parameterMetadata: { [key: string]: FlowParameterMetadata }; // Flow-specific metadata
-  parameterValues: { [key: string]: any };
-  onParameterChange: (values: { [key: string]: any }) => void;
+  parameterValues: { [key: string]: unknown };
+  onParameterChange: (values: { [key: string]: unknown }) => void;
   validationErrors: { [key: string]: string };
   contentRef?: React.RefObject<HTMLDivElement>;
 }
@@ -114,6 +113,7 @@ const ParameterInputs: React.FC<ParameterInputsProps> = ({
       });
       onParameterChange(updatedValues);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [parameterMetadata, parameterDefinitions, parameterMapping]);
 
   // Early return after all hooks to avoid hook order violation
@@ -155,8 +155,8 @@ const ParameterInputs: React.FC<ParameterInputsProps> = ({
   // Resolve parameter value considering controlled-by relationships
   const resolveParameterValue = (
     paramName: string,
-    currentValues: { [key: string]: any },
-  ): any => {
+    currentValues: { [key: string]: unknown },
+  ): unknown => {
     // Check for circular dependencies first
     const cycle = detectCircularDependencies(paramName);
     if (cycle) {
@@ -204,7 +204,7 @@ const ParameterInputs: React.FC<ParameterInputsProps> = ({
       .map(([paramName]) => paramName);
   };
 
-  const handleParameterChange = (paramName: string, value: any) => {
+  const handleParameterChange = (paramName: string, value: unknown) => {
     console.log(
       `[ParameterInputs] Changing parameter ${paramName} to:`,
       value,

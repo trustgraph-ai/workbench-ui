@@ -6,10 +6,9 @@ import {
   Heading,
   Text,
   Button,
-  Code,
   Separator,
 } from "@chakra-ui/react";
-import { ArrowLeft, FileCode, Construction } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import ReactFlow, {
   Background,
   Controls,
@@ -26,12 +25,16 @@ import ReactFlow, {
 } from "reactflow";
 import dagre from "dagre";
 import "reactflow/dist/style.css";
-import { useFlowClasses } from "../../state/flow-classes";
+import { useFlowClasses } from "@trustgraph/react-state";
 import serviceMap from "../../data/service-map.json";
 
 interface FlowClassEditorViewProps {
   flowClassId: string;
   onBack: () => void;
+}
+
+interface ProcessorInfo {
+  [key: string]: unknown;
 }
 
 // Custom node component - use role for connections, direction for positioning
@@ -43,7 +46,7 @@ const CustomNode = ({
     type?: string;
     provides?: string[];
     consumes?: string[];
-    processorInfo?: any;
+    processorInfo?: ProcessorInfo;
   };
 }) => {
   const borderColor = data.type === "class" ? "#2563eb" : "#16a34a"; // blue for class, green for flow
@@ -57,10 +60,16 @@ const CustomNode = ({
   const leftConnections: string[] = [];
   const rightConnections: string[] = [];
 
+  interface Connection {
+    name: string;
+    role: string;
+    direction?: string;
+  }
+
   // Add provides connections to left or right based on direction
   provides.forEach((connectionName) => {
-    const conn = processorInfo.connections.find(
-      (c: any) => c.name === connectionName && c.role === "provides",
+    const conn = (processorInfo.connections as Connection[] | undefined)?.find(
+      (c) => c.name === connectionName && c.role === "provides",
     );
     if (conn?.direction === "in") {
       leftConnections.push(connectionName);
@@ -71,8 +80,8 @@ const CustomNode = ({
 
   // Add consumes connections to left or right based on direction
   consumes.forEach((connectionName) => {
-    const conn = processorInfo.connections.find(
-      (c: any) => c.name === connectionName && c.role === "consumes",
+    const conn = (processorInfo.connections as Connection[] | undefined)?.find(
+      (c) => c.name === connectionName && c.role === "consumes",
     );
     if (conn?.direction === "in") {
       leftConnections.push(connectionName);
@@ -85,12 +94,6 @@ const CustomNode = ({
     50,
     Math.max(leftConnections.length, rightConnections.length) * 25 + 30,
   );
-
-  processorInfo.connections?.forEach((c: any) => {
-    const side = c.direction === "in" ? "LEFT" : "RIGHT";
-    const handleType = c.direction === "in" ? "TARGET" : "SOURCE";
-    const handleId = `${c.role === "provides" ? "provide" : "consume"}-${c.name}`;
-  });
 
   return (
     <div
@@ -112,9 +115,9 @@ const CustomNode = ({
     >
       {/* LEFT side connections */}
       {leftConnections.map((connection, index) => {
-        const conn = processorInfo.connections.find(
-          (c: any) => c.name === connection,
-        );
+        const conn = (
+          processorInfo.connections as Connection[] | undefined
+        )?.find((c) => c.name === connection);
         const isProvides = conn?.role === "provides";
         return (
           <React.Fragment
@@ -150,9 +153,9 @@ const CustomNode = ({
 
       {/* RIGHT side connections */}
       {rightConnections.map((connection, index) => {
-        const conn = processorInfo.connections.find(
-          (c: any) => c.name === connection,
-        );
+        const conn = (
+          processorInfo.connections as Connection[] | undefined
+        )?.find((c) => c.name === connection);
         const isProvides = conn?.role === "provides";
         return (
           <React.Fragment
@@ -212,11 +215,10 @@ const InterfaceNode = ({
     interfaceKind?: string;
     description?: string;
     visible?: boolean;
-    queues?: any;
+    queues?: Record<string, unknown>;
   };
 }) => {
-  const borderColor =
-    data.interfaceKind === "service" ? "#8b5cf6" : "#ec4899"; // purple for service, pink for flow
+  const borderColor = data.interfaceKind === "service" ? "#8b5cf6" : "#ec4899"; // purple for service, pink for flow
   const backgroundColor =
     data.interfaceKind === "service" ? "#f3e8ff" : "#fce7f3";
   const icon = data.interfaceKind === "service" ? "⚡" : "📦";
@@ -299,10 +301,14 @@ const nodeTypes = {
   interface: InterfaceNode,
 };
 
+interface FlowClass {
+  class?: Record<string, unknown>;
+  flow?: Record<string, unknown>;
+}
+
 // Generate nodes from flow class processors
-const generateNodesFromFlowClass = (flowClass: any): Node[] => {
+const generateNodesFromFlowClass = (flowClass: FlowClass): Node[] => {
   const nodes: Node[] = [];
-  let nodeIndex = 0;
 
   // Add class processors
   Object.keys(flowClass.class || {}).forEach((processorName) => {
@@ -442,7 +448,7 @@ const applyDagreLayout = (nodes: Node[], edges: Edge[]): Node[] => {
 };
 
 // Generate edges from flow class connections using three-way matching algorithm
-const generateEdgesFromFlowClass = (flowClass: any): Edge[] => {
+const generateEdgesFromFlowClass = (flowClass: FlowClass): Edge[] => {
   const edges: Edge[] = [];
   let edgeIndex = 0;
 
@@ -453,7 +459,7 @@ const generateEdgesFromFlowClass = (flowClass: any): Edge[] => {
       processorId: string;
       processorName: string;
       connectionName: string;
-      queues: any;
+      queues: Record<string, unknown>;
     }>
   >();
   const consumersByType = new Map<
@@ -462,7 +468,7 @@ const generateEdgesFromFlowClass = (flowClass: any): Edge[] => {
       processorId: string;
       processorName: string;
       connectionName: string;
-      queues: any;
+      queues: Record<string, unknown>;
     }>
   >();
 
@@ -495,7 +501,7 @@ const generateEdgesFromFlowClass = (flowClass: any): Edge[] => {
           serviceMap.connection_types[connectionType]?.kind;
 
         // Extract queues based on connection kind
-        let queues: any = {};
+        let queues: Record<string, unknown> = {};
 
         if (connectionKind === "service") {
           // For service: look for {connection.name}-request and {connection.name}-response for consumers
@@ -553,6 +559,7 @@ const generateEdgesFromFlowClass = (flowClass: any): Edge[] => {
     const connectionKind = serviceMap.connection_types[connectionType]?.kind;
 
     if (connectionKind === "passive") {
+      // Passive connections - no special handling needed
     }
 
     consumers.forEach((consumer) => {
@@ -622,12 +629,16 @@ const generateEdgesFromFlowClass = (flowClass: any): Edge[] => {
           if (!processorInfo?.connections) return;
 
           let isMatch = false;
-          let matchingConnection: any = null;
+          let matchingConnection: Connection | null = null;
 
           if (interfaceKind === "service") {
             // For service interfaces: check if processor PROVIDES this service
-            const interfaceRequest = (interfaceQueues as any).request;
-            const interfaceResponse = (interfaceQueues as any).response;
+            const interfaceRequest = (
+              interfaceQueues as Record<string, unknown>
+            ).request;
+            const interfaceResponse = (
+              interfaceQueues as Record<string, unknown>
+            ).response;
 
             // Check if this processor provides this service
             if (
@@ -689,8 +700,6 @@ const generateEdgesFromFlowClass = (flowClass: any): Edge[] => {
 
   return edges;
 };
-
-const initialEdges: Edge[] = [];
 
 export const FlowClassEditorView: React.FC<FlowClassEditorViewProps> = ({
   flowClassId,

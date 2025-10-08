@@ -8,8 +8,8 @@ import {
 } from "@tanstack/react-table";
 
 // State management hooks and utilities
-import { useWorkbenchStateStore } from "../../state/workbench";
-import { useSearchStateStore } from "../../state/search";
+import { useWorkbenchStateStore } from "@trustgraph/react-state";
+import { useSearchStateStore } from "@trustgraph/react-state";
 import { Row } from "../../utils/row";
 import ClickableTable from "../common/ClickableTable";
 import { EmptyState } from "../common/TableStates";

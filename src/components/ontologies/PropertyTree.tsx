@@ -13,7 +13,7 @@ import { Plus, Link, Type, Trash2 } from "lucide-react";
 import {
   OWLObjectProperty,
   OWLDatatypeProperty,
-} from "../../state/ontologies";
+} from "@trustgraph/react-state";
 
 interface PropertyTreeProps {
   objectProperties: Record<string, OWLObjectProperty>;
@@ -88,8 +88,7 @@ export const PropertyTree: React.FC<PropertyTreeProps> = ({
       ) : (
         entries.map(([propertyId, property]) => {
           const isSelected =
-            propertyId === selectedPropertyId &&
-            type === selectedPropertyType;
+            propertyId === selectedPropertyId && type === selectedPropertyType;
           return (
             <HStack
               key={propertyId}

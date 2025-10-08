@@ -1,20 +1,13 @@
 import { useState } from "react";
 
-import {
-  Text,
-  Box,
-  Stack,
-  HStack,
-  Popover,
-  Portal,
-} from "@chakra-ui/react";
+import { Text, Box, Stack, HStack, Popover, Portal } from "@chakra-ui/react";
 
 import { Database, Workflow } from "lucide-react";
 
-import { useSessionStore } from "../../state/session";
-import { useFlows } from "../../state/flows";
-import { useSettings } from "../../state/settings";
-import { useCollections } from "../../state/collections";
+import { useSessionStore } from "@trustgraph/react-state";
+import { useFlows } from "@trustgraph/react-state";
+import { useSettings } from "@trustgraph/react-state";
+import { useCollections } from "@trustgraph/react-state";
 
 const FlowSelector = () => {
   const flowState = useFlows();
@@ -111,10 +104,7 @@ const FlowSelector = () => {
                           }}
                           cursor="pointer"
                           onClick={() => {
-                            updateSetting(
-                              "collection",
-                              collection.collection,
-                            );
+                            updateSetting("collection", collection.collection);
                           }}
                         >
                           <HStack gap={3} align="start">
@@ -129,9 +119,7 @@ const FlowSelector = () => {
                                   : "border.emphasized"
                               }
                               backgroundColor={
-                                isSelected
-                                  ? "colorPalette.500"
-                                  : "transparent"
+                                isSelected ? "colorPalette.500" : "transparent"
                               }
                               mt={0.5}
                               flexShrink={0}
@@ -151,11 +139,7 @@ const FlowSelector = () => {
                               )}
                             </Box>
                             <Box flex="1">
-                              <Text
-                                fontWeight="semibold"
-                                fontSize="sm"
-                                mb={1}
-                              >
+                              <Text fontWeight="semibold" fontSize="sm" mb={1}>
                                 {collection.name}
                               </Text>
                               <Text
@@ -222,9 +206,7 @@ const FlowSelector = () => {
                                   : "border.emphasized"
                               }
                               backgroundColor={
-                                isSelected
-                                  ? "colorPalette.500"
-                                  : "transparent"
+                                isSelected ? "colorPalette.500" : "transparent"
                               }
                               mt={0.5}
                               flexShrink={0}
@@ -244,11 +226,7 @@ const FlowSelector = () => {
                               )}
                             </Box>
                             <Box flex="1">
-                              <Text
-                                fontWeight="semibold"
-                                fontSize="sm"
-                                mb={1}
-                              >
+                              <Text fontWeight="semibold" fontSize="sm" mb={1}>
                                 {flow.id}
                               </Text>
                               <Text

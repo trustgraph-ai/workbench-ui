@@ -8,10 +8,10 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "lint": "eslint .",
-    "prettier": "prettier . --write",
-    "test": "vitest",
+    "prettify": "prettier . --write",
+    "test": "vitest run",
     "test:ui": "vitest --ui",
-    "test:run": "vitest run",
+    "test:run": "vitest",
     "test:coverage": "vitest run --coverage"
   },
   "dependencies": {

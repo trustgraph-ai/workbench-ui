@@ -5,7 +5,7 @@ import { Button, Box } from "@chakra-ui/react";
 import { FilePlus } from "lucide-react";
 
 import SelectedFiles from "./SelectedFiles";
-import { useLoadStateStore } from "../../state/load";
+import { useLoadStateStore } from "@trustgraph/react-state";
 
 interface FileUploadProps {
   kind: string;

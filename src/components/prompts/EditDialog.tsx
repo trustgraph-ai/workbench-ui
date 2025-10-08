@@ -4,7 +4,7 @@ import { Trash, SendHorizontal } from "lucide-react";
 
 import { Portal, Button, Dialog, Box, CloseButton } from "@chakra-ui/react";
 
-import { usePrompts } from "../../state/prompts";
+import { usePrompts } from "@trustgraph/react-state";
 import { useSocket } from "../../api/trustgraph/socket";
 import SelectField from "../common/SelectField";
 import TextAreaField from "../common/TextAreaField";

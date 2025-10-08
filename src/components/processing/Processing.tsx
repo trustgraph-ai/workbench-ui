@@ -1,6 +1,6 @@
 import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
 
-import { useProcessing } from "../../state/processing";
+import { useProcessing } from "@trustgraph/react-state";
 import BasicTable from "../common/BasicTable";
 
 import { columns } from "../../model/processing-table";

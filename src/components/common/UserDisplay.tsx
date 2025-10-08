@@ -1,7 +1,7 @@
 import React from "react";
 import { HStack, Text } from "@chakra-ui/react";
 import { User } from "lucide-react";
-import { useSettings } from "../../state/settings";
+import { useSettings } from "@trustgraph/react-state";
 
 const UserDisplay: React.FC = () => {
   const { settings } = useSettings();

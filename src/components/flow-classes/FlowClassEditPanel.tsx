@@ -12,7 +12,7 @@ import {
   Fieldset,
 } from "@chakra-ui/react";
 import { Save, X, FileCode } from "lucide-react";
-import { FlowClassDefinition } from "../../state/flow-classes";
+import { FlowClassDefinition } from "@trustgraph/react-state";
 
 interface FlowClassEditPanelProps {
   flowClass: FlowClassDefinition;

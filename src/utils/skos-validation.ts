@@ -5,7 +5,7 @@
  * comply with SKOS standards and best practices.
  */
 
-import { Ontology } from "../state/ontologies";
+import { Ontology } from "@trustgraph/react-state";
 
 export interface ValidationError {
   type: "error" | "warning" | "info";
@@ -345,8 +345,7 @@ export class SKOSValidator {
     Object.values(concepts).forEach((concept) => {
       const hasNoBroader = !concept.broader;
       const isNotTopConcept =
-        !topConceptIds.has(concept.id) &&
-        !explicitTopConcepts.has(concept.id);
+        !topConceptIds.has(concept.id) && !explicitTopConcepts.has(concept.id);
 
       if (hasNoBroader && isNotTopConcept) {
         warnings.push({

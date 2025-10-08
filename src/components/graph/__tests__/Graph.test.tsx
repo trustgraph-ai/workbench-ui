@@ -8,8 +8,10 @@ import { render, screen, fireEvent } from "../../../test/test-utils";
 import userEvent from "@testing-library/user-event";
 import { describe, test, expect, vi, beforeEach } from "vitest";
 import GraphView from "../Graph";
-import { useGraphSubgraph } from "../../../state/graph-query";
-import { useWorkbenchStateStore } from "../../../state/workbench";
+import {
+  useGraphSubgraph,
+  useWorkbenchStateStore,
+} from "@trustgraph/react-state";
 import { useResizeDetector } from "react-resize-detector";
 
 vi.mock("react", async () => {
@@ -29,13 +31,18 @@ vi.mock("react-resize-detector", () => ({
   })),
 }));
 
-vi.mock("../../../state/graph-query", () => ({
-  useGraphSubgraph: vi.fn(),
-}));
-
-vi.mock("../../../state/workbench", () => ({
-  useWorkbenchStateStore: vi.fn(),
-}));
+vi.mock("@trustgraph/react-state", async () => {
+  const actual = await vi.importActual("@trustgraph/react-state");
+  return {
+    ...actual,
+    useGraphSubgraph: vi.fn(),
+    useWorkbenchStateStore: vi.fn(),
+    useSessionStore: vi.fn((selector) => {
+      const state = { flowId: "test-flow-123" };
+      return selector(state);
+    }),
+  };
+});
 
 vi.mock("react-force-graph", () => ({
   ForceGraph3D: React.forwardRef(
@@ -117,29 +124,6 @@ vi.mock("../ui/graph-colors", () => ({
   useLinkColor: vi.fn(() => "#999999"),
   useLinkTextColor: vi.fn(() => "#666666"),
   useLinkParticleColor: vi.fn(() => "#ff0000"),
-}));
-
-vi.mock("../../state/session", () => ({
-  useSessionStore: vi.fn((selector) => {
-    const state = { flowId: "test-flow-123" };
-    return selector(state);
-  }),
-}));
-
-vi.mock("../../state/workbench", () => ({
-  useWorkbenchStateStore: vi.fn((selector) => {
-    const state = {
-      selected: {
-        uri: "test://node/1",
-        label: "Test Selected Node",
-      },
-    };
-    return selector(state);
-  }),
-}));
-
-vi.mock("../../state/graph-query", () => ({
-  useGraphSubgraph: vi.fn(),
 }));
 
 vi.mock("./GraphHelp", () => ({
@@ -454,9 +438,7 @@ describe("Graph Component", () => {
 
     // Try to click relationship without selecting node first
     // This would normally not be possible in the UI, but tests edge case
-    const relationshipButton = screen.queryByTestId(
-      "test-relationship-click",
-    );
+    const relationshipButton = screen.queryByTestId("test-relationship-click");
     expect(relationshipButton).not.toBeInTheDocument();
 
     expect(console.warn).not.toHaveBeenCalled();

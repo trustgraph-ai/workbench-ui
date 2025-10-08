@@ -11,7 +11,7 @@ import {
 } from "@chakra-ui/react";
 import { Plus, Download, Upload, Settings } from "lucide-react";
 import SelectField from "../common/SelectField";
-import { Ontology, OntologyConcept } from "../../state/ontologies";
+import { Ontology, OntologyConcept } from "@trustgraph/react-state";
 
 interface OntologyManagerHeaderProps {
   currentOntology: Ontology;
@@ -50,8 +50,7 @@ export const OntologyManagerHeader: React.FC<OntologyManagerHeaderProps> = ({
           </HStack>
           {selectedConcept && (
             <Text fontSize="sm" color="fg.muted">
-              {currentOntology.metadata.name} →{" "}
-              {conceptBreadcrumb.join(" → ")}
+              {currentOntology.metadata.name} → {conceptBreadcrumb.join(" → ")}
             </Text>
           )}
         </VStack>
@@ -76,18 +75,10 @@ export const OntologyManagerHeader: React.FC<OntologyManagerHeaderProps> = ({
           <Button colorPalette="primary" onClick={onConceptAdd}>
             <Plus /> Add Concept
           </Button>
-          <IconButton
-            aria-label="Import"
-            variant="outline"
-            onClick={onImport}
-          >
+          <IconButton aria-label="Import" variant="outline" onClick={onImport}>
             <Upload />
           </IconButton>
-          <IconButton
-            aria-label="Export"
-            variant="outline"
-            onClick={onExport}
-          >
+          <IconButton aria-label="Export" variant="outline" onClick={onExport}>
             <Download />
           </IconButton>
           <IconButton

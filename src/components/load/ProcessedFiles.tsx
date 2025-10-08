@@ -2,7 +2,7 @@ import React from "react";
 
 import { Box, Alert } from "@chakra-ui/react";
 
-import { useLoadStateStore } from "../../state/load";
+import { useLoadStateStore } from "@trustgraph/react-state";
 
 const ProcessedFiles = () => {
   const uploaded = useLoadStateStore((state) => state.uploaded);

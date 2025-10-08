@@ -9,7 +9,7 @@ import {
   WrapItem,
   Field,
 } from "@chakra-ui/react";
-import { OntologyConcept } from "../../state/ontologies";
+import { OntologyConcept } from "@trustgraph/react-state";
 
 interface ConceptMetadataTabProps {
   concept?: OntologyConcept;

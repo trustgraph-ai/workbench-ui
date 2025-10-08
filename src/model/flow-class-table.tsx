@@ -1,6 +1,6 @@
 import { createColumnHelper } from "@tanstack/react-table";
 import { Checkbox, Badge, HStack, Text } from "@chakra-ui/react";
-import { FlowClassDefinition } from "../state/flow-classes";
+import { FlowClassDefinition } from "@trustgraph/react-state";
 
 /**
  * Flow class data structure for the flow class table
@@ -144,12 +144,7 @@ export const flowClassColumns = [
       return (
         <HStack gap={1} flexWrap="wrap">
           {tags.slice(0, 3).map((tag, index) => (
-            <Badge
-              key={index}
-              colorPalette="gray"
-              size="xs"
-              variant="outline"
-            >
+            <Badge key={index} colorPalette="gray" size="xs" variant="outline">
               {tag}
             </Badge>
           ))}

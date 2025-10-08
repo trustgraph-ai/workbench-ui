@@ -1,8 +1,8 @@
 import React from "react";
-import { Box, VStack, Text } from "@chakra-ui/react";
-import { useLLMModels } from "../../state/llm-models";
+import { Box, Text } from "@chakra-ui/react";
+import { useLLMModels } from "@trustgraph/react-state";
 import ModelsTable from "./ModelsTable";
-import { EnumOption } from "../../model/llm-models";
+import { EnumOption } from "@trustgraph/react-state";
 
 const LLMModels: React.FC = () => {
   const { parameterTypes, updateParameter, isUpdating } = useLLMModels();

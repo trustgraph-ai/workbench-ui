@@ -8,15 +8,9 @@ import {
   Input,
   IconButton,
 } from "@chakra-ui/react";
-import {
-  Plus,
-  ChevronRight,
-  ChevronDown,
-  Hash,
-  Trash2,
-} from "lucide-react";
-import { OWLClass } from "../../state/ontologies";
-import { useNotification } from "../../state/notify";
+import { Plus, ChevronRight, ChevronDown, Hash, Trash2 } from "lucide-react";
+import { OWLClass } from "@trustgraph/react-state";
+import { useNotification } from "@trustgraph/react-state";
 
 interface ClassTreeProps {
   classes: Record<string, OWLClass>;

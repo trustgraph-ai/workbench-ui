@@ -1,11 +1,6 @@
 import React from "react";
-import {
-  VStack,
-  Text,
-  Select,
-  createListCollection,
-} from "@chakra-ui/react";
-import { LLMModelParameter } from "../../model/llm-models";
+import { VStack, Text, Select, createListCollection } from "@chakra-ui/react";
+import { LLMModelParameter } from "@trustgraph/react-state";
 
 interface ParameterTypeSelectorProps {
   parameterTypes: LLMModelParameter[];

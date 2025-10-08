@@ -12,7 +12,7 @@ import {
 } from "@chakra-ui/react";
 
 import { NavLink as ReactRouterNavLink } from "react-router";
-import { useSettings } from "../state/settings";
+import { useSettings } from "@trustgraph/react-state";
 
 const ChakraNavLink = chakra(ReactRouterNavLink);
 
@@ -120,11 +120,7 @@ const Sidebar = () => {
         <NavItem to="/graph" icon={Rotate3d} label="Graph Visualizer" />
         <NavItem to="/library" icon={LibraryBig} label="Library" />
         {settings.featureSwitches.flowClasses && (
-          <NavItem
-            to="/flow-classes"
-            icon={ScrollText}
-            label="Flow Classes"
-          />
+          <NavItem to="/flow-classes" icon={ScrollText} label="Flow Classes" />
         )}
         <NavItem to="/flows" icon={Workflow} label="Flows" />
         <NavItem to="/kc" icon={BrainCircuit} label="Knowledge Cores" />

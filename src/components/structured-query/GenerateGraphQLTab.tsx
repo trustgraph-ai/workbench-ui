@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { VStack, HStack, Button, Textarea, Text } from "@chakra-ui/react";
 import { ArrowRight } from "lucide-react";
-import { useNlpQuery } from "../../state/nlp-query";
+import { useNlpQuery } from "@trustgraph/react-state";
 import TextField from "../common/TextField";
 
 const GenerateGraphQLTab: React.FC = () => {
@@ -81,24 +81,23 @@ const GenerateGraphQLTab: React.FC = () => {
             </Text>
           )}
 
-          {nlpQuery.detectedSchemas &&
-            nlpQuery.detectedSchemas.length > 0 && (
-              <VStack gap={2} align="start">
-                <Text fontSize="sm" fontWeight="medium" color="fg.muted">
-                  Detected Schemas:
-                </Text>
-                <Text fontSize="sm" color="fg.muted">
-                  {nlpQuery.detectedSchemas
-                    .map((schema: Record<string, unknown> | string) =>
-                      typeof schema === "string"
-                        ? schema
-                        : (schema as Record<string, unknown>).name ||
-                          JSON.stringify(schema),
-                    )
-                    .join(", ")}
-                </Text>
-              </VStack>
-            )}
+          {nlpQuery.detectedSchemas && nlpQuery.detectedSchemas.length > 0 && (
+            <VStack gap={2} align="start">
+              <Text fontSize="sm" fontWeight="medium" color="fg.muted">
+                Detected Schemas:
+              </Text>
+              <Text fontSize="sm" color="fg.muted">
+                {nlpQuery.detectedSchemas
+                  .map((schema: Record<string, unknown> | string) =>
+                    typeof schema === "string"
+                      ? schema
+                      : (schema as Record<string, unknown>).name ||
+                        JSON.stringify(schema),
+                  )
+                  .join(", ")}
+              </Text>
+            </VStack>
+          )}
 
           {nlpQuery.variables &&
             Object.keys(nlpQuery.variables).length > 0 && (

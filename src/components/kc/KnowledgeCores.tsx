@@ -3,8 +3,8 @@ import React, { useState } from "react";
 import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
 
 import { columns } from "../../model/knowledge-core-table";
-import { useKnowledgeCores } from "../../state/knowledge-cores";
-import { useSettings } from "../../state/settings";
+import { useKnowledgeCores } from "@trustgraph/react-state";
+import { useSettings } from "@trustgraph/react-state";
 import { createAuthenticatedFetch } from "../../api/authenticated-fetch";
 
 import SelectableTable from "../common/SelectableTable";

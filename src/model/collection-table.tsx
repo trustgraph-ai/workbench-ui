@@ -1,6 +1,6 @@
 import { createColumnHelper } from "@tanstack/react-table";
 import { Tag, Checkbox } from "@chakra-ui/react";
-import { CollectionMetadata } from "../state/collections";
+import { CollectionMetadata } from "@trustgraph/react-state";
 
 // Create a column helper instance for type-safe column definitions
 export const columnHelper = createColumnHelper<CollectionMetadata>();

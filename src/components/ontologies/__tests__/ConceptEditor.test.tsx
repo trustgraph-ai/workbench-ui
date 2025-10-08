@@ -8,17 +8,24 @@ import { render, screen, fireEvent } from "../../../test/test-utils";
 import userEvent from "@testing-library/user-event";
 import { describe, test, expect, vi, beforeEach } from "vitest";
 import { ConceptEditor } from "../ConceptEditor";
-import { OntologyConcept, Ontology } from "../../../state/ontologies";
-import { useNotification } from "../../../state/notify";
+import {
+  OntologyConcept,
+  Ontology,
+  useNotification,
+} from "@trustgraph/react-state";
 
 // Mock dependencies
-vi.mock("../../../state/notify", () => ({
-  useNotification: vi.fn(() => ({
-    error: vi.fn(),
-    success: vi.fn(),
-    info: vi.fn(),
-  })),
-}));
+vi.mock("@trustgraph/react-state", async () => {
+  const actual = await vi.importActual("@trustgraph/react-state");
+  return {
+    ...actual,
+    useNotification: vi.fn(() => ({
+      error: vi.fn(),
+      success: vi.fn(),
+      info: vi.fn(),
+    })),
+  };
+});
 
 interface ConceptEditorHeaderProps {
   concept: OntologyConcept | null;
@@ -95,19 +102,17 @@ vi.mock("../ConceptBasicTab", () => ({
         }}
       />
       <div data-testid="alt-labels">
-        {(editedConcept.altLabel || []).map(
-          (label: string, index: number) => (
-            <div key={index}>
-              {label}
-              <button
-                onClick={() => onRemoveItem("altLabel", index)}
-                data-testid={`remove-alt-label-${index}`}
-              >
-                Remove
-              </button>
-            </div>
-          ),
-        )}
+        {(editedConcept.altLabel || []).map((label: string, index: number) => (
+          <div key={index}>
+            {label}
+            <button
+              onClick={() => onRemoveItem("altLabel", index)}
+              data-testid={`remove-alt-label-${index}`}
+            >
+              Remove
+            </button>
+          </div>
+        ))}
       </div>
     </div>
   ),
@@ -131,9 +136,7 @@ vi.mock("../ConceptRelationshipsTab", () => ({
       <select
         data-testid="broader-select"
         value={editedConcept.broader || ""}
-        onChange={(e) =>
-          onUpdateField("broader", e.target.value || undefined)
-        }
+        onChange={(e) => onUpdateField("broader", e.target.value || undefined)}
       >
         <option value="">No broader concept</option>
         {availableConcepts.map((c: OntologyConcept) => (
@@ -442,9 +445,7 @@ describe("ConceptEditor", () => {
     await user.click(definitionTab);
 
     // Check if definition content exists (may be hidden due to Chakra UI tabs behavior in tests)
-    const definitionTextareas = screen.queryAllByTestId(
-      "definition-textarea",
-    );
+    const definitionTextareas = screen.queryAllByTestId("definition-textarea");
     if (definitionTextareas.length > 0) {
       expect(definitionTextareas[0]).toBeInTheDocument();
     } else {
@@ -480,9 +481,7 @@ describe("ConceptEditor", () => {
     await user.click(screen.getByRole("tab", { name: "Definition" }));
 
     // Check if the textareas are available (they should be rendered but might be hidden)
-    const definitionTextareas = screen.queryAllByTestId(
-      "definition-textarea",
-    );
+    const definitionTextareas = screen.queryAllByTestId("definition-textarea");
     const scopeNoteTextareas = screen.queryAllByTestId("scope-note-textarea");
 
     // If textareas exist, the test should pass
@@ -523,9 +522,7 @@ describe("ConceptEditor", () => {
     expect(screen.getByText("Mammalia")).toBeInTheDocument();
 
     // Add new alternative label
-    const altLabelInput = screen.getByPlaceholderText(
-      "Add alternative label",
-    );
+    const altLabelInput = screen.getByPlaceholderText("Add alternative label");
     await user.type(altLabelInput, "New Alt Label");
     await user.keyboard("{Enter}");
 
@@ -706,9 +703,7 @@ describe("ConceptEditor", () => {
     );
 
     // Test adding to alternative labels
-    const altLabelInput = screen.getByPlaceholderText(
-      "Add alternative label",
-    );
+    const altLabelInput = screen.getByPlaceholderText("Add alternative label");
     await user.type(altLabelInput, "Test Label");
     await user.keyboard("{Enter}");
 

@@ -1,18 +1,16 @@
 import React from "react";
-import { Check, Trash, Copy, Eye } from "lucide-react";
+import { Check, Trash, Eye } from "lucide-react";
 import { ActionBar, Portal, Button } from "@chakra-ui/react";
 
 interface FlowClassActionsProps {
   selectedCount: number;
   onEdit?: () => void;
-  onDuplicate?: () => void;
   onDelete?: () => void;
 }
 
 const FlowClassActions: React.FC<FlowClassActionsProps> = ({
   selectedCount,
   onEdit,
-  onDuplicate,
   onDelete,
 }) => {
   return (
@@ -40,9 +38,8 @@ const FlowClassActions: React.FC<FlowClassActionsProps> = ({
               </Button>
             )}
 
-            {/* false... temporarily disabled this because it doesn't
-                 work */}
-            {false && selectedCount === 1 && onDuplicate && (
+            {/* Temporarily disabled this because it doesn't work
+            {selectedCount === 1 && onDuplicate && (
               <Button
                 variant="outline"
                 colorPalette="green"
@@ -52,6 +49,7 @@ const FlowClassActions: React.FC<FlowClassActionsProps> = ({
                 <Copy /> Duplicate
               </Button>
             )}
+            */}
 
             {onDelete && (
               <Button

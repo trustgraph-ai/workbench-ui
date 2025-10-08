@@ -5,7 +5,7 @@ import { Trash, SendHorizontal } from "lucide-react";
 import { Portal, Button, Dialog, CloseButton } from "@chakra-ui/react";
 
 import { useSocket } from "../../api/trustgraph/socket";
-import { useMcpTools } from "../../state/mcp-tools";
+import { useMcpTools } from "@trustgraph/react-state";
 import TextField from "../common/TextField";
 import { toaster } from "../ui/toaster";
 

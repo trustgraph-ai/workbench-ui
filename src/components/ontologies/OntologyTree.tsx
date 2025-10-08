@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from "react";
 import { Box, VStack } from "@chakra-ui/react";
-import { Ontology } from "../../state/ontologies";
+import { Ontology } from "@trustgraph/react-state";
 import { OntologyTreeNode } from "./OntologyTreeNode";
 import { OntologyTreeSearch } from "./OntologyTreeSearch";
 import { OntologyTreeHeader } from "./OntologyTreeHeader";
@@ -35,9 +35,7 @@ export const OntologyTree: React.FC<OntologyTreeProps> = ({
       .map((c) => c.id);
 
     // Combine both sources and remove duplicates
-    const allTopIds = [
-      ...new Set([...topConceptIds, ...conceptsWithTopFlag]),
-    ];
+    const allTopIds = [...new Set([...topConceptIds, ...conceptsWithTopFlag])];
 
     return allTopIds.map((id) => ontology.concepts[id]).filter(Boolean);
   }, [ontology.concepts, ontology.scheme?.hasTopConcept]);

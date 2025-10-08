@@ -8,7 +8,7 @@ import {
   HStack,
   Separator,
 } from "@chakra-ui/react";
-import { useSchemas } from "../../state/schemas";
+import { useSchemas } from "@trustgraph/react-state";
 import { Schema } from "../../model/schemas-table";
 import { validateSchema } from "../../utils/schema-validation";
 import { useSchemaForm } from "./useSchemaForm";

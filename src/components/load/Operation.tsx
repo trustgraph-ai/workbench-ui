@@ -1,6 +1,6 @@
 import { Box, SegmentGroup, Field, HStack } from "@chakra-ui/react";
 
-import { useLoadStateStore } from "../../state/load";
+import { useLoadStateStore } from "@trustgraph/react-state";
 
 import LoadHelp from "./LoadHelp";
 

@@ -20,7 +20,7 @@ import {
   OWLObjectProperty,
   OWLDatatypeProperty,
   Ontology,
-} from "../../state/ontologies";
+} from "@trustgraph/react-state";
 
 interface PropertyEditorProps {
   propertyId: string;
@@ -54,9 +54,9 @@ export const PropertyEditor: React.FC<PropertyEditorProps> = ({
   const [maxCardinality, setMaxCardinality] = useState<number | undefined>(
     undefined,
   );
-  const [exactCardinality, setExactCardinality] = useState<
-    number | undefined
-  >(undefined);
+  const [exactCardinality, setExactCardinality] = useState<number | undefined>(
+    undefined,
+  );
   const [inverseOf, setInverseOf] = useState("");
   const [isInverseFunctional, setIsInverseFunctional] = useState(false);
   const [subPropertyOf, setSubPropertyOf] = useState("");
@@ -440,8 +440,8 @@ export const PropertyEditor: React.FC<PropertyEditorProps> = ({
                 onValueChange={(values) => setDomain(values[0] || "")}
               />
               <Text fontSize="xs" color="gray.500" mt={1}>
-                The class that can have this property. Leave empty if any
-                class can have this property.
+                The class that can have this property. Leave empty if any class
+                can have this property.
               </Text>
             </VStack>
 
@@ -500,8 +500,8 @@ export const PropertyEditor: React.FC<PropertyEditorProps> = ({
                     onValueChange={(values) => setInverseOf(values[0] || "")}
                   />
                   <Text fontSize="xs" color="gray.500" mt={1}>
-                    Specify the inverse relationship (e.g., 'hasParent'
-                    inverse of 'hasChild')
+                    Specify the inverse relationship (e.g., 'hasParent' inverse
+                    of 'hasChild')
                   </Text>
                 </VStack>
 
@@ -591,8 +591,8 @@ export const PropertyEditor: React.FC<PropertyEditorProps> = ({
                   placeholder="No exact requirement"
                 />
                 <Text fontSize="xs" color="gray.500" mt={1}>
-                  If specified, overrides min/max cardinality (exactly N
-                  values required)
+                  If specified, overrides min/max cardinality (exactly N values
+                  required)
                 </Text>
               </Field.Root>
             </VStack>

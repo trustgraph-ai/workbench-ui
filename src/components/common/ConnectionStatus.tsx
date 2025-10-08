@@ -2,7 +2,7 @@ import React from "react";
 import { Box, HStack, Text, Tooltip } from "@chakra-ui/react";
 import { Info, Clock, Wifi, WifiOff, Shield, ShieldOff } from "lucide-react";
 import { useConnectionState } from "../../api/trustgraph/SocketProvider";
-import type { ConnectionState } from "../../api/trustgraph/trustgraph-socket";
+import type { ConnectionState } from "@trustgraph/client";
 
 interface ConnectionStatusProps {
   showDetails?: boolean;

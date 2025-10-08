@@ -1,7 +1,7 @@
 // Functionality here helps construct subgraphs for react-force-graph
 // visualisation
 
-import { Triple } from "./Triple";
+import { Triple, BaseApi } from "@trustgraph/client";
 import {
   query,
   labelS,
@@ -9,7 +9,6 @@ import {
   labelO,
   filterInternals,
 } from "./knowledge-graph";
-import { Socket } from "../socket/trustgraph-socket";
 
 interface Node {
   id: string;
@@ -104,7 +103,7 @@ export const updateSubgraphTriples = (sg: Subgraph, triples: Triple[]) => {
 };
 
 export const updateSubgraph = (
-  socket: Socket,
+  socket: BaseApi,
   flowId: string,
   uri: string,
   sg: Subgraph,
@@ -122,7 +121,7 @@ export const updateSubgraph = (
 };
 
 export const updateSubgraphByRelationship = (
-  socket: Socket,
+  socket: BaseApi,
   flowId: string,
   selectedNodeId: string,
   relationshipUri: string,

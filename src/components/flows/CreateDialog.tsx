@@ -4,11 +4,11 @@ import { Plus } from "lucide-react";
 
 import { Portal, Button, Dialog, Box, CloseButton } from "@chakra-ui/react";
 
-import { useFlows } from "../../state/flows";
+import { useFlows } from "@trustgraph/react-state";
 import {
   useFlowParameters,
   useParameterValidation,
-} from "../../state/flow-parameters";
+} from "@trustgraph/react-state";
 import SelectField from "../common/SelectField";
 import SelectOption from "../common/SelectOption";
 import TextField from "../common/TextField";
@@ -25,12 +25,8 @@ const CreateDialog = ({ open, onOpenChange }) => {
   const [parameterValues, setParameterValues] = useState({});
 
   // Fetch parameter definitions when flow class is selected
-  const {
-    parameterDefinitions,
-    parameterMapping,
-    parameterMetadata,
-    isLoading: isLoadingParameters,
-  } = useFlowParameters(flowClass);
+  const { parameterDefinitions, parameterMapping, parameterMetadata } =
+    useFlowParameters(flowClass);
 
   // Apply default values when parameter definitions change
   useEffect(() => {
@@ -57,14 +53,15 @@ const CreateDialog = ({ open, onOpenChange }) => {
         setParameterValues((prev) => ({ ...prev, ...defaultValues }));
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [parameterDefinitions, parameterMapping]);
 
   // Resolve all parameter values including inheritance and defaults
   const resolveAllParameters = () => {
-    const resolvedValues: { [key: string]: any } = {};
+    const resolvedValues: { [key: string]: unknown } = {};
 
     // Helper function to resolve a parameter value with controlled-by logic
-    const resolveValue = (paramName: string): any => {
+    const resolveValue = (paramName: string): unknown => {
       // If already resolved, return it
       if (resolvedValues[paramName] !== undefined) {
         return resolvedValues[paramName];

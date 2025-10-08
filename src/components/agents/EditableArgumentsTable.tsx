@@ -33,9 +33,13 @@ interface EditableArgumentsTableProps {
 
 const columnHelper = createColumnHelper<Argument>();
 
-export const EditableArgumentsTable: React.FC<
-  EditableArgumentsTableProps
-> = ({ args, editArgIx, setEditArgIx, setArgAttr, deleteArg }) => {
+export const EditableArgumentsTable: React.FC<EditableArgumentsTableProps> = ({
+  args,
+  editArgIx,
+  setEditArgIx,
+  setArgAttr,
+  deleteArg,
+}) => {
   // Store latest function references to avoid stale closures
   const setArgAttrRef = useRef(setArgAttr);
   const setEditArgIxRef = useRef(setEditArgIx);
@@ -167,6 +171,7 @@ export const EditableArgumentsTable: React.FC<
         ),
       }),
     ],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [editArgIx], // Only editArgIx changes, callbacks are stable
   );
 
@@ -189,8 +194,8 @@ export const EditableArgumentsTable: React.FC<
         textAlign="center"
         fontSize="sm"
       >
-        No arguments defined yet. Click "add argument" below to create
-        template variables.
+        No arguments defined yet. Click "add argument" below to create template
+        variables.
       </Box>
     );
   }

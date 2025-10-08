@@ -232,17 +232,13 @@ describe("TextField", () => {
   it("should not show required indicator when required is false", () => {
     render(<TextField {...defaultProps} required={false} />);
 
-    expect(
-      screen.queryByTestId("required-indicator"),
-    ).not.toBeInTheDocument();
+    expect(screen.queryByTestId("required-indicator")).not.toBeInTheDocument();
   });
 
   it("should not show required indicator when required is undefined", () => {
     render(<TextField {...defaultProps} />);
 
-    expect(
-      screen.queryByTestId("required-indicator"),
-    ).not.toBeInTheDocument();
+    expect(screen.queryByTestId("required-indicator")).not.toBeInTheDocument();
   });
 
   it("should display helper text when provided", () => {

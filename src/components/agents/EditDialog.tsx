@@ -5,9 +5,9 @@ import { Trash, SendHorizontal, Plus } from "lucide-react";
 import { Portal, Button, Dialog, Box, CloseButton } from "@chakra-ui/react";
 
 import { useSocket } from "../../api/trustgraph/socket";
-import { useAgentTools } from "../../state/agent-tools";
-import { useMcpTools } from "../../state/mcp-tools";
-import { usePrompts } from "../../state/prompts";
+import { useAgentTools } from "@trustgraph/react-state";
+import { useMcpTools } from "@trustgraph/react-state";
+import { usePrompts } from "@trustgraph/react-state";
 import SelectField from "../common/SelectField";
 import TextAreaField from "../common/TextAreaField";
 import TextField from "../common/TextField";
@@ -253,8 +253,7 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
                 />
               )}
 
-              {(type === "knowledge-query" ||
-                type === "structured-query") && (
+              {(type === "knowledge-query" || type === "structured-query") && (
                 <TextField
                   label="Collection"
                   placeholder="Enter the knowledge collection (optional)"

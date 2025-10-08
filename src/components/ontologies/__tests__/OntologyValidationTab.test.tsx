@@ -7,7 +7,7 @@ import React from "react";
 import { render, screen, fireEvent, waitFor } from "../../../test/test-utils";
 import { describe, test, expect, vi } from "vitest";
 import { OntologyValidationTab } from "../OntologyValidationTab";
-import { Ontology } from "../../../state/ontologies";
+import { Ontology } from "@trustgraph/react-state/ontologies";
 import { validateOntology } from "../../../utils/skos-validation";
 import { OntologyQA } from "../../../utils/ontology-qa";
 

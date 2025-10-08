@@ -176,7 +176,7 @@ interface XSDDatatypeSelectorProps {
   label: string;
   value: string;
   onValueChange: (value: string) => void;
-  contentRef?: any;
+  contentRef?: React.RefObject<HTMLElement>;
 }
 
 const XSDDatatypeSelector: React.FC<XSDDatatypeSelectorProps> = ({

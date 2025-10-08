@@ -29,8 +29,10 @@ import Progress from "./components/common/Progress";
 import { Toaster } from "./components/ui/ToasterComponent";
 
 import { useSocket, useConnectionState } from "./api/trustgraph/socket";
-import { useProgressStateStore } from "./state/progress";
-import { useSessionStore } from "./state/session";
+import {
+  useProgressStateStore,
+  useSessionStore,
+} from "@trustgraph/react-state";
 
 const App = () => {
   const socket = useSocket();

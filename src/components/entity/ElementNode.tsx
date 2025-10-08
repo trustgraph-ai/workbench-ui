@@ -1,7 +1,7 @@
 import React from "react";
 
-import { Value } from "../state/Triple";
-import { Entity } from "../state/Entity";
+import { Value } from "@trustgraph/react-state";
+import { Entity } from "@trustgraph/react-state";
 import LiteralNode from "./LiteralNode";
 import EntityNode from "./EntityNode";
 import SelectedNode from "./SelectedNode";

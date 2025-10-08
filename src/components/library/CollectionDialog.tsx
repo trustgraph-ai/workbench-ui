@@ -97,10 +97,7 @@ const CollectionDialog = ({
               <Button variant="outline" onClick={() => onOpenChange(false)}>
                 Cancel
               </Button>
-              <ProgressSubmitButton
-                onClick={handleSubmit}
-                disabled={!isValid}
-              >
+              <ProgressSubmitButton onClick={handleSubmit} disabled={!isValid}>
                 {editingCollection ? "Update" : "Create"}
               </ProgressSubmitButton>
             </Dialog.Footer>

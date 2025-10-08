@@ -5,7 +5,7 @@ import { Plus } from "lucide-react";
 import { Button, Box } from "@chakra-ui/react";
 
 import CreateDialog from "./CreateDialog";
-import { useFlows } from "../../state/flows";
+import { useFlows } from "@trustgraph/react-state";
 
 const FlowControls = () => {
   const flowState = useFlows();

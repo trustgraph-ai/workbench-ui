@@ -1,14 +1,14 @@
 import React from "react";
 import { Box } from "@chakra-ui/react";
-import { Ontology } from "../../state/ontologies";
+import { Ontology } from "@trustgraph/react-state";
 
 interface OntologyJsonPreviewTabProps {
   ontology: Ontology;
 }
 
-export const OntologyJsonPreviewTab: React.FC<
-  OntologyJsonPreviewTabProps
-> = ({ ontology }) => {
+export const OntologyJsonPreviewTab: React.FC<OntologyJsonPreviewTabProps> = ({
+  ontology,
+}) => {
   return (
     <Box
       as="pre"

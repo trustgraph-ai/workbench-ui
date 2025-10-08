@@ -9,7 +9,7 @@ import {
   Ontology,
   OntologyConcept,
   OntologyScheme,
-} from "../state/ontologies";
+} from "@trustgraph/react-state";
 
 // SKOS namespace constants
 export const SKOS_NAMESPACES = {
@@ -181,9 +181,7 @@ export class SKOSSerializer {
     // Concept Scheme
     ttl.push(`<${scheme.uri}>`);
     ttl.push("  a skos:ConceptScheme ;");
-    ttl.push(
-      `  skos:prefLabel "${this.escapeTurtle(scheme.prefLabel)}"@en ;`,
-    );
+    ttl.push(`  skos:prefLabel "${this.escapeTurtle(scheme.prefLabel)}"@en ;`);
     if (ontology.metadata.description) {
       ttl.push(
         `  dc:description "${this.escapeTurtle(ontology.metadata.description)}"@en ;`,
@@ -247,9 +245,7 @@ export class SKOSSerializer {
 
       // Notation
       if (concept.notation) {
-        ttl.push(
-          `  skos:notation "${this.escapeTurtle(concept.notation)}" ;`,
-        );
+        ttl.push(`  skos:notation "${this.escapeTurtle(concept.notation)}" ;`);
       }
 
       // Broader concept
@@ -491,8 +487,7 @@ export class SKOSParser {
     // If no scheme was found, create a default one
     if (!scheme) {
       scheme = {
-        uri:
-          metadata.namespace || `http://example.org/ontology/${ontologyId}`,
+        uri: metadata.namespace || `http://example.org/ontology/${ontologyId}`,
         prefLabel: metadata.name || "Imported Ontology",
         hasTopConcept: Object.values(concepts)
           .filter((c) => c.topConcept)
@@ -540,10 +535,7 @@ export class SKOSParser {
     // Try to find element using namespace
     let el: Element | null = null;
     if (namespaceURI) {
-      const elements = element.getElementsByTagNameNS(
-        namespaceURI,
-        localName,
-      );
+      const elements = element.getElementsByTagNameNS(namespaceURI, localName);
       el = elements.length > 0 ? elements[0] : null;
     }
 

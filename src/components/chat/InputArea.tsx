@@ -2,8 +2,8 @@ import React, { useRef } from "react";
 
 import { Input, HStack } from "@chakra-ui/react";
 
-import { useProgressStateStore } from "../../state/progress";
-import { useChatStateStore } from "../../state/chat";
+import { useProgressStateStore } from "@trustgraph/react-state";
+import { useChatStateStore } from "@trustgraph/react-state";
 import ChatHelp from "./ChatHelp";
 import ProgressSubmitButton from "../common/ProgressSubmitButton";
 

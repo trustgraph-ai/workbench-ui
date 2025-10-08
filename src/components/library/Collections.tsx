@@ -3,8 +3,8 @@ import React, { useState } from "react";
 import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
 
 import { columns } from "../../model/collection-table";
-import { useCollections } from "../../state/collections";
-import { useNotification } from "../../state/notify";
+import { useCollections } from "@trustgraph/react-state";
+import { useNotification } from "@trustgraph/react-state";
 
 import CollectionActions from "./CollectionActions";
 import CollectionDialog from "./CollectionDialog";

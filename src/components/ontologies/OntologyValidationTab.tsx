@@ -22,7 +22,7 @@ import {
   Zap,
 } from "lucide-react";
 import { validateOntology } from "../../utils/skos-validation";
-import { Ontology } from "../../state/ontologies";
+import { Ontology } from "@trustgraph/react-state";
 import { ValidationResults } from "./ValidationResults";
 import { OntologyQA } from "../../utils/ontology-qa";
 
