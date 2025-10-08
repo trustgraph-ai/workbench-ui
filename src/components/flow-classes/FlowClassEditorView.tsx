@@ -309,7 +309,6 @@ interface FlowClass {
 // Generate nodes from flow class processors
 const generateNodesFromFlowClass = (flowClass: FlowClass): Node[] => {
   const nodes: Node[] = [];
-  let nodeIndex = 0;
 
   // Add class processors
   Object.keys(flowClass.class || {}).forEach((processorName) => {
@@ -341,7 +340,6 @@ const generateNodesFromFlowClass = (flowClass: FlowClass): Node[] => {
       },
       type: "custom",
     });
-    nodeIndex++;
   });
 
   // Add flow processors
@@ -374,7 +372,6 @@ const generateNodesFromFlowClass = (flowClass: FlowClass): Node[] => {
       },
       type: "custom",
     });
-    nodeIndex++;
   });
 
   // Add interface nodes
