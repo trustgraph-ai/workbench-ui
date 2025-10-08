@@ -17,6 +17,9 @@ const FlowClassesPage = lazy(() => import("./pages/FlowClassesPage"));
 const OntologiesPage = lazy(() => import("./pages/OntologiesPage"));
 const StructuredQueryPage = lazy(() => import("./pages/StructuredQueryPage"));
 const SettingsPage = lazy(() => import("./pages/SettingsPage"));
+const SchemasPage = lazy(() => import("./pages/SchemasPage"));
+const LLMModelsPage = lazy(() => import("./pages/LLMModelsPage"));
+const McpToolsPage = lazy(() => import("./pages/McpToolsPage"));
 
 import FlowsPage from "./pages/FlowsPage";
 import LibraryPage from "./pages/LibraryPage";
@@ -25,9 +28,6 @@ import ProcessingPage from "./pages/ProcessingPage";
 import TokenCostPage from "./pages/TokenCostPage";
 import PromptsPage from "./pages/PromptsPage";
 import ToolsPage from "./pages/ToolsPage";
-import McpToolsPage from "./pages/McpToolsPage";
-import { SchemasPage } from "./pages/SchemasPage";
-import LLMModelsPage from "./pages/LLMModelsPage";
 
 import CenterSpinner from "./components/common/CenterSpinner";
 import Progress from "./components/common/Progress";
@@ -140,7 +140,14 @@ const App = () => {
             <Route path="/procs" element={<ProcessingPage />} />
             <Route path="/tokencost" element={<TokenCostPage />} />
             <Route path="/prompts" element={<PromptsPage />} />
-            <Route path="/schemas" element={<SchemasPage />} />
+            <Route
+              path="/schemas"
+              element={
+                <Suspense fallback={<CenterSpinner />}>
+                  <SchemasPage />
+                </Suspense>
+              }
+            />
             <Route
               path="/ontologies"
               element={
@@ -158,8 +165,22 @@ const App = () => {
               }
             />
             <Route path="/agents" element={<ToolsPage />} />
-            <Route path="/mcp-tools" element={<McpToolsPage />} />
-            <Route path="/llm-models" element={<LLMModelsPage />} />
+            <Route
+              path="/mcp-tools"
+              element={
+                <Suspense fallback={<CenterSpinner />}>
+                  <McpToolsPage />
+                </Suspense>
+              }
+            />
+            <Route
+              path="/llm-models"
+              element={
+                <Suspense fallback={<CenterSpinner />}>
+                  <LLMModelsPage />
+                </Suspense>
+              }
+            />
             <Route
               path="/settings"
               element={
