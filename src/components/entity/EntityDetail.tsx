@@ -13,14 +13,25 @@ const EntityDetail = () => {
   const navigate = useNavigate();
   const flowId = useSessionStore((state) => state.flowId);
   const selected = useWorkbenchStateStore((state) => state.selected);
-  const { settings } = useSettings();
+  const { settings, isLoaded: settingsLoaded } = useSettings();
 
   // Use the new Tanstack Query hook for entity details
   const { detail, isLoading, isError } = useEntityDetail(
     selected?.uri,
     flowId,
-    settings.collection
+    settings?.collection || "default"
   );
+
+  if (!settingsLoaded) {
+    return (
+      <Box>
+        <Alert.Root status="info" variant="outline">
+          <Alert.Indicator />
+          <Alert.Title>Loading settings...</Alert.Title>
+        </Alert.Root>
+      </Box>
+    );
+  }
 
   if (!selected) {
     return (

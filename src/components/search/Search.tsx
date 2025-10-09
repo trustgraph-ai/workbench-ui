@@ -45,7 +45,7 @@ const Search = () => {
     setLastSearchedTerm(search);
 
     // Trigger search - results will come via state.data
-    state.startSearch({ flow: flowId, term: search, limit: 10, collection: settings.collection });
+    state.startSearch({ flow: flowId, term: search, limit: 10, collection: settings?.collection || "default" });
   };
 
   // Update view when search data changes

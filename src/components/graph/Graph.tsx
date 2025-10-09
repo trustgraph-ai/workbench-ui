@@ -25,7 +25,7 @@ import NodeDetailsDrawer from "./NodeDetailsDrawer";
 const GraphView = () => {
   const flowId = useSessionStore((state) => state.flowId);
   const selected = useWorkbenchStateStore((state) => state.selected);
-  const { settings } = useSettings();
+  const { settings, isLoaded: settingsLoaded } = useSettings();
 
   const fgRef = useRef();
   const { width, height, ref } = useResizeDetector({});
@@ -45,7 +45,7 @@ const GraphView = () => {
 
   // Use the new Tanstack Query hook for graph data
   const { view, isLoading, isError, navigateByRelationship } =
-    useGraphSubgraph(selected?.uri, flowId, settings.collection);
+    useGraphSubgraph(selected?.uri, flowId, settings?.collection || "default");
 
   // Ensure drawer opens when node is selected
   useEffect(() => {

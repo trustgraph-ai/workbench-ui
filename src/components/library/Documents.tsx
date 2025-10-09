@@ -71,7 +71,7 @@ const Documents = () => {
       ids: ids,
       flow: flow,
       tags: tags,
-      collection: settings.collection,
+      collection: settings?.collection || "default",
       onSuccess: () => {
         // Clear selection and close dialog after successful submission
         table.setRowSelection({});
