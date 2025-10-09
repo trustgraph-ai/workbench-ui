@@ -44,9 +44,6 @@ const SubmitDialog = ({ open, onOpenChange }) => {
     // Shouldn't happen
     if (files.length < 1) throw "Was expecting some files";
 
-    // FIXME: Should be in auth
-    const user = "trustgraph";
-
     const params: DocumentParameters = {
       title: title,
       url: url,
@@ -58,7 +55,6 @@ const SubmitDialog = ({ open, onOpenChange }) => {
       files: files,
       params: params,
       mimeType: operation == "upload-pdf" ? "application/pdf" : "text/plain",
-      user: user,
       onSuccess: () => {
         setFiles([]);
         onOpenChange(false);
@@ -67,9 +63,6 @@ const SubmitDialog = ({ open, onOpenChange }) => {
   };
 
   const onTextSubmit = () => {
-    // FIXME: Should be in auth
-    const user = "trustgraph";
-
     const params: DocumentParameters = {
       title: title,
       url: url,
@@ -81,7 +74,6 @@ const SubmitDialog = ({ open, onOpenChange }) => {
       texts: [text],
       params: params,
       mimeType: "text/plain",
-      user: user,
       onSuccess: () => {
         setText("");
         onOpenChange(false);

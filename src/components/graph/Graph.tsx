@@ -18,15 +18,14 @@ import {
   useLinkParticleColor,
 } from "../ui/graph-colors";
 
-import { useSessionStore } from "@trustgraph/react-state";
-import { useWorkbenchStateStore } from "@trustgraph/react-state";
-import { useGraphSubgraph } from "@trustgraph/react-state";
+import { useSessionStore, useWorkbenchStateStore, useGraphSubgraph, useSettings } from "@trustgraph/react-state";
 import GraphHelp from "./GraphHelp";
 import NodeDetailsDrawer from "./NodeDetailsDrawer";
 
 const GraphView = () => {
   const flowId = useSessionStore((state) => state.flowId);
   const selected = useWorkbenchStateStore((state) => state.selected);
+  const { settings } = useSettings();
 
   const fgRef = useRef();
   const { width, height, ref } = useResizeDetector({});
@@ -46,7 +45,7 @@ const GraphView = () => {
 
   // Use the new Tanstack Query hook for graph data
   const { view, isLoading, isError, navigateByRelationship } =
-    useGraphSubgraph(selected?.uri, flowId);
+    useGraphSubgraph(selected?.uri, flowId, settings.collection);
 
   // Ensure drawer opens when node is selected
   useEffect(() => {

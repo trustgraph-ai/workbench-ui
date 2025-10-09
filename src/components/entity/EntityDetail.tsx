@@ -4,9 +4,7 @@ import { Rotate3d, ArrowBigRight } from "lucide-react";
 
 import { Box, Alert, Button, Stack, Heading, HStack } from "@chakra-ui/react";
 
-import { useWorkbenchStateStore } from "@trustgraph/react-state";
-import { useSessionStore } from "@trustgraph/react-state";
-import { useEntityDetail } from "@trustgraph/react-state";
+import { useWorkbenchStateStore, useSessionStore, useEntityDetail, useSettings } from "@trustgraph/react-state";
 
 import EntityHelp from "./EntityHelp";
 import ElementNode from "./ElementNode";
@@ -15,11 +13,13 @@ const EntityDetail = () => {
   const navigate = useNavigate();
   const flowId = useSessionStore((state) => state.flowId);
   const selected = useWorkbenchStateStore((state) => state.selected);
+  const { settings } = useSettings();
 
   // Use the new Tanstack Query hook for entity details
   const { detail, isLoading, isError } = useEntityDetail(
     selected?.uri,
     flowId,
+    settings.collection
   );
 
   if (!selected) {

@@ -3,8 +3,7 @@ import React, { useState } from "react";
 import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
 
 import { columns } from "../../model/document-table";
-import { useLibrary } from "@trustgraph/react-state";
-import { useNotification } from "@trustgraph/react-state";
+import { useLibrary, useNotification, useSettings } from "@trustgraph/react-state";
 
 import Actions from "./Actions";
 import SubmitDialog from "./SubmitDialog";
@@ -26,6 +25,9 @@ const Documents = () => {
 
   // Hook for displaying notifications to the user
   const notify = useNotification();
+
+  // Hook for accessing settings
+  const { settings } = useSettings();
 
   // Hook for accessing library state and operations
   const library = useLibrary();
@@ -69,6 +71,7 @@ const Documents = () => {
       ids: ids,
       flow: flow,
       tags: tags,
+      collection: settings.collection,
       onSuccess: () => {
         // Clear selection and close dialog after successful submission
         table.setRowSelection({});

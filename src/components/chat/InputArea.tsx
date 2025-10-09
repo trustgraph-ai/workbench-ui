@@ -2,8 +2,7 @@ import React, { useRef } from "react";
 
 import { Input, HStack } from "@chakra-ui/react";
 
-import { useProgressStateStore } from "@trustgraph/react-state";
-import { useChatStateStore } from "@trustgraph/react-state";
+import { useProgressStateStore, useConversation } from "@trustgraph/react-state";
 import ChatHelp from "./ChatHelp";
 import ProgressSubmitButton from "../common/ProgressSubmitButton";
 
@@ -12,8 +11,8 @@ interface InputAreaProps {
 }
 
 const InputArea: React.FC<InputAreaProps> = ({ onSubmit }) => {
-  const input = useChatStateStore((state) => state.input);
-  const setInput = useChatStateStore((state) => state.setInput);
+  const input = useConversation((state) => state.input);
+  const setInput = useConversation((state) => state.setInput);
   const activity = useProgressStateStore((state) => state.activity);
 
   const inputRef = useRef<HTMLInputElement>(null);
