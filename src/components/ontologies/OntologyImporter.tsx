@@ -201,8 +201,18 @@ export class OntologyImporter {
   private static parseTurtle(content: string): Ontology {
     // Parse Turtle using N3.js
     const parser = new Parser();
-    const quads = parser.parse(content);
+    const quads = parser.parse(content); // Synchronous parsing
     const store = new Store(quads);
+
+    // Extract namespace prefixes from content using regex
+    const prefixes: Record<string, string> = {};
+    const prefixRegex = /@prefix\s+(\w*):?\s+<([^>]+)>/g;
+    let match;
+    while ((match = prefixRegex.exec(content)) !== null) {
+      const prefix = match[1] || ""; // Empty string for default prefix
+      const uri = match[2];
+      prefixes[prefix] = uri;
+    }
 
     const metadata: OntologyMetadata = {
       name: "Imported Ontology",
@@ -230,10 +240,11 @@ export class OntologyImporter {
       return index >= 0 ? uri.slice(index + 1) : uri;
     };
 
-    // Extract ontology metadata
+    // Extract ontology URI and metadata
     const ontologyQuads = store.getQuads(null, RDF.type, OWL.Ontology, null);
     if (ontologyQuads.length > 0) {
       const ontologySubject = ontologyQuads[0].subject;
+      // Store the ontology's own URI in the namespace field
       metadata.namespace = ontologySubject.value;
 
       // Extract title
@@ -279,17 +290,22 @@ export class OntologyImporter {
       }
     }
 
+    // Determine the base namespace for classes in this ontology
+    // Usually classes share a common prefix with the ontology URI
+    const ontologyBaseNS = metadata.namespace;
+
     // Extract classes
     const classQuads = store.getQuads(null, RDF.type, OWL.Class, null);
     for (const quad of classQuads) {
       const classURI = quad.subject.value;
 
       // Only include classes from this ontology's namespace
-      if (!metadata.namespace || !classURI.startsWith(metadata.namespace)) {
+      // Classes whose URI starts with the ontology's base namespace are considered internal
+      if (!ontologyBaseNS || !classURI.startsWith(ontologyBaseNS)) {
         continue;
       }
 
-      const classId = extractLocalName(classURI, metadata.namespace);
+      const classId = extractLocalName(classURI, ontologyBaseNS);
 
       classes[classId] = {
         uri: classURI,
@@ -321,8 +337,8 @@ export class OntologyImporter {
       const subClassQuads = store.getQuads(quad.subject, RDFS.subClassOf, null, null);
       if (subClassQuads.length > 0 && subClassQuads[0].object.termType === "NamedNode") {
         const parentURI = subClassQuads[0].object.value;
-        if (parentURI.startsWith(metadata.namespace)) {
-          classes[classId]["rdfs:subClassOf"] = extractLocalName(parentURI, metadata.namespace);
+        if (parentURI.startsWith(ontologyBaseNS)) {
+          classes[classId]["rdfs:subClassOf"] = extractLocalName(parentURI, ontologyBaseNS);
         }
       }
     }
@@ -333,11 +349,11 @@ export class OntologyImporter {
       const propURI = quad.subject.value;
 
       // Only include properties from this ontology's namespace
-      if (!metadata.namespace || !propURI.startsWith(metadata.namespace)) {
+      if (!ontologyBaseNS || !propURI.startsWith(ontologyBaseNS)) {
         continue;
       }
 
-      const propId = extractLocalName(propURI, metadata.namespace);
+      const propId = extractLocalName(propURI, ontologyBaseNS);
 
       objectProperties[propId] = {
         uri: propURI,
@@ -369,8 +385,8 @@ export class OntologyImporter {
       const domainQuads = store.getQuads(quad.subject, RDFS.domain, null, null);
       if (domainQuads.length > 0 && domainQuads[0].object.termType === "NamedNode") {
         const domainURI = domainQuads[0].object.value;
-        if (domainURI.startsWith(metadata.namespace)) {
-          objectProperties[propId]["rdfs:domain"] = extractLocalName(domainURI, metadata.namespace);
+        if (domainURI.startsWith(ontologyBaseNS)) {
+          objectProperties[propId]["rdfs:domain"] = extractLocalName(domainURI, ontologyBaseNS);
         }
       }
 
@@ -378,8 +394,8 @@ export class OntologyImporter {
       const rangeQuads = store.getQuads(quad.subject, RDFS.range, null, null);
       if (rangeQuads.length > 0 && rangeQuads[0].object.termType === "NamedNode") {
         const rangeURI = rangeQuads[0].object.value;
-        if (rangeURI.startsWith(metadata.namespace)) {
-          objectProperties[propId]["rdfs:range"] = extractLocalName(rangeURI, metadata.namespace);
+        if (rangeURI.startsWith(ontologyBaseNS)) {
+          objectProperties[propId]["rdfs:range"] = extractLocalName(rangeURI, ontologyBaseNS);
         }
       }
     }
@@ -390,11 +406,11 @@ export class OntologyImporter {
       const propURI = quad.subject.value;
 
       // Only include properties from this ontology's namespace
-      if (!metadata.namespace || !propURI.startsWith(metadata.namespace)) {
+      if (!ontologyBaseNS || !propURI.startsWith(ontologyBaseNS)) {
         continue;
       }
 
-      const propId = extractLocalName(propURI, metadata.namespace);
+      const propId = extractLocalName(propURI, ontologyBaseNS);
 
       datatypeProperties[propId] = {
         uri: propURI,
@@ -427,8 +443,8 @@ export class OntologyImporter {
       const domainQuads = store.getQuads(quad.subject, RDFS.domain, null, null);
       if (domainQuads.length > 0 && domainQuads[0].object.termType === "NamedNode") {
         const domainURI = domainQuads[0].object.value;
-        if (domainURI.startsWith(metadata.namespace)) {
-          datatypeProperties[propId]["rdfs:domain"] = extractLocalName(domainURI, metadata.namespace);
+        if (domainURI.startsWith(ontologyBaseNS)) {
+          datatypeProperties[propId]["rdfs:domain"] = extractLocalName(domainURI, ontologyBaseNS);
         }
       }
 
