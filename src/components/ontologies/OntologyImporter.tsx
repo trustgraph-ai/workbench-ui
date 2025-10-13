@@ -201,6 +201,39 @@ export class OntologyImporter {
     // This avoids splitting on periods inside quoted strings
     const statements = content.split(/\s\.\s*\n/).filter((s) => s.trim());
 
+    // Extract ontology metadata from the ontology declaration
+    for (const statement of statements) {
+      if (statement.includes("a owl:Ontology")) {
+        const lines = statement.split("\n").map((l) => l.trim());
+        const propsText = lines.join(" ");
+
+        // Extract title from dcterms:title or rdfs:label
+        const titleMatch = propsText.match(/(?:dcterms:title|rdfs:label)\s+"([^"]+)"/);
+        if (titleMatch) {
+          metadata.name = titleMatch[1];
+        }
+
+        // Extract description from rdfs:comment
+        const commentMatch = propsText.match(/rdfs:comment\s+"([^"]+)"/);
+        if (commentMatch) {
+          metadata.description = commentMatch[1];
+        }
+
+        // Extract version from owl:versionInfo or provenance:version
+        const versionMatch = propsText.match(/(?:owl:versionInfo|provenance:version)\s+"([^"]+)"/);
+        if (versionMatch) {
+          metadata.version = versionMatch[1];
+        }
+
+        // Extract created date from dcterms:created
+        const createdMatch = propsText.match(/dcterms:created\s+"([^"]+)"/);
+        if (createdMatch) {
+          metadata.created = createdMatch[1];
+        }
+        break;
+      }
+    }
+
     for (const statement of statements) {
       const lines = statement.split("\n").map((l) => l.trim());
       if (lines.length === 0) continue;
