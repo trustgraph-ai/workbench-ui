@@ -13,6 +13,7 @@ import {
 } from "@chakra-ui/react";
 import { Save } from "lucide-react";
 import { OntologyMetadata } from "@trustgraph/react-state";
+import { NamespacePrefixEditor } from "./NamespacePrefixEditor";
 
 interface MetadataEditorProps {
   metadata: OntologyMetadata;
@@ -32,6 +33,7 @@ export const MetadataEditor: React.FC<MetadataEditorProps> = ({
   const [version, setVersion] = useState("");
   const [creator, setCreator] = useState("");
   const [namespace, setNamespace] = useState("");
+  const [namespaces, setNamespaces] = useState<Record<string, string>>({});
   const [hasChanges, setHasChanges] = useState(false);
 
   useEffect(() => {
@@ -41,6 +43,7 @@ export const MetadataEditor: React.FC<MetadataEditorProps> = ({
     setVersion(metadata.version || "1.0");
     setCreator(metadata.creator || "");
     setNamespace(metadata.namespace || "");
+    setNamespaces(metadata.namespaces || {});
     setHasChanges(false);
   }, [metadata]);
 
@@ -51,15 +54,18 @@ export const MetadataEditor: React.FC<MetadataEditorProps> = ({
     const versionChanged = version !== (metadata.version || "1.0");
     const creatorChanged = creator !== (metadata.creator || "");
     const namespaceChanged = namespace !== (metadata.namespace || "");
+    const namespacesChanged =
+      JSON.stringify(namespaces) !== JSON.stringify(metadata.namespaces || {});
 
     setHasChanges(
       nameChanged ||
         descriptionChanged ||
         versionChanged ||
         creatorChanged ||
-        namespaceChanged,
+        namespaceChanged ||
+        namespacesChanged,
     );
-  }, [name, description, version, creator, namespace, metadata]);
+  }, [name, description, version, creator, namespace, namespaces, metadata]);
 
   const handleSave = () => {
     const updatedMetadata: OntologyMetadata = {
@@ -69,6 +75,7 @@ export const MetadataEditor: React.FC<MetadataEditorProps> = ({
       version: version.trim() || "1.0",
       creator: creator.trim(),
       namespace: namespace.trim(),
+      namespaces,
       modified: new Date().toISOString(),
     };
 
@@ -82,6 +89,7 @@ export const MetadataEditor: React.FC<MetadataEditorProps> = ({
     setVersion(metadata.version || "1.0");
     setCreator(metadata.creator || "");
     setNamespace(metadata.namespace || "");
+    setNamespaces(metadata.namespaces || {});
     setHasChanges(false);
   };
 
@@ -215,7 +223,7 @@ export const MetadataEditor: React.FC<MetadataEditorProps> = ({
 
             <Field.Root required invalid={!namespaceValid}>
               <Field.Label>
-                Namespace URI
+                Ontology URI
                 <Field.RequiredIndicator />
               </Field.Label>
               <Input
@@ -229,10 +237,21 @@ export const MetadataEditor: React.FC<MetadataEditorProps> = ({
                 mt={1}
               >
                 {namespaceValid
-                  ? "Base URI for all classes and properties (must end with # or /)"
+                  ? "The ontology's own identifier (must end with # or /)"
                   : "Invalid URI format - must be a valid URL ending with # or /"}
               </Text>
             </Field.Root>
+
+            <Box mt={4}>
+              <NamespacePrefixEditor
+                namespaces={namespaces}
+                onChange={setNamespaces}
+              />
+              <Text fontSize="xs" color="gray.500" mt={2}>
+                Namespace prefixes are used to abbreviate URIs when exporting to
+                Turtle format
+              </Text>
+            </Box>
 
             <Field.Root>
               <Field.Label>Created</Field.Label>
@@ -268,8 +287,6 @@ export const MetadataEditor: React.FC<MetadataEditorProps> = ({
                 </Text>
                 <Text fontSize="xs" color="gray.500" textAlign="center">
                   • Import declarations (owl:imports)
-                  <br />
-                  • Custom namespace prefixes
                   <br />• Ontology annotations
                 </Text>
               </VStack>

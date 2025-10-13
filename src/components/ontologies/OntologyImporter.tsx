@@ -222,6 +222,7 @@ export class OntologyImporter {
       modified: new Date().toISOString(),
       creator: "",
       namespace: "",
+      namespaces: prefixes,
     };
 
     const classes: Record<string, OWLClass> = {};
