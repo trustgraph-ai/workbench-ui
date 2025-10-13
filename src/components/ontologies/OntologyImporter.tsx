@@ -186,13 +186,20 @@ export class OntologyImporter {
     const datatypeProperties: Record<string, OWLDatatypeProperty> = {};
 
     // Extract namespace from @prefix or @base
+    let ontologyPrefix = "";
     const namespaceMatch = content.match(/@base\s+<([^>]+)>/);
     if (namespaceMatch) {
       metadata.namespace = namespaceMatch[1];
-    } else {
-      const prefixMatch = content.match(/@prefix\s+:\s+<([^>]+)>/);
+      // Find the prefix that maps to this namespace
+      const prefixMatch = content.match(new RegExp(`@prefix\\s+(\\w+):\\s+<${metadata.namespace.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}>`));
       if (prefixMatch) {
-        metadata.namespace = prefixMatch[1];
+        ontologyPrefix = prefixMatch[1];
+      }
+    } else {
+      const prefixMatch = content.match(/@prefix\s+(\w*):?\s+<([^>]+)>/);
+      if (prefixMatch) {
+        ontologyPrefix = prefixMatch[1] || "";
+        metadata.namespace = prefixMatch[2];
       }
     }
 
@@ -273,10 +280,16 @@ export class OntologyImporter {
           classes[classId]["rdfs:comment"] = commentMatch[1];
         }
 
-        // Extract subClassOf
+        // Extract subClassOf (only if it references a class in this ontology)
         const subClassMatch = propsText.match(/rdfs:subClassOf\s+(\w+):(\w+)/);
         if (subClassMatch) {
-          classes[classId]["rdfs:subClassOf"] = subClassMatch[2];
+          const subClassPrefix = subClassMatch[1];
+          const subClassName = subClassMatch[2];
+          // Only store if the prefix matches the ontology's prefix (internal reference)
+          if (subClassPrefix === ontologyPrefix || subClassPrefix === prefix) {
+            classes[classId]["rdfs:subClassOf"] = subClassName;
+          }
+          // External references (different prefix) are ignored for internal hierarchy
         }
         continue;
       }
@@ -296,16 +309,24 @@ export class OntologyImporter {
         // Parse properties from remaining lines
         const propsText = lines.slice(1).join(" ");
 
-        // Extract domain
+        // Extract domain (only if it references a class in this ontology)
         const domainMatch = propsText.match(/rdfs:domain\s+(\w+):(\w+)/);
         if (domainMatch) {
-          objectProperties[propId]["rdfs:domain"] = domainMatch[2];
+          const domainPrefix = domainMatch[1];
+          const domainClass = domainMatch[2];
+          if (domainPrefix === ontologyPrefix || domainPrefix === prefix) {
+            objectProperties[propId]["rdfs:domain"] = domainClass;
+          }
         }
 
-        // Extract range
+        // Extract range (only if it references a class in this ontology)
         const rangeMatch = propsText.match(/rdfs:range\s+(\w+):(\w+)/);
         if (rangeMatch) {
-          objectProperties[propId]["rdfs:range"] = rangeMatch[2];
+          const rangePrefix = rangeMatch[1];
+          const rangeClass = rangeMatch[2];
+          if (rangePrefix === ontologyPrefix || rangePrefix === prefix) {
+            objectProperties[propId]["rdfs:range"] = rangeClass;
+          }
         }
 
         // Extract labels
@@ -344,10 +365,14 @@ export class OntologyImporter {
         // Parse properties from remaining lines
         const propsText = lines.slice(1).join(" ");
 
-        // Extract domain
+        // Extract domain (only if it references a class in this ontology)
         const domainMatch = propsText.match(/rdfs:domain\s+(\w+):(\w+)/);
         if (domainMatch) {
-          datatypeProperties[propId]["rdfs:domain"] = domainMatch[2];
+          const domainPrefix = domainMatch[1];
+          const domainClass = domainMatch[2];
+          if (domainPrefix === ontologyPrefix || domainPrefix === prefix) {
+            datatypeProperties[propId]["rdfs:domain"] = domainClass;
+          }
         }
 
         // Extract range (XSD datatypes)
