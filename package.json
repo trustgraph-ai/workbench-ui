@@ -15,7 +15,9 @@
     "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
+    "@trustgraph/react-provider": "github:trustgraph-ai/trustgraph-react-provider#master",
     "@trustgraph/react-state": "github:trustgraph-ai/trustgraph-react-state#master",
+    "@trustgraph/client": "github:trustgraph-ai/trustgraph-client#master",      
     "@chakra-ui/react": "^3.19.1",
     "@emotion/styled": "^11.13.0",
     "@msgpack/msgpack": "^3.1.1",

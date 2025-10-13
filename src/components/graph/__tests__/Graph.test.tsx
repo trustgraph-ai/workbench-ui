@@ -41,6 +41,19 @@ vi.mock("@trustgraph/react-state", async () => {
       const state = { flowId: "test-flow-123" };
       return selector(state);
     }),
+    useSettings: vi.fn(() => ({
+      settings: {
+        collection: "test-collection",
+        user: "test-user",
+        graphrag: {
+          entityLimit: 10,
+          tripleLimit: 10,
+          maxSubgraphSize: 100,
+          pathLength: 2,
+        },
+      },
+      isLoaded: true,
+    })),
   };
 });
 

@@ -1,10 +1,10 @@
 import React from "react";
 import { Select, Portal, createListCollection } from "@chakra-ui/react";
-import { useChatStateStore, ChatMode } from "@trustgraph/react-state";
+import { useConversation, ChatMode } from "@trustgraph/react-state";
 
 const ChatModeSelector = () => {
-  const chatMode = useChatStateStore((state) => state.chatMode);
-  const setChatMode = useChatStateStore((state) => state.setChatMode);
+  const chatMode = useConversation((state) => state.chatMode);
+  const setChatMode = useConversation((state) => state.setChatMode);
 
   const chatModes = [
     { value: "graph-rag", label: "Graph RAG" },
