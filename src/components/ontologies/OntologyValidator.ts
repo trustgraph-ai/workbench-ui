@@ -129,7 +129,10 @@ export class OntologyValidator {
       const subClassOf = owlClass["rdfs:subClassOf"];
       if (subClassOf && !ontology.classes[subClassOf]) {
         // Check if this is an external class reference (from standard vocabularies)
-        const isExternalRef = this.isExternalClassReference(subClassOf, owlClass.uri);
+        const isExternalRef = this.isExternalClassReference(
+          subClassOf,
+          owlClass.uri,
+        );
         if (!isExternalRef) {
           issues.push({
             type: "error",
@@ -238,7 +241,10 @@ export class OntologyValidator {
     // Check domain references
     const domain = property["rdfs:domain"];
     if (domain && !ontology.classes[domain]) {
-      const isExternalRef = this.isExternalClassReference(domain, property.uri);
+      const isExternalRef = this.isExternalClassReference(
+        domain,
+        property.uri,
+      );
       if (!isExternalRef) {
         issues.push({
           type: "error",
@@ -256,7 +262,10 @@ export class OntologyValidator {
     if (propType === "objectProperty") {
       const range = property["rdfs:range"];
       if (range && !ontology.classes[range]) {
-        const isExternalRef = this.isExternalClassReference(range, property.uri);
+        const isExternalRef = this.isExternalClassReference(
+          range,
+          property.uri,
+        );
         if (!isExternalRef) {
           issues.push({
             type: "error",
@@ -458,12 +467,10 @@ export class OntologyValidator {
 
     // If the class name looks like it's from a different namespace
     // (doesn't match the pattern of the referencing URI)
+    // This is a heuristic - in a full implementation, we'd track namespace prefixes
     if (referencingUri && className) {
       try {
-        const refUrl = new URL(referencingUri);
-        const baseNamespace = refUrl.origin + refUrl.pathname;
-        // If className doesn't look like it belongs to the same namespace, it's likely external
-        // This is a heuristic - in a full implementation, we'd track namespace prefixes
+        new URL(referencingUri);
         return false;
       } catch {
         return false;

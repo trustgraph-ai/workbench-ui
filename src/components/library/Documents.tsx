@@ -3,7 +3,11 @@ import React, { useState } from "react";
 import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
 
 import { columns } from "../../model/document-table";
-import { useLibrary, useNotification, useSettings } from "@trustgraph/react-state";
+import {
+  useLibrary,
+  useNotification,
+  useSettings,
+} from "@trustgraph/react-state";
 
 import Actions from "./Actions";
 import SubmitDialog from "./SubmitDialog";

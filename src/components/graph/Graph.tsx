@@ -18,14 +18,19 @@ import {
   useLinkParticleColor,
 } from "../ui/graph-colors";
 
-import { useSessionStore, useWorkbenchStateStore, useGraphSubgraph, useSettings } from "@trustgraph/react-state";
+import {
+  useSessionStore,
+  useWorkbenchStateStore,
+  useGraphSubgraph,
+  useSettings,
+} from "@trustgraph/react-state";
 import GraphHelp from "./GraphHelp";
 import NodeDetailsDrawer from "./NodeDetailsDrawer";
 
 const GraphView = () => {
   const flowId = useSessionStore((state) => state.flowId);
   const selected = useWorkbenchStateStore((state) => state.selected);
-  const { settings, isLoaded: settingsLoaded } = useSettings();
+  const { settings } = useSettings();
 
   const fgRef = useRef();
   const { width, height, ref } = useResizeDetector({});

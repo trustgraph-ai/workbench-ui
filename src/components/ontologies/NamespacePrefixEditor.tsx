@@ -1,13 +1,5 @@
 import React, { useState } from "react";
-import {
-  Box,
-  Table,
-  Button,
-  Input,
-  IconButton,
-  HStack,
-  Text,
-} from "@chakra-ui/react";
+import { Box, Table, Button, Input, IconButton, Text } from "@chakra-ui/react";
 import { Plus, Trash2 } from "lucide-react";
 
 interface NamespacePrefixEditorProps {

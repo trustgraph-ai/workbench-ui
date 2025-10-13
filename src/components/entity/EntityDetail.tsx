@@ -4,7 +4,12 @@ import { Rotate3d, ArrowBigRight } from "lucide-react";
 
 import { Box, Alert, Button, Stack, Heading, HStack } from "@chakra-ui/react";
 
-import { useWorkbenchStateStore, useSessionStore, useEntityDetail, useSettings } from "@trustgraph/react-state";
+import {
+  useWorkbenchStateStore,
+  useSessionStore,
+  useEntityDetail,
+  useSettings,
+} from "@trustgraph/react-state";
 
 import EntityHelp from "./EntityHelp";
 import ElementNode from "./ElementNode";
@@ -19,7 +24,7 @@ const EntityDetail = () => {
   const { detail, isLoading, isError } = useEntityDetail(
     selected?.uri,
     flowId,
-    settings?.collection || "default"
+    settings?.collection || "default",
   );
 
   if (!settingsLoaded) {

@@ -393,7 +393,6 @@ const generateNodesFromFlowClass = (flowClass: FlowClass): Node[] => {
         },
         type: "interface", // Use a different node type for interfaces
       });
-      nodeIndex++;
     },
   );
 

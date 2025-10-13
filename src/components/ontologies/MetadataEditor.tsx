@@ -248,8 +248,8 @@ export const MetadataEditor: React.FC<MetadataEditorProps> = ({
                 onChange={setNamespaces}
               />
               <Text fontSize="xs" color="gray.500" mt={2}>
-                Namespace prefixes are used to abbreviate URIs when exporting to
-                Turtle format
+                Namespace prefixes are used to abbreviate URIs when exporting
+                to Turtle format
               </Text>
             </Box>
 
