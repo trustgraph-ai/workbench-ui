@@ -197,87 +197,151 @@ export class OntologyImporter {
     }
 
     // Simple Turtle parser - this is a basic implementation
-    // In production, you'd want to use a proper Turtle parser library
+    // Split into statements (each ending with " ." - space + period + newline)
+    // This avoids splitting on periods inside quoted strings
+    const statements = content.split(/\s\.\s*\n/).filter((s) => s.trim());
 
-    // Extract classes (simplified pattern matching)
-    const classPattern = /:(\w+)\s+a\s+owl:Class/g;
-    let classMatch;
-    while ((classMatch = classPattern.exec(content)) !== null) {
-      const classId = classMatch[1];
-      const uri = metadata.namespace + classId;
+    for (const statement of statements) {
+      const lines = statement.split("\n").map((l) => l.trim());
+      if (lines.length === 0) continue;
 
-      classes[classId] = {
-        uri,
-        type: "owl:Class",
-      };
+      const firstLine = lines[0];
 
-      // Try to find label
-      const labelPattern = new RegExp(
-        `:${classId}\\s+rdfs:label\\s+"([^"]+)"`,
-        "g",
-      );
-      const labelMatch = labelPattern.exec(content);
-      if (labelMatch) {
-        classes[classId]["rdfs:label"] = [
-          { value: labelMatch[1], lang: "en" },
-        ];
+      // Check if this is a class declaration
+      const classMatch = firstLine.match(/^(\w+):(\w+)\s+a\s+owl:Class/);
+      if (classMatch) {
+        const prefix = classMatch[1];
+        const classId = classMatch[2];
+        const uri = metadata.namespace + classId;
+
+        classes[classId] = {
+          uri,
+          type: "owl:Class",
+        };
+
+        // Parse properties from remaining lines
+        const propsText = lines.slice(1).join(" ");
+
+        // Extract labels
+        const labelMatches = propsText.matchAll(
+          /rdfs:label\s+"([^"]+)"(?:@(\w+(?:-\w+)?))?/g,
+        );
+        const labels: Array<{ value: string; lang?: string }> = [];
+        for (const match of labelMatches) {
+          labels.push({ value: match[1], lang: match[2] || "en" });
+        }
+        if (labels.length > 0) {
+          classes[classId]["rdfs:label"] = labels;
+        }
+
+        // Extract comment
+        const commentMatch = propsText.match(/rdfs:comment\s+"([^"]+)"/);
+        if (commentMatch) {
+          classes[classId]["rdfs:comment"] = commentMatch[1];
+        }
+
+        // Extract subClassOf
+        const subClassMatch = propsText.match(/rdfs:subClassOf\s+(\w+):(\w+)/);
+        if (subClassMatch) {
+          classes[classId]["rdfs:subClassOf"] = subClassMatch[2];
+        }
+        continue;
       }
 
-      // Try to find comment
-      const commentPattern = new RegExp(
-        `:${classId}\\s+rdfs:comment\\s+"([^"]+)"`,
-        "g",
-      );
-      const commentMatch = commentPattern.exec(content);
-      if (commentMatch) {
-        classes[classId]["rdfs:comment"] = commentMatch[1];
+      // Check if this is an object property declaration
+      const objPropMatch = firstLine.match(/^(\w+):(\w+)\s+a\s+owl:ObjectProperty/);
+      if (objPropMatch) {
+        const prefix = objPropMatch[1];
+        const propId = objPropMatch[2];
+        const uri = metadata.namespace + propId;
+
+        objectProperties[propId] = {
+          uri,
+          type: "owl:ObjectProperty",
+        };
+
+        // Parse properties from remaining lines
+        const propsText = lines.slice(1).join(" ");
+
+        // Extract domain
+        const domainMatch = propsText.match(/rdfs:domain\s+(\w+):(\w+)/);
+        if (domainMatch) {
+          objectProperties[propId]["rdfs:domain"] = domainMatch[2];
+        }
+
+        // Extract range
+        const rangeMatch = propsText.match(/rdfs:range\s+(\w+):(\w+)/);
+        if (rangeMatch) {
+          objectProperties[propId]["rdfs:range"] = rangeMatch[2];
+        }
+
+        // Extract labels
+        const labelMatches = propsText.matchAll(
+          /rdfs:label\s+"([^"]+)"(?:@(\w+(?:-\w+)?))?/g,
+        );
+        const labels: Array<{ value: string; lang?: string }> = [];
+        for (const match of labelMatches) {
+          labels.push({ value: match[1], lang: match[2] || "en" });
+        }
+        if (labels.length > 0) {
+          objectProperties[propId]["rdfs:label"] = labels;
+        }
+
+        // Extract comment
+        const commentMatch = propsText.match(/rdfs:comment\s+"([^"]+)"/);
+        if (commentMatch) {
+          objectProperties[propId]["rdfs:comment"] = commentMatch[1];
+        }
+        continue;
       }
-    }
 
-    // Extract object properties
-    const objPropPattern = /:(\w+)\s+a\s+owl:ObjectProperty/g;
-    let objPropMatch;
-    while ((objPropMatch = objPropPattern.exec(content)) !== null) {
-      const propId = objPropMatch[1];
-      const uri = metadata.namespace + propId;
+      // Check if this is a datatype property declaration
+      const dtPropMatch = firstLine.match(/^(\w+):(\w+)\s+a\s+owl:DatatypeProperty/);
+      if (dtPropMatch) {
+        const prefix = dtPropMatch[1];
+        const propId = dtPropMatch[2];
+        const uri = metadata.namespace + propId;
 
-      objectProperties[propId] = {
-        uri,
-        type: "owl:ObjectProperty",
-      };
+        datatypeProperties[propId] = {
+          uri,
+          type: "owl:DatatypeProperty",
+          "rdfs:range": "xsd:string",
+        };
 
-      // Try to find domain and range
-      const domainPattern = new RegExp(
-        `:${propId}\\s+rdfs:domain\\s+:?(\\w+)`,
-        "g",
-      );
-      const domainMatch = domainPattern.exec(content);
-      if (domainMatch) {
-        objectProperties[propId]["rdfs:domain"] = domainMatch[1];
+        // Parse properties from remaining lines
+        const propsText = lines.slice(1).join(" ");
+
+        // Extract domain
+        const domainMatch = propsText.match(/rdfs:domain\s+(\w+):(\w+)/);
+        if (domainMatch) {
+          datatypeProperties[propId]["rdfs:domain"] = domainMatch[2];
+        }
+
+        // Extract range (XSD datatypes)
+        const rangeMatch = propsText.match(/rdfs:range\s+(xsd:\w+)/);
+        if (rangeMatch) {
+          datatypeProperties[propId]["rdfs:range"] = rangeMatch[1];
+        }
+
+        // Extract labels
+        const labelMatches = propsText.matchAll(
+          /rdfs:label\s+"([^"]+)"(?:@(\w+(?:-\w+)?))?/g,
+        );
+        const labels: Array<{ value: string; lang?: string }> = [];
+        for (const match of labelMatches) {
+          labels.push({ value: match[1], lang: match[2] || "en" });
+        }
+        if (labels.length > 0) {
+          datatypeProperties[propId]["rdfs:label"] = labels;
+        }
+
+        // Extract comment
+        const commentMatch = propsText.match(/rdfs:comment\s+"([^"]+)"/);
+        if (commentMatch) {
+          datatypeProperties[propId]["rdfs:comment"] = commentMatch[1];
+        }
+        continue;
       }
-
-      const rangePattern = new RegExp(
-        `:${propId}\\s+rdfs:range\\s+:?(\\w+)`,
-        "g",
-      );
-      const rangeMatch = rangePattern.exec(content);
-      if (rangeMatch) {
-        objectProperties[propId]["rdfs:range"] = rangeMatch[1];
-      }
-    }
-
-    // Extract datatype properties
-    const dtPropPattern = /:(\w+)\s+a\s+owl:DatatypeProperty/g;
-    let dtPropMatch;
-    while ((dtPropMatch = dtPropPattern.exec(content)) !== null) {
-      const propId = dtPropMatch[1];
-      const uri = metadata.namespace + propId;
-
-      datatypeProperties[propId] = {
-        uri,
-        type: "owl:DatatypeProperty",
-        "rdfs:range": "xsd:string",
-      };
     }
 
     return {
