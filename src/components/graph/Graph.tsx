@@ -30,7 +30,7 @@ import NodeDetailsDrawer from "./NodeDetailsDrawer";
 const GraphView = () => {
   const flowId = useSessionStore((state) => state.flowId);
   const selected = useWorkbenchStateStore((state) => state.selected);
-  const { settings, isLoaded: settingsLoaded } = useSettings();
+  const { settings } = useSettings();
 
   const fgRef = useRef();
   const { width, height, ref } = useResizeDetector({});

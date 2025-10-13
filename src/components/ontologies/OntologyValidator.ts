@@ -467,12 +467,10 @@ export class OntologyValidator {
 
     // If the class name looks like it's from a different namespace
     // (doesn't match the pattern of the referencing URI)
+    // This is a heuristic - in a full implementation, we'd track namespace prefixes
     if (referencingUri && className) {
       try {
-        const refUrl = new URL(referencingUri);
-        const baseNamespace = refUrl.origin + refUrl.pathname;
-        // If className doesn't look like it belongs to the same namespace, it's likely external
-        // This is a heuristic - in a full implementation, we'd track namespace prefixes
+        new URL(referencingUri);
         return false;
       } catch {
         return false;
