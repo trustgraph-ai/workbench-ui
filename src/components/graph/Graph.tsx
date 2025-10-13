@@ -18,7 +18,12 @@ import {
   useLinkParticleColor,
 } from "../ui/graph-colors";
 
-import { useSessionStore, useWorkbenchStateStore, useGraphSubgraph, useSettings } from "@trustgraph/react-state";
+import {
+  useSessionStore,
+  useWorkbenchStateStore,
+  useGraphSubgraph,
+  useSettings,
+} from "@trustgraph/react-state";
 import GraphHelp from "./GraphHelp";
 import NodeDetailsDrawer from "./NodeDetailsDrawer";
 

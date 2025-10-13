@@ -253,7 +253,10 @@ export class OntologyImporter {
         ...store.getQuads(ontologySubject, DCTERMS.title, null, null),
         ...store.getQuads(ontologySubject, RDFS.label, null, null),
       ];
-      if (titleQuads.length > 0 && titleQuads[0].object.termType === "Literal") {
+      if (
+        titleQuads.length > 0 &&
+        titleQuads[0].object.termType === "Literal"
+      ) {
         metadata.name = titleQuads[0].object.value;
       }
 
@@ -264,7 +267,10 @@ export class OntologyImporter {
         null,
         null,
       );
-      if (commentQuads.length > 0 && commentQuads[0].object.termType === "Literal") {
+      if (
+        commentQuads.length > 0 &&
+        commentQuads[0].object.termType === "Literal"
+      ) {
         metadata.description = commentQuads[0].object.value;
       }
 
@@ -275,7 +281,10 @@ export class OntologyImporter {
         null,
         null,
       );
-      if (versionQuads.length > 0 && versionQuads[0].object.termType === "Literal") {
+      if (
+        versionQuads.length > 0 &&
+        versionQuads[0].object.termType === "Literal"
+      ) {
         metadata.version = versionQuads[0].object.value;
       }
 
@@ -286,7 +295,10 @@ export class OntologyImporter {
         null,
         null,
       );
-      if (createdQuads.length > 0 && createdQuads[0].object.termType === "Literal") {
+      if (
+        createdQuads.length > 0 &&
+        createdQuads[0].object.termType === "Literal"
+      ) {
         metadata.created = createdQuads[0].object.value;
       }
     }
@@ -329,23 +341,47 @@ export class OntologyImporter {
       }
 
       // Extract comment
-      const commentQuads = store.getQuads(quad.subject, RDFS.comment, null, null);
-      if (commentQuads.length > 0 && commentQuads[0].object.termType === "Literal") {
+      const commentQuads = store.getQuads(
+        quad.subject,
+        RDFS.comment,
+        null,
+        null,
+      );
+      if (
+        commentQuads.length > 0 &&
+        commentQuads[0].object.termType === "Literal"
+      ) {
         classes[classId]["rdfs:comment"] = commentQuads[0].object.value;
       }
 
       // Extract subClassOf (only internal references)
-      const subClassQuads = store.getQuads(quad.subject, RDFS.subClassOf, null, null);
-      if (subClassQuads.length > 0 && subClassQuads[0].object.termType === "NamedNode") {
+      const subClassQuads = store.getQuads(
+        quad.subject,
+        RDFS.subClassOf,
+        null,
+        null,
+      );
+      if (
+        subClassQuads.length > 0 &&
+        subClassQuads[0].object.termType === "NamedNode"
+      ) {
         const parentURI = subClassQuads[0].object.value;
         if (parentURI.startsWith(ontologyBaseNS)) {
-          classes[classId]["rdfs:subClassOf"] = extractLocalName(parentURI, ontologyBaseNS);
+          classes[classId]["rdfs:subClassOf"] = extractLocalName(
+            parentURI,
+            ontologyBaseNS,
+          );
         }
       }
     }
 
     // Extract object properties
-    const objPropQuads = store.getQuads(null, RDF.type, OWL.ObjectProperty, null);
+    const objPropQuads = store.getQuads(
+      null,
+      RDF.type,
+      OWL.ObjectProperty,
+      null,
+    );
     for (const quad of objPropQuads) {
       const propURI = quad.subject.value;
 
@@ -377,32 +413,63 @@ export class OntologyImporter {
       }
 
       // Extract comment
-      const commentQuads = store.getQuads(quad.subject, RDFS.comment, null, null);
-      if (commentQuads.length > 0 && commentQuads[0].object.termType === "Literal") {
-        objectProperties[propId]["rdfs:comment"] = commentQuads[0].object.value;
+      const commentQuads = store.getQuads(
+        quad.subject,
+        RDFS.comment,
+        null,
+        null,
+      );
+      if (
+        commentQuads.length > 0 &&
+        commentQuads[0].object.termType === "Literal"
+      ) {
+        objectProperties[propId]["rdfs:comment"] =
+          commentQuads[0].object.value;
       }
 
       // Extract domain (only internal references)
-      const domainQuads = store.getQuads(quad.subject, RDFS.domain, null, null);
-      if (domainQuads.length > 0 && domainQuads[0].object.termType === "NamedNode") {
+      const domainQuads = store.getQuads(
+        quad.subject,
+        RDFS.domain,
+        null,
+        null,
+      );
+      if (
+        domainQuads.length > 0 &&
+        domainQuads[0].object.termType === "NamedNode"
+      ) {
         const domainURI = domainQuads[0].object.value;
         if (domainURI.startsWith(ontologyBaseNS)) {
-          objectProperties[propId]["rdfs:domain"] = extractLocalName(domainURI, ontologyBaseNS);
+          objectProperties[propId]["rdfs:domain"] = extractLocalName(
+            domainURI,
+            ontologyBaseNS,
+          );
         }
       }
 
       // Extract range (only internal references)
       const rangeQuads = store.getQuads(quad.subject, RDFS.range, null, null);
-      if (rangeQuads.length > 0 && rangeQuads[0].object.termType === "NamedNode") {
+      if (
+        rangeQuads.length > 0 &&
+        rangeQuads[0].object.termType === "NamedNode"
+      ) {
         const rangeURI = rangeQuads[0].object.value;
         if (rangeURI.startsWith(ontologyBaseNS)) {
-          objectProperties[propId]["rdfs:range"] = extractLocalName(rangeURI, ontologyBaseNS);
+          objectProperties[propId]["rdfs:range"] = extractLocalName(
+            rangeURI,
+            ontologyBaseNS,
+          );
         }
       }
     }
 
     // Extract datatype properties
-    const dtPropQuads = store.getQuads(null, RDF.type, OWL.DatatypeProperty, null);
+    const dtPropQuads = store.getQuads(
+      null,
+      RDF.type,
+      OWL.DatatypeProperty,
+      null,
+    );
     for (const quad of dtPropQuads) {
       const propURI = quad.subject.value;
 
@@ -435,27 +502,52 @@ export class OntologyImporter {
       }
 
       // Extract comment
-      const commentQuads = store.getQuads(quad.subject, RDFS.comment, null, null);
-      if (commentQuads.length > 0 && commentQuads[0].object.termType === "Literal") {
-        datatypeProperties[propId]["rdfs:comment"] = commentQuads[0].object.value;
+      const commentQuads = store.getQuads(
+        quad.subject,
+        RDFS.comment,
+        null,
+        null,
+      );
+      if (
+        commentQuads.length > 0 &&
+        commentQuads[0].object.termType === "Literal"
+      ) {
+        datatypeProperties[propId]["rdfs:comment"] =
+          commentQuads[0].object.value;
       }
 
       // Extract domain (only internal references)
-      const domainQuads = store.getQuads(quad.subject, RDFS.domain, null, null);
-      if (domainQuads.length > 0 && domainQuads[0].object.termType === "NamedNode") {
+      const domainQuads = store.getQuads(
+        quad.subject,
+        RDFS.domain,
+        null,
+        null,
+      );
+      if (
+        domainQuads.length > 0 &&
+        domainQuads[0].object.termType === "NamedNode"
+      ) {
         const domainURI = domainQuads[0].object.value;
         if (domainURI.startsWith(ontologyBaseNS)) {
-          datatypeProperties[propId]["rdfs:domain"] = extractLocalName(domainURI, ontologyBaseNS);
+          datatypeProperties[propId]["rdfs:domain"] = extractLocalName(
+            domainURI,
+            ontologyBaseNS,
+          );
         }
       }
 
       // Extract range (XSD datatypes)
       const rangeQuads = store.getQuads(quad.subject, RDFS.range, null, null);
-      if (rangeQuads.length > 0 && rangeQuads[0].object.termType === "NamedNode") {
+      if (
+        rangeQuads.length > 0 &&
+        rangeQuads[0].object.termType === "NamedNode"
+      ) {
         const rangeURI = rangeQuads[0].object.value;
         // Keep XSD datatypes as-is
         if (rangeURI.startsWith("http://www.w3.org/2001/XMLSchema#")) {
-          datatypeProperties[propId]["rdfs:range"] = "xsd:" + extractLocalName(rangeURI, "http://www.w3.org/2001/XMLSchema#");
+          datatypeProperties[propId]["rdfs:range"] =
+            "xsd:" +
+            extractLocalName(rangeURI, "http://www.w3.org/2001/XMLSchema#");
         }
       }
     }

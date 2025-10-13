@@ -1,6 +1,12 @@
 // Import state management hooks for different parts of the application
 import React, { useState } from "react";
-import { useWorkbenchStateStore, useSearchStateStore, useSessionStore, useVectorSearch, useSettings } from "@trustgraph/react-state";
+import {
+  useWorkbenchStateStore,
+  useSearchStateStore,
+  useSessionStore,
+  useVectorSearch,
+  useSettings,
+} from "@trustgraph/react-state";
 
 // Import child components for search functionality
 import SearchInput from "./SearchInput";
@@ -45,7 +51,12 @@ const Search = () => {
     setLastSearchedTerm(search);
 
     // Trigger search - results will come via state.data
-    state.startSearch({ flow: flowId, term: search, limit: 10, collection: settings?.collection || "default" });
+    state.startSearch({
+      flow: flowId,
+      term: search,
+      limit: 10,
+      collection: settings?.collection || "default",
+    });
   };
 
   // Update view when search data changes
