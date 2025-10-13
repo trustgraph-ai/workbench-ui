@@ -213,7 +213,7 @@ export const MetadataEditor: React.FC<MetadataEditorProps> = ({
               Technical Details
             </Text>
 
-            <Field.Root required>
+            <Field.Root required invalid={!namespaceValid}>
               <Field.Label>
                 Namespace URI
                 <Field.RequiredIndicator />
@@ -222,7 +222,6 @@ export const MetadataEditor: React.FC<MetadataEditorProps> = ({
                 value={namespace}
                 onChange={(e) => setNamespace(e.target.value)}
                 placeholder="http://example.org/myontology#"
-                isInvalid={!namespaceValid}
               />
               <Text
                 fontSize="xs"
