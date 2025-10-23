@@ -22,7 +22,7 @@
     "@tanstack/react-table": "^8.21.3",
     "@trustgraph/client": "github:trustgraph-ai/trustgraph-client#master",
     "@trustgraph/react-provider": "github:trustgraph-ai/trustgraph-react-provider#master",
-    "@trustgraph/react-state": "github:trustgraph-ai/trustgraph-react-state#master",
+    "@trustgraph/react-state": "github:trustgraph-ai/trustgraph-react-state#d24cdec0",
     "@types/dagre": "^0.7.53",
     "compute-cosine-similarity": "^1.1.0",
     "dagre": "^0.8.5",
