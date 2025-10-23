@@ -6,6 +6,7 @@ import ReactDOM from "react-dom/client";
 import App from "./App";
 import { system } from "./theme";
 import { SocketProvider } from "./api/trustgraph/SocketProvider";
+import { SettingsLoadingBoundary } from "./providers/SettingsLoadingBoundary";
 import {
   NotificationProvider,
   NotificationHandler,
@@ -48,9 +49,11 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
       <NotificationProvider handler={notificationHandler}>
         <ChakraProvider value={system}>
           <ThemeProvider attribute="class" disableTransitionOnChange>
-            <SocketProvider>
-              <App />
-            </SocketProvider>
+            <SettingsLoadingBoundary>
+              <SocketProvider>
+                <App />
+              </SocketProvider>
+            </SettingsLoadingBoundary>
           </ThemeProvider>
         </ChakraProvider>
       </NotificationProvider>

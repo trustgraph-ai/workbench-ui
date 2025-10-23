@@ -1,12 +1,11 @@
 import React from "react";
-import { Box, Text } from "@chakra-ui/react";
+import { Box, Spinner, Text } from "@chakra-ui/react";
 import {
   SocketProvider as BaseSocketProvider,
   useSocket,
   useConnectionState,
 } from "@trustgraph/react-provider";
 import { useSettings } from "@trustgraph/react-state";
-import CenterSpinner from "../../components/common/CenterSpinner";
 
 // Re-export hooks for backward compatibility
 export { useSocket, useConnectionState };
@@ -16,35 +15,17 @@ interface SocketProviderProps {
 }
 
 /**
- * Workbench-specific SocketProvider that integrates with settings
+ * Application-specific SocketProvider that integrates with settings
  *
- * This wraps SocketProvider to provide:
- * 1. Settings management
- * 2. WebSocket connection with user authentication
- * 3. Custom loading UI with CenterSpinner
+ * Wraps BaseSocketProvider from @trustgraph/react-provider and configures it
+ * with user settings (user identity and API key).
+ *
+ * Note: Assumes settings are already loaded (enforced by SettingsLoadingBoundary)
  */
 export const SocketProvider: React.FC<SocketProviderProps> = ({
   children,
 }) => {
-  const { settings, isLoaded } = useSettings();
-
-  // Show loading state while settings load
-  if (!isLoaded) {
-    return (
-      <Box
-        width="100%"
-        height="100vh"
-        display="flex"
-        flexDirection="column"
-        alignItems="center"
-        justifyContent="center"
-        gap={4}
-      >
-        <CenterSpinner />
-        <Text color="fg.muted">Loading settings...</Text>
-      </Box>
-    );
-  }
+  const { settings } = useSettings();
 
   return (
     <BaseSocketProvider
@@ -60,7 +41,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
           justifyContent="center"
           gap={4}
         >
-          <CenterSpinner />
+          <Spinner size="xl" />
           <Text color="fg.muted">Connecting to server...</Text>
         </Box>
       }
