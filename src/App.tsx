@@ -33,7 +33,7 @@ import CenterSpinner from "./components/common/CenterSpinner";
 import Progress from "./components/common/Progress";
 import { Toaster } from "./components/ui/ToasterComponent";
 
-import { useSocket, useConnectionState } from "./api/trustgraph/socket";
+import { useSocket, useConnectionState } from "./api/trustgraph/SocketProvider";
 import {
   useProgressStateStore,
   useSessionStore,
