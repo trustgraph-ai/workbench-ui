@@ -4,7 +4,7 @@ import { Trash, SendHorizontal, Plus } from "lucide-react";
 
 import { Portal, Button, Dialog, Box, CloseButton } from "@chakra-ui/react";
 
-import { useSocket } from "../../api/trustgraph/SocketProvider";
+import { useSocket } from "@trustgraph/react-provider";
 import { useAgentTools } from "@trustgraph/react-state";
 import { useMcpTools } from "@trustgraph/react-state";
 import { usePrompts } from "@trustgraph/react-state";
