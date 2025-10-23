@@ -3,7 +3,7 @@ import { FileUp } from "lucide-react";
 
 import { SimpleGrid, Stack, Box } from "@chakra-ui/react";
 
-import { useSocket } from "../api/trustgraph/socket";
+import { useSocket } from "@trustgraph/react-provider";
 
 import Title from "../components/load/Title";
 import Comments from "../components/load/Comments";
