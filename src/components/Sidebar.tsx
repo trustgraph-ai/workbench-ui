@@ -12,6 +12,7 @@ import {
 } from "@chakra-ui/react";
 
 import { NavLink as ReactRouterNavLink } from "react-router";
+import { useSettings } from "@trustgraph/react-state";
 
 const ChakraNavLink = chakra(ReactRouterNavLink);
 
@@ -19,18 +20,23 @@ import {
   TestTube2,
   Hammer,
   Plug,
+  Bot,
   MessageSquareText,
   Search,
   Waypoints,
   Rotate3d,
   //  FileUp,
   Workflow,
-  //  ScrollText,
+  ScrollText,
   LibraryBig,
   BrainCircuit,
   CircleArrowRight,
   HandCoins,
   MessageCircleCode,
+  Database,
+  Network,
+  FileSearch,
+  Settings,
 } from "lucide-react";
 
 interface NavItemProps {
@@ -64,6 +70,8 @@ const NavItem: React.FC<NavItemProps> = ({ to, icon, label }) => {
 };
 
 const Sidebar = () => {
+  const { settings } = useSettings();
+
   return (
     <Box
       bg="colors.background"
@@ -111,16 +119,41 @@ const Sidebar = () => {
         <NavItem to="/entity" icon={Waypoints} label="Relationships" />
         <NavItem to="/graph" icon={Rotate3d} label="Graph Visualizer" />
         <NavItem to="/library" icon={LibraryBig} label="Library" />
-        {/*
-        <NavItem to="/flow-classes" icon={ScrollText} label="Flow Classes" />
-*/}
+        {settings.featureSwitches.flowClasses && (
+          <NavItem to="/flow-classes" icon={ScrollText} label="Flow Classes" />
+        )}
         <NavItem to="/flows" icon={Workflow} label="Flows" />
         <NavItem to="/kc" icon={BrainCircuit} label="Knowledge Cores" />
-        <NavItem to="/procs" icon={CircleArrowRight} label="Submissions" />
-        <NavItem to="/tokencost" icon={HandCoins} label="Token Cost" />
+        {settings.featureSwitches.submissions && (
+          <NavItem to="/procs" icon={CircleArrowRight} label="Submissions" />
+        )}
+        {settings.featureSwitches.tokenCost && (
+          <NavItem to="/tokencost" icon={HandCoins} label="Token Cost" />
+        )}
         <NavItem to="/prompts" icon={MessageCircleCode} label="Prompts" />
-        <NavItem to="/agents" icon={Hammer} label="Agent Tools" />
-        <NavItem to="/mcp-tools" icon={Plug} label="MCP Tools" />
+        {settings.featureSwitches.schemas && (
+          <NavItem to="/schemas" icon={Database} label="Schemas" />
+        )}
+        {settings.featureSwitches.structuredQuery && (
+          <NavItem
+            to="/structured-query"
+            icon={FileSearch}
+            label="Structured Query"
+          />
+        )}
+        {settings.featureSwitches.ontologyEditor && (
+          <NavItem to="/ontologies" icon={Network} label="Ontologies" />
+        )}
+        {settings.featureSwitches.agentTools && (
+          <NavItem to="/agents" icon={Hammer} label="Agent Tools" />
+        )}
+        {settings.featureSwitches.mcpTools && (
+          <NavItem to="/mcp-tools" icon={Plug} label="MCP Tools" />
+        )}
+        {settings.featureSwitches.llmModels && (
+          <NavItem to="/llm-models" icon={Bot} label="LLM Models" />
+        )}
+        <NavItem to="/settings" icon={Settings} label="Settings" />
       </VStack>
     </Box>
   );

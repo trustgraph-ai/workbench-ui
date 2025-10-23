@@ -2,7 +2,7 @@ import React, { useState } from "react";
 
 import { Tabs } from "@chakra-ui/react";
 
-import { usePrompts } from "../../state/prompts";
+import { usePrompts } from "@trustgraph/react-state";
 
 import EditDialog from "./EditDialog";
 import PromptControls from "./PromptControls";

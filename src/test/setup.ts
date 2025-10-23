@@ -1,5 +1,6 @@
 import "@testing-library/jest-dom";
-import { vi } from "vitest";
+import { vi, beforeEach } from "vitest";
+import type { MockedObject } from "vitest";
 
 // Mock WebSocket globally
 global.WebSocket = vi.fn(() => ({
@@ -8,7 +9,7 @@ global.WebSocket = vi.fn(() => ({
   send: vi.fn(),
   close: vi.fn(),
   readyState: 1,
-})) as any;
+})) as MockedObject<WebSocket>;
 
 // Mock ResizeObserver
 global.ResizeObserver = vi.fn(() => ({
@@ -49,4 +50,41 @@ Object.defineProperty(window, "location", {
     hash: "",
   },
   writable: true,
+});
+
+// Set up DOM for Portal components globally
+// Create portal containers that persist across tests
+const setupPortalContainers = () => {
+  // Ensure portal containers exist for Dialog and other Portal components
+  if (!document.getElementById("chakra-portal")) {
+    const portalRoot = document.createElement("div");
+    portalRoot.setAttribute("id", "chakra-portal");
+    document.body.appendChild(portalRoot);
+  }
+
+  // Also create a generic portal root that some components might use
+  if (!document.getElementById("portal-root")) {
+    const portalRoot = document.createElement("div");
+    portalRoot.setAttribute("id", "portal-root");
+    document.body.appendChild(portalRoot);
+  }
+};
+
+// Set up portals immediately when setup runs
+setupPortalContainers();
+
+beforeEach(() => {
+  // Ensure portal containers are clean but still exist
+  const chakraPortal = document.getElementById("chakra-portal");
+  if (chakraPortal) {
+    chakraPortal.innerHTML = "";
+  }
+
+  const portalRoot = document.getElementById("portal-root");
+  if (portalRoot) {
+    portalRoot.innerHTML = "";
+  }
+
+  // Recreate if they were removed
+  setupPortalContainers();
 });

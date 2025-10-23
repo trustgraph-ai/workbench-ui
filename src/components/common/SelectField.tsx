@@ -1,4 +1,21 @@
-import React from "react";
+/*
+ * CRITICAL: DO NOT MODIFY THIS COMPONENT WITHOUT DESIGN AUTHORITY APPROVAL
+ *
+ * This SelectField component is used throughout the application by 15+ components
+ * across multiple domains (ontologies, flows, documents, etc.). Any changes to
+ * this component's interface or behavior will have extensive downstream impact.
+ *
+ * Changes to this component in September 2025 broke multiple features and required
+ * systematic updates across the entire application. Always prefer adapter patterns
+ * or feature-specific solutions over modifying this shared infrastructure.
+ *
+ * Required API contract:
+ * - value: string[] (arrays only)
+ * - onValueChange: (values: string[]) => void
+ * - items must include description fields with SelectOptionText/SelectOption
+ */
+
+import React, { useMemo } from "react";
 import {
   Field,
   Select,
@@ -18,8 +35,8 @@ interface SelectFieldProps {
 
   items: SelectFieldValue[];
 
-  value: string;
-  onValueChange: (x: string) => void;
+  value: string[];
+  onValueChange: (x: string[]) => void;
 
   contentRef?;
 }
@@ -31,7 +48,11 @@ const SelectField: React.FC<SelectFieldProps> = ({
   onValueChange,
   contentRef,
 }) => {
-  const collection = createListCollection({ items: items });
+  // Only create new collection when items actually change
+  const collection = useMemo(
+    () => createListCollection({ items: items }),
+    [items],
+  );
 
   return (
     <Field.Root mb={4}>
@@ -39,8 +60,8 @@ const SelectField: React.FC<SelectFieldProps> = ({
 
       <Select.Root
         collection={collection}
-        value={[value]}
-        onValueChange={(e) => onValueChange(e.value[0])}
+        value={value}
+        onValueChange={(e) => onValueChange(e.value)}
       >
         <Select.HiddenSelect />
         <Select.Control>

@@ -25,8 +25,8 @@ const Help = () => {
               <Text>
                 You can use the mouse to zoom, pan and rotate the space to
                 explore different parts of the graph. Clicking on a graph node
-                adds more properties and relationships to the graph centered
-                on that node.
+                adds more properties and relationships to the graph centered on
+                that node.
               </Text>
             </Popover.Body>
           </Popover.Content>

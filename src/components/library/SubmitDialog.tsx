@@ -1,7 +1,7 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 
 import { SendHorizontal } from "lucide-react";
-import { useFlows } from "../../state/flows";
+import { useFlows } from "@trustgraph/react-state";
 
 import {
   List,
@@ -18,7 +18,10 @@ import ChipInputField from "../common/ChipInputField";
 
 const SubmitDialog = ({ open, onOpenChange, onSubmit, docs }) => {
   const flowState = useFlows();
-  const flows = flowState.flows ? flowState.flows : [];
+  const flows = useMemo(
+    () => (flowState.flows ? flowState.flows : []),
+    [flowState.flows],
+  );
 
   const flowOptions = flows.map((flow) => {
     return {
@@ -32,8 +35,15 @@ const SubmitDialog = ({ open, onOpenChange, onSubmit, docs }) => {
     };
   });
 
-  const [flow, setFlow] = useState(undefined);
+  const [flow, setFlow] = useState([]);
   const [tags, setTags] = useState([]);
+
+  // Set default flow when flows are loaded or dialog opens
+  useEffect(() => {
+    if (open && flows.length > 0 && flow.length === 0) {
+      setFlow([flows[0].id]);
+    }
+  }, [open, flows, flow]);
 
   const contentRef = useRef<HTMLDivElement>(null);
 
@@ -70,8 +80,8 @@ const SubmitDialog = ({ open, onOpenChange, onSubmit, docs }) => {
                   label="Processing flow"
                   items={flowOptions}
                   value={flow}
-                  onValueChange={(x) => {
-                    setFlow(x);
+                  onValueChange={(values) => {
+                    setFlow(values);
                   }}
                   contentRef={contentRef}
                 />
@@ -88,7 +98,9 @@ const SubmitDialog = ({ open, onOpenChange, onSubmit, docs }) => {
                 Cancel
               </Button>
               <Button
-                onClick={() => onSubmit(flow, tags)}
+                onClick={() =>
+                  onSubmit(flow.length > 0 ? flow[0] : null, tags)
+                }
                 colorPalette="primary"
               >
                 <SendHorizontal /> Submit

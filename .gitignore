@@ -23,4 +23,7 @@ dist-ssr
 *.sln
 *.sw?
 *~
-
+workbench-ui/workbench/__pycache__/
+workbench-ui/workbench/ui/
+workbench-ui/workbench/version.py
+*.egg-info/

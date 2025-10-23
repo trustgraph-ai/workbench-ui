@@ -2,7 +2,7 @@ import React from "react";
 
 import { Box } from "@chakra-ui/react";
 
-import { useLoadStateStore } from "../../state/load";
+import { useLoadStateStore } from "@trustgraph/react-state";
 
 import TextAreaField from "../common/TextAreaField";
 

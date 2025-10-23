@@ -3,7 +3,7 @@ import { FileUp } from "lucide-react";
 
 import { SimpleGrid, Stack, Box } from "@chakra-ui/react";
 
-import { useSocket } from "../api/trustgraph/socket";
+import { useSocket } from "@trustgraph/react-provider";
 
 import Title from "../components/load/Title";
 import Comments from "../components/load/Comments";
@@ -11,8 +11,8 @@ import Url from "../components/load/Url";
 import Keywords from "../components/load/Keywords";
 import Operation from "../components/load/Operation";
 import Content from "../components/load/Content";
-import { useProgressStateStore } from "../state/progress";
-import { useLoadStateStore } from "../state/load";
+import { useProgressStateStore } from "@trustgraph/react-state";
+import { useLoadStateStore } from "@trustgraph/react-state";
 import PageHeader from "../components/common/PageHeader";
 import { loadFile, loadText } from "../utils/document-load";
 import { toaster } from "../components/ui/toaster";

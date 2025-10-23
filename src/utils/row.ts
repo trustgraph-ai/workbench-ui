@@ -1,7 +1,6 @@
 import similarity from "compute-cosine-similarity";
 
-import { Value } from "./Triple";
-import { Socket } from "../socket/trustgraph-socket";
+import { Value, BaseApi } from "@trustgraph/client";
 import { RDFS_LABEL, SKOS_DEFINITION } from "./knowledge-graph";
 
 export interface Row {
@@ -17,10 +16,11 @@ export interface Row {
 // embeddings, add embedding to each entity row, just an easy
 // place to put it
 export const getGraphEmbeddings = (
-  socket: Socket,
+  socket: BaseApi,
   add: (s: string) => void,
   remove: (s: string) => void,
   limit?: number,
+  collection?: string,
 ) => {
   // Take the embeddings, and lookup entities using graph
   // embeddings, add embedding to each entity row, just an easy
@@ -30,13 +30,13 @@ export const getGraphEmbeddings = (
     add(act);
 
     return socket
-      .graphEmbeddingsQuery(vecs, limit ? limit : 10)
-      .then((ents: Value[]): Row[] =>
-        ents.map((ent) => {
-          remove(act);
+      .graphEmbeddingsQuery(vecs, limit ? limit : 10, collection)
+      .then((ents: Value[]): Row[] => {
+        remove(act);
+        return ents.map((ent) => {
           return { uri: ent.v, target: vecs[0] };
-        }),
-      )
+        });
+      })
       .catch((err) => {
         remove(act);
         throw err;
@@ -46,7 +46,12 @@ export const getGraphEmbeddings = (
 
 // For entities, lookup labels
 export const addRowLabels =
-  (socket: Socket, add: (s: string) => void, remove: (s: string) => void) =>
+  (
+    socket: BaseApi,
+    add: (s: string) => void,
+    remove: (s: string) => void,
+    collection?: string,
+  ) =>
   (entities: Row[]): Promise<Row[]> => {
     return Promise.all<Row>(
       entities.map((ent: Row) => {
@@ -58,6 +63,7 @@ export const addRowLabels =
             { v: RDFS_LABEL, e: true },
             undefined,
             1,
+            collection,
           )
           .then((t): Row => {
             if (t.length < 1) {
@@ -86,7 +92,12 @@ export const addRowLabels =
 
 // For entities, lookup definitions
 export const addRowDefinitions =
-  (socket: Socket, add: (s: string) => void, remove: (s: string) => void) =>
+  (
+    socket: BaseApi,
+    add: (s: string) => void,
+    remove: (s: string) => void,
+    collection?: string,
+  ) =>
   // For entities, lookup labels
   (entities: Row[]) => {
     return Promise.all<Row>(
@@ -99,6 +110,7 @@ export const addRowDefinitions =
             { v: SKOS_DEFINITION, e: true },
             undefined,
             1,
+            collection,
           )
           .then((t) => {
             if (t.length < 1) {
@@ -122,7 +134,7 @@ export const addRowDefinitions =
 
 // Compute an embedding for each entity based on its definition or label
 export const addRowEmbeddings =
-  (socket: Socket, add: (s: string) => void, remove: (s: string) => void) =>
+  (socket: BaseApi, add: (s: string) => void, remove: (s: string) => void) =>
   (entities: Row[]) => {
     return Promise.all<Row>(
       entities.map((ent) => {

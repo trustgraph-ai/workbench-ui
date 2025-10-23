@@ -4,7 +4,7 @@ import { SendHorizontal } from "lucide-react";
 
 import { Portal, Button, Dialog, CloseButton } from "@chakra-ui/react";
 
-import { usePrompts } from "../../state/prompts";
+import { usePrompts } from "@trustgraph/react-state";
 import TextAreaField from "../common/TextAreaField";
 
 const EditDialog = ({ open, onOpenChange, onComplete }) => {

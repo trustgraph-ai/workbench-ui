@@ -4,7 +4,7 @@ import { Play } from "lucide-react";
 
 import { Portal, Button, Dialog, Box, CloseButton } from "@chakra-ui/react";
 
-import { useFlows } from "../../state/flows";
+import { useFlows } from "@trustgraph/react-state";
 import SelectField from "../common/SelectField";
 import SelectOption from "../common/SelectOption";
 

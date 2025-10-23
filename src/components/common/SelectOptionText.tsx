@@ -1,3 +1,12 @@
+/*
+ * CRITICAL: DO NOT MODIFY THIS COMPONENT WITHOUT DESIGN AUTHORITY APPROVAL
+ *
+ * This SelectOptionText component is used by SelectField throughout the application.
+ * Changes to this component's interface or styling will affect all dropdown
+ * options across multiple domains. Any modifications require extensive testing
+ * and approval from the application design authority.
+ */
+
 import React from "react";
 import { Text } from "@chakra-ui/react";
 

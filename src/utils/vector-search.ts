@@ -13,6 +13,8 @@ export const vectorSearch = (
   addActivity,
   removeActivity,
   term: string,
+  collection?: string,
+  limit?: number,
 ) => {
   const api = socket.flow(flowId);
 
@@ -21,9 +23,17 @@ export const vectorSearch = (
 
   return api
     .embeddings(term)
-    .then(getGraphEmbeddings(api, addActivity, removeActivity, 10))
-    .then(addRowLabels(api, addActivity, removeActivity))
-    .then(addRowDefinitions(api, addActivity, removeActivity))
+    .then(
+      getGraphEmbeddings(
+        api,
+        addActivity,
+        removeActivity,
+        limit || 10,
+        collection,
+      ),
+    )
+    .then(addRowLabels(api, addActivity, removeActivity, collection))
+    .then(addRowDefinitions(api, addActivity, removeActivity, collection))
     .then(addRowEmbeddings(api, addActivity, removeActivity))
     .then(computeCosineSimilarity(addActivity, removeActivity))
     .then(sortSimilarity(addActivity, removeActivity))

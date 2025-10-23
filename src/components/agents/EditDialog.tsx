@@ -2,28 +2,18 @@ import React, { useEffect, useState, useRef } from "react";
 
 import { Trash, SendHorizontal, Plus } from "lucide-react";
 
-import {
-  Portal,
-  Button,
-  Dialog,
-  Box,
-  CloseButton,
-  Table,
-  Editable,
-  Popover,
-  Text,
-  RadioGroup,
-  Stack,
-} from "@chakra-ui/react";
+import { Portal, Button, Dialog, Box, CloseButton } from "@chakra-ui/react";
 
-import { useSocket } from "../../api/trustgraph/socket";
-import { useAgentTools } from "../../state/agent-tools";
-import { useMcpTools } from "../../state/mcp-tools";
-import { usePrompts } from "../../state/prompts";
+import { useSocket } from "@trustgraph/react-provider";
+import { useAgentTools } from "@trustgraph/react-state";
+import { useMcpTools } from "@trustgraph/react-state";
+import { usePrompts } from "@trustgraph/react-state";
 import SelectField from "../common/SelectField";
 import TextAreaField from "../common/TextAreaField";
 import TextField from "../common/TextField";
+import ChipInputField from "../common/ChipInputField";
 import { toaster } from "../ui/toaster";
+import EditableArgumentsTable from "./EditableArgumentsTable";
 
 const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
   const socket = useSocket();
@@ -39,6 +29,9 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
   const [templateId, setTemplateId] = useState("");
   const [mcpToolId, setMcpToolId] = useState("");
   const [collection, setCollection] = useState("");
+  const [group, setGroup] = useState([]);
+  const [state, setState] = useState("");
+  const [applicableStates, setApplicableStates] = useState([]);
 
   const [editArgIx, setEditArgIx] = useState(-1);
 
@@ -63,6 +56,10 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
         setMcpToolId(x.mcp_tool_id || x["mcp-tool"] || "");
         // Handle collection attribute for knowledge-query tools
         setCollection(x.collection || "");
+        // Handle new optional fields
+        setGroup(x.group || []);
+        setState(x.state || "");
+        setApplicableStates(x["applicable-states"] || []);
       })
       .catch((e) => {
         console.log("Error:", e);
@@ -85,6 +82,12 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
       description: "Uses the GraphRAG service for knowledge",
     },
     {
+      value: "structured-query",
+      label: "Structured Query",
+      description:
+        "Execute natural language questions against records in a structured data / object store",
+    },
+    {
       value: "mcp-tool",
       label: "MCP Tool",
       description: "Uses the mcp-tool service to access a remote MCP tool",
@@ -99,14 +102,14 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
   const contentRef = useRef<HTMLDivElement>(null);
 
   // Create options for MCP tools select menu
-  const mcpToolOptions = mcpTools.map(([id, tool]) => ({
+  const mcpToolOptions = mcpTools.map(([id]) => ({
     value: id,
     label: id,
     description: id,
   }));
 
   // Create options for prompt templates select menu
-  const promptTemplateOptions = prompts.map(([id, prompt]) => ({
+  const promptTemplateOptions = prompts.map(([id]) => ({
     value: id,
     label: id,
     description: id,
@@ -122,8 +125,14 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
       arguments: args,
       ...(type === "prompt" && templateId && { template: templateId }),
       ...(type === "mcp-tool" && mcpToolId && { "mcp-tool": mcpToolId }),
-      ...(type === "knowledge-query" &&
+      ...((type === "knowledge-query" || type === "structured-query") &&
         collection && { collection: collection }),
+      ...(group && group.length > 0 && { group: group }),
+      ...(state && { state: state }),
+      ...(applicableStates &&
+        applicableStates.length > 0 && {
+          "applicable-states": applicableStates,
+        }),
     };
 
     if (create) {
@@ -142,6 +151,10 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
         type: "string",
       },
     ]);
+  };
+
+  const deleteArgument = (index) => {
+    setArgs((x) => x.filter((_, i) => i !== index));
   };
 
   const setArgAttr = (id, key, value) => {
@@ -215,8 +228,8 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
               <SelectField
                 label="Tool type"
                 items={typeOptions}
-                value={type}
-                onValueChange={(v) => setType(v)}
+                value={type ? [type] : []}
+                onValueChange={(v) => setType(v[0])}
                 contentRef={contentRef}
               />
 
@@ -224,8 +237,8 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
                 <SelectField
                   label="Template ID"
                   items={promptTemplateOptions}
-                  value={templateId}
-                  onValueChange={(v) => setTemplateId(v)}
+                  value={templateId ? [templateId] : []}
+                  onValueChange={(v) => setTemplateId(v[0] || "")}
                   contentRef={contentRef}
                 />
               )}
@@ -234,13 +247,13 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
                 <SelectField
                   label="MCP Tool ID"
                   items={mcpToolOptions}
-                  value={mcpToolId}
-                  onValueChange={(v) => setMcpToolId(v)}
+                  value={mcpToolId ? [mcpToolId] : []}
+                  onValueChange={(v) => setMcpToolId(v[0] || "")}
                   contentRef={contentRef}
                 />
               )}
 
-              {type === "knowledge-query" && (
+              {(type === "knowledge-query" || type === "structured-query") && (
                 <TextField
                   label="Collection"
                   placeholder="Enter the knowledge collection (optional)"
@@ -250,95 +263,35 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
                 />
               )}
 
-              {type === "prompt" && (
+              <ChipInputField
+                label="Groups"
+                values={group}
+                onValuesChange={setGroup}
+              />
+
+              <TextField
+                label="Next State"
+                placeholder="Optional: Specify which state the agent should move to after successfully using this tool. Used to create multi-step workflows."
+                value={state}
+                onValueChange={(v) => setState(v)}
+                required={false}
+              />
+
+              <ChipInputField
+                label="Applicable States"
+                values={applicableStates}
+                onValuesChange={setApplicableStates}
+              />
+
+              {(type === "prompt" || type === "mcp-tool") && (
                 <>
-                  <Table.Root interactive size="xs">
-                    <Table.Header>
-                      <Table.Row>
-                        <Table.ColumnHeader>Name</Table.ColumnHeader>
-                        <Table.ColumnHeader>Description</Table.ColumnHeader>
-                        <Table.ColumnHeader>Type</Table.ColumnHeader>
-                      </Table.Row>
-                    </Table.Header>
-                    <Table.Body>
-                      {args.map((arg, ix) => (
-                        <Table.Row key={ix}>
-                          <Table.Cell width="20%">
-                            <Editable.Root
-                              autoResize={false}
-                              value={arg.name}
-                              onValueChange={(v) =>
-                                setArgAttr(ix, "name", v.value)
-                              }
-                            >
-                              <Editable.Preview />
-                              <Editable.Input />
-                            </Editable.Root>
-                          </Table.Cell>
-                          <Table.Cell width="50%">
-                            <Editable.Root
-                              value={arg.description}
-                              onValueChange={(v) =>
-                                setArgAttr(ix, "description", v.value)
-                              }
-                            >
-                              <Editable.Preview />
-                              <Editable.Input />
-                            </Editable.Root>
-                          </Table.Cell>
-                          <Table.Cell
-                            onClick={() => {
-                              setEditArgIx(ix);
-                            }}
-                          >
-                            {editArgIx == ix && (
-                              <Popover.Root
-                                open={editArgIx == ix}
-                                onOpenChange={(e) => {
-                                  if (e) setEditArgIx(-1);
-                                }}
-                              >
-                                <Popover.Trigger asChild>
-                                  <Text>{arg.type}</Text>
-                                </Popover.Trigger>
-                                <Popover.Positioner>
-                                  <Popover.Content>
-                                    <Popover.Arrow />
-                                    <Popover.Body>
-                                      <RadioGroup.Root
-                                        value={args[ix].type}
-                                        onValueChange={(v) =>
-                                          setArgAttr(ix, "type", v.value)
-                                        }
-                                      >
-                                        <Stack gap="6">
-                                          <RadioGroup.Item value={"string"}>
-                                            <RadioGroup.ItemHiddenInput />
-                                            <RadioGroup.ItemIndicator />
-                                            <RadioGroup.ItemText>
-                                              string
-                                            </RadioGroup.ItemText>
-                                          </RadioGroup.Item>
-                                          <RadioGroup.Item value={"number"}>
-                                            <RadioGroup.ItemHiddenInput />
-                                            <RadioGroup.ItemIndicator />
-                                            <RadioGroup.ItemText>
-                                              number
-                                            </RadioGroup.ItemText>
-                                          </RadioGroup.Item>
-                                        </Stack>
-                                      </RadioGroup.Root>
-                                    </Popover.Body>
-                                  </Popover.Content>
-                                </Popover.Positioner>
-                              </Popover.Root>
-                            )}
-                            {editArgIx != ix && arg.type}
-                          </Table.Cell>
-                        </Table.Row>
-                      ))}
-                    </Table.Body>
-                  </Table.Root>
+                  <EditableArgumentsTable
+                    args={args}
+                    editArgIx={editArgIx}
+                    setEditArgIx={setEditArgIx}
+                    setArgAttr={setArgAttr}
+                    deleteArg={deleteArgument}
+                  />
 
                   <Box mt={5}>
                     <Button

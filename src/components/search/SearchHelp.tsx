@@ -30,10 +30,10 @@ const SearchHelp = () => {
               <Popover.Title fontWeight="medium">Search</Popover.Title>
               <Text m={2}>
                 {/* Explanation of semantic search functionality */}
-                The Search assistant lets you enter terms for semantic
-                matching against known entities in the knowledge graph. Just
-                enter a natural language term, and the search assistant will
-                find things that closely match what you enter.
+                The Search assistant lets you enter terms for semantic matching
+                against known entities in the knowledge graph. Just enter a
+                natural language term, and the search assistant will find
+                things that closely match what you enter.
               </Text>
             </Popover.Body>
           </Popover.Content>

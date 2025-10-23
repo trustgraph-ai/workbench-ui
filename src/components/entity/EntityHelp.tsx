@@ -18,15 +18,14 @@ const EntityHelp = () => {
             <Popover.Body p={5}>
               <Popover.Title fontWeight="medium">Explore</Popover.Title>
               <Text m={2}>
-                The Explore page shows properties and relationships of
-                entities in the knowledge graph. On this page, you can
-                navigate by selecting other knowledge graph entities and
-                seeing the properties and relationships related to those
-                entities.
+                The Explore page shows properties and relationships of entities
+                in the knowledge graph. On this page, you can navigate by
+                selecting other knowledge graph entities and seeing the
+                properties and relationships related to those entities.
               </Text>
               <Text>
-                Selecting the Graph View button shows you the same
-                information, but presented in a 3D graphical form.
+                Selecting the Graph View button shows you the same information,
+                but presented in a 3D graphical form.
               </Text>
             </Popover.Body>
           </Popover.Content>

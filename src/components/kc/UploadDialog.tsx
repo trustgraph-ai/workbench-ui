@@ -4,7 +4,9 @@ import { Upload, FilePlus } from "lucide-react";
 
 import { Portal, Button, Dialog, Box, CloseButton } from "@chakra-ui/react";
 
-import { useKnowledgeCores } from "../../state/knowledge-cores";
+import { useKnowledgeCores } from "@trustgraph/react-state";
+import { useSettings } from "@trustgraph/react-state";
+import { createAuthenticatedFetch } from "../../api/authenticated-fetch";
 import TextField from "../common/TextField";
 
 const UploadDialog = ({ open, onOpenChange }) => {
@@ -12,6 +14,7 @@ const UploadDialog = ({ open, onOpenChange }) => {
   const [id, setId] = useState("");
 
   const knowledgeCoresState = useKnowledgeCores();
+  const { settings } = useSettings();
 
   const fl2a = (x: FileList | null): File[] => {
     if (x) return Array.from(x);
@@ -35,17 +38,27 @@ const UploadDialog = ({ open, onOpenChange }) => {
       "&user=" +
       encodeURIComponent("trustgraph");
 
-    fetch(url, {
+    // Use authenticated fetch with current API key
+    const authenticatedFetch = createAuthenticatedFetch(
+      settings.authentication.apiKey,
+    );
+
+    authenticatedFetch(url, {
       method: "POST",
       body: file,
-    }).then(() => {
-      console.log("Upload success.");
-      setFiles([]);
-      setId("");
-      onOpenChange(false);
-      // Refresh the knowledge cores list
-      knowledgeCoresState.refetch();
-    });
+    })
+      .then(() => {
+        console.log("Upload success.");
+        setFiles([]);
+        setId("");
+        onOpenChange(false);
+        // Refresh the knowledge cores list
+        knowledgeCoresState.refetch();
+      })
+      .catch((error) => {
+        console.error("Upload failed:", error);
+        // TODO: Show error notification to user
+      });
   };
 
   return (

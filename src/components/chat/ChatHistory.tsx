@@ -2,12 +2,12 @@ import React, { useEffect, useRef } from "react";
 
 import { Box, Text, VStack, HStack, Avatar, Spacer } from "@chakra-ui/react";
 
-import { useChatStateStore } from "../../state/chat";
+import { useConversation } from "@trustgraph/react-state";
 import ChatMessage from "./ChatMessage";
 import ChatModeSelector from "./ChatModeSelector";
 
 const ChatHistory = () => {
-  const messages = useChatStateStore((state) => state.messages);
+  const messages = useConversation((state) => state.messages);
 
   const scrollRef = useRef<HTMLInputElement>(null);
 

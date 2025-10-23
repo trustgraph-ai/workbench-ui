@@ -9,6 +9,8 @@ interface TextFieldProps {
   onValueChange: (x: string) => void;
   required?: boolean;
   helperText?: string;
+  disabled?: boolean;
+  type?: string;
 }
 
 const TextField: React.FC<TextFieldProps> = ({
@@ -18,6 +20,8 @@ const TextField: React.FC<TextFieldProps> = ({
   onValueChange,
   required,
   helperText,
+  disabled,
+  type = "text",
 }) => {
   return (
     <Field.Root mb={4} required={required}>
@@ -25,10 +29,12 @@ const TextField: React.FC<TextFieldProps> = ({
         {label} {required && <Field.RequiredIndicator />}
       </Field.Label>
       <Input
+        type={type}
         value={value}
         onChange={(e) => onValueChange(e.target.value)}
         placeholder={placeholder}
         variant="subtle"
+        disabled={disabled}
       />
       {helperText && <Field.HelperText>{helperText}</Field.HelperText>}
     </Field.Root>

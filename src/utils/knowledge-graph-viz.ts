@@ -1,7 +1,7 @@
 // Functionality here helps construct subgraphs for react-force-graph
 // visualisation
 
-import { Triple } from "./Triple";
+import { Triple, BaseApi } from "@trustgraph/client";
 import {
   query,
   labelS,
@@ -9,7 +9,6 @@ import {
   labelO,
   filterInternals,
 } from "./knowledge-graph";
-import { Socket } from "../socket/trustgraph-socket";
 
 interface Node {
   id: string;
@@ -104,24 +103,25 @@ export const updateSubgraphTriples = (sg: Subgraph, triples: Triple[]) => {
 };
 
 export const updateSubgraph = (
-  socket: Socket,
+  socket: BaseApi,
   flowId: string,
   uri: string,
   sg: Subgraph,
   add: (s: string) => void,
   remove: (s: string) => void,
+  collection?: string,
 ) => {
   const api = socket.flow(flowId);
-  return query(api, uri, add, remove)
-    .then((d) => labelS(api, d, add, remove))
-    .then((d) => labelP(api, d, add, remove))
-    .then((d) => labelO(api, d, add, remove))
+  return query(api, uri, add, remove, undefined, collection)
+    .then((d) => labelS(api, d, add, remove, collection))
+    .then((d) => labelP(api, d, add, remove, collection))
+    .then((d) => labelO(api, d, add, remove, collection))
     .then((d) => filterInternals(d))
     .then((d) => updateSubgraphTriples(sg, d));
 };
 
 export const updateSubgraphByRelationship = (
-  socket: Socket,
+  socket: BaseApi,
   flowId: string,
   selectedNodeId: string,
   relationshipUri: string,
@@ -129,35 +129,39 @@ export const updateSubgraphByRelationship = (
   sg: Subgraph,
   add: (s: string) => void,
   remove: (s: string) => void,
+  collection?: string,
 ) => {
   const api = socket.flow(flowId);
   const activityName = `Following ${direction} relationship: ${relationshipUri}`;
-  
+
   add(activityName);
-  
+
   // Build the query based on direction
-  const queryPromise = direction === "outgoing" 
-    ? api.triplesQuery(
-        { v: selectedNodeId, e: true },  // s = selectedNode
-        { v: relationshipUri, e: true }, // p = relationship
-        undefined,                       // o = ??? (what we want to find)
-        20 // Limit results
-      )
-    : api.triplesQuery(
-        undefined,                       // s = ??? (what we want to find) 
-        { v: relationshipUri, e: true }, // p = relationship
-        { v: selectedNodeId, e: true },  // o = selectedNode
-        20 // Limit results
-      );
-  
+  const queryPromise =
+    direction === "outgoing"
+      ? api.triplesQuery(
+          { v: selectedNodeId, e: true }, // s = selectedNode
+          { v: relationshipUri, e: true }, // p = relationship
+          undefined, // o = ??? (what we want to find)
+          20, // Limit results
+          collection,
+        )
+      : api.triplesQuery(
+          undefined, // s = ??? (what we want to find)
+          { v: relationshipUri, e: true }, // p = relationship
+          { v: selectedNodeId, e: true }, // o = selectedNode
+          20, // Limit results
+          collection,
+        );
+
   return queryPromise
     .then((triples) => {
       remove(activityName);
       return triples;
     })
-    .then((d) => labelS(api, d, add, remove))
-    .then((d) => labelP(api, d, add, remove))
-    .then((d) => labelO(api, d, add, remove))
+    .then((d) => labelS(api, d, add, remove, collection))
+    .then((d) => labelP(api, d, add, remove, collection))
+    .then((d) => labelO(api, d, add, remove, collection))
     .then((d) => filterInternals(d))
     .then((d) => updateSubgraphTriples(sg, d));
 };

@@ -1,5 +1,4 @@
-import { Socket } from "../socket/trustgraph-socket";
-import { Triple } from "./Triple";
+import { BaseApi, Triple } from "@trustgraph/client";
 
 export const RDFS_LABEL = "http://www.w3.org/2000/01/rdf-schema#label";
 
@@ -36,11 +35,12 @@ export const LIMIT = 30;
 
 // Query triples which match URI on 's'
 export const queryS = (
-  socket: Socket,
+  socket: BaseApi,
   uri: string,
   add: (s: string) => void,
   remove: (s: string) => void,
   limit?: number,
+  collection?: string,
 ) => {
   const act = "Query S: " + uri;
   add(act);
@@ -51,6 +51,7 @@ export const queryS = (
       undefined,
       undefined,
       limit ? limit : LIMIT,
+      collection,
     )
     .then((x) => {
       remove(act);
@@ -64,11 +65,12 @@ export const queryS = (
 
 // Query triples which match URI on 'p'
 export const queryP = (
-  socket: Socket,
+  socket: BaseApi,
   uri: string,
   add: (s: string) => void,
   remove: (s: string) => void,
   limit?: number,
+  collection?: string,
 ) => {
   const act = "Query P: " + uri;
   add(act);
@@ -79,6 +81,7 @@ export const queryP = (
       { v: uri, e: true },
       undefined,
       limit ? limit : LIMIT,
+      collection,
     )
     .then((x) => {
       remove(act);
@@ -92,11 +95,12 @@ export const queryP = (
 
 // Query triples which match URI on 'o'
 export const queryO = (
-  socket: Socket,
+  socket: BaseApi,
   uri: string,
   add: (s: string) => void,
   remove: (s: string) => void,
   limit?: number,
+  collection?: string,
 ) => {
   const act = "Query O: " + uri;
   add(act);
@@ -107,6 +111,7 @@ export const queryO = (
       undefined,
       { v: uri, e: true },
       limit ? limit : LIMIT,
+      collection,
     )
     .then((x) => {
       remove(act);
@@ -120,19 +125,20 @@ export const queryO = (
 
 // Query triples which match URI on 's', 'p' or 'o'.
 export const query = (
-  socket: Socket,
+  socket: BaseApi,
   uri: string,
   add: (s: string) => void,
   remove: (s: string) => void,
   limit?: number,
+  collection?: string,
 ) => {
   const act = "Query: " + uri;
   add(act);
 
   return Promise.all([
-    queryS(socket, uri, add, remove, limit),
-    queryP(socket, uri, add, remove, limit),
-    queryO(socket, uri, add, remove, limit),
+    queryS(socket, uri, add, remove, limit, collection),
+    queryP(socket, uri, add, remove, limit, collection),
+    queryO(socket, uri, add, remove, limit, collection),
   ])
     .then((resp) => {
       return resp[0].concat(resp[1]).concat(resp[2]);
@@ -150,10 +156,11 @@ export const query = (
 // Convert a URI to its label by querying the graph store, returns a
 // promise
 export const queryLabel = (
-  socket: Socket,
+  socket: BaseApi,
   uri: string,
   add: (s: string) => void,
   remove: (s: string) => void,
+  collection?: string,
 ): Promise<string> => {
   const act = "Label " + uri;
 
@@ -171,6 +178,7 @@ export const queryLabel = (
       { v: RDFS_LABEL, e: true },
       undefined,
       1,
+      collection,
     )
     .then((triples: Triple[]) => {
       // If got a result, return the label, otherwise the URI
@@ -191,22 +199,25 @@ export const queryLabel = (
 // Add 'label' elements to 's' elements in a list of triples.
 // Returns a promise
 export const labelS = (
-  socket: Socket,
+  socket: BaseApi,
   triples: Triple[],
   add: (s: string) => void,
   remove: (s: string) => void,
+  collection?: string,
 ) => {
   return Promise.all(
     triples.map((t) => {
-      return queryLabel(socket, t.s.v, add, remove).then((label: string) => {
-        return {
-          ...t,
-          s: {
-            ...t.s,
-            label: label,
-          },
-        };
-      });
+      return queryLabel(socket, t.s.v, add, remove, collection).then(
+        (label: string) => {
+          return {
+            ...t,
+            s: {
+              ...t.s,
+              label: label,
+            },
+          };
+        },
+      );
     }),
   );
 };
@@ -214,22 +225,25 @@ export const labelS = (
 // Add 'label' elements to 'p' elements in a list of triples.
 // Returns a promise
 export const labelP = (
-  socket: Socket,
+  socket: BaseApi,
   triples: Triple[],
   add: (s: string) => void,
   remove: (s: string) => void,
+  collection?: string,
 ) => {
   return Promise.all(
     triples.map((t) => {
-      return queryLabel(socket, t.p.v, add, remove).then((label: string) => {
-        return {
-          ...t,
-          p: {
-            ...t.p,
-            label: label,
-          },
-        };
-      });
+      return queryLabel(socket, t.p.v, add, remove, collection).then(
+        (label: string) => {
+          return {
+            ...t,
+            p: {
+              ...t.p,
+              label: label,
+            },
+          };
+        },
+      );
     }),
   );
 };
@@ -237,17 +251,18 @@ export const labelP = (
 // Add 'label' elements to 'o' elements in a list of triples.
 // Returns a promise
 export const labelO = (
-  socket: Socket,
+  socket: BaseApi,
   triples: Triple[],
   add: (s: string) => void,
   remove: (s: string) => void,
+  collection?: string,
 ) => {
   return Promise.all(
     triples.map((t) => {
       // If the 'o' element is a entity, do a label lookup, else
       // just use the literal value for its label
       if (t.o.e)
-        return queryLabel(socket, t.o.v, add, remove).then(
+        return queryLabel(socket, t.o.v, add, remove, collection).then(
           (label: string) => {
             return {
               ...t,
@@ -286,30 +301,33 @@ export const filterInternals = (triples: Triple[]) =>
 // Generic triple fetcher, fetches triples related to a URI, adds labels
 // and provides over-arching uri/label props for the input URI
 export const getTriples = (
-  socket: Socket,
+  socket: BaseApi,
   flowId: string,
   uri: string,
   add: (s: string) => void,
   remove: (s: string) => void,
   limit?: number,
+  collection?: string,
 ) => {
   // FIXME: Cache more
   // FIXME: Too many queries
 
   const api = socket.flow(flowId);
 
-  return query(api, uri, add, remove, limit)
-    .then((d) => labelS(api, d, add, remove))
-    .then((d) => labelP(api, d, add, remove))
-    .then((d) => labelO(api, d, add, remove))
+  return query(api, uri, add, remove, limit, collection)
+    .then((d) => labelS(api, d, add, remove, collection))
+    .then((d) => labelP(api, d, add, remove, collection))
+    .then((d) => labelO(api, d, add, remove, collection))
     .then((d) => filterInternals(d))
     .then((d) => {
-      return queryLabel(api, uri, add, remove).then((label: string) => {
-        return {
-          triples: d,
-          uri: uri,
-          label: label,
-        };
-      });
+      return queryLabel(api, uri, add, remove, collection).then(
+        (label: string) => {
+          return {
+            triples: d,
+            uri: uri,
+            label: label,
+          };
+        },
+      );
     });
 };

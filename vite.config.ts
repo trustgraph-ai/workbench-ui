@@ -4,6 +4,10 @@ import react from "@vitejs/plugin-react";
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
+  resolve: {
+    preserveSymlinks: true,
+    dedupe: ["react", "react-dom", "@trustgraph/react-provider"],
+  },
   server: {
     proxy: {
       "/api/socket": {
@@ -12,8 +16,8 @@ export default defineConfig({
         changeOrigin: true,
         ws: true,
         secure: false,
-        //          rewrite: () => "/api/v1/socket?token=Ky3X4us4lsHO4lVg4sZB1UPi9qBFZCvVLdTzHHMYTHk&entity=mark%40trustgraph.ai%2Fdocker-compose",
-        rewrite: () => "/api/v1/socket",
+        // Preserve query parameters (like ?token=hello) when rewriting
+        rewrite: (path) => path.replace("/api/socket", "/api/v1/socket"),
       },
       "/api/export-core": {
         target: "http://localhost:8088/",

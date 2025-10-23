@@ -1,6 +1,6 @@
 import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
 
-import { useFlows } from "../../state/flows";
+import { useFlows } from "@trustgraph/react-state";
 
 import SelectableTable from "../common/SelectableTable";
 import Actions from "./Actions";

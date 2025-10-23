@@ -4,7 +4,7 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import ProgressSubmitButton from "../ProgressSubmitButton";
 
 // Helper function to filter out Chakra UI props
-const filterChakraProps = (props: any) => {
+const filterChakraProps = (props: Record<string, unknown>) => {
   const chakraProps = [
     "alignItems",
     "justifyContent",
@@ -106,12 +106,27 @@ const filterChakraProps = (props: any) => {
 
 // Mock Chakra UI components
 vi.mock("@chakra-ui/react", () => ({
-  Box: ({ children, ...props }: any) => (
+  Box: ({
+    children,
+    ...props
+  }: React.PropsWithChildren<Record<string, unknown>>) => (
     <div data-testid="box" {...filterChakraProps(props)}>
       {children}
     </div>
   ),
-  Button: ({ children, onClick, disabled, loading, ...props }: any) => (
+  Button: ({
+    children,
+    onClick,
+    disabled,
+    loading,
+    ...props
+  }: React.PropsWithChildren<
+    {
+      onClick?: React.MouseEventHandler<HTMLButtonElement>;
+      disabled?: boolean;
+      loading?: boolean;
+    } & Record<string, unknown>
+  >) => (
     <button
       data-testid="progress-button"
       onClick={onClick}
