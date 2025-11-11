@@ -11,6 +11,7 @@ const McpToolsTable = ({ setSelected, tools }) => {
       id,
       "remote-name": config?.["remote-name"] || "",
       url: config?.url || "",
+      "auth-token": config?.["auth-token"],
     }));
   }, [tools]);
 
