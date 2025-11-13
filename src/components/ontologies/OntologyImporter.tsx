@@ -246,7 +246,12 @@ export class OntologyImporter {
     if (ontologyQuads.length > 0) {
       const ontologySubject = ontologyQuads[0].subject;
       // Store the ontology's own URI in the namespace field
-      metadata.namespace = ontologySubject.value;
+      // Ensure it ends with # or / for proper URI construction
+      let ontologyURI = ontologySubject.value;
+      if (!ontologyURI.endsWith("#") && !ontologyURI.endsWith("/")) {
+        ontologyURI += "#";
+      }
+      metadata.namespace = ontologyURI;
 
       // Extract title
       const titleQuads = [
