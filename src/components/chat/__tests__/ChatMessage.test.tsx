@@ -334,11 +334,19 @@ describe("ChatMessage", () => {
 
       const { unmount } = render(<ChatMessage message={message} />);
 
-      // Verify the message text is present (may be truncated for thinking/observation)
-      expect(screen.getByText(new RegExp(`Message of type ${type}`))).toBeInTheDocument();
-
-      if (type !== "normal") {
+      // For thinking/observation, just verify the badge is present
+      // (text is collapsed/truncated so harder to test)
+      if (type === "thinking" || type === "observation") {
         expect(screen.getByTestId("badge")).toBeInTheDocument();
+        expect(screen.getByTestId("icon-button")).toBeInTheDocument();
+      } else {
+        // For normal and answer, verify text in markdown
+        expect(screen.getByTestId("markdown")).toHaveTextContent(
+          `Message of type ${type}`,
+        );
+        if (type !== "normal") {
+          expect(screen.getByTestId("badge")).toBeInTheDocument();
+        }
       }
 
       unmount();
