@@ -1,10 +1,31 @@
-import { Box, Flex, Avatar, Badge } from "@chakra-ui/react";
-import { Brain, Eye, CheckCircle } from "lucide-react";
+import { useState } from "react";
+import { Box, Flex, Avatar, Badge, IconButton } from "@chakra-ui/react";
+import { Brain, Eye, CheckCircle, ChevronDown, ChevronRight } from "lucide-react";
 import Markdown from "react-markdown-it";
+
+// Smart truncation: first sentence if short, otherwise ~100 chars at word boundary
+const truncateText = (text: string, maxLength: number = 100): string => {
+  if (!text || text.length <= maxLength) return text;
+
+  // Try to find first sentence (ends with . ! or ?)
+  const firstSentence = text.match(/^[^.!?]+[.!?]/);
+  if (firstSentence && firstSentence[0].length <= maxLength) {
+    return firstSentence[0];
+  }
+
+  // Otherwise truncate at word boundary
+  const truncated = text.substring(0, maxLength);
+  const lastSpace = truncated.lastIndexOf(' ');
+  return (lastSpace > 0 ? truncated.substring(0, lastSpace) : truncated) + '...';
+};
 
 const ChatMessage = ({ message }) => {
   const isUser = message.role === "human";
   const messageType = message.type || "normal";
+
+  // Collapsible state for thinking and observation messages
+  const isCollapsible = messageType === "thinking" || messageType === "observation";
+  const [isExpanded, setIsExpanded] = useState(false);
 
   // Define styles and icons for different message types
   const getTypeStyles = () => {
@@ -49,6 +70,11 @@ const ChatMessage = ({ message }) => {
 
   const typeStyles = getTypeStyles();
 
+  // Determine what text to display
+  const displayText = isCollapsible && !isExpanded
+    ? truncateText(message.text)
+    : message.text;
+
   return (
     <Flex w="100%" justify={isUser ? "flex-end" : "flex-start"} mb={2}>
       {!isUser && (
@@ -68,19 +94,31 @@ const ChatMessage = ({ message }) => {
         py={2}
       >
         {typeStyles.badge && (
-          <Flex align="center" mb={2}>
-            {typeStyles.icon}
-            <Badge
-              ml={2}
-              size="sm"
-              colorPalette={typeStyles.badgeColor}
-              variant="subtle"
-            >
-              {typeStyles.badge}
-            </Badge>
+          <Flex align="center" mb={2} justify="space-between">
+            <Flex align="center">
+              {typeStyles.icon}
+              <Badge
+                ml={2}
+                size="sm"
+                colorPalette={typeStyles.badgeColor}
+                variant="subtle"
+              >
+                {typeStyles.badge}
+              </Badge>
+            </Flex>
+            {isCollapsible && (
+              <IconButton
+                aria-label={isExpanded ? "Collapse" : "Expand"}
+                size="xs"
+                variant="ghost"
+                onClick={() => setIsExpanded(!isExpanded)}
+              >
+                {isExpanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+              </IconButton>
+            )}
           </Flex>
         )}
-        <Markdown>{message.text}</Markdown>
+        <Markdown>{displayText}</Markdown>
       </Box>
 
       {isUser && (
