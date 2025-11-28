@@ -95,15 +95,8 @@ const ChatMessage = ({ message }) => {
         py={2}
       >
         {typeStyles.badge && isCollapsible && !isExpanded ? (
-          // Compact collapsed view - everything on one line
+          // Compact collapsed view - everything on one line, click to expand
           <Flex align="center" gap={2} cursor="pointer" onClick={() => setIsExpanded(true)}>
-            <IconButton
-              aria-label="Expand"
-              size="xs"
-              variant="ghost"
-            >
-              <ChevronRight size={16} />
-            </IconButton>
             {typeStyles.icon}
             <Badge
               size="sm"
@@ -112,14 +105,27 @@ const ChatMessage = ({ message }) => {
             >
               {typeStyles.badge}
             </Badge>
-            <Box fontSize="sm" opacity={0.9}>
+            <Box fontSize="sm" opacity={0.9} flex={1}>
               {displayText}
             </Box>
+            <IconButton
+              aria-label="Expand"
+              size="xs"
+              variant="ghost"
+            >
+              <ChevronRight size={16} />
+            </IconButton>
           </Flex>
         ) : typeStyles.badge ? (
           // Expanded view with header and full content
           <>
-            <Flex align="center" mb={2} justify="space-between">
+            <Flex
+              align="center"
+              mb={2}
+              justify="space-between"
+              cursor={isCollapsible ? "pointer" : "default"}
+              onClick={isCollapsible ? () => setIsExpanded(false) : undefined}
+            >
               <Flex align="center">
                 {typeStyles.icon}
                 <Badge
@@ -136,7 +142,6 @@ const ChatMessage = ({ message }) => {
                   aria-label="Collapse"
                   size="xs"
                   variant="ghost"
-                  onClick={() => setIsExpanded(false)}
                 >
                   <ChevronDown size={16} />
                 </IconButton>
