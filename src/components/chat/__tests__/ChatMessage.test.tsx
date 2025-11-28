@@ -155,6 +155,14 @@ vi.mock("@chakra-ui/react", () => ({
       {children}
     </span>
   ),
+  IconButton: ({
+    children,
+    ...props
+  }: React.PropsWithChildren<Record<string, unknown>>) => (
+    <button data-testid="icon-button" {...filterChakraProps(props)}>
+      {children}
+    </button>
+  ),
 }));
 
 // Mock react-markdown-it
@@ -169,6 +177,8 @@ vi.mock("lucide-react", () => ({
   Brain: () => <div data-testid="brain-icon">Brain</div>,
   Eye: () => <div data-testid="eye-icon">Eye</div>,
   CheckCircle: () => <div data-testid="check-circle-icon">CheckCircle</div>,
+  ChevronRight: () => <div data-testid="chevron-right-icon">ChevronRight</div>,
+  ChevronDown: () => <div data-testid="chevron-down-icon">ChevronDown</div>,
 }));
 
 describe("ChatMessage", () => {
@@ -213,9 +223,9 @@ describe("ChatMessage", () => {
 
     expect(screen.getByTestId("brain-icon")).toBeInTheDocument();
     expect(screen.getByTestId("badge")).toHaveTextContent("Thinking");
-    expect(screen.getByTestId("markdown")).toHaveTextContent(
-      "Let me think about this...",
-    );
+    // Thinking messages start collapsed with truncated text including ellipsis
+    expect(screen.getByText(/Let me think about this/)).toBeInTheDocument();
+    expect(screen.getByTestId("icon-button")).toBeInTheDocument();
   });
 
   it("should render observation message with correct badge and icon", () => {
@@ -229,9 +239,9 @@ describe("ChatMessage", () => {
 
     expect(screen.getByTestId("eye-icon")).toBeInTheDocument();
     expect(screen.getByTestId("badge")).toHaveTextContent("Observation");
-    expect(screen.getByTestId("markdown")).toHaveTextContent(
-      "I observe that...",
-    );
+    // Observation messages start collapsed with truncated text including ellipsis
+    expect(screen.getByText(/I observe that/)).toBeInTheDocument();
+    expect(screen.getByTestId("icon-button")).toBeInTheDocument();
   });
 
   it("should render answer message with correct badge and icon", () => {
@@ -324,9 +334,8 @@ describe("ChatMessage", () => {
 
       const { unmount } = render(<ChatMessage message={message} />);
 
-      expect(screen.getByTestId("markdown")).toHaveTextContent(
-        `Message of type ${type}`,
-      );
+      // Verify the message text is present (may be truncated for thinking/observation)
+      expect(screen.getByText(new RegExp(`Message of type ${type}`))).toBeInTheDocument();
 
       if (type !== "normal") {
         expect(screen.getByTestId("badge")).toBeInTheDocument();
