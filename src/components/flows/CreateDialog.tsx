@@ -19,14 +19,14 @@ const CreateDialog = ({ open, onOpenChange }) => {
 
   const flowBlueprints = flowState.flowBlueprints ? flowState.flowBlueprints : [];
 
-  const [flowBlueprints, setFlowBlueprint] = useState(undefined);
+  const [flowBlueprint, setFlowBlueprint] = useState(undefined);
   const [id, setId] = useState("");
   const [description, setDescription] = useState("");
   const [parameterValues, setParameterValues] = useState({});
 
   // Fetch parameter definitions when flow blueprint is selected
   const { parameterDefinitions, parameterMapping, parameterMetadata } =
-    useFlowParameters(flowBlueprints);
+    useFlowParameters(flowBlueprint);
 
   // Apply default values when parameter definitions change
   useEffect(() => {
@@ -121,7 +121,7 @@ const CreateDialog = ({ open, onOpenChange }) => {
   const onSubmit = () => {
     // Validate required fields before submission
     if (
-      !flowBlueprints ||
+      !flowBlueprint ||
       !id.trim() ||
       !description.trim() ||
       !areParametersValid
@@ -139,12 +139,12 @@ const CreateDialog = ({ open, onOpenChange }) => {
 
     flowState.startFlow({
       id: id,
-      flowBlueprints: flowBlueprint,
+      blueprintName: flowBlueprint,
       description: description,
       parameters: resolvedParameters,
       onSuccess: () => {
         // Clear form after successful submission
-        setFlowBlueprints(undefined);
+        setFlowBlueprint(undefined);
         setId("");
         setDescription("");
         setParameterValues({});
@@ -155,20 +155,20 @@ const CreateDialog = ({ open, onOpenChange }) => {
 
   // Check if form is valid for submission
   const isFormValid =
-    flowBlueprints &&
+    flowBlueprint &&
     id.trim().length > 0 &&
     description.trim().length > 0 &&
     areParametersValid;
 
   const flowBlueprintsOptions = flowBlueprints
-    .filter((flowBlueprints) => flowBlueprint[1]) // Filter out incomplete data
-    .map((flowBlueprints) => {
+    .filter((bp) => bp[1]) // Filter out incomplete data
+    .map((bp) => {
       return {
-        value: flowBlueprints[0],
-        label: flowBlueprints[1].description,
+        value: bp[0],
+        label: bp[1].description,
         description: (
-          <SelectOption title={flowBlueprints[1].description}>
-            {flowBlueprints[0]}
+          <SelectOption title={bp[1].description}>
+            {bp[0]}
           </SelectOption>
         ),
       };
@@ -198,10 +198,10 @@ const CreateDialog = ({ open, onOpenChange }) => {
                 <SelectField
                   label="Flow blueprint"
                   items={flowBlueprintsOptions}
-                  value={flowBlueprints ? [flowBlueprint] : []}
+                  value={flowBlueprint ? [flowBlueprint] : []}
                   onValueChange={(x) => {
                     // SelectField returns an array, extract the first element
-                    setFlowBlueprints(Array.isArray(x) ? x[0] : x);
+                    setFlowBlueprint(Array.isArray(x) ? x[0] : x);
                   }}
                   contentRef={contentRef}
                 />
@@ -224,7 +224,7 @@ const CreateDialog = ({ open, onOpenChange }) => {
               />
 
               {/* Parameter inputs - only show if flow blueprint has parameters */}
-              {flowBlueprints && (
+              {flowBlueprint && (
                 <ParameterInputs
                   parameterDefinitions={parameterDefinitions}
                   parameterMapping={parameterMapping}

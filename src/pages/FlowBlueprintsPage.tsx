@@ -3,31 +3,31 @@ import React, { useState } from "react";
 import { ScrollText } from "lucide-react";
 
 import PageHeader from "../components/common/PageHeader";
-import FlowBlueprintsTable from "../components/flow-Blueprint/FlowBlueprintTable";
-import { FlowBlueprintsEditorView } from "../components/flow-Blueprint/FlowBlueprintEditorView";
+import FlowBlueprintsTable from "../components/flow-blueprints/FlowBlueprintTable";
+import { FlowBlueprintEditorView } from "../components/flow-blueprints/FlowBlueprintEditorView";
 
 type ViewMode = "table" | "editor";
 
 const FlowBlueprintsPage = () => {
   const [viewMode, setViewMode] = useState<ViewMode>("table");
-  const [editingFlowBlueprintsId, setEditingFlowBlueprintId] = useState<string | null>(
+  const [editingFlowBlueprintId, setEditingFlowBlueprintId] = useState<string | null>(
     null,
   );
 
-  const handleEditFlowBlueprints = (flowBlueprintId: string) => {
-    setEditingFlowBlueprintsId(flowBlueprintId);
+  const handleEditFlowBlueprint = (flowBlueprintId: string) => {
+    setEditingFlowBlueprintId(flowBlueprintId);
     setViewMode("editor");
   };
 
   const handleBackToTable = () => {
     setViewMode("table");
-    setEditingFlowBlueprintsId(null);
+    setEditingFlowBlueprintId(null);
   };
 
-  if (viewMode === "editor" && editingFlowBlueprintsId) {
+  if (viewMode === "editor" && editingFlowBlueprintId) {
     return (
-      <FlowBlueprintsEditorView
-        flowBlueprintsId={editingFlowBlueprintId}
+      <FlowBlueprintEditorView
+        flowBlueprintId={editingFlowBlueprintId}
         onBack={handleBackToTable}
       />
     );

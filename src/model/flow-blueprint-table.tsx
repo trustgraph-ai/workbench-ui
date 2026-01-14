@@ -1,6 +1,6 @@
 import { createColumnHelper } from "@tanstack/react-table";
 import { Checkbox, Badge, HStack, Text } from "@chakra-ui/react";
-import { FlowBlueprintsDefinition } from "@trustgraph/react-state";
+import { FlowBlueprintDefinition } from "@trustgraph/react-state";
 
 /**
  * Flow blueprint data structure for the flow blueprint table

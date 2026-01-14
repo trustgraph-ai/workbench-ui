@@ -2,13 +2,13 @@ import React from "react";
 import { Box, VStack, Heading, Text, Button } from "@chakra-ui/react";
 import { Construction } from "lucide-react";
 
-interface FlowBlueprintsEditorProps {
-  flowBlueprintsId?: string;
+interface FlowBlueprintEditorProps {
+  flowBlueprintId?: string;
   onClose?: () => void;
 }
 
-export const FlowBlueprintsEditor: React.FC<FlowBlueprintEditorProps> = ({
-  flowBlueprintsId,
+export const FlowBlueprintEditor: React.FC<FlowBlueprintEditorProps> = ({
+  flowBlueprintId,
   onClose,
 }) => {
   return (
@@ -30,7 +30,7 @@ export const FlowBlueprintsEditor: React.FC<FlowBlueprintEditorProps> = ({
         <Construction size={48} color="var(--colors-fg-muted)" />
 
         <VStack gap={2} textAlign="center">
-          <Heading size="xl">Flow Blueprints Editor</Heading>
+          <Heading size="xl">Flow Blueprint Editor</Heading>
           <Text color="fg.muted" fontSize="lg">
             Under Construction
           </Text>
@@ -38,11 +38,11 @@ export const FlowBlueprintsEditor: React.FC<FlowBlueprintEditorProps> = ({
 
         <VStack gap={3} textAlign="center">
           <Text color="fg.subtle">
-            The Flow Blueprints Editor is being rebuilt for a better experience.
+            The Flow Blueprint Editor is being rebuilt for a better experience.
           </Text>
-          {flowBlueprintsId && (
+          {flowBlueprintId && (
             <Text fontSize="sm" color="fg.muted">
-              Flow Blueprints ID: <code>{flowBlueprintId}</code>
+              Flow Blueprint ID: <code>{flowBlueprintId}</code>
             </Text>
           )}
         </VStack>

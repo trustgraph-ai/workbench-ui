@@ -24,14 +24,14 @@ const ParameterDisplay: React.FC<ParameterDisplayProps> = ({
     useFlowParameters(flowBlueprintsName);
 
   // Find the flow blueprint metadata
-  const flowBlueprints = Array.isArray(flowBlueprints)
+  const flowBlueprint = Array.isArray(flowBlueprints)
     ? flowBlueprints.find(
         (fc) => Array.isArray(fc) && fc[0] === flowBlueprintsName,
       )?.[1]
     : undefined;
   const parameterMetadata = useMemo(
-    () => flowBlueprints?.parameters || {},
-    [flowBlueprints],
+    () => flowBlueprint?.parameters || {},
+    [flowBlueprint],
   );
 
   // Create a mapping of parameter values to display values
