@@ -8,7 +8,7 @@ import ParameterDisplay from "../components/flows/ParameterDisplay";
  */
 export type Flow = {
   id: string; // Unique identifier for the flow
-  "class-name": string; // Flow class ID
+  "blueprint-name": string; // Flow blueprint ID
   description: string; // Human-readable description
   parameters?: { [key: string]: unknown }; // Flow parameters
 };
@@ -70,9 +70,9 @@ export const columns = [
     cell: (info) => info.getValue(),
   }),
 
-  // Class name column - displays flow class
-  columnHelper.accessor("class-name", {
-    header: "Flow class",
+  // Blueprints name column - displays flow blueprint
+  columnHelper.accessor("blueprint-name", {
+    header: "Flow blueprint",
     cell: (info) => info.getValue(),
   }),
 
@@ -94,7 +94,7 @@ export const columns = [
       // Use the ParameterDisplay component to show parameters with descriptions
       return (
         <ParameterDisplay
-          flowClassName={row["class-name"]}
+          flowBlueprintsName={row["blueprint-name"]}
           parameters={parameters}
         />
       );

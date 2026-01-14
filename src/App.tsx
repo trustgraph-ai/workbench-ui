@@ -11,8 +11,8 @@ import EntityPage from "./pages/EntityPage";
 
 // Lazy load GraphPage since it includes heavy 3D visualization library (react-force-graph/Three.js)
 const GraphPage = lazy(() => import("./pages/GraphPage"));
-// Lazy load FlowClassesPage since it includes reactflow library
-const FlowClassesPage = lazy(() => import("./pages/FlowClassesPage"));
+// Lazy load FlowBlueprintsPage since it includes reactflow library
+const FlowBlueprintsPage = lazy(() => import("./pages/FlowBlueprintsPage"));
 // Lazy load less frequently used pages
 const OntologiesPage = lazy(() => import("./pages/OntologiesPage"));
 const StructuredQueryPage = lazy(() => import("./pages/StructuredQueryPage"));
@@ -128,10 +128,10 @@ const App = () => {
             />
             <Route path="/flows" element={<FlowsPage />} />
             <Route
-              path="/flow-classes"
+              path="/flow-Blueprint"
               element={
                 <Suspense fallback={<CenterSpinner />}>
-                  <FlowClassesPage />
+                  <FlowBlueprintsPage />
                 </Suspense>
               }
             />

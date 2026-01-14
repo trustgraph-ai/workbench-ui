@@ -12,10 +12,10 @@ const FlowControls = () => {
 
   const [createOpen, setCreateOpen] = useState(false);
 
-  const onCreate = (flowClass, id, description) => {
+  const onCreate = (flowBlueprints, id, description) => {
     flowState.startFlow({
       id: id,
-      flowClass: flowClass,
+      flowBlueprints: flowBlueprint,
       description: description,
       onSuccess: () => {},
     });

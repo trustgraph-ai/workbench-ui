@@ -12,32 +12,32 @@ import {
   Fieldset,
 } from "@chakra-ui/react";
 import { Save, X, FileCode } from "lucide-react";
-import { FlowClassDefinition } from "@trustgraph/react-state";
+import { FlowBlueprintDefinition } from "@trustgraph/react-state";
 
-interface FlowClassEditPanelProps {
-  flowClass: FlowClassDefinition;
-  onSave?: (flowClass: FlowClassDefinition) => void;
+interface FlowBlueprintsEditPanelProps {
+  flowBlueprints: FlowBlueprintDefinition;
+  onSave?: (flowBlueprints: FlowBlueprintDefinition) => void;
   onCancel?: () => void;
   isLoading?: boolean;
 }
 
-const FlowClassEditPanel: React.FC<FlowClassEditPanelProps> = ({
-  flowClass,
+const FlowBlueprintsEditPanel: React.FC<FlowBlueprintEditPanelProps> = ({
+  flowBlueprints,
   onSave,
   onCancel,
   isLoading = false,
 }) => {
-  const [description, setDescription] = useState(flowClass.description || "");
-  const [tags, setTags] = useState((flowClass.tags || []).join(", "));
+  const [description, setDescription] = useState(flowBlueprints.description || "");
+  const [tags, setTags] = useState((flowBlueprints.tags || []).join(", "));
 
   useEffect(() => {
-    setDescription(flowClass.description || "");
-    setTags((flowClass.tags || []).join(", "));
-  }, [flowClass]);
+    setDescription(flowBlueprints.description || "");
+    setTags((flowBlueprints.tags || []).join(", "));
+  }, [flowBlueprints]);
 
   const handleSave = () => {
-    const updatedFlowClass: FlowClassDefinition = {
-      ...flowClass,
+    const updatedFlowBlueprints: FlowBlueprintDefinition = {
+      ...flowBlueprints,
       description: description.trim() || undefined,
       tags: tags
         .split(",")
@@ -46,16 +46,16 @@ const FlowClassEditPanel: React.FC<FlowClassEditPanelProps> = ({
         .slice(0, 10), // Limit to 10 tags
     };
 
-    onSave?.(updatedFlowClass);
+    onSave?.(updatedFlowBlueprints);
   };
 
   const hasChanges =
-    description !== (flowClass.description || "") ||
-    tags !== (flowClass.tags || []).join(", ");
+    description !== (flowBlueprints.description || "") ||
+    tags !== (flowBlueprints.tags || []).join(", ");
 
-  const classCount = Object.keys(flowClass.class || {}).length;
-  const flowCount = Object.keys(flowClass.flow || {}).length;
-  const interfaceCount = Object.keys(flowClass.interfaces || {}).length;
+  const blueprintCount = Object.keys(flowBlueprints.blueprint || {}).length;
+  const flowCount = Object.keys(flowBlueprints.flow || {}).length;
+  const interfaceCount = Object.keys(flowBlueprints.interfaces || {}).length;
 
   return (
     <Box
@@ -78,7 +78,7 @@ const FlowClassEditPanel: React.FC<FlowClassEditPanelProps> = ({
           <HStack gap={3}>
             <FileCode size={20} />
             <Text fontSize="lg" fontWeight="semibold">
-              Edit Flow Class: {flowClass.id}
+              Edit Flow Blueprints: {flowBlueprint.id}
             </Text>
           </HStack>
           <HStack gap={2}>
@@ -121,7 +121,7 @@ const FlowClassEditPanel: React.FC<FlowClassEditPanelProps> = ({
                     <Textarea
                       value={description}
                       onChange={(e) => setDescription(e.target.value)}
-                      placeholder="Enter flow class description..."
+                      placeholder="Enter flow blueprint description..."
                       rows={3}
                       resize="none"
                     />
@@ -148,12 +148,12 @@ const FlowClassEditPanel: React.FC<FlowClassEditPanelProps> = ({
           {/* Right Column - Statistics */}
           <VStack gap={4} align="stretch" minW="300px">
             <Fieldset.Root>
-              <Fieldset.Legend>Flow Class Statistics</Fieldset.Legend>
+              <Fieldset.Legend>Flow Blueprints Statistics</Fieldset.Legend>
               <Fieldset.Content>
                 <VStack gap={3} align="stretch">
                   <HStack justify="space-between">
-                    <Text fontSize="sm">Class Processors:</Text>
-                    <Badge colorPalette="blue">{classCount}</Badge>
+                    <Text fontSize="sm">Blueprints Processors:</Text>
+                    <Badge colorPalette="blue">{blueprintCount}</Badge>
                   </HStack>
 
                   <HStack justify="space-between">
@@ -169,7 +169,7 @@ const FlowClassEditPanel: React.FC<FlowClassEditPanelProps> = ({
                   <HStack justify="space-between">
                     <Text fontSize="sm">Total Components:</Text>
                     <Badge colorPalette="gray">
-                      {classCount + flowCount + interfaceCount}
+                      {blueprintCount + flowCount + interfaceCount}
                     </Badge>
                   </HStack>
                 </VStack>
@@ -177,13 +177,13 @@ const FlowClassEditPanel: React.FC<FlowClassEditPanelProps> = ({
             </Fieldset.Root>
 
             {/* Preview of current tags */}
-            {flowClass.tags && flowClass.tags.length > 0 && (
+            {flowBlueprints.tags && flowBlueprint.tags.length > 0 && (
               <Box>
                 <Text fontSize="sm" fontWeight="medium" mb={2}>
                   Current Tags
                 </Text>
                 <HStack gap={1} flexWrap="wrap">
-                  {flowClass.tags.map((tag, index) => (
+                  {flowBlueprints.tags.map((tag, index) => (
                     <Badge
                       key={index}
                       colorPalette="gray"
@@ -203,4 +203,4 @@ const FlowClassEditPanel: React.FC<FlowClassEditPanelProps> = ({
   );
 };
 
-export default FlowClassEditPanel;
+export default FlowBlueprintsEditPanel;

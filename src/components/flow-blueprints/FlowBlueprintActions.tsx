@@ -2,13 +2,13 @@ import React from "react";
 import { Check, Trash, Eye } from "lucide-react";
 import { ActionBar, Portal, Button } from "@chakra-ui/react";
 
-interface FlowClassActionsProps {
+interface FlowBlueprintsActionsProps {
   selectedCount: number;
   onEdit?: () => void;
   onDelete?: () => void;
 }
 
-const FlowClassActions: React.FC<FlowClassActionsProps> = ({
+const FlowBlueprintsActions: React.FC<FlowBlueprintActionsProps> = ({
   selectedCount,
   onEdit,
   onDelete,
@@ -68,4 +68,4 @@ const FlowClassActions: React.FC<FlowClassActionsProps> = ({
   );
 };
 
-export default FlowClassActions;
+export default FlowBlueprintsActions;

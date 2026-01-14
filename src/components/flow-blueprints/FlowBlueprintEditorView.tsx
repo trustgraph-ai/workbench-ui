@@ -25,11 +25,11 @@ import ReactFlow, {
 } from "reactflow";
 import dagre from "dagre";
 import "reactflow/dist/style.css";
-import { useFlowClasses } from "@trustgraph/react-state";
+import { useFlowBlueprints } from "@trustgraph/react-state";
 import serviceMap from "../../data/service-map.json";
 
-interface FlowClassEditorViewProps {
-  flowClassId: string;
+interface FlowBlueprintEditorViewProps {
+  flowBlueprintId: string;
   onBack: () => void;
 }
 
@@ -49,8 +49,8 @@ const CustomNode = ({
     processorInfo?: ProcessorInfo;
   };
 }) => {
-  const borderColor = data.type === "class" ? "#2563eb" : "#16a34a"; // blue for class, green for flow
-  const backgroundColor = data.type === "class" ? "#eff6ff" : "#f0fdf4";
+  const borderColor = data.type === "blueprint" ? "#2563eb" : "#16a34a"; // blue for blueprint, green for flow
+  const backgroundColor = data.type === "blueprint" ? "#eff6ff" : "#f0fdf4";
 
   const provides = data.provides || [];
   const consumes = data.consumes || [];
@@ -301,17 +301,17 @@ const nodeTypes = {
   interface: InterfaceNode,
 };
 
-interface FlowClass {
-  class?: Record<string, unknown>;
+interface FlowBlueprints {
+  blueprint?: Record<string, unknown>;
   flow?: Record<string, unknown>;
 }
 
-// Generate nodes from flow class processors
-const generateNodesFromFlowClass = (flowClass: FlowClass): Node[] => {
+// Generate nodes from flow blueprint processors
+const generateNodesFromFlowBlueprints = (flowBlueprint: FlowBlueprint): Node[] => {
   const nodes: Node[] = [];
 
-  // Add class processors
-  Object.keys(flowClass.class || {}).forEach((processorName) => {
+  // Add blueprint processors
+  Object.keys(flowBlueprints.blueprint || {}).forEach((processorName) => {
     // Strip template suffix to get base processor name for service map lookup
     const baseProcessorName = processorName.replace(/:\{[^}]+\}$/, "");
 
@@ -329,11 +329,11 @@ const generateNodesFromFlowClass = (flowClass: FlowClass): Node[] => {
         .map((conn) => conn.name) || [];
 
     nodes.push({
-      id: `class-${processorName}`,
+      id: `blueprint-${processorName}`,
       position: { x: 0, y: 0 }, // Will be calculated by dagre
       data: {
         label: processorName,
-        type: "class",
+        type: "blueprint",
         provides: provides,
         consumes: consumes,
         processorInfo: processorInfo, // Pass full processor info for direction lookup
@@ -343,7 +343,7 @@ const generateNodesFromFlowClass = (flowClass: FlowClass): Node[] => {
   });
 
   // Add flow processors
-  Object.keys(flowClass.flow || {}).forEach((processorName) => {
+  Object.keys(flowBlueprints.flow || {}).forEach((processorName) => {
     // Strip template suffix to get base processor name for service map lookup
     const baseProcessorName = processorName.replace(/:\{[^}]+\}$/, "");
 
@@ -375,7 +375,7 @@ const generateNodesFromFlowClass = (flowClass: FlowClass): Node[] => {
   });
 
   // Add interface nodes
-  Object.entries(flowClass.interfaces || {}).forEach(
+  Object.entries(flowBlueprints.interfaces || {}).forEach(
     ([interfaceName, interfaceQueues]) => {
       // Look up interface definition in service map
       const interfaceDefinition = serviceMap.interfaces?.[interfaceName];
@@ -444,8 +444,8 @@ const applyDagreLayout = (nodes: Node[], edges: Edge[]): Node[] => {
   });
 };
 
-// Generate edges from flow class connections using three-way matching algorithm
-const generateEdgesFromFlowClass = (flowClass: FlowClass): Edge[] => {
+// Generate edges from flow blueprint connections using three-way matching algorithm
+const generateEdgesFromFlowBlueprints = (flowBlueprint: FlowBlueprint): Edge[] => {
   const edges: Edge[] = [];
   let edgeIndex = 0;
 
@@ -469,24 +469,24 @@ const generateEdgesFromFlowClass = (flowClass: FlowClass): Edge[] => {
     }>
   >();
 
-  // Collect all processors and their connections from service map + flow class queues
+  // Collect all processors and their connections from service map + flow blueprint queues
   const allProcessors = [
-    ...Object.keys(flowClass.class || {}).map((name) => ({
+    ...Object.keys(flowBlueprints.blueprint || {}).map((name) => ({
       name,
-      type: "class",
+      type: "blueprint",
       baseProcessorName: name.replace(/:\{[^}]+\}$/, ""),
-      flowClassConnections: flowClass.class[name],
+      flowBlueprintsConnections: flowBlueprint.blueprint[name],
     })),
-    ...Object.keys(flowClass.flow || {}).map((name) => ({
+    ...Object.keys(flowBlueprints.flow || {}).map((name) => ({
       name,
       type: "flow",
       baseProcessorName: name.replace(/:\{[^}]+\}$/, ""),
-      flowClassConnections: flowClass.flow[name],
+      flowBlueprintsConnections: flowBlueprint.flow[name],
     })),
   ];
 
   allProcessors.forEach(
-    ({ name, type, baseProcessorName, flowClassConnections }) => {
+    ({ name, type, baseProcessorName, flowBlueprintsConnections }) => {
       const processorInfo = serviceMap.processors[baseProcessorName];
       if (!processorInfo?.connections) return;
 
@@ -505,21 +505,21 @@ const generateEdgesFromFlowClass = (flowClass: FlowClass): Edge[] => {
           // For providers: look for request and response
           if (connection.role === "provides") {
             queues = {
-              request: flowClassConnections.request,
-              response: flowClassConnections.response,
+              request: flowBlueprintsConnections.request,
+              response: flowBlueprintsConnections.response,
             };
           } else if (connection.role === "consumes") {
             queues = {
-              request: flowClassConnections[`${connection.name}-request`],
-              response: flowClassConnections[`${connection.name}-response`],
+              request: flowBlueprintsConnections[`${connection.name}-request`],
+              response: flowBlueprintsConnections[`${connection.name}-response`],
             };
           }
         } else if (connectionKind === "flow") {
           // For flow: single queue value at connection.name
-          queues = { value: flowClassConnections[connection.name] };
+          queues = { value: flowBlueprintsConnections[connection.name] };
         } else if (connectionKind === "passive") {
           // For passive: both consumer and provider use single queue value
-          queues = { value: flowClassConnections[connection.name] };
+          queues = { value: flowBlueprintsConnections[connection.name] };
         }
 
         // Only add if we found valid queues
@@ -609,7 +609,7 @@ const generateEdgesFromFlowClass = (flowClass: FlowClass): Edge[] => {
 
   // Connect interfaces to their implementing processors
 
-  Object.entries(flowClass.interfaces || {}).forEach(
+  Object.entries(flowBlueprints.interfaces || {}).forEach(
     ([interfaceName, interfaceQueues]) => {
       const interfaceDefinition = serviceMap.interfaces?.[interfaceName];
       const interfaceKind = interfaceDefinition?.kind;
@@ -620,7 +620,7 @@ const generateEdgesFromFlowClass = (flowClass: FlowClass): Edge[] => {
 
       // Find processors that match this interface's queue pattern
       allProcessors.forEach(
-        ({ name, type, baseProcessorName, flowClassConnections }) => {
+        ({ name, type, baseProcessorName, flowBlueprintsConnections }) => {
           const processorId = `${type}-${name}`;
           const processorInfo = serviceMap.processors[baseProcessorName];
           if (!processorInfo?.connections) return;
@@ -639,8 +639,8 @@ const generateEdgesFromFlowClass = (flowClass: FlowClass): Edge[] => {
 
             // Check if this processor provides this service
             if (
-              flowClassConnections.request === interfaceRequest &&
-              flowClassConnections.response === interfaceResponse
+              flowBlueprintsConnections.request === interfaceRequest &&
+              flowBlueprintsConnections.response === interfaceResponse
             ) {
               // Find the service connection that provides
               matchingConnection = processorInfo.connections.find(
@@ -657,7 +657,7 @@ const generateEdgesFromFlowClass = (flowClass: FlowClass): Edge[] => {
             // Check only provider connections for matching queue
             processorInfo.connections.forEach((connection) => {
               if (connection.role === "provides") {
-                const connectionQueue = flowClassConnections[connection.name];
+                const connectionQueue = flowBlueprintsConnections[connection.name];
                 if (connectionQueue === interfaceQueue) {
                   matchingConnection = connection;
                   isMatch = true;
@@ -698,25 +698,25 @@ const generateEdgesFromFlowClass = (flowClass: FlowClass): Edge[] => {
   return edges;
 };
 
-export const FlowClassEditorView: React.FC<FlowClassEditorViewProps> = ({
-  flowClassId,
+export const FlowBlueprintEditorView: React.FC<FlowBlueprintEditorViewProps> = ({
+  flowBlueprintId,
   onBack,
 }) => {
-  const { flowClasses } = useFlowClasses();
-  const flowClass = flowClasses.find((fc) => fc.id === flowClassId);
+  const { flowBlueprints } = useFlowBlueprints();
+  const flowBlueprint = flowBlueprints.find((fc) => fc.id === flowBlueprintId);
 
-  // Generate nodes and edges from flow class data using useMemo - must be before early return
+  // Generate nodes and edges from flow blueprint data using useMemo - must be before early return
   const initialNodes = useMemo(() => {
-    if (!flowClass) return [];
-    const nodes = generateNodesFromFlowClass(flowClass);
+    if (!flowBlueprint) return [];
+    const nodes = generateNodesFromFlowBlueprints(flowBlueprint);
     return nodes;
-  }, [flowClass]);
+  }, [flowBlueprint]);
 
   const generatedEdges = useMemo(() => {
-    if (!flowClass) return [];
-    const edges = generateEdgesFromFlowClass(flowClass);
+    if (!flowBlueprint) return [];
+    const edges = generateEdgesFromFlowBlueprints(flowBlueprint);
     return edges;
-  }, [flowClass]);
+  }, [flowBlueprint]);
 
   const layoutedNodes = useMemo(() => {
     const layouted = applyDagreLayout(initialNodes, generatedEdges);
@@ -740,7 +740,7 @@ export const FlowClassEditorView: React.FC<FlowClassEditorViewProps> = ({
     [setEdges],
   );
 
-  if (!flowClass) {
+  if (!flowBlueprints) {
     return (
       <Box p={6}>
         <HStack spacing={4} mb={4}>
@@ -749,10 +749,10 @@ export const FlowClassEditorView: React.FC<FlowClassEditorViewProps> = ({
             leftIcon={<ArrowLeft size={16} />}
             variant="ghost"
           >
-            Back to Flow Classes
+            Back to Flow Blueprints
           </Button>
         </HStack>
-        <Text>Flow class not found.</Text>
+        <Text>Flow blueprint not found.</Text>
       </Box>
     );
   }
@@ -774,7 +774,7 @@ export const FlowClassEditorView: React.FC<FlowClassEditorViewProps> = ({
               leftIcon={<ArrowLeft size={16} />}
               variant="ghost"
             >
-              Back to Flow Classes
+              Back to Flow Blueprints
             </Button>
           </HStack>
           <HStack spacing={4}>
@@ -790,7 +790,7 @@ export const FlowClassEditorView: React.FC<FlowClassEditorViewProps> = ({
         </HStack>
 
         <VStack spacing={2} align="start" w="100%">
-          <Heading size="lg">{flowClass.name}</Heading>
+          <Heading size="lg">{flowBlueprints.name}</Heading>
         </VStack>
 
         <Separator />
@@ -813,7 +813,7 @@ export const FlowClassEditorView: React.FC<FlowClassEditorViewProps> = ({
           <Controls />
           <MiniMap
             nodeColor={(node) => {
-              return node.data?.type === "class" ? "#2563eb" : "#16a34a";
+              return node.data?.type === "blueprint" ? "#2563eb" : "#16a34a";
             }}
             position="top-right"
             style={{

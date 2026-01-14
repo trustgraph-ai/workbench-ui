@@ -372,7 +372,7 @@ describe("EnumValueManager", () => {
     );
 
     const badge = screen.getByText("test_value").closest(".chakra-badge");
-    expect(badge).toHaveClass("chakra-badge");
+    expect(badge).toHaveBlueprints("chakra-badge");
   });
 
   test("input ref functionality works", async () => {
