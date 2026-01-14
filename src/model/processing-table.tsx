@@ -33,13 +33,13 @@ export const columns = [
     cell: (info) => timeString(info.getValue()), // Convert to readable string
   }),
 
-  // Class name column - displays flow class
+  // Blueprints name column - displays flow blueprint
   columnHelper.accessor("document-id", {
     header: "Document ID",
     cell: (info) => info.getValue(),
   }),
 
-  // Class name column - displays flow class
+  // Blueprints name column - displays flow blueprint
   columnHelper.accessor("flow", {
     header: "Flow ID",
     cell: (info) => info.getValue(),

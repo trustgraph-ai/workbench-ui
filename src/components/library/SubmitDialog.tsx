@@ -29,7 +29,7 @@ const SubmitDialog = ({ open, onOpenChange, onSubmit, docs }) => {
       label: flow.description,
       description: (
         <SelectOption title={flow.description}>
-          {flow[0]} (class {flow["class-name"]})
+          {flow[0]} (blueprint {flow["blueprint-name"]})
         </SelectOption>
       ),
     };

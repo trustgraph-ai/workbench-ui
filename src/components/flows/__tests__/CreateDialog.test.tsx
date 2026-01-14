@@ -7,9 +7,9 @@ import CreateDialog from "../CreateDialog";
 
 // Mock the useFlows hook
 const mockStartFlow = vi.fn();
-const mockFlowClasses = [
-  ["class1", { description: "Class 1 Description" }],
-  ["class2", { description: "Class 2 Description" }],
+const mockFlowBlueprints = [
+  ["class1", { description: "Blueprints 1 Description" }],
+  ["class2", { description: "Blueprints 2 Description" }],
 ];
 
 vi.mock("@trustgraph/react-state", async () => {
@@ -17,7 +17,7 @@ vi.mock("@trustgraph/react-state", async () => {
   return {
     ...actual,
     useFlows: () => ({
-      flowClasses: mockFlowClasses,
+      flowBlueprints: mockFlowBlueprints,
       startFlow: mockStartFlow,
     }),
     useFlowParameters: () => ({

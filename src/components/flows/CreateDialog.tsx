@@ -17,16 +17,16 @@ import ParameterInputs from "./ParameterInputs";
 const CreateDialog = ({ open, onOpenChange }) => {
   const flowState = useFlows();
 
-  const flowClasses = flowState.flowClasses ? flowState.flowClasses : [];
+  const flowBlueprints = flowState.flowBlueprints ? flowState.flowBlueprints : [];
 
-  const [flowClass, setFlowClass] = useState(undefined);
+  const [flowBlueprints, setFlowBlueprint] = useState(undefined);
   const [id, setId] = useState("");
   const [description, setDescription] = useState("");
   const [parameterValues, setParameterValues] = useState({});
 
-  // Fetch parameter definitions when flow class is selected
+  // Fetch parameter definitions when flow blueprint is selected
   const { parameterDefinitions, parameterMapping, parameterMetadata } =
-    useFlowParameters(flowClass);
+    useFlowParameters(flowBlueprints);
 
   // Apply default values when parameter definitions change
   useEffect(() => {
@@ -121,7 +121,7 @@ const CreateDialog = ({ open, onOpenChange }) => {
   const onSubmit = () => {
     // Validate required fields before submission
     if (
-      !flowClass ||
+      !flowBlueprints ||
       !id.trim() ||
       !description.trim() ||
       !areParametersValid
@@ -139,12 +139,12 @@ const CreateDialog = ({ open, onOpenChange }) => {
 
     flowState.startFlow({
       id: id,
-      flowClass: flowClass,
+      flowBlueprints: flowBlueprint,
       description: description,
       parameters: resolvedParameters,
       onSuccess: () => {
         // Clear form after successful submission
-        setFlowClass(undefined);
+        setFlowBlueprints(undefined);
         setId("");
         setDescription("");
         setParameterValues({});
@@ -155,20 +155,20 @@ const CreateDialog = ({ open, onOpenChange }) => {
 
   // Check if form is valid for submission
   const isFormValid =
-    flowClass &&
+    flowBlueprints &&
     id.trim().length > 0 &&
     description.trim().length > 0 &&
     areParametersValid;
 
-  const flowClassOptions = flowClasses
-    .filter((flowClass) => flowClass[1]) // Filter out incomplete data
-    .map((flowClass) => {
+  const flowBlueprintsOptions = flowBlueprints
+    .filter((flowBlueprints) => flowBlueprint[1]) // Filter out incomplete data
+    .map((flowBlueprints) => {
       return {
-        value: flowClass[0],
-        label: flowClass[1].description,
+        value: flowBlueprints[0],
+        label: flowBlueprints[1].description,
         description: (
-          <SelectOption title={flowClass[1].description}>
-            {flowClass[0]}
+          <SelectOption title={flowBlueprints[1].description}>
+            {flowBlueprints[0]}
           </SelectOption>
         ),
       };
@@ -192,16 +192,16 @@ const CreateDialog = ({ open, onOpenChange }) => {
               <Dialog.Title>Create Flow</Dialog.Title>
             </Dialog.Header>
             <Dialog.Body>
-              <Box mt={5}>Select flow class and configuration:</Box>
+              <Box mt={5}>Select flow blueprint and configuration:</Box>
 
               <Box mt={5}>
                 <SelectField
-                  label="Flow class"
-                  items={flowClassOptions}
-                  value={flowClass ? [flowClass] : []}
+                  label="Flow blueprint"
+                  items={flowBlueprintsOptions}
+                  value={flowBlueprints ? [flowBlueprint] : []}
                   onValueChange={(x) => {
                     // SelectField returns an array, extract the first element
-                    setFlowClass(Array.isArray(x) ? x[0] : x);
+                    setFlowBlueprints(Array.isArray(x) ? x[0] : x);
                   }}
                   contentRef={contentRef}
                 />
@@ -223,8 +223,8 @@ const CreateDialog = ({ open, onOpenChange }) => {
                 required={true}
               />
 
-              {/* Parameter inputs - only show if flow class has parameters */}
-              {flowClass && (
+              {/* Parameter inputs - only show if flow blueprint has parameters */}
+              {flowBlueprints && (
                 <ParameterInputs
                   parameterDefinitions={parameterDefinitions}
                   parameterMapping={parameterMapping}

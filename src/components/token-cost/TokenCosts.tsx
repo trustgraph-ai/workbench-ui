@@ -5,7 +5,7 @@ import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import EditDialog from "./EditDialog";
 import Controls from "./Controls";
 import { useTokenCosts } from "@trustgraph/react-state";
-import { columns } from "../../model/token-costs-table";
+import { columns } from "../../model/token-cost-table";
 import ClickableTable from "../common/ClickableTable";
 
 const TokenCostTable = () => {

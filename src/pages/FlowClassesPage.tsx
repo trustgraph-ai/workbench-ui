@@ -3,31 +3,31 @@ import React, { useState } from "react";
 import { ScrollText } from "lucide-react";
 
 import PageHeader from "../components/common/PageHeader";
-import FlowClassTable from "../components/flow-classes/FlowClassTable";
-import { FlowClassEditorView } from "../components/flow-classes/FlowClassEditorView";
+import FlowBlueprintsTable from "../components/flow-Blueprint/FlowBlueprintTable";
+import { FlowBlueprintsEditorView } from "../components/flow-Blueprint/FlowBlueprintEditorView";
 
 type ViewMode = "table" | "editor";
 
-const FlowClassesPage = () => {
+const FlowBlueprintsPage = () => {
   const [viewMode, setViewMode] = useState<ViewMode>("table");
-  const [editingFlowClassId, setEditingFlowClassId] = useState<string | null>(
+  const [editingFlowBlueprintsId, setEditingFlowBlueprintId] = useState<string | null>(
     null,
   );
 
-  const handleEditFlowClass = (flowClassId: string) => {
-    setEditingFlowClassId(flowClassId);
+  const handleEditFlowBlueprints = (flowBlueprintId: string) => {
+    setEditingFlowBlueprintsId(flowBlueprintId);
     setViewMode("editor");
   };
 
   const handleBackToTable = () => {
     setViewMode("table");
-    setEditingFlowClassId(null);
+    setEditingFlowBlueprintsId(null);
   };
 
-  if (viewMode === "editor" && editingFlowClassId) {
+  if (viewMode === "editor" && editingFlowBlueprintsId) {
     return (
-      <FlowClassEditorView
-        flowClassId={editingFlowClassId}
+      <FlowBlueprintsEditorView
+        flowBlueprintsId={editingFlowBlueprintId}
         onBack={handleBackToTable}
       />
     );
@@ -37,12 +37,12 @@ const FlowClassesPage = () => {
     <>
       <PageHeader
         icon={<ScrollText />}
-        title="Flow Classes"
+        title="Flow Blueprints"
         description="Managing the dataflow definitions"
       />
-      <FlowClassTable onEdit={handleEditFlowClass} />
+      <FlowBlueprintsTable onEdit={handleEditFlowBlueprint} />
     </>
   );
 };
 
-export default FlowClassesPage;
+export default FlowBlueprintsPage;

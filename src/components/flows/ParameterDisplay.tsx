@@ -4,34 +4,34 @@ import { useFlows } from "@trustgraph/react-state";
 import { useFlowParameters } from "@trustgraph/react-state";
 
 interface ParameterDisplayProps {
-  flowClassName: string;
+  flowBlueprintsName: string;
   parameters: { [key: string]: unknown } | undefined;
 }
 
 /**
  * Component for displaying flow parameters with descriptive names and values
- * Looks up parameter metadata from flow class to show descriptions instead of identifiers
+ * Looks up parameter metadata from flow blueprint to show descriptions instead of identifiers
  * Also maps enum values to their descriptions when available
  */
 const ParameterDisplay: React.FC<ParameterDisplayProps> = ({
-  flowClassName,
+  flowBlueprintsName,
   parameters,
 }) => {
-  const { flowClasses } = useFlows();
+  const { flowBlueprints } = useFlows();
 
   // Fetch parameter definitions to get enum mappings
   const { parameterDefinitions, parameterMapping } =
-    useFlowParameters(flowClassName);
+    useFlowParameters(flowBlueprintsName);
 
-  // Find the flow class metadata
-  const flowClass = Array.isArray(flowClasses)
-    ? flowClasses.find(
-        (fc) => Array.isArray(fc) && fc[0] === flowClassName,
+  // Find the flow blueprint metadata
+  const flowBlueprints = Array.isArray(flowBlueprints)
+    ? flowBlueprints.find(
+        (fc) => Array.isArray(fc) && fc[0] === flowBlueprintsName,
       )?.[1]
     : undefined;
   const parameterMetadata = useMemo(
-    () => flowClass?.parameters || {},
-    [flowClass],
+    () => flowBlueprints?.parameters || {},
+    [flowBlueprints],
   );
 
   // Create a mapping of parameter values to display values

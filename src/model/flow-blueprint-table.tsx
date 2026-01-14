@@ -1,15 +1,15 @@
 import { createColumnHelper } from "@tanstack/react-table";
 import { Checkbox, Badge, HStack, Text } from "@chakra-ui/react";
-import { FlowClassDefinition } from "@trustgraph/react-state";
+import { FlowBlueprintsDefinition } from "@trustgraph/react-state";
 
 /**
- * Flow class data structure for the flow class table
- * Represents a single flow class with its metadata and properties
+ * Flow blueprint data structure for the flow blueprint table
+ * Represents a single flow blueprint with its metadata and properties
  */
-export type FlowClassRow = FlowClassDefinition;
+export type FlowBlueprintsRow = FlowBlueprintDefinition;
 
 // Create a column helper instance for type-safe column definitions
-export const columnHelper = createColumnHelper<FlowClassRow>();
+export const columnHelper = createColumnHelper<FlowBlueprintsRow>();
 
 /**
  * Helper function to determine the selection state of the table header
@@ -26,10 +26,10 @@ const selectionState = (table) => {
 };
 
 /**
- * Column definitions for the flow class table
+ * Column definitions for the flow blueprint table
  * Defines how each column should be rendered and what data it displays
  */
-export const flowClassColumns = [
+export const flowBlueprintsColumns = [
   // Selection column - provides row selection functionality with checkboxes
   columnHelper.display({
     id: "select",
@@ -59,27 +59,27 @@ export const flowClassColumns = [
     ),
   }),
 
-  // ID column - displays the flow class ID
+  // ID column - displays the flow blueprint ID
   columnHelper.display({
     id: "id",
     header: "ID",
     cell: ({ row }) => {
-      const flowClass = row.original;
+      const flowBlueprints = row.original;
       return (
         <Text fontFamily="mono" fontSize="sm">
-          {flowClass.id || "No ID"}
+          {flowBlueprints.id || "No ID"}
         </Text>
       );
     },
   }),
 
-  // Description column - displays flow class description
+  // Description column - displays flow blueprint description
   columnHelper.display({
     id: "description",
     header: "Description",
     cell: ({ row }) => {
-      const flowClass = row.original;
-      const description = flowClass.description;
+      const flowBlueprints = row.original;
+      const description = flowBlueprints.description;
       return (
         <Text fontSize="sm" noOfLines={2}>
           {description || "No description"}
@@ -88,19 +88,19 @@ export const flowClassColumns = [
     },
   }),
 
-  // Processors column - shows count of class and flow processors
+  // Processors column - shows count of blueprint and flow processors
   columnHelper.display({
     id: "processors",
     header: "Processors",
     cell: ({ row }) => {
-      const flowClass = row.original;
-      const classCount = Object.keys(flowClass.class || {}).length;
-      const flowCount = Object.keys(flowClass.flow || {}).length;
+      const flowBlueprints = row.original;
+      const blueprintCount = Object.keys(flowBlueprints.blueprint || {}).length;
+      const flowCount = Object.keys(flowBlueprints.flow || {}).length;
 
       return (
         <HStack gap={2}>
           <Badge colorPalette="blue" size="sm">
-            {classCount} class
+            {blueprintCount} blueprint
           </Badge>
           <Badge colorPalette="green" size="sm">
             {flowCount} flow
@@ -115,8 +115,8 @@ export const flowClassColumns = [
     id: "interfaces",
     header: "Interfaces",
     cell: ({ row }) => {
-      const flowClass = row.original;
-      const interfaceCount = Object.keys(flowClass.interfaces || {}).length;
+      const flowBlueprints = row.original;
+      const interfaceCount = Object.keys(flowBlueprints.interfaces || {}).length;
 
       return (
         <Badge colorPalette="purple" size="sm">
@@ -126,13 +126,13 @@ export const flowClassColumns = [
     },
   }),
 
-  // Tags column - displays flow class tags
+  // Tags column - displays flow blueprint tags
   columnHelper.display({
     id: "tags",
     header: "Tags",
     cell: ({ row }) => {
-      const flowClass = row.original;
-      const tags = flowClass.tags || [];
+      const flowBlueprints = row.original;
+      const tags = flowBlueprints.tags || [];
       if (tags.length === 0) {
         return (
           <Text fontSize="xs" color="fg.muted">

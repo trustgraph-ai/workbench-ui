@@ -136,7 +136,7 @@ const Settings: React.FC = () => {
         mcpTools={settings.featureSwitches.mcpTools}
         schemas={settings.featureSwitches.schemas}
         tokenCost={settings.featureSwitches.tokenCost}
-        flowClasses={settings.featureSwitches.flowClasses}
+        flowBlueprints={settings.featureSwitches.flowBlueprints}
         structuredQuery={settings.featureSwitches.structuredQuery}
         llmModels={settings.featureSwitches.llmModels}
         onOntologyEditorChange={(value) =>
@@ -157,8 +157,8 @@ const Settings: React.FC = () => {
         onTokenCostChange={(value) =>
           updateSetting("featureSwitches.tokenCost", value)
         }
-        onFlowClassesChange={(value) =>
-          updateSetting("featureSwitches.flowClasses", value)
+        onFlowBlueprintsChange={(value) =>
+          updateSetting("featureSwitches.flowBlueprints", value)
         }
         onStructuredQueryChange={(value) =>
           updateSetting("featureSwitches.structuredQuery", value)

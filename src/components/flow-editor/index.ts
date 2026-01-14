@@ -1,1 +1,1 @@
-export { FlowClassEditor } from "./FlowClassEditor";
+export { FlowBlueprintsEditor } from "./FlowBlueprintEditor";
