@@ -120,7 +120,7 @@ const Sidebar = () => {
         <NavItem to="/graph" icon={Rotate3d} label="Graph Visualizer" />
         <NavItem to="/library" icon={LibraryBig} label="Library" />
         {settings.featureSwitches.flowBlueprints && (
-          <NavItem to="/flow-Blueprint" icon={ScrollText} label="Flow Blueprints" />
+          <NavItem to="/flow-blueprints" icon={ScrollText} label="Flow Blueprints" />
         )}
         <NavItem to="/flows" icon={Workflow} label="Flows" />
         <NavItem to="/kc" icon={BrainCircuit} label="Knowledge Cores" />
