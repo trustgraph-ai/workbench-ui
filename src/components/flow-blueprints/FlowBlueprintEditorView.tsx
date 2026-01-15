@@ -301,7 +301,7 @@ const nodeTypes = {
   interface: InterfaceNode,
 };
 
-interface FlowBlueprints {
+interface FlowBlueprint {
   blueprint?: Record<string, unknown>;
   flow?: Record<string, unknown>;
 }
@@ -311,7 +311,7 @@ const generateNodesFromFlowBlueprints = (flowBlueprint: FlowBlueprint): Node[] =
   const nodes: Node[] = [];
 
   // Add blueprint processors
-  Object.keys(flowBlueprints.blueprint || {}).forEach((processorName) => {
+  Object.keys(flowBlueprint.blueprint || {}).forEach((processorName) => {
     // Strip template suffix to get base processor name for service map lookup
     const baseProcessorName = processorName.replace(/:\{[^}]+\}$/, "");
 
@@ -343,7 +343,7 @@ const generateNodesFromFlowBlueprints = (flowBlueprint: FlowBlueprint): Node[] =
   });
 
   // Add flow processors
-  Object.keys(flowBlueprints.flow || {}).forEach((processorName) => {
+  Object.keys(flowBlueprint.flow || {}).forEach((processorName) => {
     // Strip template suffix to get base processor name for service map lookup
     const baseProcessorName = processorName.replace(/:\{[^}]+\}$/, "");
 
@@ -375,7 +375,7 @@ const generateNodesFromFlowBlueprints = (flowBlueprint: FlowBlueprint): Node[] =
   });
 
   // Add interface nodes
-  Object.entries(flowBlueprints.interfaces || {}).forEach(
+  Object.entries(flowBlueprint.interfaces || {}).forEach(
     ([interfaceName, interfaceQueues]) => {
       // Look up interface definition in service map
       const interfaceDefinition = serviceMap.interfaces?.[interfaceName];
@@ -469,24 +469,24 @@ const generateEdgesFromFlowBlueprints = (flowBlueprint: FlowBlueprint): Edge[] =
     }>
   >();
 
-  // Collect all processors and their connections from service map + flow blueprint queues
+  // Collect all processors and their connections from service map + flow class queues
   const allProcessors = [
-    ...Object.keys(flowBlueprints.blueprint || {}).map((name) => ({
+    ...Object.keys(flowBlueprint.blueprint || {}).map((name) => ({
       name,
       type: "blueprint",
       baseProcessorName: name.replace(/:\{[^}]+\}$/, ""),
-      flowBlueprintsConnections: flowBlueprint.blueprint[name],
+      flowBlueprintConnections: flowBlueprint.blueprint[name],
     })),
-    ...Object.keys(flowBlueprints.flow || {}).map((name) => ({
+    ...Object.keys(flowBlueprint.flow || {}).map((name) => ({
       name,
       type: "flow",
       baseProcessorName: name.replace(/:\{[^}]+\}$/, ""),
-      flowBlueprintsConnections: flowBlueprint.flow[name],
+      flowBlueprintConnections: flowBlueprint.flow[name],
     })),
   ];
 
   allProcessors.forEach(
-    ({ name, type, baseProcessorName, flowBlueprintsConnections }) => {
+    ({ name, type, baseProcessorName, flowBlueprintConnections }) => {
       const processorInfo = serviceMap.processors[baseProcessorName];
       if (!processorInfo?.connections) return;
 
@@ -505,21 +505,21 @@ const generateEdgesFromFlowBlueprints = (flowBlueprint: FlowBlueprint): Edge[] =
           // For providers: look for request and response
           if (connection.role === "provides") {
             queues = {
-              request: flowBlueprintsConnections.request,
-              response: flowBlueprintsConnections.response,
+              request: flowBlueprintConnections.request,
+              response: flowBlueprintConnections.response,
             };
           } else if (connection.role === "consumes") {
             queues = {
-              request: flowBlueprintsConnections[`${connection.name}-request`],
-              response: flowBlueprintsConnections[`${connection.name}-response`],
+              request: flowBlueprintConnections[`${connection.name}-request`],
+              response: flowBlueprintConnections[`${connection.name}-response`],
             };
           }
         } else if (connectionKind === "flow") {
           // For flow: single queue value at connection.name
-          queues = { value: flowBlueprintsConnections[connection.name] };
+          queues = { value: flowBlueprintConnections[connection.name] };
         } else if (connectionKind === "passive") {
           // For passive: both consumer and provider use single queue value
-          queues = { value: flowBlueprintsConnections[connection.name] };
+          queues = { value: flowBlueprintConnections[connection.name] };
         }
 
         // Only add if we found valid queues
@@ -609,7 +609,7 @@ const generateEdgesFromFlowBlueprints = (flowBlueprint: FlowBlueprint): Edge[] =
 
   // Connect interfaces to their implementing processors
 
-  Object.entries(flowBlueprints.interfaces || {}).forEach(
+  Object.entries(flowBlueprint.interfaces || {}).forEach(
     ([interfaceName, interfaceQueues]) => {
       const interfaceDefinition = serviceMap.interfaces?.[interfaceName];
       const interfaceKind = interfaceDefinition?.kind;
@@ -620,7 +620,7 @@ const generateEdgesFromFlowBlueprints = (flowBlueprint: FlowBlueprint): Edge[] =
 
       // Find processors that match this interface's queue pattern
       allProcessors.forEach(
-        ({ name, type, baseProcessorName, flowBlueprintsConnections }) => {
+        ({ name, type, baseProcessorName, flowBlueprintConnections }) => {
           const processorId = `${type}-${name}`;
           const processorInfo = serviceMap.processors[baseProcessorName];
           if (!processorInfo?.connections) return;
@@ -639,8 +639,8 @@ const generateEdgesFromFlowBlueprints = (flowBlueprint: FlowBlueprint): Edge[] =
 
             // Check if this processor provides this service
             if (
-              flowBlueprintsConnections.request === interfaceRequest &&
-              flowBlueprintsConnections.response === interfaceResponse
+              flowBlueprintConnections.request === interfaceRequest &&
+              flowBlueprintConnections.response === interfaceResponse
             ) {
               // Find the service connection that provides
               matchingConnection = processorInfo.connections.find(
@@ -657,7 +657,7 @@ const generateEdgesFromFlowBlueprints = (flowBlueprint: FlowBlueprint): Edge[] =
             // Check only provider connections for matching queue
             processorInfo.connections.forEach((connection) => {
               if (connection.role === "provides") {
-                const connectionQueue = flowBlueprintsConnections[connection.name];
+                const connectionQueue = flowBlueprintConnections[connection.name];
                 if (connectionQueue === interfaceQueue) {
                   matchingConnection = connection;
                   isMatch = true;
@@ -703,20 +703,48 @@ export const FlowBlueprintEditorView: React.FC<FlowBlueprintEditorViewProps> = (
   onBack,
 }) => {
   const { flowBlueprints } = useFlowBlueprints();
-  const flowBlueprint = flowBlueprints.find((fc) => fc.id === flowBlueprintId);
+
+  // Transform flow Blueprint data if it's in [key, value] format (same as FlowBlueprintTable)
+  const transformedFlowBlueprints = useMemo(() => {
+    if (!flowBlueprints || !Array.isArray(flowBlueprints)) return [];
+
+    // Check if first item is an array [key, value] pair
+    if (
+      flowBlueprints.length > 0 &&
+      Array.isArray(flowBlueprints[0]) &&
+      flowBlueprints[0].length === 2
+    ) {
+      return flowBlueprints.map(([id, flowBlueprintData]) => ({
+        id,
+        ...(flowBlueprintData as Record<string, unknown>),
+      }));
+    }
+
+    // Already transformed
+    return flowBlueprints;
+  }, [flowBlueprints]);
+
+  const flowBlueprint = transformedFlowBlueprints.find((fc) => fc.id === flowBlueprintId);
+
+  // Keep the last valid flowBlueprint to prevent unmounting during refetch
+  const lastValidFlowBlueprint = React.useRef(flowBlueprint);
+  if (flowBlueprint) {
+    lastValidFlowBlueprint.current = flowBlueprint;
+  }
+  const stableFlowBlueprint = flowBlueprint || lastValidFlowBlueprint.current;
 
   // Generate nodes and edges from flow blueprint data using useMemo - must be before early return
   const initialNodes = useMemo(() => {
-    if (!flowBlueprint) return [];
-    const nodes = generateNodesFromFlowBlueprints(flowBlueprint);
+    if (!stableFlowBlueprint) return [];
+    const nodes = generateNodesFromFlowBlueprints(stableFlowBlueprint);
     return nodes;
-  }, [flowBlueprint]);
+  }, [stableFlowBlueprint]);
 
   const generatedEdges = useMemo(() => {
-    if (!flowBlueprint) return [];
-    const edges = generateEdgesFromFlowBlueprints(flowBlueprint);
+    if (!stableFlowBlueprint) return [];
+    const edges = generateEdgesFromFlowBlueprints(stableFlowBlueprint);
     return edges;
-  }, [flowBlueprint]);
+  }, [stableFlowBlueprint]);
 
   const layoutedNodes = useMemo(() => {
     const layouted = applyDagreLayout(initialNodes, generatedEdges);
@@ -740,7 +768,7 @@ export const FlowBlueprintEditorView: React.FC<FlowBlueprintEditorViewProps> = (
     [setEdges],
   );
 
-  if (!flowBlueprints) {
+  if (!stableFlowBlueprint) {
     return (
       <Box p={6}>
         <HStack spacing={4} mb={4}>
@@ -790,7 +818,7 @@ export const FlowBlueprintEditorView: React.FC<FlowBlueprintEditorViewProps> = (
         </HStack>
 
         <VStack spacing={2} align="start" w="100%">
-          <Heading size="lg">{flowBlueprints.name}</Heading>
+          <Heading size="lg">{stableFlowBlueprint?.name}</Heading>
         </VStack>
 
         <Separator />
