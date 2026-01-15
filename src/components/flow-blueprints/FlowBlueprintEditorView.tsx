@@ -703,48 +703,20 @@ export const FlowBlueprintEditorView: React.FC<FlowBlueprintEditorViewProps> = (
   onBack,
 }) => {
   const { flowBlueprints } = useFlowBlueprints();
-
-  // Transform flow Blueprint data if it's in [key, value] format (same as FlowBlueprintTable)
-  const transformedFlowBlueprints = useMemo(() => {
-    if (!flowBlueprints || !Array.isArray(flowBlueprints)) return [];
-
-    // Check if first item is an array [key, value] pair
-    if (
-      flowBlueprints.length > 0 &&
-      Array.isArray(flowBlueprints[0]) &&
-      flowBlueprints[0].length === 2
-    ) {
-      return flowBlueprints.map(([id, flowBlueprintData]) => ({
-        id,
-        ...(flowBlueprintData as Record<string, unknown>),
-      }));
-    }
-
-    // Already transformed
-    return flowBlueprints;
-  }, [flowBlueprints]);
-
-  const flowBlueprint = transformedFlowBlueprints.find((fc) => fc.id === flowBlueprintId);
-
-  // Keep the last valid flowBlueprint to prevent unmounting during refetch
-  const lastValidFlowBlueprint = React.useRef(flowBlueprint);
-  if (flowBlueprint) {
-    lastValidFlowBlueprint.current = flowBlueprint;
-  }
-  const stableFlowBlueprint = flowBlueprint || lastValidFlowBlueprint.current;
+  const flowBlueprint = flowBlueprints.find((fc) => fc.id === flowBlueprintId);
 
   // Generate nodes and edges from flow blueprint data using useMemo - must be before early return
   const initialNodes = useMemo(() => {
-    if (!stableFlowBlueprint) return [];
-    const nodes = generateNodesFromFlowBlueprints(stableFlowBlueprint);
+    if (!flowBlueprint) return [];
+    const nodes = generateNodesFromFlowBlueprints(flowBlueprint);
     return nodes;
-  }, [stableFlowBlueprint]);
+  }, [flowBlueprint]);
 
   const generatedEdges = useMemo(() => {
-    if (!stableFlowBlueprint) return [];
-    const edges = generateEdgesFromFlowBlueprints(stableFlowBlueprint);
+    if (!flowBlueprint) return [];
+    const edges = generateEdgesFromFlowBlueprints(flowBlueprint);
     return edges;
-  }, [stableFlowBlueprint]);
+  }, [flowBlueprint]);
 
   const layoutedNodes = useMemo(() => {
     const layouted = applyDagreLayout(initialNodes, generatedEdges);
@@ -768,7 +740,7 @@ export const FlowBlueprintEditorView: React.FC<FlowBlueprintEditorViewProps> = (
     [setEdges],
   );
 
-  if (!stableFlowBlueprint) {
+  if (!flowBlueprint) {
     return (
       <Box p={6}>
         <HStack spacing={4} mb={4}>
@@ -818,7 +790,7 @@ export const FlowBlueprintEditorView: React.FC<FlowBlueprintEditorViewProps> = (
         </HStack>
 
         <VStack spacing={2} align="start" w="100%">
-          <Heading size="lg">{stableFlowBlueprint?.name}</Heading>
+          <Heading size="lg">{flowBlueprint?.name}</Heading>
         </VStack>
 
         <Separator />
