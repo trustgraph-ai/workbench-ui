@@ -128,7 +128,7 @@ const App = () => {
             />
             <Route path="/flows" element={<FlowsPage />} />
             <Route
-              path="/flow-Blueprint"
+              path="/flow-blueprints"
               element={
                 <Suspense fallback={<CenterSpinner />}>
                   <FlowBlueprintsPage />
