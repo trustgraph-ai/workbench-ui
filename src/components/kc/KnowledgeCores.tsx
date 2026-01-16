@@ -98,6 +98,7 @@ const KnowledgeCores = () => {
     state.loadKnowledgeCores({
       ids: ids,
       flow: flow,
+      collection: settings.collection,
       onSuccess: () => {
         // Clear row selection after successful load
         table.setRowSelection({});
