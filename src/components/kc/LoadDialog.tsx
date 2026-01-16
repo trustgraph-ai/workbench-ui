@@ -61,9 +61,9 @@ const LoadDialog = ({ open, onOpenChange, selectedIds, onLoad }) => {
                 <SelectField
                   label="Processing flow"
                   items={flowOptions}
-                  value={selectedFlow}
-                  onValueChange={(x) => {
-                    setSelectedFlow(x);
+                  value={selectedFlow ? [selectedFlow] : []}
+                  onValueChange={(values) => {
+                    setSelectedFlow(values.length > 0 ? values[0] : undefined);
                   }}
                   contentRef={contentRef}
                 />
