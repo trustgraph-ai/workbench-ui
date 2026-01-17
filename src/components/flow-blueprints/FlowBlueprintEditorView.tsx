@@ -9,6 +9,7 @@ import {
   Separator,
 } from "@chakra-ui/react";
 import { ArrowLeft } from "lucide-react";
+import { useColorModeValue } from "../ui/color-mode";
 import ReactFlow, {
   Background,
   Controls,
@@ -49,8 +50,18 @@ const CustomNode = ({
     processorInfo?: ProcessorInfo;
   };
 }) => {
-  const borderColor = data.type === "blueprint" ? "#2563eb" : "#16a34a"; // blue for blueprint, green for flow
-  const backgroundColor = data.type === "blueprint" ? "#eff6ff" : "#f0fdf4";
+  // Use Chakra color tokens that adapt to light/dark mode
+  const blueprintBorder = useColorModeValue("blue.600", "blue.400");
+  const blueprintBg = useColorModeValue("blue.50", "blue.900");
+  const flowBorder = useColorModeValue("green.600", "green.400");
+  const flowBg = useColorModeValue("green.50", "green.900");
+  const provideColor = useColorModeValue("green.600", "green.400");
+  const consumeColor = useColorModeValue("red.600", "red.400");
+  const textColor = useColorModeValue("gray.900", "gray.100");
+  const labelColor = useColorModeValue("gray.600", "gray.400");
+
+  const borderColor = data.type === "blueprint" ? blueprintBorder : flowBorder;
+  const backgroundColor = data.type === "blueprint" ? blueprintBg : flowBg;
 
   const provides = data.provides || [];
   const consumes = data.consumes || [];
@@ -102,6 +113,7 @@ const CustomNode = ({
         border: `2px solid ${borderColor}`,
         borderRadius: "6px",
         background: backgroundColor,
+        color: textColor,
         fontSize: "14px",
         fontWeight: "500",
         position: "relative",
@@ -128,7 +140,7 @@ const CustomNode = ({
               position={Position.Left}
               id={`${isProvides ? "provide" : "consume"}-${connection}`}
               style={{
-                background: isProvides ? "#16a34a" : "#dc2626",
+                background: isProvides ? provideColor : consumeColor,
                 top: `${((index + 1) / (leftConnections.length + 1)) * 100}%`,
               }}
             />
@@ -139,7 +151,7 @@ const CustomNode = ({
                 top: `calc(${((index + 1) / (leftConnections.length + 1)) * 100}% - 8px)`,
                 transform: "translateY(-50%)",
                 fontSize: "9px",
-                color: isProvides ? "#16a34a" : "#dc2626",
+                color: isProvides ? provideColor : consumeColor,
                 fontWeight: "normal",
                 whiteSpace: "nowrap",
                 textAlign: "right",
@@ -166,7 +178,7 @@ const CustomNode = ({
               position={Position.Right}
               id={`${isProvides ? "provide" : "consume"}-${connection}`}
               style={{
-                background: isProvides ? "#16a34a" : "#dc2626",
+                background: isProvides ? provideColor : consumeColor,
                 top: `${((index + 1) / (rightConnections.length + 1)) * 100}%`,
               }}
             />
@@ -177,7 +189,7 @@ const CustomNode = ({
                 top: `calc(${((index + 1) / (rightConnections.length + 1)) * 100}% - 8px)`,
                 transform: "translateY(-50%)",
                 fontSize: "9px",
-                color: isProvides ? "#16a34a" : "#dc2626",
+                color: isProvides ? provideColor : consumeColor,
                 fontWeight: "normal",
                 whiteSpace: "nowrap",
                 textAlign: "left",
@@ -194,7 +206,7 @@ const CustomNode = ({
         <div
           style={{
             fontSize: "10px",
-            color: borderColor,
+            color: labelColor,
             fontWeight: "normal",
             marginTop: "2px",
           }}
@@ -218,9 +230,18 @@ const InterfaceNode = ({
     queues?: Record<string, unknown>;
   };
 }) => {
-  const borderColor = data.interfaceKind === "service" ? "#8b5cf6" : "#ec4899"; // purple for service, pink for flow
-  const backgroundColor =
-    data.interfaceKind === "service" ? "#f3e8ff" : "#fce7f3";
+  // Use Chakra color tokens that adapt to light/dark mode
+  const serviceBorder = useColorModeValue("purple.600", "purple.400");
+  const serviceBg = useColorModeValue("purple.50", "purple.900");
+  const flowInterfaceBorder = useColorModeValue("pink.600", "pink.400");
+  const flowInterfaceBg = useColorModeValue("pink.50", "pink.900");
+  const textColor = useColorModeValue("gray.900", "gray.100");
+  const descriptionColor = useColorModeValue("gray.600", "gray.400");
+  const shadowColor = useColorModeValue("rgba(0, 0, 0, 0.1)", "rgba(0, 0, 0, 0.3)");
+  const handleBorder = useColorModeValue("white", "gray.800");
+
+  const borderColor = data.interfaceKind === "service" ? serviceBorder : flowInterfaceBorder;
+  const backgroundColor = data.interfaceKind === "service" ? serviceBg : flowInterfaceBg;
   const icon = data.interfaceKind === "service" ? "⚡" : "📦";
 
   return (
@@ -230,6 +251,7 @@ const InterfaceNode = ({
         border: `2px dashed ${borderColor}`,
         borderRadius: "12px",
         background: backgroundColor,
+        color: textColor,
         fontSize: "14px",
         fontWeight: "500",
         minWidth: "180px",
@@ -237,7 +259,7 @@ const InterfaceNode = ({
         flexDirection: "column",
         alignItems: "center",
         gap: "4px",
-        boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+        boxShadow: `0 4px 6px ${shadowColor}`,
         position: "relative",
       }}
     >
@@ -250,7 +272,7 @@ const InterfaceNode = ({
           background: borderColor,
           width: "12px",
           height: "12px",
-          border: "2px solid white",
+          border: `2px solid ${handleBorder}`,
           right: "-6px",
         }}
       />
@@ -271,7 +293,7 @@ const InterfaceNode = ({
         <div
           style={{
             fontSize: "11px",
-            color: "#6b7280",
+            color: descriptionColor,
             fontStyle: "italic",
             textAlign: "center",
             maxWidth: "200px",
@@ -757,15 +779,19 @@ export const FlowBlueprintEditorView: React.FC<FlowBlueprintEditorViewProps> = (
     );
   }
 
+  const headerBg = useColorModeValue("white", "gray.800");
+  const headerBorder = useColorModeValue("gray.200", "gray.700");
+  const miniMapBg = useColorModeValue("rgba(255, 255, 255, 0.8)", "rgba(26, 32, 44, 0.8)");
+
   return (
     <Box h="100vh" display="flex" flexDirection="column">
       {/* Header */}
       <VStack
         spacing={4}
         p={6}
-        bg="white"
+        bg={headerBg}
         borderBottom="1px"
-        borderColor="gray.200"
+        borderColor={headerBorder}
       >
         <HStack justifyContent="space-between" w="100%">
           <HStack spacing={4}>
@@ -817,7 +843,7 @@ export const FlowBlueprintEditorView: React.FC<FlowBlueprintEditorViewProps> = (
             }}
             position="top-right"
             style={{
-              backgroundColor: "rgba(255, 255, 255, 0.8)",
+              backgroundColor: miniMapBg,
             }}
           />
         </ReactFlow>
