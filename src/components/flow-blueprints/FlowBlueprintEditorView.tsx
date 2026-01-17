@@ -10,6 +10,7 @@ import {
 } from "@chakra-ui/react";
 import { ArrowLeft } from "lucide-react";
 import { useColorModeValue } from "../ui/color-mode";
+import { system } from "../../theme";
 import ReactFlow, {
   Background,
   Controls,
@@ -50,15 +51,47 @@ const CustomNode = ({
     processorInfo?: ProcessorInfo;
   };
 }) => {
-  // Use Chakra color tokens that adapt to light/dark mode
-  const blueprintBorder = useColorModeValue("blue.600", "blue.400");
-  const blueprintBg = useColorModeValue("blue.50", "blue.900");
-  const flowBorder = useColorModeValue("green.600", "green.400");
-  const flowBg = useColorModeValue("green.50", "green.900");
-  const provideColor = useColorModeValue("green.600", "green.400");
-  const consumeColor = useColorModeValue("red.600", "red.400");
-  const textColor = useColorModeValue("gray.900", "gray.100");
-  const labelColor = useColorModeValue("gray.600", "gray.400");
+  // Use Chakra color tokens that adapt to light/dark mode - resolved to actual color values
+  const blueprintBorder = useColorModeValue(
+    system.token("colors.blue.600"),
+    system.token("colors.blue.400")
+  );
+  const blueprintBg = useColorModeValue(
+    system.token("colors.blue.50"),
+    system.token("colors.blue.900")
+  );
+  const flowBorder = useColorModeValue(
+    system.token("colors.green.600"),
+    system.token("colors.green.400")
+  );
+  const flowBg = useColorModeValue(
+    system.token("colors.green.50"),
+    system.token("colors.green.900")
+  );
+  const provideColor = useColorModeValue(
+    system.token("colors.green.600"),
+    system.token("colors.green.400")
+  );
+  const consumeColor = useColorModeValue(
+    system.token("colors.red.600"),
+    system.token("colors.red.400")
+  );
+  const textColor = useColorModeValue(
+    system.token("colors.gray.900"),
+    system.token("colors.gray.100")
+  );
+  const labelColor = useColorModeValue(
+    system.token("colors.gray.600"),
+    system.token("colors.gray.400")
+  );
+  const connectionLabelBg = useColorModeValue(
+    "rgba(255, 255, 255, 0.9)",
+    "rgba(26, 32, 44, 0.9)"
+  );
+  const connectionLabelBorder = useColorModeValue(
+    system.token("colors.gray.200"),
+    system.token("colors.gray.700")
+  );
 
   const borderColor = data.type === "blueprint" ? blueprintBorder : flowBorder;
   const backgroundColor = data.type === "blueprint" ? blueprintBg : flowBg;
@@ -155,6 +188,10 @@ const CustomNode = ({
                 fontWeight: "normal",
                 whiteSpace: "nowrap",
                 textAlign: "right",
+                background: connectionLabelBg,
+                padding: "2px 4px",
+                borderRadius: "3px",
+                border: `1px solid ${connectionLabelBorder}`,
               }}
             >
               {connection}
@@ -193,6 +230,10 @@ const CustomNode = ({
                 fontWeight: "normal",
                 whiteSpace: "nowrap",
                 textAlign: "left",
+                background: connectionLabelBg,
+                padding: "2px 4px",
+                borderRadius: "3px",
+                border: `1px solid ${connectionLabelBorder}`,
               }}
             >
               {connection}
@@ -230,15 +271,39 @@ const InterfaceNode = ({
     queues?: Record<string, unknown>;
   };
 }) => {
-  // Use Chakra color tokens that adapt to light/dark mode
-  const serviceBorder = useColorModeValue("purple.600", "purple.400");
-  const serviceBg = useColorModeValue("purple.50", "purple.900");
-  const flowInterfaceBorder = useColorModeValue("pink.600", "pink.400");
-  const flowInterfaceBg = useColorModeValue("pink.50", "pink.900");
-  const textColor = useColorModeValue("gray.900", "gray.100");
-  const descriptionColor = useColorModeValue("gray.600", "gray.400");
-  const shadowColor = useColorModeValue("rgba(0, 0, 0, 0.1)", "rgba(0, 0, 0, 0.3)");
-  const handleBorder = useColorModeValue("white", "gray.800");
+  // Use Chakra color tokens that adapt to light/dark mode - resolved to actual color values
+  const serviceBorder = useColorModeValue(
+    system.token("colors.purple.600"),
+    system.token("colors.purple.400")
+  );
+  const serviceBg = useColorModeValue(
+    system.token("colors.purple.50"),
+    system.token("colors.purple.900")
+  );
+  const flowInterfaceBorder = useColorModeValue(
+    system.token("colors.pink.600"),
+    system.token("colors.pink.400")
+  );
+  const flowInterfaceBg = useColorModeValue(
+    system.token("colors.pink.50"),
+    system.token("colors.pink.900")
+  );
+  const textColor = useColorModeValue(
+    system.token("colors.gray.900"),
+    system.token("colors.gray.100")
+  );
+  const descriptionColor = useColorModeValue(
+    system.token("colors.gray.600"),
+    system.token("colors.gray.400")
+  );
+  const shadowColor = useColorModeValue(
+    "rgba(0, 0, 0, 0.1)",
+    "rgba(0, 0, 0, 0.3)"
+  );
+  const handleBorder = useColorModeValue(
+    system.token("colors.white"),
+    system.token("colors.gray.800")
+  );
 
   const borderColor = data.interfaceKind === "service" ? serviceBorder : flowInterfaceBorder;
   const backgroundColor = data.interfaceKind === "service" ? serviceBg : flowInterfaceBg;
@@ -727,6 +792,28 @@ export const FlowBlueprintEditorView: React.FC<FlowBlueprintEditorViewProps> = (
   const { flowBlueprints } = useFlowBlueprints();
   const flowBlueprint = flowBlueprints.find((fc) => fc.id === flowBlueprintId);
 
+  // Define color mode values for styling - resolved to actual color values
+  const headerBg = useColorModeValue(
+    system.token("colors.white"),
+    system.token("colors.gray.800")
+  );
+  const headerBorder = useColorModeValue(
+    system.token("colors.gray.200"),
+    system.token("colors.gray.700")
+  );
+  const miniMapBg = useColorModeValue(
+    "rgba(255, 255, 255, 0.8)",
+    "rgba(26, 32, 44, 0.8)"
+  );
+  const edgeLabelBg = useColorModeValue(
+    system.token("colors.white"),
+    system.token("colors.gray.800")
+  );
+  const edgeLabelColor = useColorModeValue(
+    system.token("colors.gray.900"),
+    system.token("colors.gray.100")
+  );
+
   // Generate nodes and edges from flow blueprint data using useMemo - must be before early return
   const initialNodes = useMemo(() => {
     if (!flowBlueprint) return [];
@@ -739,6 +826,24 @@ export const FlowBlueprintEditorView: React.FC<FlowBlueprintEditorViewProps> = (
     const edges = generateEdgesFromFlowBlueprints(flowBlueprint);
     return edges;
   }, [flowBlueprint]);
+
+  // Apply dark mode styling to edge labels
+  const styledEdges = useMemo(() => {
+    return generatedEdges.map((edge) => ({
+      ...edge,
+      labelStyle: {
+        fill: edgeLabelColor,
+        fontWeight: 500,
+        fontSize: 12,
+      },
+      labelBgStyle: {
+        fill: edgeLabelBg,
+        fillOpacity: 0.9,
+      },
+      labelBgPadding: [8, 4] as [number, number],
+      labelBgBorderRadius: 4,
+    }));
+  }, [generatedEdges, edgeLabelColor, edgeLabelBg]);
 
   const layoutedNodes = useMemo(() => {
     const layouted = applyDagreLayout(initialNodes, generatedEdges);
@@ -754,8 +859,8 @@ export const FlowBlueprintEditorView: React.FC<FlowBlueprintEditorViewProps> = (
   }, [layoutedNodes, setNodes]);
 
   useEffect(() => {
-    setEdges(generatedEdges);
-  }, [generatedEdges, setEdges]);
+    setEdges(styledEdges);
+  }, [styledEdges, setEdges]);
 
   const onConnect = useCallback(
     (params: Connection) => setEdges((eds) => addEdge(params, eds)),
@@ -778,10 +883,6 @@ export const FlowBlueprintEditorView: React.FC<FlowBlueprintEditorViewProps> = (
       </Box>
     );
   }
-
-  const headerBg = useColorModeValue("white", "gray.800");
-  const headerBorder = useColorModeValue("gray.200", "gray.700");
-  const miniMapBg = useColorModeValue("rgba(255, 255, 255, 0.8)", "rgba(26, 32, 44, 0.8)");
 
   return (
     <Box h="100vh" display="flex" flexDirection="column">
