@@ -19,6 +19,10 @@ import {
   Type,
 } from "lucide-react";
 import { ValidationResult, ValidationIssue } from "./OntologyValidator";
+import {
+  usePanelBackgroundColor,
+  useContentBackgroundColor,
+} from "../ui/ontology-colors";
 
 interface ValidationPanelProps {
   validationResult: ValidationResult;
@@ -34,6 +38,9 @@ export const ValidationPanel: React.FC<ValidationPanelProps> = ({
   onNavigateToItem,
   onClose,
 }) => {
+  const panelBg = usePanelBackgroundColor();
+  const contentBg = useContentBackgroundColor();
+
   const { isValid, issues, summary } = validationResult;
 
   const getIssueIcon = (type: ValidationIssue["type"]) => {
@@ -102,9 +109,9 @@ export const ValidationPanel: React.FC<ValidationPanelProps> = ({
   }
 
   return (
-    <Box borderWidth="1px" borderRadius="md" bg="white" overflow="hidden">
+    <Box borderWidth="1px" borderRadius="md" bg={panelBg} overflow="hidden">
       {/* Header */}
-      <Box p={4} bg="gray.50" borderBottomWidth="1px">
+      <Box p={4} bg={contentBg} borderBottomWidth="1px">
         <HStack justify="space-between" align="center">
           <VStack align="start" spacing={1}>
             <Text fontWeight="semibold" fontSize="lg">

@@ -14,6 +14,7 @@ import {
   OWLObjectProperty,
   OWLDatatypeProperty,
 } from "@trustgraph/react-state";
+import { useContentBackgroundColor } from "../ui/ontology-colors";
 
 interface PropertyTreeProps {
   objectProperties: Record<string, OWLObjectProperty>;
@@ -36,6 +37,8 @@ export const PropertyTree: React.FC<PropertyTreeProps> = ({
   onCreateDatatypeProperty,
   onDeleteProperty,
 }) => {
+  const contentBg = useContentBackgroundColor();
+
   const [isCreating, setIsCreating] = useState<"object" | "datatype" | null>(
     null,
   );
@@ -143,7 +146,7 @@ export const PropertyTree: React.FC<PropertyTreeProps> = ({
   return (
     <VStack align="stretch" spacing={0} h="100%">
       {/* Header */}
-      <Box p={4} borderBottomWidth="1px" bg="gray.50">
+      <Box p={4} borderBottomWidth="1px" bg={contentBg}>
         <HStack justify="space-between">
           <Text fontWeight="semibold" fontSize="md" color="gray.800">
             Properties (
@@ -169,7 +172,7 @@ export const PropertyTree: React.FC<PropertyTreeProps> = ({
           <Tabs.Content value="object">
             <VStack align="stretch" spacing={0}>
               {/* Create Object Property */}
-              <Box p={3} borderBottomWidth="1px" bg="gray.25">
+              <Box p={3} borderBottomWidth="1px" bg={contentBg}>
                 {isCreating === "object" ? (
                   <VStack spacing={2}>
                     <Input
@@ -227,7 +230,7 @@ export const PropertyTree: React.FC<PropertyTreeProps> = ({
           <Tabs.Content value="datatype">
             <VStack align="stretch" spacing={0}>
               {/* Create Datatype Property */}
-              <Box p={3} borderBottomWidth="1px" bg="gray.25">
+              <Box p={3} borderBottomWidth="1px" bg={contentBg}>
                 {isCreating === "datatype" ? (
                   <VStack spacing={2}>
                     <Input

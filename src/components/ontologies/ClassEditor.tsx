@@ -16,6 +16,7 @@ import SelectOptionText from "../common/SelectOptionText";
 import { Hash, Save, Trash2, Link, Type, AlertTriangle } from "lucide-react";
 import { OWLClass, Ontology } from "@trustgraph/react-state";
 import { MultiLanguageLabels } from "./MultiLanguageLabels";
+import { usePanelBackgroundColor } from "../ui/ontology-colors";
 
 interface ClassEditorProps {
   classId: string;
@@ -37,6 +38,8 @@ export const ClassEditor: React.FC<ClassEditorProps> = ({
   onDeleteClass,
   onNavigateToProperty,
 }) => {
+  const panelBg = usePanelBackgroundColor();
+
   const [labels, setLabels] = useState<
     Array<{ value: string; lang?: string }>
   >([]);
@@ -512,7 +515,7 @@ export const ClassEditor: React.FC<ClassEditorProps> = ({
                     <Box
                       key={propId}
                       p={3}
-                      bg="white"
+                      bg={panelBg}
                       borderWidth="1px"
                       borderRadius="md"
                       cursor="pointer"
@@ -564,7 +567,7 @@ export const ClassEditor: React.FC<ClassEditorProps> = ({
                     <Box
                       key={propId}
                       p={3}
-                      bg="white"
+                      bg={panelBg}
                       borderWidth="1px"
                       borderRadius="md"
                       cursor="pointer"

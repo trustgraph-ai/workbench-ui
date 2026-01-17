@@ -11,6 +11,7 @@ import {
 import { Plus, ChevronRight, ChevronDown, Hash, Trash2 } from "lucide-react";
 import { OWLClass } from "@trustgraph/react-state";
 import { useNotification } from "@trustgraph/react-state";
+import { useContentBackgroundColor } from "../ui/ontology-colors";
 
 interface ClassTreeProps {
   classes: Record<string, OWLClass>;
@@ -29,6 +30,8 @@ export const ClassTree: React.FC<ClassTreeProps> = ({
   onUpdateClass,
   onDeleteClass,
 }) => {
+  const contentBg = useContentBackgroundColor();
+
   const [isCreating, setIsCreating] = useState(false);
   const [newClassName, setNewClassName] = useState("");
   const [expandedClasses, setExpandedClasses] = useState<Set<string>>(
@@ -309,7 +312,7 @@ export const ClassTree: React.FC<ClassTreeProps> = ({
   return (
     <VStack align="stretch" spacing={0} h="100%">
       {/* Header */}
-      <Box p={4} borderBottomWidth="1px" bg="gray.50">
+      <Box p={4} borderBottomWidth="1px" bg={contentBg}>
         <HStack justify="space-between">
           <Text fontWeight="semibold" fontSize="md" color="gray.800">
             Classes ({classEntries.length})
