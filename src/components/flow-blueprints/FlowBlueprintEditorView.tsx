@@ -9,6 +9,30 @@ import {
   Separator,
 } from "@chakra-ui/react";
 import { ArrowLeft } from "lucide-react";
+import {
+  useBlueprintBorderColor,
+  useBlueprintBackgroundColor,
+  useFlowBorderColor,
+  useFlowBackgroundColor,
+  useProvideHandleColor,
+  useConsumeHandleColor,
+  useNodeTextColor,
+  useNodeLabelColor,
+  useConnectionLabelBackgroundColor,
+  useConnectionLabelBorderColor,
+  useServiceInterfaceBorderColor,
+  useServiceInterfaceBackgroundColor,
+  useFlowInterfaceBorderColor,
+  useFlowInterfaceBackgroundColor,
+  useDescriptionTextColor,
+  useNodeShadowColor,
+  useInterfaceHandleBorderColor,
+  useHeaderBackgroundColor,
+  useHeaderBorderColor,
+  useMiniMapBackgroundColor,
+  useEdgeLabelBackgroundColor,
+  useEdgeLabelTextColor,
+} from "../ui/flow-blueprint-colors";
 import ReactFlow, {
   Background,
   Controls,
@@ -49,8 +73,20 @@ const CustomNode = ({
     processorInfo?: ProcessorInfo;
   };
 }) => {
-  const borderColor = data.type === "blueprint" ? "#2563eb" : "#16a34a"; // blue for blueprint, green for flow
-  const backgroundColor = data.type === "blueprint" ? "#eff6ff" : "#f0fdf4";
+  // Use theme-aware colors from flow-blueprint-colors.tsx
+  const blueprintBorder = useBlueprintBorderColor();
+  const blueprintBg = useBlueprintBackgroundColor();
+  const flowBorder = useFlowBorderColor();
+  const flowBg = useFlowBackgroundColor();
+  const provideColor = useProvideHandleColor();
+  const consumeColor = useConsumeHandleColor();
+  const textColor = useNodeTextColor();
+  const labelColor = useNodeLabelColor();
+  const connectionLabelBg = useConnectionLabelBackgroundColor();
+  const connectionLabelBorder = useConnectionLabelBorderColor();
+
+  const borderColor = data.type === "blueprint" ? blueprintBorder : flowBorder;
+  const backgroundColor = data.type === "blueprint" ? blueprintBg : flowBg;
 
   const provides = data.provides || [];
   const consumes = data.consumes || [];
@@ -102,6 +138,7 @@ const CustomNode = ({
         border: `2px solid ${borderColor}`,
         borderRadius: "6px",
         background: backgroundColor,
+        color: textColor,
         fontSize: "14px",
         fontWeight: "500",
         position: "relative",
@@ -128,7 +165,7 @@ const CustomNode = ({
               position={Position.Left}
               id={`${isProvides ? "provide" : "consume"}-${connection}`}
               style={{
-                background: isProvides ? "#16a34a" : "#dc2626",
+                background: isProvides ? provideColor : consumeColor,
                 top: `${((index + 1) / (leftConnections.length + 1)) * 100}%`,
               }}
             />
@@ -139,10 +176,14 @@ const CustomNode = ({
                 top: `calc(${((index + 1) / (leftConnections.length + 1)) * 100}% - 8px)`,
                 transform: "translateY(-50%)",
                 fontSize: "9px",
-                color: isProvides ? "#16a34a" : "#dc2626",
+                color: isProvides ? provideColor : consumeColor,
                 fontWeight: "normal",
                 whiteSpace: "nowrap",
                 textAlign: "right",
+                background: connectionLabelBg,
+                padding: "2px 4px",
+                borderRadius: "3px",
+                border: `1px solid ${connectionLabelBorder}`,
               }}
             >
               {connection}
@@ -166,7 +207,7 @@ const CustomNode = ({
               position={Position.Right}
               id={`${isProvides ? "provide" : "consume"}-${connection}`}
               style={{
-                background: isProvides ? "#16a34a" : "#dc2626",
+                background: isProvides ? provideColor : consumeColor,
                 top: `${((index + 1) / (rightConnections.length + 1)) * 100}%`,
               }}
             />
@@ -177,10 +218,14 @@ const CustomNode = ({
                 top: `calc(${((index + 1) / (rightConnections.length + 1)) * 100}% - 8px)`,
                 transform: "translateY(-50%)",
                 fontSize: "9px",
-                color: isProvides ? "#16a34a" : "#dc2626",
+                color: isProvides ? provideColor : consumeColor,
                 fontWeight: "normal",
                 whiteSpace: "nowrap",
                 textAlign: "left",
+                background: connectionLabelBg,
+                padding: "2px 4px",
+                borderRadius: "3px",
+                border: `1px solid ${connectionLabelBorder}`,
               }}
             >
               {connection}
@@ -194,7 +239,7 @@ const CustomNode = ({
         <div
           style={{
             fontSize: "10px",
-            color: borderColor,
+            color: labelColor,
             fontWeight: "normal",
             marginTop: "2px",
           }}
@@ -218,9 +263,18 @@ const InterfaceNode = ({
     queues?: Record<string, unknown>;
   };
 }) => {
-  const borderColor = data.interfaceKind === "service" ? "#8b5cf6" : "#ec4899"; // purple for service, pink for flow
-  const backgroundColor =
-    data.interfaceKind === "service" ? "#f3e8ff" : "#fce7f3";
+  // Use theme-aware colors from flow-blueprint-colors.tsx
+  const serviceBorder = useServiceInterfaceBorderColor();
+  const serviceBg = useServiceInterfaceBackgroundColor();
+  const flowInterfaceBorder = useFlowInterfaceBorderColor();
+  const flowInterfaceBg = useFlowInterfaceBackgroundColor();
+  const textColor = useNodeTextColor();
+  const descriptionColor = useDescriptionTextColor();
+  const shadowColor = useNodeShadowColor();
+  const handleBorder = useInterfaceHandleBorderColor();
+
+  const borderColor = data.interfaceKind === "service" ? serviceBorder : flowInterfaceBorder;
+  const backgroundColor = data.interfaceKind === "service" ? serviceBg : flowInterfaceBg;
   const icon = data.interfaceKind === "service" ? "⚡" : "📦";
 
   return (
@@ -230,6 +284,7 @@ const InterfaceNode = ({
         border: `2px dashed ${borderColor}`,
         borderRadius: "12px",
         background: backgroundColor,
+        color: textColor,
         fontSize: "14px",
         fontWeight: "500",
         minWidth: "180px",
@@ -237,7 +292,7 @@ const InterfaceNode = ({
         flexDirection: "column",
         alignItems: "center",
         gap: "4px",
-        boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+        boxShadow: `0 4px 6px ${shadowColor}`,
         position: "relative",
       }}
     >
@@ -250,7 +305,7 @@ const InterfaceNode = ({
           background: borderColor,
           width: "12px",
           height: "12px",
-          border: "2px solid white",
+          border: `2px solid ${handleBorder}`,
           right: "-6px",
         }}
       />
@@ -271,7 +326,7 @@ const InterfaceNode = ({
         <div
           style={{
             fontSize: "11px",
-            color: "#6b7280",
+            color: descriptionColor,
             fontStyle: "italic",
             textAlign: "center",
             maxWidth: "200px",
@@ -705,6 +760,13 @@ export const FlowBlueprintEditorView: React.FC<FlowBlueprintEditorViewProps> = (
   const { flowBlueprints } = useFlowBlueprints();
   const flowBlueprint = flowBlueprints.find((fc) => fc.id === flowBlueprintId);
 
+  // Use theme-aware colors from flow-blueprint-colors.tsx
+  const headerBg = useHeaderBackgroundColor();
+  const headerBorder = useHeaderBorderColor();
+  const miniMapBg = useMiniMapBackgroundColor();
+  const edgeLabelBg = useEdgeLabelBackgroundColor();
+  const edgeLabelColor = useEdgeLabelTextColor();
+
   // Generate nodes and edges from flow blueprint data using useMemo - must be before early return
   const initialNodes = useMemo(() => {
     if (!flowBlueprint) return [];
@@ -717,6 +779,24 @@ export const FlowBlueprintEditorView: React.FC<FlowBlueprintEditorViewProps> = (
     const edges = generateEdgesFromFlowBlueprints(flowBlueprint);
     return edges;
   }, [flowBlueprint]);
+
+  // Apply dark mode styling to edge labels
+  const styledEdges = useMemo(() => {
+    return generatedEdges.map((edge) => ({
+      ...edge,
+      labelStyle: {
+        fill: edgeLabelColor,
+        fontWeight: 500,
+        fontSize: 12,
+      },
+      labelBgStyle: {
+        fill: edgeLabelBg,
+        fillOpacity: 0.9,
+      },
+      labelBgPadding: [8, 4] as [number, number],
+      labelBgBorderRadius: 4,
+    }));
+  }, [generatedEdges, edgeLabelColor, edgeLabelBg]);
 
   const layoutedNodes = useMemo(() => {
     const layouted = applyDagreLayout(initialNodes, generatedEdges);
@@ -732,8 +812,8 @@ export const FlowBlueprintEditorView: React.FC<FlowBlueprintEditorViewProps> = (
   }, [layoutedNodes, setNodes]);
 
   useEffect(() => {
-    setEdges(generatedEdges);
-  }, [generatedEdges, setEdges]);
+    setEdges(styledEdges);
+  }, [styledEdges, setEdges]);
 
   const onConnect = useCallback(
     (params: Connection) => setEdges((eds) => addEdge(params, eds)),
@@ -763,9 +843,9 @@ export const FlowBlueprintEditorView: React.FC<FlowBlueprintEditorViewProps> = (
       <VStack
         spacing={4}
         p={6}
-        bg="white"
+        bg={headerBg}
         borderBottom="1px"
-        borderColor="gray.200"
+        borderColor={headerBorder}
       >
         <HStack justifyContent="space-between" w="100%">
           <HStack spacing={4}>
@@ -817,7 +897,7 @@ export const FlowBlueprintEditorView: React.FC<FlowBlueprintEditorViewProps> = (
             }}
             position="top-right"
             style={{
-              backgroundColor: "rgba(255, 255, 255, 0.8)",
+              backgroundColor: miniMapBg,
             }}
           />
         </ReactFlow>
