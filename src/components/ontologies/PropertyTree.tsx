@@ -19,6 +19,9 @@ import {
   useHeadingTextColor,
   useTextColor,
   useSubtleTextColor,
+  useHoverBackgroundColor,
+  useSelectedBackgroundColor,
+  useSelectedHoverBackgroundColor,
 } from "../ui/ontology-colors";
 
 interface PropertyTreeProps {
@@ -46,6 +49,9 @@ export const PropertyTree: React.FC<PropertyTreeProps> = ({
   const headingColor = useHeadingTextColor();
   const textColor = useTextColor();
   const subtleTextColor = useSubtleTextColor();
+  const hoverBg = useHoverBackgroundColor();
+  const selectedBg = useSelectedBackgroundColor();
+  const selectedHoverBg = useSelectedHoverBackgroundColor();
 
   const [isCreating, setIsCreating] = useState<"object" | "datatype" | null>(
     null,
@@ -106,9 +112,9 @@ export const PropertyTree: React.FC<PropertyTreeProps> = ({
               role="group"
               p={3}
               spacing={3}
-              bg={isSelected ? "blue.50" : "transparent"}
+              bg={isSelected ? selectedBg : "transparent"}
               cursor="pointer"
-              _hover={{ bg: isSelected ? "blue.100" : "gray.50" }}
+              _hover={{ bg: isSelected ? selectedHoverBg : hoverBg }}
               onClick={() => onSelectProperty(propertyId, type)}
             >
               {icon}

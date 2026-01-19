@@ -16,6 +16,9 @@ import {
   useHeadingTextColor,
   useTextColor,
   useSubtleTextColor,
+  useHoverBackgroundColor,
+  useSelectedBackgroundColor,
+  useSelectedHoverBackgroundColor,
 } from "../ui/ontology-colors";
 
 interface ClassTreeProps {
@@ -39,6 +42,9 @@ export const ClassTree: React.FC<ClassTreeProps> = ({
   const headingColor = useHeadingTextColor();
   const textColor = useTextColor();
   const subtleTextColor = useSubtleTextColor();
+  const hoverBg = useHoverBackgroundColor();
+  const selectedBg = useSelectedBackgroundColor();
+  const selectedHoverBg = useSelectedHoverBackgroundColor();
 
   const [isCreating, setIsCreating] = useState(false);
   const [newClassName, setNewClassName] = useState("");
@@ -224,7 +230,7 @@ export const ClassTree: React.FC<ClassTreeProps> = ({
             isDraggedOver
               ? "green.100"
               : isSelected
-                ? "blue.50"
+                ? selectedBg
                 : isDragging
                   ? "gray.200"
                   : "transparent"
@@ -238,8 +244,8 @@ export const ClassTree: React.FC<ClassTreeProps> = ({
             bg: isDraggedOver
               ? "green.100"
               : isSelected
-                ? "blue.100"
-                : "gray.50",
+                ? selectedHoverBg
+                : hoverBg,
           }}
           onClick={() => onSelectClass(classId)}
           draggable

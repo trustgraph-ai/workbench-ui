@@ -47,3 +47,23 @@ export const useSubtleTextColor = () =>
     system.token("colors.gray.600"),
     system.token("colors.gray.400"),
   );
+
+// Hover backgrounds
+export const useHoverBackgroundColor = () =>
+  useColorModeValue(
+    system.token("colors.gray.100"),
+    system.token("colors.gray.700"),
+  );
+
+// Selected backgrounds
+export const useSelectedBackgroundColor = () =>
+  useColorModeValue(
+    system.token("colors.blue.50"),
+    system.token("colors.blue.900"),
+  );
+
+export const useSelectedHoverBackgroundColor = () =>
+  useColorModeValue(
+    system.token("colors.blue.100"),
+    system.token("colors.blue.800"),
+  );
