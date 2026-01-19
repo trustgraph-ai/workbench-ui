@@ -21,7 +21,7 @@ import {
   OWLDatatypeProperty,
   Ontology,
 } from "@trustgraph/react-state";
-import { useSubtleTextColor } from "../ui/ontology-colors";
+import { useSubtleTextColor, useMutedBackgroundColor } from "../ui/ontology-colors";
 
 interface PropertyEditorProps {
   propertyId: string;
@@ -45,6 +45,7 @@ export const PropertyEditor: React.FC<PropertyEditorProps> = ({
   onDeleteProperty,
 }) => {
   const subtleText = useSubtleTextColor();
+  const mutedBg = useMutedBackgroundColor();
 
   const [label, setLabel] = useState("");
   const [comment, setComment] = useState("");
@@ -386,7 +387,7 @@ export const PropertyEditor: React.FC<PropertyEditorProps> = ({
               <Input
                 value={property.uri}
                 readOnly
-                bg="gray.50"
+                bg={mutedBg}
                 color={subtleText}
                 fontFamily="mono"
                 fontSize="sm"
@@ -401,7 +402,7 @@ export const PropertyEditor: React.FC<PropertyEditorProps> = ({
               <Input
                 value={property.type}
                 readOnly
-                bg="gray.50"
+                bg={mutedBg}
                 color={subtleText}
                 fontFamily="mono"
                 fontSize="sm"
@@ -416,7 +417,7 @@ export const PropertyEditor: React.FC<PropertyEditorProps> = ({
               <Input
                 value={propertyId}
                 readOnly
-                bg="gray.50"
+                bg={mutedBg}
                 color={subtleText}
                 fontFamily="mono"
                 fontSize="sm"

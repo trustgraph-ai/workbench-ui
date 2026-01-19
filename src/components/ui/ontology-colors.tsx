@@ -67,3 +67,10 @@ export const useSelectedHoverBackgroundColor = () =>
     system.token("colors.blue.100"),
     system.token("colors.blue.800"),
   );
+
+// Muted/readonly input backgrounds
+export const useMutedBackgroundColor = () =>
+  useColorModeValue(
+    system.token("colors.gray.50"),
+    system.token("colors.gray.700"),
+  );
