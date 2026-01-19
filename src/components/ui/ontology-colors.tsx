@@ -74,3 +74,40 @@ export const useMutedBackgroundColor = () =>
     system.token("colors.gray.50"),
     system.token("colors.gray.700"),
   );
+
+// Status colors for validation
+export const useSuccessBackgroundColor = () =>
+  useColorModeValue(
+    system.token("colors.green.50"),
+    system.token("colors.green.900"),
+  );
+
+export const useSuccessTextColor = () =>
+  useColorModeValue(
+    system.token("colors.green.800"),
+    system.token("colors.green.200"),
+  );
+
+export const useErrorBackgroundColor = () =>
+  useColorModeValue(
+    system.token("colors.red.50"),
+    system.token("colors.red.900"),
+  );
+
+export const useErrorTextColor = () =>
+  useColorModeValue(
+    system.token("colors.red.600"),
+    system.token("colors.red.300"),
+  );
+
+export const useWarningTextColor = () =>
+  useColorModeValue(
+    system.token("colors.orange.600"),
+    system.token("colors.orange.300"),
+  );
+
+export const useInfoTextColor = () =>
+  useColorModeValue(
+    system.token("colors.blue.600"),
+    system.token("colors.blue.300"),
+  );

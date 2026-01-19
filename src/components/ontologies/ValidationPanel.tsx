@@ -22,6 +22,14 @@ import { ValidationResult, ValidationIssue } from "./OntologyValidator";
 import {
   usePanelBackgroundColor,
   useContentBackgroundColor,
+  useSubtleTextColor,
+  useHoverBackgroundColor,
+  useSuccessBackgroundColor,
+  useSuccessTextColor,
+  useErrorBackgroundColor,
+  useErrorTextColor,
+  useWarningTextColor,
+  useInfoTextColor,
 } from "../ui/ontology-colors";
 
 interface ValidationPanelProps {
@@ -40,17 +48,36 @@ export const ValidationPanel: React.FC<ValidationPanelProps> = ({
 }) => {
   const panelBg = usePanelBackgroundColor();
   const contentBg = useContentBackgroundColor();
+  const subtleText = useSubtleTextColor();
+  const hoverBg = useHoverBackgroundColor();
+  const successBg = useSuccessBackgroundColor();
+  const successText = useSuccessTextColor();
+  const errorBg = useErrorBackgroundColor();
+  const errorText = useErrorTextColor();
+  const warningText = useWarningTextColor();
+  const infoText = useInfoTextColor();
 
   const { isValid, issues, summary } = validationResult;
 
   const getIssueIcon = (type: ValidationIssue["type"]) => {
     switch (type) {
       case "error":
-        return <XCircle size={14} color="#E53E3E" />;
+        return <XCircle size={14} color={errorText} />;
       case "warning":
-        return <AlertTriangle size={14} color="#DD6B20" />;
+        return <AlertTriangle size={14} color={warningText} />;
       case "info":
-        return <Info size={14} color="#3182CE" />;
+        return <Info size={14} color={infoText} />;
+    }
+  };
+
+  const getIssueTextColor = (type: ValidationIssue["type"]) => {
+    switch (type) {
+      case "error":
+        return errorText;
+      case "warning":
+        return warningText;
+      case "info":
+        return infoText;
     }
   };
 
@@ -68,11 +95,11 @@ export const ValidationPanel: React.FC<ValidationPanelProps> = ({
   const getItemIcon = (itemType?: ValidationIssue["itemType"]) => {
     switch (itemType) {
       case "class":
-        return <Hash size={12} color="#666" />;
+        return <Hash size={12} color={subtleText} />;
       case "objectProperty":
-        return <Link size={12} color="#666" />;
+        return <Link size={12} color={subtleText} />;
       case "datatypeProperty":
-        return <Type size={12} color="#666" />;
+        return <Type size={12} color={subtleText} />;
       default:
         return null;
     }
@@ -90,16 +117,16 @@ export const ValidationPanel: React.FC<ValidationPanelProps> = ({
         p={4}
         borderWidth="1px"
         borderRadius="md"
-        bg="green.50"
+        bg={successBg}
         borderColor="green.200"
       >
         <HStack spacing={3}>
-          <CheckCircle size={20} color="#38A169" />
+          <CheckCircle size={20} color={successText} />
           <VStack align="start" spacing={1}>
-            <Text fontWeight="semibold" color="green.800">
+            <Text fontWeight="semibold" color={successText}>
               Ontology is valid
             </Text>
-            <Text fontSize="sm" color="green.600">
+            <Text fontSize="sm" color={successText}>
               No validation issues found. Your ontology follows best practices.
             </Text>
           </VStack>
@@ -120,16 +147,16 @@ export const ValidationPanel: React.FC<ValidationPanelProps> = ({
             <HStack spacing={4}>
               {summary.errors > 0 && (
                 <HStack spacing={1}>
-                  <XCircle size={14} color="#E53E3E" />
-                  <Text fontSize="sm" color="red.600">
+                  <XCircle size={14} color={errorText} />
+                  <Text fontSize="sm" color={errorText}>
                     {summary.errors} error{summary.errors !== 1 ? "s" : ""}
                   </Text>
                 </HStack>
               )}
               {summary.warnings > 0 && (
                 <HStack spacing={1}>
-                  <AlertTriangle size={14} color="#DD6B20" />
-                  <Text fontSize="sm" color="orange.600">
+                  <AlertTriangle size={14} color={warningText} />
+                  <Text fontSize="sm" color={warningText}>
                     {summary.warnings} warning
                     {summary.warnings !== 1 ? "s" : ""}
                   </Text>
@@ -137,8 +164,8 @@ export const ValidationPanel: React.FC<ValidationPanelProps> = ({
               )}
               {summary.info > 0 && (
                 <HStack spacing={1}>
-                  <Info size={14} color="#3182CE" />
-                  <Text fontSize="sm" color="blue.600">
+                  <Info size={14} color={infoText} />
+                  <Text fontSize="sm" color={infoText}>
                     {summary.info} suggestion{summary.info !== 1 ? "s" : ""}
                   </Text>
                 </HStack>
@@ -158,7 +185,7 @@ export const ValidationPanel: React.FC<ValidationPanelProps> = ({
             <Box key={index}>
               <Box
                 p={4}
-                _hover={{ bg: "gray.50" }}
+                _hover={{ bg: hoverBg }}
                 cursor={
                   issue.itemId && onNavigateToItem ? "pointer" : "default"
                 }
@@ -171,7 +198,7 @@ export const ValidationPanel: React.FC<ValidationPanelProps> = ({
                       <HStack spacing={2} align="center">
                         <Text
                           fontWeight="medium"
-                          color={`${getIssueColor(issue.type)}.800`}
+                          color={getIssueTextColor(issue.type)}
                         >
                           {issue.message}
                         </Text>
@@ -189,7 +216,7 @@ export const ValidationPanel: React.FC<ValidationPanelProps> = ({
                         )}
                       </HStack>
                       {issue.suggestion && (
-                        <Text fontSize="sm" color="gray.600">
+                        <Text fontSize="sm" color={subtleText}>
                           💡 {issue.suggestion}
                         </Text>
                       )}
@@ -205,7 +232,7 @@ export const ValidationPanel: React.FC<ValidationPanelProps> = ({
 
       {/* Footer with overall status */}
       {!isValid && (
-        <Box p={3} bg="red.50" borderTopWidth="1px">
+        <Box p={3} bg={errorBg} borderTopWidth="1px">
           <Alert.Root status="error" size="sm">
             <Alert.Indicator />
             <Alert.Content>
