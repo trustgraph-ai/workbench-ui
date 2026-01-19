@@ -11,7 +11,12 @@ import {
 import { Plus, ChevronRight, ChevronDown, Hash, Trash2 } from "lucide-react";
 import { OWLClass } from "@trustgraph/react-state";
 import { useNotification } from "@trustgraph/react-state";
-import { useContentBackgroundColor } from "../ui/ontology-colors";
+import {
+  useContentBackgroundColor,
+  useHeadingTextColor,
+  useTextColor,
+  useSubtleTextColor,
+} from "../ui/ontology-colors";
 
 interface ClassTreeProps {
   classes: Record<string, OWLClass>;
@@ -31,6 +36,9 @@ export const ClassTree: React.FC<ClassTreeProps> = ({
   onDeleteClass,
 }) => {
   const contentBg = useContentBackgroundColor();
+  const headingColor = useHeadingTextColor();
+  const textColor = useTextColor();
+  const subtleTextColor = useSubtleTextColor();
 
   const [isCreating, setIsCreating] = useState(false);
   const [newClassName, setNewClassName] = useState("");
@@ -259,19 +267,19 @@ export const ClassTree: React.FC<ClassTreeProps> = ({
             <Box w={6} /> // Spacer for alignment
           )}
 
-          <Hash size={14} color="#666" />
+          <Hash size={14} color={subtleTextColor} />
 
           <VStack align="start" spacing={0} flex="1" minW="0">
             <Text
               fontSize="sm"
               fontWeight={isSelected ? "semibold" : "normal"}
-              color={isSelected ? "blue.800" : "gray.800"}
+              color={isSelected ? "blue.600" : textColor}
               noOfLines={1}
             >
               {getClassLabel(owlClass)}
             </Text>
             {owlClass["rdfs:comment"] && (
-              <Text fontSize="xs" color="gray.500" noOfLines={1}>
+              <Text fontSize="xs" color={subtleTextColor} noOfLines={1}>
                 {owlClass["rdfs:comment"]}
               </Text>
             )}
@@ -314,7 +322,7 @@ export const ClassTree: React.FC<ClassTreeProps> = ({
       {/* Header */}
       <Box p={4} borderBottomWidth="1px" bg={contentBg}>
         <HStack justify="space-between">
-          <Text fontWeight="semibold" fontSize="md" color="gray.800">
+          <Text fontWeight="semibold" fontSize="md" color={headingColor}>
             Classes ({classEntries.length})
           </Text>
           <IconButton

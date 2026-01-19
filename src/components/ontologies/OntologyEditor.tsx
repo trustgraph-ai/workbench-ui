@@ -37,6 +37,7 @@ import {
   usePanelBackgroundColor,
   useContentBackgroundColor,
   useHeaderBackgroundColor,
+  useSubtleTextColor,
 } from "../ui/ontology-colors";
 
 interface OntologyEditorProps {
@@ -54,6 +55,7 @@ export const OntologyEditor: React.FC<OntologyEditorProps> = ({
   const panelBg = usePanelBackgroundColor();
   const contentBg = useContentBackgroundColor();
   const headerBg = useHeaderBackgroundColor();
+  const subtleText = useSubtleTextColor();
 
   const [selectedClassId, setSelectedClassId] = useState<string | null>(null);
   const [selectedPropertyId, setSelectedPropertyId] = useState<string | null>(
@@ -565,7 +567,7 @@ export const OntologyEditor: React.FC<OntologyEditorProps> = ({
             )}
             <VStack align="start" spacing={0}>
               <Heading size="lg">{ontologyData.metadata.name}</Heading>
-              <Text fontSize="sm" color="gray.600">
+              <Text fontSize="sm" color={subtleText}>
                 {ontologyData.metadata.description}
               </Text>
             </VStack>
@@ -689,7 +691,7 @@ export const OntologyEditor: React.FC<OntologyEditorProps> = ({
                       >
                         Ontology Information
                       </Text>
-                      <Text fontSize="sm" color="gray.600">
+                      <Text fontSize="sm" color={subtleText}>
                         Configure basic metadata about this ontology
                       </Text>
                     </VStack>

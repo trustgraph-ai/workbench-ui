@@ -16,7 +16,10 @@ import SelectOptionText from "../common/SelectOptionText";
 import { Hash, Save, Trash2, Link, Type, AlertTriangle } from "lucide-react";
 import { OWLClass, Ontology } from "@trustgraph/react-state";
 import { MultiLanguageLabels } from "./MultiLanguageLabels";
-import { usePanelBackgroundColor } from "../ui/ontology-colors";
+import {
+  usePanelBackgroundColor,
+  useSubtleTextColor,
+} from "../ui/ontology-colors";
 
 interface ClassEditorProps {
   classId: string;
@@ -39,6 +42,7 @@ export const ClassEditor: React.FC<ClassEditorProps> = ({
   onNavigateToProperty,
 }) => {
   const panelBg = usePanelBackgroundColor();
+  const subtleText = useSubtleTextColor();
 
   const [labels, setLabels] = useState<
     Array<{ value: string; lang?: string }>
@@ -232,7 +236,7 @@ export const ClassEditor: React.FC<ClassEditorProps> = ({
                 value={owlClass.uri}
                 readOnly
                 bg="gray.50"
-                color="gray.600"
+                color={subtleText}
                 fontFamily="mono"
                 fontSize="sm"
               />
@@ -247,7 +251,7 @@ export const ClassEditor: React.FC<ClassEditorProps> = ({
                 value="owl:Class"
                 readOnly
                 bg="gray.50"
-                color="gray.600"
+                color={subtleText}
                 fontFamily="mono"
                 fontSize="sm"
               />
@@ -262,7 +266,7 @@ export const ClassEditor: React.FC<ClassEditorProps> = ({
                 value={classId}
                 readOnly
                 bg="gray.50"
-                color="gray.600"
+                color={subtleText}
                 fontFamily="mono"
                 fontSize="sm"
               />
@@ -497,7 +501,7 @@ export const ClassEditor: React.FC<ClassEditorProps> = ({
                 return (
                   <Box p={4} bg="gray.50" borderRadius="md">
                     <VStack spacing={2}>
-                      <Text fontSize="sm" color="gray.600" fontWeight="medium">
+                      <Text fontSize="sm" color={subtleText} fontWeight="medium">
                         No properties use this class as domain
                       </Text>
                       <Text fontSize="xs" color="gray.500" textAlign="center">
@@ -546,7 +550,7 @@ export const ClassEditor: React.FC<ClassEditorProps> = ({
                               Object Property
                             </Badge>
                             {prop["rdfs:range"] && (
-                              <Text fontSize="xs" color="gray.600">
+                              <Text fontSize="xs" color={subtleText}>
                                 →{" "}
                                 {ontology.classes[prop["rdfs:range"]]?.[
                                   "rdfs:label"
@@ -598,7 +602,7 @@ export const ClassEditor: React.FC<ClassEditorProps> = ({
                               Datatype Property
                             </Badge>
                             {prop["rdfs:range"] && (
-                              <Text fontSize="xs" color="gray.600">
+                              <Text fontSize="xs" color={subtleText}>
                                 : {prop["rdfs:range"]}
                               </Text>
                             )}

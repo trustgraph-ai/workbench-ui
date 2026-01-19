@@ -14,7 +14,12 @@ import {
   OWLObjectProperty,
   OWLDatatypeProperty,
 } from "@trustgraph/react-state";
-import { useContentBackgroundColor } from "../ui/ontology-colors";
+import {
+  useContentBackgroundColor,
+  useHeadingTextColor,
+  useTextColor,
+  useSubtleTextColor,
+} from "../ui/ontology-colors";
 
 interface PropertyTreeProps {
   objectProperties: Record<string, OWLObjectProperty>;
@@ -38,6 +43,9 @@ export const PropertyTree: React.FC<PropertyTreeProps> = ({
   onDeleteProperty,
 }) => {
   const contentBg = useContentBackgroundColor();
+  const headingColor = useHeadingTextColor();
+  const textColor = useTextColor();
+  const subtleTextColor = useSubtleTextColor();
 
   const [isCreating, setIsCreating] = useState<"object" | "datatype" | null>(
     null,
@@ -84,7 +92,7 @@ export const PropertyTree: React.FC<PropertyTreeProps> = ({
     <VStack align="stretch" spacing={0}>
       {entries.length === 0 ? (
         <Box p={3} textAlign="center">
-          <Text color="gray.500" fontSize="xs">
+          <Text color={subtleTextColor} fontSize="xs">
             {emptyMessage}
           </Text>
         </Box>
@@ -108,13 +116,13 @@ export const PropertyTree: React.FC<PropertyTreeProps> = ({
                 <Text
                   fontSize="sm"
                   fontWeight={isSelected ? "semibold" : "normal"}
-                  color={isSelected ? "blue.800" : "gray.800"}
+                  color={isSelected ? "blue.600" : textColor}
                   noOfLines={1}
                 >
                   {getPropertyLabel(property)}
                 </Text>
                 {property["rdfs:comment"] && (
-                  <Text fontSize="xs" color="gray.500" noOfLines={1}>
+                  <Text fontSize="xs" color={subtleTextColor} noOfLines={1}>
                     {property["rdfs:comment"]}
                   </Text>
                 )}
@@ -148,7 +156,7 @@ export const PropertyTree: React.FC<PropertyTreeProps> = ({
       {/* Header */}
       <Box p={4} borderBottomWidth="1px" bg={contentBg}>
         <HStack justify="space-between">
-          <Text fontWeight="semibold" fontSize="md" color="gray.800">
+          <Text fontWeight="semibold" fontSize="md" color={headingColor}>
             Properties (
             {objectPropertyEntries.length + datatypePropertyEntries.length})
           </Text>
@@ -221,7 +229,7 @@ export const PropertyTree: React.FC<PropertyTreeProps> = ({
               {renderPropertyList(
                 objectPropertyEntries,
                 "object",
-                <Link size={14} color="#666" />,
+                <Link size={14} color={subtleTextColor} />,
                 "No object properties",
               )}
             </VStack>
@@ -279,7 +287,7 @@ export const PropertyTree: React.FC<PropertyTreeProps> = ({
               {renderPropertyList(
                 datatypePropertyEntries,
                 "datatype",
-                <Type size={14} color="#666" />,
+                <Type size={14} color={subtleTextColor} />,
                 "No datatype properties",
               )}
             </VStack>

@@ -36,6 +36,12 @@ export const useTextColor = () =>
     system.token("colors.gray.100"),
   );
 
+export const useHeadingTextColor = () =>
+  useColorModeValue(
+    system.token("colors.gray.800"),
+    system.token("colors.gray.200"),
+  );
+
 export const useSubtleTextColor = () =>
   useColorModeValue(
     system.token("colors.gray.600"),
