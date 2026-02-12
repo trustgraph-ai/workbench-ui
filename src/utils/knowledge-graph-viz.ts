@@ -1,7 +1,7 @@
 // Functionality here helps construct subgraphs for react-force-graph
 // visualisation
 
-import { Triple, BaseApi } from "@trustgraph/client";
+import { Triple, BaseApi, Term, IriTerm, LiteralTerm } from "@trustgraph/client";
 import {
   query,
   labelS,
@@ -9,6 +9,20 @@ import {
   labelO,
   filterInternals,
 } from "./knowledge-graph";
+
+// Helper to get the string value from a Term (IRI or Literal)
+const getTermValue = (term: Term): string => {
+  if (term.t === "i") return (term as IriTerm).i;
+  if (term.t === "l") return (term as LiteralTerm).v;
+  if (term.t === "b") return term.d;
+  return "";
+};
+
+// Helper to check if a Term is an IRI
+const isIri = (term: Term): term is IriTerm => term.t === "i";
+
+// Extended Term type that includes optional label (added by labeling functions)
+type LabeledTerm = Term & { label?: string };
 
 interface Node {
   id: string;
@@ -45,22 +59,23 @@ export const updateSubgraphTriples = (sg: Subgraph, triples: Triple[]) => {
   for (const t of triples) {
     // Skip triples where the object is a literal (property edges)
     // These are now shown in the node details drawer instead
-    if (!t.o.e) {
+    if (!isIri(t.o)) {
       continue;
     }
     // Source has a URI, that can be its unique ID
-    const sourceId = t.s.v;
+    const sourceId = getTermValue(t.s);
 
     // Target is always an entity now (we filtered out literals above)
-    const targetId = t.o.v;
+    const targetId = getTermValue(t.o);
 
     // Links have an ID so that this edge is unique
-    const linkId = t.s.v + "@@" + t.p.v + "@@" + t.o.v;
+    const linkId = getTermValue(t.s) + "@@" + getTermValue(t.p) + "@@" + getTermValue(t.o);
 
     if (!nodeIds.has(sourceId)) {
+      const sLabeled = t.s as LabeledTerm;
       const n: Node = {
         id: sourceId,
-        label: t.s.label ? t.s.label : "unknown",
+        label: sLabeled.label ? sLabeled.label : "unknown",
         group: groupId,
       };
       nodeIds.add(sourceId);
@@ -71,9 +86,10 @@ export const updateSubgraphTriples = (sg: Subgraph, triples: Triple[]) => {
     }
 
     if (!nodeIds.has(targetId)) {
+      const oLabeled = t.o as LabeledTerm;
       const n: Node = {
         id: targetId,
-        label: t.o.label ? t.o.label : "unknown",
+        label: oLabeled.label ? oLabeled.label : "unknown",
         group: groupId,
       };
       nodeIds.add(targetId);
@@ -84,11 +100,12 @@ export const updateSubgraphTriples = (sg: Subgraph, triples: Triple[]) => {
     }
 
     if (!linkIds.has(linkId)) {
+      const pLabeled = t.p as LabeledTerm;
       const l: Link = {
         source: sourceId,
         target: targetId,
         id: linkId,
-        label: t.p.label ? t.p.label : "unknown",
+        label: pLabeled.label ? pLabeled.label : "unknown",
         value: 1,
       };
       linkIds.add(linkId);
@@ -140,16 +157,16 @@ export const updateSubgraphByRelationship = (
   const queryPromise =
     direction === "outgoing"
       ? api.triplesQuery(
-          { v: selectedNodeId, e: true }, // s = selectedNode
-          { v: relationshipUri, e: true }, // p = relationship
+          { t: "i", i: selectedNodeId }, // s = selectedNode
+          { t: "i", i: relationshipUri }, // p = relationship
           undefined, // o = ??? (what we want to find)
           20, // Limit results
           collection,
         )
       : api.triplesQuery(
           undefined, // s = ??? (what we want to find)
-          { v: relationshipUri, e: true }, // p = relationship
-          { v: selectedNodeId, e: true }, // o = selectedNode
+          { t: "i", i: relationshipUri }, // p = relationship
+          { t: "i", i: selectedNodeId }, // o = selectedNode
           20, // Limit results
           collection,
         );
