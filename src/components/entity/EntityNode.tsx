@@ -2,11 +2,12 @@ import React from "react";
 
 import { Button } from "@chakra-ui/react";
 
-import { useWorkbenchStateStore } from "@trustgraph/react-state";
-import { Value } from "@trustgraph/react-state";
+import { useWorkbenchStateStore, LabeledTerm, getTermValue } from "@trustgraph/react-state";
 
-const EntityNode: React.FC<{ value: Value }> = ({ value }) => {
+const EntityNode: React.FC<{ value: LabeledTerm }> = ({ value }) => {
   const setSelected = useWorkbenchStateStore((state) => state.setSelected);
+  const uri = getTermValue(value);
+  const label = value.label ?? uri;
 
   return (
     <Button
@@ -15,12 +16,12 @@ const EntityNode: React.FC<{ value: Value }> = ({ value }) => {
       colorPalette="blue"
       onClick={() =>
         setSelected({
-          uri: value.v,
-          label: value.label ? value.label : value.v,
+          uri,
+          label,
         })
       }
     >
-      {value.label}
+      {label}
     </Button>
   );
 };

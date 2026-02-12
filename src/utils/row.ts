@@ -1,6 +1,6 @@
 import similarity from "compute-cosine-similarity";
 
-import { Value, BaseApi } from "@trustgraph/client";
+import { Term, IriTerm, LiteralTerm, BaseApi } from "@trustgraph/client";
 import { RDFS_LABEL, SKOS_DEFINITION } from "./knowledge-graph";
 
 export interface Row {
@@ -31,11 +31,13 @@ export const getGraphEmbeddings = (
 
     return socket
       .graphEmbeddingsQuery(vecs, limit ? limit : 10, collection)
-      .then((ents: Value[]): Row[] => {
+      .then((ents: Term[]): Row[] => {
         remove(act);
-        return ents.map((ent) => {
-          return { uri: ent.v, target: vecs[0] };
-        });
+        return ents
+          .filter((ent): ent is IriTerm => ent.t === "i")
+          .map((ent) => {
+            return { uri: ent.i, target: vecs[0] };
+          });
       })
       .catch((err) => {
         remove(act);
@@ -59,8 +61,8 @@ export const addRowLabels =
         add(act);
         return socket
           .triplesQuery(
-            { v: ent.uri, e: true },
-            { v: RDFS_LABEL, e: true },
+            { t: "i", i: ent.uri },
+            { t: "i", i: RDFS_LABEL },
             undefined,
             1,
             collection,
@@ -75,9 +77,10 @@ export const addRowLabels =
               };
             } else {
               remove(act);
+              const obj = t[0].o as LiteralTerm;
               return {
                 uri: ent.uri,
-                label: t[0].o.v,
+                label: obj.v,
                 target: ent.target,
               };
             }
@@ -106,8 +109,8 @@ export const addRowDefinitions =
         add(act);
         return socket
           .triplesQuery(
-            { v: ent.uri, e: true },
-            { v: SKOS_DEFINITION, e: true },
+            { t: "i", i: ent.uri },
+            { t: "i", i: SKOS_DEFINITION },
             undefined,
             1,
             collection,
@@ -118,9 +121,10 @@ export const addRowDefinitions =
               return { ...ent, description: "" };
             } else {
               remove(act);
+              const obj = t[0].o as LiteralTerm;
               return {
                 ...ent,
-                description: t[0].o.v,
+                description: obj.v,
               };
             }
           })
