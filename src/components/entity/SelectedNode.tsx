@@ -2,12 +2,13 @@ import React from "react";
 
 import { Tag } from "@chakra-ui/react";
 
-import { Value } from "@trustgraph/react-state";
+import { LabeledTerm, getTermValue } from "@trustgraph/react-state";
 
-const SelectedNode: React.FC<{ value: Value }> = ({ value }) => {
+const SelectedNode: React.FC<{ value: LabeledTerm }> = ({ value }) => {
+  const label = value.label ?? getTermValue(value);
   return (
     <Tag.Root variant="surface" color="gray.50" backgroundColor="gray.600">
-      <Tag.Label>{value.label}</Tag.Label>
+      <Tag.Label>{label}</Tag.Label>
     </Tag.Root>
   );
 };

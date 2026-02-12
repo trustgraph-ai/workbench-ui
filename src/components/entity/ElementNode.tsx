@@ -1,20 +1,25 @@
 import React from "react";
 
-import { Value } from "@trustgraph/react-state";
+import { LabeledTerm, getTermValue } from "@trustgraph/react-state";
 import { Entity } from "@trustgraph/react-state";
 import LiteralNode from "./LiteralNode";
 import EntityNode from "./EntityNode";
 import SelectedNode from "./SelectedNode";
 
-const ElementNode: React.FC<{ value: Value; selected: Entity }> = ({
+// Check if term is an IRI or blank node (i.e., an entity reference)
+const isEntity = (term: LabeledTerm): boolean => term.t === "i" || term.t === "b";
+
+const ElementNode: React.FC<{ value: LabeledTerm; selected: Entity }> = ({
   value,
   selected,
 }) => {
-  if (value.e)
-    if (selected && value.v == selected.uri)
+  if (isEntity(value)) {
+    const uri = getTermValue(value);
+    if (selected && uri === selected.uri)
       return <SelectedNode value={value} />;
     else return <EntityNode value={value} />;
-  else return <LiteralNode value={value} />;
+  }
+  return <LiteralNode value={value} />;
 };
 
 export default ElementNode;
