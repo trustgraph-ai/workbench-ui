@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from "react";
 import { VStack, HStack, Button, Textarea, Text, Box } from "@chakra-ui/react";
 import { Play } from "lucide-react";
-import { useObjectsQuery } from "@trustgraph/react-state";
+import { useRowsQuery } from "@trustgraph/react-state";
 import {
   createColumnHelper,
   useReactTable,
@@ -17,12 +17,12 @@ const columnHelper = createColumnHelper<GraphQLResultRow>();
 
 const RunGraphQLTab: React.FC = () => {
   const [query, setQuery] = useState("");
-  const objectsQuery = useObjectsQuery();
+  const rowsQuery = useRowsQuery();
 
   const handleSubmit = () => {
     if (!query.trim()) return;
 
-    objectsQuery.executeQuery({ query: query.trim() });
+    rowsQuery.executeQuery({ query: query.trim() });
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -34,20 +34,20 @@ const RunGraphQLTab: React.FC = () => {
 
   // Dynamically create columns based on the first row of results
   const { columns, tableData } = useMemo(() => {
-    if (!objectsQuery.data?.data) {
+    if (!rowsQuery.data?.data) {
       return { columns: [], tableData: [] };
     }
 
     // Extract the first array of results from the GraphQL response
     // GraphQL responses typically have structure like { data: { users: [...] } }
-    const dataKeys = Object.keys(objectsQuery.data.data);
+    const dataKeys = Object.keys(rowsQuery.data.data);
     if (dataKeys.length === 0) {
       return { columns: [], tableData: [] };
     }
 
     // Get the first data collection
     const firstKey = dataKeys[0];
-    const results = objectsQuery.data.data[firstKey];
+    const results = rowsQuery.data.data[firstKey];
 
     if (!Array.isArray(results) || results.length === 0) {
       return { columns: [], tableData: [] };
@@ -91,7 +91,7 @@ const RunGraphQLTab: React.FC = () => {
       columns: resultColumns,
       tableData: results as GraphQLResultRow[],
     };
-  }, [objectsQuery.data]);
+  }, [rowsQuery.data]);
 
   // Create the table instance
   const table = useReactTable({
@@ -136,8 +136,8 @@ const RunGraphQLTab: React.FC = () => {
             onClick={handleSubmit}
             disabled={
               !query.trim() ||
-              objectsQuery.isExecuting ||
-              !objectsQuery.isReady
+              rowsQuery.isExecuting ||
+              !rowsQuery.isReady
             }
             colorPalette="primary"
           >
@@ -148,13 +148,13 @@ const RunGraphQLTab: React.FC = () => {
       </VStack>
 
       {/* Error Display */}
-      {objectsQuery.error && (
+      {rowsQuery.error && (
         <Box>
           <Text fontWeight="medium" fontSize="lg" color="red.500" mb={2}>
             Query Error
           </Text>
           <Textarea
-            value={`Error: ${objectsQuery.error.message || objectsQuery.error}`}
+            value={`Error: ${rowsQuery.error.message || rowsQuery.error}`}
             readOnly
             rows={4}
             bg="red.50"
@@ -167,13 +167,13 @@ const RunGraphQLTab: React.FC = () => {
       )}
 
       {/* GraphQL Errors Display */}
-      {objectsQuery.data?.errors && objectsQuery.data.errors.length > 0 && (
+      {rowsQuery.data?.errors && rowsQuery.data.errors.length > 0 && (
         <Box>
           <Text fontWeight="medium" fontSize="lg" color="orange.500" mb={2}>
             GraphQL Errors
           </Text>
           <Textarea
-            value={objectsQuery.data.errors
+            value={rowsQuery.data.errors
               .map(
                 (error: Record<string, unknown>) =>
                   (error.message as string) || JSON.stringify(error),
@@ -191,7 +191,7 @@ const RunGraphQLTab: React.FC = () => {
       )}
 
       {/* Results Table */}
-      {objectsQuery.data?.data && tableData.length > 0 && (
+      {rowsQuery.data?.data && tableData.length > 0 && (
         <VStack gap={4} align="stretch">
           <HStack justify="space-between" align="center">
             <Text fontWeight="medium" fontSize="lg">
@@ -209,9 +209,9 @@ const RunGraphQLTab: React.FC = () => {
       )}
 
       {/* No Results Message */}
-      {objectsQuery.data?.data &&
+      {rowsQuery.data?.data &&
         tableData.length === 0 &&
-        !objectsQuery.error && (
+        !rowsQuery.error && (
           <Box>
             <Text fontWeight="medium" fontSize="lg" mb={2}>
               Query Results
