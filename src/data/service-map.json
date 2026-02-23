@@ -58,12 +58,12 @@
       "description": "Text completion service",
       "kind": "service"
     },
-    "objects-store": {
-      "description": "Object store",
+    "rows-store": {
+      "description": "Row store",
       "kind": "service"
     },
-    "objects": {
-      "description": "Object query service",
+    "rows": {
+      "description": "Row query service",
       "kind": "service"
     },
     "nlp-query": {
@@ -94,7 +94,7 @@
     "graph-rag-service": { "kind": "service", "description": "Graph RAG service requests/responses" },
     "mcp-tool-service": { "kind": "service", "description": "MCP tool service requests/responses" },
     "nlp-query-service": { "kind": "service", "description": "NLP query service requests/responses" },
-    "objects-query-service": { "kind": "service", "description": "Objects query service requests/responses" },
+    "rows-query-service": { "kind": "service", "description": "Rows query service requests/responses" },
     "structured-query-service": { "kind": "service", "description": "Structured query service requests/responses" },
     "triples-service": { "kind": "service", "description": "Triples query service requests/responses" },
 
@@ -105,7 +105,7 @@
     "graph-embeddings": { "kind": "flow", "description": "Graph embeddings storage data" },
     "entity-contexts": { "kind": "flow", "description": "Entity context information" },
     "triples": { "kind": "flow", "description": "Knowledge graph triples data" },
-    "objects": { "kind": "flow", "description": "Extracted objects data" },
+    "rows": { "kind": "flow", "description": "Extracted rows data" },
     "next-step": { "kind": "flow", "description": "Next processing step data" },
 
     "text-completion-monitoring": { "kind": "passive", "description": "Passive monitoring of text completion responses" }
@@ -200,10 +200,10 @@
         { "name": "prompt", "type": "prompt-service", "role": "consumes", "direction": "out" }
       ]
     },
-    "kg-extract-objects": {
+    "kg-extract-rows": {
       "connections": [
         { "name": "input", "type": "chunk", "role": "provides", "direction": "in" },
-        { "name": "output", "type": "objects", "role": "consumes", "direction": "out" },
+        { "name": "output", "type": "rows", "role": "consumes", "direction": "out" },
         { "name": "entity-contexts", "type": "entity-contexts", "role": "consumes", "direction": "in" },
         { "name": "prompt", "type": "prompt-service", "role": "consumes", "direction": "out" }
       ]
@@ -243,14 +243,14 @@
         { "name": "prompt", "type": "prompt-service", "role": "consumes", "direction": "out" }
       ]
     },
-    "objects-query": {
+    "rows-query": {
       "connections": [
-        { "name": "service", "type": "objects-query-service", "role": "provides", "direction": "in" }
+        { "name": "service", "type": "rows-query-service", "role": "provides", "direction": "in" }
       ]
     },
-    "objects-write": {
+    "rows-write": {
       "connections": [
-        { "name": "input", "type": "objects", "role": "provides", "direction": "in" }
+        { "name": "input", "type": "rows", "role": "provides", "direction": "in" }
       ]
     },
     "pdf-decoder": {
@@ -275,7 +275,7 @@
       "connections": [
         { "name": "service", "type": "structured-query-service", "role": "provides", "direction": "in" },
         { "name": "nlp-query", "type": "nlp-query-service", "role": "consumes", "direction": "out" },
-        { "name": "objects-query", "type": "objects-query-service", "role": "consumes", "direction": "out" }
+        { "name": "rows-query", "type": "rows-query-service", "role": "consumes", "direction": "out" }
       ]
     },
     "text-completion": {

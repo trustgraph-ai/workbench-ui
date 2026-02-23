@@ -20,7 +20,7 @@ const mockSocket = {
     triplesQuery: () => Promise.resolve([]),
     graphEmbeddingsQuery: () => Promise.resolve([]),
     nlpQuery: () => Promise.resolve({ graphql_query: "" }),
-    objectsQuery: () => Promise.resolve({}),
+    rowsQuery: () => Promise.resolve({}),
     embeddings: () => Promise.resolve([]),
   }),
   flows: () => ({
