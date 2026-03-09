@@ -22,11 +22,11 @@ const EntityDetail = () => {
   const { settings, isLoaded: settingsLoaded } = useSettings();
 
   // Use the new Tanstack Query hook for entity details
-  const { detail, isLoading, isError } = useEntityDetail(
-    selected?.uri,
-    flowId,
-    settings?.collection || "default",
-  );
+  const { detail, isLoading, isError } = useEntityDetail({
+    entityUri: selected?.uri,
+    flow: flowId,
+    collection: settings?.collection || "default",
+  });
 
   if (!settingsLoaded) {
     return (
