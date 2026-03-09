@@ -50,7 +50,11 @@ const GraphView = () => {
 
   // Use the new Tanstack Query hook for graph data
   const { view, isLoading, isError, navigateByRelationship } =
-    useGraphSubgraph(selected?.uri, flowId, settings?.collection || "default");
+    useGraphSubgraph({
+      entityUri: selected?.uri,
+      flow: flowId,
+      collection: settings?.collection || "default",
+    });
 
   // Ensure drawer opens when node is selected
   useEffect(() => {

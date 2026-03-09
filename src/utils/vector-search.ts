@@ -22,7 +22,8 @@ export const vectorSearch = (
   addActivity(searchAct);
 
   return api
-    .embeddings(term)
+    .embeddings([term])
+    .then((vecs) => vecs[0])
     .then(
       getGraphEmbeddings(
         api,
