@@ -22,11 +22,7 @@
     "@tanstack/react-table": "^8.21.3",
     "@trustgraph/client": "^1.5.1",
     "@trustgraph/react-provider": "^1.4.0",
-<<<<<<< Updated upstream
-    "@trustgraph/react-state": "^1.4.1",
-=======
     "@trustgraph/react-state": "^1.5.2",
->>>>>>> Stashed changes
     "@types/dagre": "^0.7.53",
     "compute-cosine-similarity": "^1.1.0",
     "dagre": "^0.8.5",
