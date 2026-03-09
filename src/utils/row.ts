@@ -1,6 +1,6 @@
 import similarity from "compute-cosine-similarity";
 
-import { Term, IriTerm, LiteralTerm, BaseApi } from "@trustgraph/client";
+import { Term, IriTerm, LiteralTerm, BaseApi, EntityMatch } from "@trustgraph/client";
 import { RDFS_LABEL, SKOS_DEFINITION } from "./knowledge-graph";
 
 export interface Row {
@@ -12,7 +12,7 @@ export interface Row {
   similarity?: number;
 }
 
-// Take the embeddings, and lookup entities using graph
+// Take the embedding vector, and lookup entities using graph
 // embeddings, add embedding to each entity row, just an easy
 // place to put it
 export const getGraphEmbeddings = (
@@ -22,21 +22,21 @@ export const getGraphEmbeddings = (
   limit?: number,
   collection?: string,
 ) => {
-  // Take the embeddings, and lookup entities using graph
-  // embeddings, add embedding to each entity row, just an easy
-  // place to put it
-  return (vecs: number[][]): Promise<Row[]> => {
+  // Take the embedding, and lookup entities using graph
+  // embeddings, add embedding to each entity row
+  return (vec: number[]): Promise<Row[]> => {
     const act = "Graph embedding search";
     add(act);
 
     return socket
-      .graphEmbeddingsQuery(vecs, limit ? limit : 10, collection)
-      .then((ents: Term[]): Row[] => {
+      .graphEmbeddingsQuery(vec, limit ? limit : 10, collection)
+      .then((matches: EntityMatch[]): Row[] => {
         remove(act);
-        return ents
-          .filter((ent): ent is IriTerm => ent.t === "i")
-          .map((ent) => {
-            return { uri: ent.i, target: vecs[0] };
+        return matches
+          .filter((m): m is EntityMatch & { entity: IriTerm } =>
+            m.entity !== null && m.entity.t === "i")
+          .map((m) => {
+            return { uri: m.entity.i, target: vec };
           });
       })
       .catch((err) => {
@@ -150,7 +150,7 @@ export const addRowEmbeddings =
         add(act);
 
         return socket
-          .embeddings(text)
+          .embeddings([text])
           .then((x) => {
             if (x && x.length > 0) {
               remove(act);
