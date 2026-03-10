@@ -20,7 +20,7 @@ const ChatConversation = () => {
     <>
       <ChatHistory />
       <InputArea onSubmit={() => submit()} />
-      <EntityList />
+      {/* <EntityList /> */}
     </>
   );
 };
