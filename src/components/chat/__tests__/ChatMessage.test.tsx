@@ -181,6 +181,21 @@ vi.mock("lucide-react", () => ({
   ChevronDown: () => <div data-testid="chevron-down-icon">ChevronDown</div>,
 }));
 
+// Mock @trustgraph/react-state hooks
+vi.mock("@trustgraph/react-state", () => ({
+  useSettings: () => ({
+    settings: {
+      featureSwitches: { explainability: false },
+    },
+  }),
+  useExplainabilityStore: () => false,
+}));
+
+// Mock ExplainabilityPanel
+vi.mock("../ExplainabilityPanel", () => ({
+  default: () => null,
+}));
+
 describe("ChatMessage", () => {
   it("should render user message with correct styling", () => {
     const message = {
