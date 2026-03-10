@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Box, Flex, Avatar, Badge, IconButton } from "@chakra-ui/react";
 import { Brain, Eye, CheckCircle, ChevronDown, ChevronRight } from "lucide-react";
 import Markdown from "react-markdown-it";
+import { useSettings, useExplainabilityStore } from "@trustgraph/react-state";
+import ExplainabilityPanel from "./ExplainabilityPanel";
 
 // Smart truncation: first sentence if short, otherwise ~100 chars at word boundary
 // Always adds ellipsis to make it clear there's more content
@@ -23,6 +25,22 @@ const truncateText = (text: string, maxLength: number = 80): string => {
 const ChatMessage = ({ message }) => {
   const isUser = message.role === "human";
   const messageType = message.type || "normal";
+
+  // Settings for feature switches
+  const { settings } = useSettings();
+  const explainabilityEnabled = settings.featureSwitches.explainability;
+
+  // Check if session exists for this message
+  const sessionExists = useExplainabilityStore(
+    (state) => !!message.explainSessionId && !!state.sessions[message.explainSessionId]
+  );
+
+  // Determine if explainability panel should be shown
+  const showExplainability =
+    !isUser &&
+    explainabilityEnabled &&
+    message.explainSessionId &&
+    sessionExists;
 
   // Collapsible state for thinking and observation messages
   const isCollapsible = messageType === "thinking" || messageType === "observation";
@@ -148,10 +166,18 @@ const ChatMessage = ({ message }) => {
               )}
             </Flex>
             <Markdown>{displayText}</Markdown>
+            {showExplainability && (
+              <ExplainabilityPanel sessionId={message.explainSessionId} />
+            )}
           </>
         ) : (
           // Normal message without badge
-          <Markdown>{displayText}</Markdown>
+          <>
+            <Markdown>{displayText}</Markdown>
+            {showExplainability && (
+              <ExplainabilityPanel sessionId={message.explainSessionId} />
+            )}
+          </>
         )}
       </Box>
 
