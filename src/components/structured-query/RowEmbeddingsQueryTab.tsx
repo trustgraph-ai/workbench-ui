@@ -1,7 +1,11 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
 import { VStack, HStack, Button, Text, Box, Textarea } from "@chakra-ui/react";
 import { Search } from "lucide-react";
-import { useRowEmbeddingsQuery, useSchemas } from "@trustgraph/react-state";
+import {
+  useRowEmbeddingsQuery,
+  useSchemas,
+  useEmbeddings,
+} from "@trustgraph/react-state";
 import TextField from "../common/TextField";
 import NumberField from "../common/NumberField";
 import SelectField from "../common/SelectField";
@@ -56,8 +60,39 @@ const RowEmbeddingsQueryTab: React.FC = () => {
   const [indexName, setIndexName] = useState("");
   const [limit, setLimit] = useState(10);
 
+  // searchTerm is set on submit to trigger embedding generation
+  const [searchTerm, setSearchTerm] = useState("");
+
   const rowEmbeddingsQuery = useRowEmbeddingsQuery();
   const { schemas, schemasLoading } = useSchemas();
+
+  // Get embeddings for the search term
+  const {
+    embeddings,
+    isLoading: embeddingsLoading,
+  } = useEmbeddings({ flow: undefined, term: searchTerm || undefined });
+
+  // Track the search parameters at time of submit
+  const searchParamsRef = useRef<{
+    schemaName: string;
+    indexName: string | undefined;
+    limit: number;
+  } | null>(null);
+
+  // When embeddings arrive, execute the row embeddings query
+  useEffect(() => {
+    if (embeddings && embeddings.length > 0 && searchParamsRef.current) {
+      const params = searchParamsRef.current;
+      searchParamsRef.current = null;
+      rowEmbeddingsQuery.executeQuery({
+        vectors: embeddings[0],
+        schemaName: params.schemaName,
+        indexName: params.indexName,
+        limit: params.limit,
+      });
+      setSearchTerm("");
+    }
+  }, [embeddings]);
 
   // Create schema options for dropdown
   const schemaItems = useMemo(() => {
@@ -72,12 +107,12 @@ const RowEmbeddingsQueryTab: React.FC = () => {
   const handleSubmit = () => {
     if (!query.trim() || !schemaName.trim()) return;
 
-    rowEmbeddingsQuery.executeQuery({
-      query: query.trim(),
+    searchParamsRef.current = {
       schemaName: schemaName.trim(),
       indexName: indexName.trim() || undefined,
       limit: limit,
-    });
+    };
+    setSearchTerm(query.trim());
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -168,6 +203,7 @@ const RowEmbeddingsQueryTab: React.FC = () => {
               !query.trim() ||
               !schemaName.trim() ||
               rowEmbeddingsQuery.isExecuting ||
+              embeddingsLoading ||
               !rowEmbeddingsQuery.isReady ||
               schemasLoading
             }
