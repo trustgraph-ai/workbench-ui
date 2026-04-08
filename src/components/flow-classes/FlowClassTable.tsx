@@ -3,7 +3,7 @@ import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import { Box } from "@chakra-ui/react";
 
 import {
-  useFlowClasses,
+  useFlowBlueprints,
   generateFlowClassId,
   FlowClassDefinition,
 } from "@trustgraph/react-state";
@@ -19,7 +19,7 @@ interface FlowClassTableProps {
 
 const FlowClassTable: React.FC<FlowClassTableProps> = ({ onEdit }) => {
   const { flowClasses, createFlowClass, deleteFlowClass, duplicateFlowClass } =
-    useFlowClasses();
+    useFlowBlueprints();
 
   // No need for selected flow class state - actions handled by ActionBar
 
