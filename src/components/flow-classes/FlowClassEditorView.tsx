@@ -25,7 +25,7 @@ import ReactFlow, {
 } from "reactflow";
 import dagre from "dagre";
 import "reactflow/dist/style.css";
-import { useFlowClasses } from "@trustgraph/react-state";
+import { useFlowBlueprints } from "@trustgraph/react-state";
 import serviceMap from "../../data/service-map.json";
 
 interface FlowClassEditorViewProps {
@@ -702,7 +702,7 @@ export const FlowClassEditorView: React.FC<FlowClassEditorViewProps> = ({
   flowClassId,
   onBack,
 }) => {
-  const { flowClasses } = useFlowClasses();
+  const { flowClasses } = useFlowBlueprints();
   const flowClass = flowClasses.find((fc) => fc.id === flowClassId);
 
   // Generate nodes and edges from flow class data using useMemo - must be before early return
