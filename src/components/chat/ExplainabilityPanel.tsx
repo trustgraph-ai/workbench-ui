@@ -8,6 +8,7 @@ import {
   ExplorationSection,
   FocusSection,
   SourceDrawer,
+  AgentExplainTimeline,
 } from "./explainability";
 
 interface ExplainabilityPanelProps {
@@ -25,7 +26,9 @@ const ExplainabilityPanel = ({ sessionId }: ExplainabilityPanelProps) => {
   if (!session) return null;
 
   // Check if there's any meaningful data to show
+  const hasAgentSteps = session.agentSteps && session.agentSteps.length > 0;
   const hasData =
+    hasAgentSteps ||
     session.question?.query ||
     session.exploration?.edgeCount !== undefined ||
     (session.focus?.selectedEdges && session.focus.selectedEdges.length > 0);
@@ -67,17 +70,23 @@ const ExplainabilityPanel = ({ sessionId }: ExplainabilityPanelProps) => {
                 <Lightbulb size={12} />
               </Badge>
               <Text fontSize="sm" color="fg.muted">
-                How I found this answer
+                {hasAgentSteps ? "How the agent reasoned" : "How I found this answer"}
               </Text>
             </Flex>
           </Collapsible.Trigger>
 
           <Collapsible.Content>
             <Box pl={8} pr={2} py={2}>
-              {session.question && <QuestionSection question={session.question} />}
-              {session.exploration && <ExplorationSection exploration={session.exploration} />}
-              {session.focus && (
-                <FocusSection focus={session.focus} onSourceClick={handleSourceClick} />
+              {hasAgentSteps ? (
+                <AgentExplainTimeline steps={session.agentSteps!} />
+              ) : (
+                <>
+                  {session.question && <QuestionSection question={session.question} />}
+                  {session.exploration && <ExplorationSection exploration={session.exploration} />}
+                  {session.focus && (
+                    <FocusSection focus={session.focus} onSourceClick={handleSourceClick} />
+                  )}
+                </>
               )}
             </Box>
           </Collapsible.Content>

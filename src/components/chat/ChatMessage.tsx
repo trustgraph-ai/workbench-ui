@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Box, Flex, Avatar, Badge, IconButton } from "@chakra-ui/react";
 import { Brain, Eye, CheckCircle, ChevronDown, ChevronRight } from "lucide-react";
 import Markdown from "react-markdown-it";
-import { useSettings, useExplainabilityStore } from "@trustgraph/react-state";
+import { useExplainabilityStore } from "@trustgraph/react-state";
 import ExplainabilityPanel from "./ExplainabilityPanel";
 
 // Smart truncation: first sentence if short, otherwise ~100 chars at word boundary
@@ -26,19 +26,14 @@ const ChatMessage = ({ message }) => {
   const isUser = message.role === "human";
   const messageType = message.type || "normal";
 
-  // Settings for feature switches
-  const { settings } = useSettings();
-  const explainabilityEnabled = settings.featureSwitches.explainability;
-
   // Check if session exists for this message
   const sessionExists = useExplainabilityStore(
     (state) => !!message.explainSessionId && !!state.sessions[message.explainSessionId]
   );
 
-  // Determine if explainability panel should be shown
+  // Show explainability panel if this message has a session with data
   const showExplainability =
     !isUser &&
-    explainabilityEnabled &&
     message.explainSessionId &&
     sessionExists;
 
