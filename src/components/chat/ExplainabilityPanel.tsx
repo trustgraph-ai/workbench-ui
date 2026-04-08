@@ -77,16 +77,13 @@ const ExplainabilityPanel = ({ sessionId }: ExplainabilityPanelProps) => {
 
           <Collapsible.Content>
             <Box pl={8} pr={2} py={2}>
-              {hasAgentSteps ? (
+              {hasAgentSteps && (
                 <AgentExplainTimeline steps={session.agentSteps!} />
-              ) : (
-                <>
-                  {session.question && <QuestionSection question={session.question} />}
-                  {session.exploration && <ExplorationSection exploration={session.exploration} />}
-                  {session.focus && (
-                    <FocusSection focus={session.focus} onSourceClick={handleSourceClick} />
-                  )}
-                </>
+              )}
+              {session.question && <QuestionSection question={session.question} />}
+              {session.exploration && <ExplorationSection exploration={session.exploration} />}
+              {session.focus && (
+                <FocusSection focus={session.focus} onSourceClick={handleSourceClick} />
               )}
             </Box>
           </Collapsible.Content>
