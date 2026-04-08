@@ -5,12 +5,14 @@ import {
   Wrench,
   MessageSquare,
   CheckCircle,
+  Search,
 } from "lucide-react";
 import type {
   StructuredExplainEvent,
   AgentQuestionEvent,
   DecompositionEvent,
   AnalysisEvent,
+  GroundingEvent,
 } from "@trustgraph/react-state";
 
 const STEP_CONFIG: Record<
@@ -41,6 +43,11 @@ const STEP_CONFIG: Record<
     color: "green",
     icon: <CheckCircle size={12} />,
     defaultLabel: "Conclusion",
+  },
+  grounding: {
+    color: "blue",
+    icon: <Search size={12} />,
+    defaultLabel: "Grounding",
   },
 };
 
@@ -78,6 +85,14 @@ const StepDetail = ({ step }: { step: StructuredExplainEvent }) => {
         </Text>
       ) : null;
     }
+    case "grounding": {
+      const concepts = (step as GroundingEvent).concepts;
+      return concepts.length > 0 ? (
+        <Text fontSize="xs" color="fg.muted">
+          {concepts.join(", ")}
+        </Text>
+      ) : null;
+    }
     default:
       return null;
   }
@@ -87,12 +102,16 @@ interface AgentExplainTimelineProps {
   steps: StructuredExplainEvent[];
 }
 
+// Filter out steps that duplicate the conversation bubbles above
+const VISIBLE_TYPES = new Set(["decomposition", "analysis", "grounding"]);
+
 const AgentExplainTimeline = ({ steps }: AgentExplainTimelineProps) => {
-  if (steps.length === 0) return null;
+  const visible = steps.filter((s) => VISIBLE_TYPES.has(s.type));
+  if (visible.length === 0) return null;
 
   return (
     <VStack gap={1} align="stretch">
-      {steps.map((step, i) => {
+      {visible.map((step, i) => {
         const config = STEP_CONFIG[step.type] || STEP_CONFIG.reflection;
         const label =
           ("label" in step && step.label) || config.defaultLabel;

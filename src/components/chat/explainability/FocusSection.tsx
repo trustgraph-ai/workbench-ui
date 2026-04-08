@@ -21,13 +21,16 @@ const EdgeDisplay = ({
     o: edge.edge.o,
   };
 
-  // Get the last source in the chain (the document)
-  const documentSource = edge.sources?.[edge.sources.length - 1];
+  // Build breadcrumb from chain: e.g. "Chunk 3 → Page 2 → Beyond the vigilant state"
+  const chunkSource = edge.sources?.[0];
+  const chainLabel = edge.sources && edge.sources.length > 0
+    ? edge.sources.map((s) => s.label).join(" \u2192 ")
+    : undefined;
 
   return (
     <Card.Root size="sm" variant="outline" mb={2}>
       <Card.Body p={3}>
-        <Flex align="center" gap={2} flexWrap="wrap" mb={edge.reasoning || documentSource ? 2 : 0}>
+        <Flex align="center" gap={2} flexWrap="wrap" mb={edge.reasoning || chunkSource ? 2 : 0}>
           <Text fontSize="sm" fontWeight="medium">
             {labels.s}
           </Text>
@@ -42,14 +45,17 @@ const EdgeDisplay = ({
         </Flex>
 
         {edge.reasoning && (
-          <Text fontSize="xs" color="fg.muted" mb={documentSource ? 2 : 0}>
+          <Text fontSize="xs" color="fg.muted" mb={chunkSource ? 2 : 0}>
             {edge.reasoning}
           </Text>
         )}
 
-        {documentSource && (
+        {chunkSource && (
           <Box>
-            <SourceLink source={documentSource} onClick={onSourceClick} />
+            <SourceLink
+              source={{ uri: chunkSource.uri, label: chainLabel || chunkSource.label }}
+              onClick={onSourceClick}
+            />
           </Box>
         )}
       </Card.Body>
