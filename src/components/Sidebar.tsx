@@ -81,6 +81,7 @@ const Sidebar = () => {
       position="sticky"
       top="0"
       height="100vh"
+      overflowY="auto"
       boxShadow="sm"
     >
       <Flex h="20" alignItems="center" mx="8" justifyContent="space-between">
