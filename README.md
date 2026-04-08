@@ -1,5 +1,7 @@
 
-# Test Suite for TrustGraph
+# Workbench UI for TrustGraph
+
+Developers!  Please open PRs against the latest `release/vX.Y` branch.
 
 ## Setup for Python
 
