@@ -1,7 +1,7 @@
 {
   "name": "vite-ts",
   "private": true,
-  "version": "1.0.2",
+  "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -24,9 +24,9 @@
     "@tanstack/query-core": "^5.96.2",
     "@tanstack/react-query": "^5.80.3",
     "@tanstack/react-table": "^8.21.3",
-    "@trustgraph/client": "github:trustgraph-ai/trustgraph-client#master",
-    "@trustgraph/react-provider": "github:trustgraph-ai/trustgraph-react-provider#master",
-    "@trustgraph/react-state": "github:trustgraph-ai/trustgraph-react-state#master",
+    "@trustgraph/client": "^1.7.1",
+    "@trustgraph/react-provider": "^1.4.0",
+    "@trustgraph/react-state": "^1.7.3",
     "@types/dagre": "^0.7.53",
     "@zag-js/core": "^1.39.1",
     "@zag-js/date-picker": "^1.39.1",

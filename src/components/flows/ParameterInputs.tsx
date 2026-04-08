@@ -32,7 +32,7 @@ interface ParameterSchema {
   placeholder?: string; // Custom placeholder text
 }
 
-// Flow parameter metadata (stored in flow class)
+// Flow parameter metadata (stored in flow blueprint)
 interface FlowParameterMetadata {
   description: string;
   order: number;

@@ -11,6 +11,7 @@ import { usePrompts } from "@trustgraph/react-state";
 import SelectField from "../common/SelectField";
 import TextAreaField from "../common/TextAreaField";
 import TextField from "../common/TextField";
+import NumberField from "../common/NumberField";
 import ChipInputField from "../common/ChipInputField";
 import { toaster } from "../ui/toaster";
 import EditableArgumentsTable from "./EditableArgumentsTable";
@@ -29,6 +30,9 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
   const [templateId, setTemplateId] = useState("");
   const [mcpToolId, setMcpToolId] = useState("");
   const [collection, setCollection] = useState("");
+  const [schemaName, setSchemaName] = useState("");
+  const [indexName, setIndexName] = useState("");
+  const [limit, setLimit] = useState(10);
   const [group, setGroup] = useState([]);
   const [state, setState] = useState("");
   const [applicableStates, setApplicableStates] = useState([]);
@@ -56,6 +60,10 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
         setMcpToolId(x.mcp_tool_id || x["mcp-tool"] || "");
         // Handle collection attribute for knowledge-query tools
         setCollection(x.collection || "");
+        // Handle row-embeddings-query fields
+        setSchemaName(x["schema-name"] || "");
+        setIndexName(x["index-name"] || "");
+        setLimit(x.limit || 10);
         // Handle new optional fields
         setGroup(x.group || []);
         setState(x.state || "");
@@ -86,6 +94,12 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
       label: "Structured Query",
       description:
         "Execute natural language questions against records in a structured data / object store",
+    },
+    {
+      value: "row-embeddings-query",
+      label: "Row Embeddings Query",
+      description:
+        "Semantic search on structured data indexes using vector similarity",
     },
     {
       value: "mcp-tool",
@@ -125,8 +139,12 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
       arguments: args,
       ...(type === "prompt" && templateId && { template: templateId }),
       ...(type === "mcp-tool" && mcpToolId && { "mcp-tool": mcpToolId }),
-      ...((type === "knowledge-query" || type === "structured-query") &&
+      ...((type === "knowledge-query" || type === "structured-query" || type === "row-embeddings-query") &&
         collection && { collection: collection }),
+      // Row embeddings query specific fields
+      ...(type === "row-embeddings-query" && schemaName && { "schema-name": schemaName }),
+      ...(type === "row-embeddings-query" && indexName && { "index-name": indexName }),
+      ...(type === "row-embeddings-query" && { limit: limit }),
       ...(group && group.length > 0 && { group: group }),
       ...(state && { state: state }),
       ...(applicableStates &&
@@ -253,7 +271,7 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
                 />
               )}
 
-              {(type === "knowledge-query" || type === "structured-query") && (
+              {(type === "knowledge-query" || type === "structured-query" || type === "row-embeddings-query") && (
                 <TextField
                   label="Collection"
                   placeholder="Enter the knowledge collection (optional)"
@@ -261,6 +279,32 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
                   onValueChange={(v) => setCollection(v)}
                   required={false}
                 />
+              )}
+
+              {type === "row-embeddings-query" && (
+                <>
+                  <TextField
+                    label="Schema Name"
+                    placeholder="Enter the schema name for the structured data"
+                    value={schemaName}
+                    onValueChange={(v) => setSchemaName(v)}
+                    required={true}
+                  />
+                  <TextField
+                    label="Index Name"
+                    placeholder="Enter specific index name to search (optional)"
+                    value={indexName}
+                    onValueChange={(v) => setIndexName(v)}
+                    required={false}
+                  />
+                  <NumberField
+                    label="Limit"
+                    value={limit}
+                    onValueChange={(v) => setLimit(v)}
+                    minValue={1}
+                    maxValue={100}
+                  />
+                </>
               )}
 
               <ChipInputField

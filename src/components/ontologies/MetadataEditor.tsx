@@ -14,6 +14,7 @@ import {
 import { Save } from "lucide-react";
 import { OntologyMetadata } from "@trustgraph/react-state";
 import { NamespacePrefixEditor } from "./NamespacePrefixEditor";
+import { useHeaderBackgroundColor } from "../ui/ontology-colors";
 
 interface MetadataEditorProps {
   metadata: OntologyMetadata;
@@ -28,6 +29,8 @@ export const MetadataEditor: React.FC<MetadataEditorProps> = ({
   hasClasses = false,
   hasProperties = false,
 }) => {
+  const headerBg = useHeaderBackgroundColor();
+
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [version, setVersion] = useState("");
@@ -108,7 +111,7 @@ export const MetadataEditor: React.FC<MetadataEditorProps> = ({
   return (
     <Box h="100%" display="flex" flexDirection="column">
       {/* Header */}
-      <Box p={6} borderBottomWidth="1px" bg="white">
+      <Box p={6} borderBottomWidth="1px" bg={headerBg}>
         <HStack justify="space-between" align="center">
           <VStack align="start" spacing={1}>
             <Text fontSize="lg" fontWeight="semibold">

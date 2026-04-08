@@ -10,7 +10,7 @@ interface FeatureSwitchesSectionProps {
   mcpTools: boolean;
   schemas: boolean;
   tokenCost: boolean;
-  flowClasses: boolean;
+  flowBlueprints: boolean;
   structuredQuery: boolean;
   llmModels: boolean;
   onOntologyEditorChange: (enabled: boolean) => void;
@@ -19,7 +19,7 @@ interface FeatureSwitchesSectionProps {
   onMcpToolsChange: (enabled: boolean) => void;
   onSchemasChange: (enabled: boolean) => void;
   onTokenCostChange: (enabled: boolean) => void;
-  onFlowClassesChange: (enabled: boolean) => void;
+  onFlowBlueprintsChange: (enabled: boolean) => void;
   onStructuredQueryChange: (enabled: boolean) => void;
   onLlmModelsChange: (enabled: boolean) => void;
 }
@@ -31,7 +31,7 @@ const FeatureSwitchesSection: React.FC<FeatureSwitchesSectionProps> = ({
   mcpTools,
   schemas,
   tokenCost,
-  flowClasses,
+  flowBlueprints,
   structuredQuery,
   llmModels,
   onOntologyEditorChange,
@@ -40,7 +40,7 @@ const FeatureSwitchesSection: React.FC<FeatureSwitchesSectionProps> = ({
   onMcpToolsChange,
   onSchemasChange,
   onTokenCostChange,
-  onFlowClassesChange,
+  onFlowBlueprintsChange,
   onStructuredQueryChange,
   onLlmModelsChange,
 }) => {
@@ -168,15 +168,15 @@ const FeatureSwitchesSection: React.FC<FeatureSwitchesSectionProps> = ({
 
         <HStack justify="space-between" align="center">
           <VStack gap={1} align="start">
-            <Text fontWeight="medium">Flow Classes</Text>
+            <Text fontWeight="medium">Flow Blueprints</Text>
             <Text fontSize="sm" color="fg.muted">
-              Enable the flow classes management interface for dataflow
+              Enable the flow Blueprint management interface for dataflow
               definitions
             </Text>
           </VStack>
           <Switch.Root
-            checked={flowClasses}
-            onCheckedChange={(details) => onFlowClassesChange(details.checked)}
+            checked={flowBlueprints}
+            onCheckedChange={(details) => onFlowBlueprintsChange(details.checked)}
           >
             <Switch.HiddenInput />
             <Switch.Control>

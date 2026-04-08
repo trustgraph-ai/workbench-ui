@@ -33,6 +33,12 @@ import { ValidationPanel } from "./ValidationPanel";
 import { ExportDialog } from "./ExportDialog";
 import { MetadataEditor } from "./MetadataEditor";
 import { ConfirmDialog } from "../common/ConfirmDialog";
+import {
+  usePanelBackgroundColor,
+  useContentBackgroundColor,
+  useHeaderBackgroundColor,
+  useSubtleTextColor,
+} from "../ui/ontology-colors";
 
 interface OntologyEditorProps {
   ontologyId: string;
@@ -44,6 +50,13 @@ export const OntologyEditor: React.FC<OntologyEditorProps> = ({
   onBack,
 }) => {
   const { ontologies, updateOntology } = useOntologies();
+
+  // Theme-aware colors
+  const panelBg = usePanelBackgroundColor();
+  const contentBg = useContentBackgroundColor();
+  const headerBg = useHeaderBackgroundColor();
+  const subtleText = useSubtleTextColor();
+
   const [selectedClassId, setSelectedClassId] = useState<string | null>(null);
   const [selectedPropertyId, setSelectedPropertyId] = useState<string | null>(
     null,
@@ -541,10 +554,10 @@ export const OntologyEditor: React.FC<OntologyEditorProps> = ({
       h="calc(100vh - 140px)"
       display="flex"
       flexDirection="column"
-      bg="gray.25"
+      bg={contentBg}
     >
       {/* Header */}
-      <Box p={6} borderBottomWidth="1px" bg="white" boxShadow="sm">
+      <Box p={6} borderBottomWidth="1px" bg={headerBg} boxShadow="sm">
         <HStack justify="space-between" align="center">
           <HStack>
             {onBack && (
@@ -554,7 +567,7 @@ export const OntologyEditor: React.FC<OntologyEditorProps> = ({
             )}
             <VStack align="start" spacing={0}>
               <Heading size="lg">{ontologyData.metadata.name}</Heading>
-              <Text fontSize="sm" color="gray.600">
+              <Text fontSize="sm" color={subtleText}>
                 {ontologyData.metadata.description}
               </Text>
             </VStack>
@@ -595,7 +608,7 @@ export const OntologyEditor: React.FC<OntologyEditorProps> = ({
 
       {/* Validation Panel */}
       {showValidation && validationResult && (
-        <Box p={6} borderBottomWidth="1px" bg="white" boxShadow="sm">
+        <Box p={6} borderBottomWidth="1px" bg={headerBg} boxShadow="sm">
           <ValidationPanel
             validationResult={validationResult}
             onNavigateToItem={handleNavigateToItem}
@@ -626,7 +639,7 @@ export const OntologyEditor: React.FC<OntologyEditorProps> = ({
             <Box
               w="380px"
               borderRightWidth="1px"
-              bg="white"
+              bg={panelBg}
               overflow="auto"
               boxShadow="sm"
             >
@@ -678,7 +691,7 @@ export const OntologyEditor: React.FC<OntologyEditorProps> = ({
                       >
                         Ontology Information
                       </Text>
-                      <Text fontSize="sm" color="gray.600">
+                      <Text fontSize="sm" color={subtleText}>
                         Configure basic metadata about this ontology
                       </Text>
                     </VStack>
@@ -688,7 +701,7 @@ export const OntologyEditor: React.FC<OntologyEditorProps> = ({
             </Box>
 
             {/* Right Panel - Editor */}
-            <Box flex="1" overflow="auto" bg="white">
+            <Box flex="1" overflow="auto" bg={panelBg}>
               {activeTab === "metadata" ? (
                 <MetadataEditor
                   metadata={ontologyData.metadata}

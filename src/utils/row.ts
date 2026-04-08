@@ -1,6 +1,6 @@
 import similarity from "compute-cosine-similarity";
 
-import { Value, BaseApi } from "@trustgraph/client";
+import { Term, IriTerm, LiteralTerm, BaseApi, EntityMatch } from "@trustgraph/client";
 import { RDFS_LABEL, SKOS_DEFINITION } from "./knowledge-graph";
 
 export interface Row {
@@ -12,7 +12,7 @@ export interface Row {
   similarity?: number;
 }
 
-// Take the embeddings, and lookup entities using graph
+// Take the embedding vector, and lookup entities using graph
 // embeddings, add embedding to each entity row, just an easy
 // place to put it
 export const getGraphEmbeddings = (
@@ -22,20 +22,22 @@ export const getGraphEmbeddings = (
   limit?: number,
   collection?: string,
 ) => {
-  // Take the embeddings, and lookup entities using graph
-  // embeddings, add embedding to each entity row, just an easy
-  // place to put it
-  return (vecs: number[][]): Promise<Row[]> => {
+  // Take the embedding, and lookup entities using graph
+  // embeddings, add embedding to each entity row
+  return (vec: number[]): Promise<Row[]> => {
     const act = "Graph embedding search";
     add(act);
 
     return socket
-      .graphEmbeddingsQuery(vecs, limit ? limit : 10, collection)
-      .then((ents: Value[]): Row[] => {
+      .graphEmbeddingsQuery(vec, limit ? limit : 10, collection)
+      .then((matches: EntityMatch[]): Row[] => {
         remove(act);
-        return ents.map((ent) => {
-          return { uri: ent.v, target: vecs[0] };
-        });
+        return matches
+          .filter((m): m is EntityMatch & { entity: IriTerm } =>
+            m.entity !== null && m.entity.t === "i")
+          .map((m) => {
+            return { uri: m.entity.i, target: vec };
+          });
       })
       .catch((err) => {
         remove(act);
@@ -59,8 +61,8 @@ export const addRowLabels =
         add(act);
         return socket
           .triplesQuery(
-            { v: ent.uri, e: true },
-            { v: RDFS_LABEL, e: true },
+            { t: "i", i: ent.uri },
+            { t: "i", i: RDFS_LABEL },
             undefined,
             1,
             collection,
@@ -75,9 +77,10 @@ export const addRowLabels =
               };
             } else {
               remove(act);
+              const obj = t[0].o as LiteralTerm;
               return {
                 uri: ent.uri,
-                label: t[0].o.v,
+                label: obj.v,
                 target: ent.target,
               };
             }
@@ -106,8 +109,8 @@ export const addRowDefinitions =
         add(act);
         return socket
           .triplesQuery(
-            { v: ent.uri, e: true },
-            { v: SKOS_DEFINITION, e: true },
+            { t: "i", i: ent.uri },
+            { t: "i", i: SKOS_DEFINITION },
             undefined,
             1,
             collection,
@@ -118,9 +121,10 @@ export const addRowDefinitions =
               return { ...ent, description: "" };
             } else {
               remove(act);
+              const obj = t[0].o as LiteralTerm;
               return {
                 ...ent,
-                description: t[0].o.v,
+                description: obj.v,
               };
             }
           })
@@ -146,7 +150,7 @@ export const addRowEmbeddings =
         add(act);
 
         return socket
-          .embeddings(text)
+          .embeddings([text])
           .then((x) => {
             if (x && x.length > 0) {
               remove(act);

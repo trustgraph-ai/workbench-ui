@@ -8,6 +8,7 @@ export type McpTool = {
   id: string; // Unique identifier for the tool
   "remote-name": string; // Remote name of the MCP tool
   url: string; // MCP endpoint URL
+  "auth-token"?: string; // Optional bearer token for authentication
 };
 
 // Create a column helper instance for type-safe column definitions
@@ -34,5 +35,14 @@ export const columns = [
   columnHelper.accessor("url", {
     header: "MCP Endpoint URL",
     cell: (info) => info.getValue(),
+  }),
+
+  // Auth indicator column - shows if authentication is configured
+  columnHelper.accessor("auth-token", {
+    header: "Auth",
+    cell: (info) => {
+      const token = info.getValue();
+      return token ? "🔒 Authenticated" : "";
+    },
   }),
 ];

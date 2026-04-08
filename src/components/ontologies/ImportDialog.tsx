@@ -21,6 +21,10 @@ import {
   ImportOptions,
 } from "./OntologyImporter";
 import { useNotification } from "@trustgraph/react-state";
+import {
+  usePanelBackgroundColor,
+  useContentBackgroundColor,
+} from "../ui/ontology-colors";
 
 interface ImportDialogProps {
   isOpen: boolean;
@@ -33,6 +37,9 @@ export const ImportDialog: React.FC<ImportDialogProps> = ({
   onClose,
   onImported,
 }) => {
+  const panelBg = usePanelBackgroundColor();
+  const contentBg = useContentBackgroundColor();
+
   const [format, setFormat] = useState<ImportFormat | "auto">("auto");
   const [importMode, setImportMode] = useState<"new" | "merge" | "overwrite">(
     "new",
@@ -261,7 +268,7 @@ export const ImportDialog: React.FC<ImportDialogProps> = ({
       zIndex="modal"
     >
       <Box
-        bg="white"
+        bg={panelBg}
         borderRadius="md"
         boxShadow="xl"
         w="600px"
@@ -487,7 +494,7 @@ export const ImportDialog: React.FC<ImportDialogProps> = ({
         </Box>
 
         {/* Footer */}
-        <Box p={4} borderTopWidth="1px" bg="gray.50">
+        <Box p={4} borderTopWidth="1px" bg={contentBg}>
           <HStack justify="space-between">
             <Button
               size="sm"

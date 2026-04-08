@@ -14,6 +14,10 @@ import SelectOptionText from "../common/SelectOptionText";
 import { Ontology } from "@trustgraph/react-state";
 import { OntologyExporter, ExportOptions } from "./OntologyExporter";
 import { useNotification } from "@trustgraph/react-state";
+import {
+  usePanelBackgroundColor,
+  useContentBackgroundColor,
+} from "../ui/ontology-colors";
 
 interface ExportDialogProps {
   ontology: Ontology;
@@ -26,6 +30,9 @@ export const ExportDialog: React.FC<ExportDialogProps> = ({
   isOpen,
   onClose,
 }) => {
+  const panelBg = usePanelBackgroundColor();
+  const contentBg = useContentBackgroundColor();
+
   const [format, setFormat] = useState<ExportOptions["format"]>("owl");
   const [includeComments, setIncludeComments] = useState(true);
   const [includeNamespaces, setIncludeNamespaces] = useState(true);
@@ -98,7 +105,7 @@ export const ExportDialog: React.FC<ExportDialogProps> = ({
       zIndex="modal"
     >
       <Box
-        bg="white"
+        bg={panelBg}
         borderRadius="md"
         boxShadow="xl"
         w="500px"
@@ -203,7 +210,7 @@ export const ExportDialog: React.FC<ExportDialogProps> = ({
         </Box>
 
         {/* Footer */}
-        <Box p={4} borderTopWidth="1px" bg="gray.50">
+        <Box p={4} borderTopWidth="1px" bg={contentBg}>
           <HStack justify="flex-end" spacing={3}>
             <Button variant="ghost" onClick={onClose} disabled={isExporting}>
               Cancel

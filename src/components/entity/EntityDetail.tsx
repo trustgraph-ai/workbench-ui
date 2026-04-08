@@ -9,6 +9,7 @@ import {
   useSessionStore,
   useEntityDetail,
   useSettings,
+  getTermValue,
 } from "@trustgraph/react-state";
 
 import EntityHelp from "./EntityHelp";
@@ -21,11 +22,11 @@ const EntityDetail = () => {
   const { settings, isLoaded: settingsLoaded } = useSettings();
 
   // Use the new Tanstack Query hook for entity details
-  const { detail, isLoading, isError } = useEntityDetail(
-    selected?.uri,
-    flowId,
-    settings?.collection || "default",
-  );
+  const { detail, isLoading, isError } = useEntityDetail({
+    entityUri: selected?.uri,
+    flow: flowId,
+    collection: settings?.collection || "default",
+  });
 
   if (!settingsLoaded) {
     return (
@@ -95,8 +96,9 @@ const EntityDetail = () => {
 
       <Box>
         {detail.triples.map((t) => {
+          const key = `${getTermValue(t.s)}//${getTermValue(t.p)}//${getTermValue(t.o)}`;
           return (
-            <Box key={t.s.v + "//" + t.p.v + "//" + t.o.v} mb={2}>
+            <Box key={key} mb={2}>
               <Stack direction="row" alignItems="center" gap={0}>
                 <ElementNode value={t.s} selected={selected} />
                 <ArrowBigRight />

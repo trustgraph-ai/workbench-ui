@@ -155,6 +155,14 @@ vi.mock("@chakra-ui/react", () => ({
       {children}
     </span>
   ),
+  IconButton: ({
+    children,
+    ...props
+  }: React.PropsWithChildren<Record<string, unknown>>) => (
+    <button data-testid="icon-button" {...filterChakraProps(props)}>
+      {children}
+    </button>
+  ),
 }));
 
 // Mock react-markdown-it
@@ -169,6 +177,23 @@ vi.mock("lucide-react", () => ({
   Brain: () => <div data-testid="brain-icon">Brain</div>,
   Eye: () => <div data-testid="eye-icon">Eye</div>,
   CheckCircle: () => <div data-testid="check-circle-icon">CheckCircle</div>,
+  ChevronRight: () => <div data-testid="chevron-right-icon">ChevronRight</div>,
+  ChevronDown: () => <div data-testid="chevron-down-icon">ChevronDown</div>,
+}));
+
+// Mock @trustgraph/react-state hooks
+vi.mock("@trustgraph/react-state", () => ({
+  useSettings: () => ({
+    settings: {
+      featureSwitches: { explainability: false },
+    },
+  }),
+  useExplainabilityStore: () => false,
+}));
+
+// Mock ExplainabilityPanel
+vi.mock("../ExplainabilityPanel", () => ({
+  default: () => null,
 }));
 
 describe("ChatMessage", () => {
@@ -213,9 +238,9 @@ describe("ChatMessage", () => {
 
     expect(screen.getByTestId("brain-icon")).toBeInTheDocument();
     expect(screen.getByTestId("badge")).toHaveTextContent("Thinking");
-    expect(screen.getByTestId("markdown")).toHaveTextContent(
-      "Let me think about this...",
-    );
+    // Thinking messages start collapsed with truncated text including ellipsis
+    expect(screen.getByText(/Let me think about this/)).toBeInTheDocument();
+    expect(screen.getByTestId("icon-button")).toBeInTheDocument();
   });
 
   it("should render observation message with correct badge and icon", () => {
@@ -229,9 +254,9 @@ describe("ChatMessage", () => {
 
     expect(screen.getByTestId("eye-icon")).toBeInTheDocument();
     expect(screen.getByTestId("badge")).toHaveTextContent("Observation");
-    expect(screen.getByTestId("markdown")).toHaveTextContent(
-      "I observe that...",
-    );
+    // Observation messages start collapsed with truncated text including ellipsis
+    expect(screen.getByText(/I observe that/)).toBeInTheDocument();
+    expect(screen.getByTestId("icon-button")).toBeInTheDocument();
   });
 
   it("should render answer message with correct badge and icon", () => {
@@ -324,12 +349,19 @@ describe("ChatMessage", () => {
 
       const { unmount } = render(<ChatMessage message={message} />);
 
-      expect(screen.getByTestId("markdown")).toHaveTextContent(
-        `Message of type ${type}`,
-      );
-
-      if (type !== "normal") {
+      // For thinking/observation, just verify the badge is present
+      // (text is collapsed/truncated so harder to test)
+      if (type === "thinking" || type === "observation") {
         expect(screen.getByTestId("badge")).toBeInTheDocument();
+        expect(screen.getByTestId("icon-button")).toBeInTheDocument();
+      } else {
+        // For normal and answer, verify text in markdown
+        expect(screen.getByTestId("markdown")).toHaveTextContent(
+          `Message of type ${type}`,
+        );
+        if (type !== "normal") {
+          expect(screen.getByTestId("badge")).toBeInTheDocument();
+        }
       }
 
       unmount();

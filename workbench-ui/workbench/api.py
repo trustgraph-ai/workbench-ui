@@ -172,7 +172,7 @@ class Api:
 
         await ws_server.prepare(request)
 
-        url = self.gateway_ws + "api/v1/socket"
+        url = self.gateway_ws + "api/v1/socket?" + request.query_string
 
         running = Running()
 

@@ -9,6 +9,30 @@ import {
   Separator,
 } from "@chakra-ui/react";
 import { ArrowLeft } from "lucide-react";
+import {
+  useBlueprintBorderColor,
+  useBlueprintBackgroundColor,
+  useFlowBorderColor,
+  useFlowBackgroundColor,
+  useProvideHandleColor,
+  useConsumeHandleColor,
+  useNodeTextColor,
+  useNodeLabelColor,
+  useConnectionLabelBackgroundColor,
+  useConnectionLabelBorderColor,
+  useServiceInterfaceBorderColor,
+  useServiceInterfaceBackgroundColor,
+  useFlowInterfaceBorderColor,
+  useFlowInterfaceBackgroundColor,
+  useDescriptionTextColor,
+  useNodeShadowColor,
+  useInterfaceHandleBorderColor,
+  useHeaderBackgroundColor,
+  useHeaderBorderColor,
+  useMiniMapBackgroundColor,
+  useEdgeLabelBackgroundColor,
+  useEdgeLabelTextColor,
+} from "../ui/flow-blueprint-colors";
 import ReactFlow, {
   Background,
   Controls,
@@ -28,8 +52,8 @@ import "reactflow/dist/style.css";
 import { useFlowBlueprints } from "@trustgraph/react-state";
 import serviceMap from "../../data/service-map.json";
 
-interface FlowClassEditorViewProps {
-  flowClassId: string;
+interface FlowBlueprintEditorViewProps {
+  flowBlueprintId: string;
   onBack: () => void;
 }
 
@@ -49,8 +73,20 @@ const CustomNode = ({
     processorInfo?: ProcessorInfo;
   };
 }) => {
-  const borderColor = data.type === "class" ? "#2563eb" : "#16a34a"; // blue for class, green for flow
-  const backgroundColor = data.type === "class" ? "#eff6ff" : "#f0fdf4";
+  // Use theme-aware colors from flow-blueprint-colors.tsx
+  const blueprintBorder = useBlueprintBorderColor();
+  const blueprintBg = useBlueprintBackgroundColor();
+  const flowBorder = useFlowBorderColor();
+  const flowBg = useFlowBackgroundColor();
+  const provideColor = useProvideHandleColor();
+  const consumeColor = useConsumeHandleColor();
+  const textColor = useNodeTextColor();
+  const labelColor = useNodeLabelColor();
+  const connectionLabelBg = useConnectionLabelBackgroundColor();
+  const connectionLabelBorder = useConnectionLabelBorderColor();
+
+  const borderColor = data.type === "blueprint" ? blueprintBorder : flowBorder;
+  const backgroundColor = data.type === "blueprint" ? blueprintBg : flowBg;
 
   const provides = data.provides || [];
   const consumes = data.consumes || [];
@@ -102,6 +138,7 @@ const CustomNode = ({
         border: `2px solid ${borderColor}`,
         borderRadius: "6px",
         background: backgroundColor,
+        color: textColor,
         fontSize: "14px",
         fontWeight: "500",
         position: "relative",
@@ -128,7 +165,7 @@ const CustomNode = ({
               position={Position.Left}
               id={`${isProvides ? "provide" : "consume"}-${connection}`}
               style={{
-                background: isProvides ? "#16a34a" : "#dc2626",
+                background: isProvides ? provideColor : consumeColor,
                 top: `${((index + 1) / (leftConnections.length + 1)) * 100}%`,
               }}
             />
@@ -139,10 +176,14 @@ const CustomNode = ({
                 top: `calc(${((index + 1) / (leftConnections.length + 1)) * 100}% - 8px)`,
                 transform: "translateY(-50%)",
                 fontSize: "9px",
-                color: isProvides ? "#16a34a" : "#dc2626",
+                color: isProvides ? provideColor : consumeColor,
                 fontWeight: "normal",
                 whiteSpace: "nowrap",
                 textAlign: "right",
+                background: connectionLabelBg,
+                padding: "2px 4px",
+                borderRadius: "3px",
+                border: `1px solid ${connectionLabelBorder}`,
               }}
             >
               {connection}
@@ -166,7 +207,7 @@ const CustomNode = ({
               position={Position.Right}
               id={`${isProvides ? "provide" : "consume"}-${connection}`}
               style={{
-                background: isProvides ? "#16a34a" : "#dc2626",
+                background: isProvides ? provideColor : consumeColor,
                 top: `${((index + 1) / (rightConnections.length + 1)) * 100}%`,
               }}
             />
@@ -177,10 +218,14 @@ const CustomNode = ({
                 top: `calc(${((index + 1) / (rightConnections.length + 1)) * 100}% - 8px)`,
                 transform: "translateY(-50%)",
                 fontSize: "9px",
-                color: isProvides ? "#16a34a" : "#dc2626",
+                color: isProvides ? provideColor : consumeColor,
                 fontWeight: "normal",
                 whiteSpace: "nowrap",
                 textAlign: "left",
+                background: connectionLabelBg,
+                padding: "2px 4px",
+                borderRadius: "3px",
+                border: `1px solid ${connectionLabelBorder}`,
               }}
             >
               {connection}
@@ -194,7 +239,7 @@ const CustomNode = ({
         <div
           style={{
             fontSize: "10px",
-            color: borderColor,
+            color: labelColor,
             fontWeight: "normal",
             marginTop: "2px",
           }}
@@ -218,9 +263,18 @@ const InterfaceNode = ({
     queues?: Record<string, unknown>;
   };
 }) => {
-  const borderColor = data.interfaceKind === "service" ? "#8b5cf6" : "#ec4899"; // purple for service, pink for flow
-  const backgroundColor =
-    data.interfaceKind === "service" ? "#f3e8ff" : "#fce7f3";
+  // Use theme-aware colors from flow-blueprint-colors.tsx
+  const serviceBorder = useServiceInterfaceBorderColor();
+  const serviceBg = useServiceInterfaceBackgroundColor();
+  const flowInterfaceBorder = useFlowInterfaceBorderColor();
+  const flowInterfaceBg = useFlowInterfaceBackgroundColor();
+  const textColor = useNodeTextColor();
+  const descriptionColor = useDescriptionTextColor();
+  const shadowColor = useNodeShadowColor();
+  const handleBorder = useInterfaceHandleBorderColor();
+
+  const borderColor = data.interfaceKind === "service" ? serviceBorder : flowInterfaceBorder;
+  const backgroundColor = data.interfaceKind === "service" ? serviceBg : flowInterfaceBg;
   const icon = data.interfaceKind === "service" ? "⚡" : "📦";
 
   return (
@@ -230,6 +284,7 @@ const InterfaceNode = ({
         border: `2px dashed ${borderColor}`,
         borderRadius: "12px",
         background: backgroundColor,
+        color: textColor,
         fontSize: "14px",
         fontWeight: "500",
         minWidth: "180px",
@@ -237,7 +292,7 @@ const InterfaceNode = ({
         flexDirection: "column",
         alignItems: "center",
         gap: "4px",
-        boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+        boxShadow: `0 4px 6px ${shadowColor}`,
         position: "relative",
       }}
     >
@@ -250,7 +305,7 @@ const InterfaceNode = ({
           background: borderColor,
           width: "12px",
           height: "12px",
-          border: "2px solid white",
+          border: `2px solid ${handleBorder}`,
           right: "-6px",
         }}
       />
@@ -271,7 +326,7 @@ const InterfaceNode = ({
         <div
           style={{
             fontSize: "11px",
-            color: "#6b7280",
+            color: descriptionColor,
             fontStyle: "italic",
             textAlign: "center",
             maxWidth: "200px",
@@ -301,17 +356,17 @@ const nodeTypes = {
   interface: InterfaceNode,
 };
 
-interface FlowClass {
-  class?: Record<string, unknown>;
+interface FlowBlueprint {
+  blueprint?: Record<string, unknown>;
   flow?: Record<string, unknown>;
 }
 
-// Generate nodes from flow class processors
-const generateNodesFromFlowClass = (flowClass: FlowClass): Node[] => {
+// Generate nodes from flow blueprint processors
+const generateNodesFromFlowBlueprints = (flowBlueprint: FlowBlueprint): Node[] => {
   const nodes: Node[] = [];
 
-  // Add class processors
-  Object.keys(flowClass.class || {}).forEach((processorName) => {
+  // Add blueprint processors
+  Object.keys(flowBlueprint.blueprint || {}).forEach((processorName) => {
     // Strip template suffix to get base processor name for service map lookup
     const baseProcessorName = processorName.replace(/:\{[^}]+\}$/, "");
 
@@ -329,11 +384,11 @@ const generateNodesFromFlowClass = (flowClass: FlowClass): Node[] => {
         .map((conn) => conn.name) || [];
 
     nodes.push({
-      id: `class-${processorName}`,
+      id: `blueprint-${processorName}`,
       position: { x: 0, y: 0 }, // Will be calculated by dagre
       data: {
         label: processorName,
-        type: "class",
+        type: "blueprint",
         provides: provides,
         consumes: consumes,
         processorInfo: processorInfo, // Pass full processor info for direction lookup
@@ -343,7 +398,7 @@ const generateNodesFromFlowClass = (flowClass: FlowClass): Node[] => {
   });
 
   // Add flow processors
-  Object.keys(flowClass.flow || {}).forEach((processorName) => {
+  Object.keys(flowBlueprint.flow || {}).forEach((processorName) => {
     // Strip template suffix to get base processor name for service map lookup
     const baseProcessorName = processorName.replace(/:\{[^}]+\}$/, "");
 
@@ -375,7 +430,7 @@ const generateNodesFromFlowClass = (flowClass: FlowClass): Node[] => {
   });
 
   // Add interface nodes
-  Object.entries(flowClass.interfaces || {}).forEach(
+  Object.entries(flowBlueprint.interfaces || {}).forEach(
     ([interfaceName, interfaceQueues]) => {
       // Look up interface definition in service map
       const interfaceDefinition = serviceMap.interfaces?.[interfaceName];
@@ -444,8 +499,8 @@ const applyDagreLayout = (nodes: Node[], edges: Edge[]): Node[] => {
   });
 };
 
-// Generate edges from flow class connections using three-way matching algorithm
-const generateEdgesFromFlowClass = (flowClass: FlowClass): Edge[] => {
+// Generate edges from flow blueprint connections using three-way matching algorithm
+const generateEdgesFromFlowBlueprints = (flowBlueprint: FlowBlueprint): Edge[] => {
   const edges: Edge[] = [];
   let edgeIndex = 0;
 
@@ -471,22 +526,22 @@ const generateEdgesFromFlowClass = (flowClass: FlowClass): Edge[] => {
 
   // Collect all processors and their connections from service map + flow class queues
   const allProcessors = [
-    ...Object.keys(flowClass.class || {}).map((name) => ({
+    ...Object.keys(flowBlueprint.blueprint || {}).map((name) => ({
       name,
-      type: "class",
+      type: "blueprint",
       baseProcessorName: name.replace(/:\{[^}]+\}$/, ""),
-      flowClassConnections: flowClass.class[name],
+      flowBlueprintConnections: flowBlueprint.blueprint[name],
     })),
-    ...Object.keys(flowClass.flow || {}).map((name) => ({
+    ...Object.keys(flowBlueprint.flow || {}).map((name) => ({
       name,
       type: "flow",
       baseProcessorName: name.replace(/:\{[^}]+\}$/, ""),
-      flowClassConnections: flowClass.flow[name],
+      flowBlueprintConnections: flowBlueprint.flow[name],
     })),
   ];
 
   allProcessors.forEach(
-    ({ name, type, baseProcessorName, flowClassConnections }) => {
+    ({ name, type, baseProcessorName, flowBlueprintConnections }) => {
       const processorInfo = serviceMap.processors[baseProcessorName];
       if (!processorInfo?.connections) return;
 
@@ -505,21 +560,21 @@ const generateEdgesFromFlowClass = (flowClass: FlowClass): Edge[] => {
           // For providers: look for request and response
           if (connection.role === "provides") {
             queues = {
-              request: flowClassConnections.request,
-              response: flowClassConnections.response,
+              request: flowBlueprintConnections.request,
+              response: flowBlueprintConnections.response,
             };
           } else if (connection.role === "consumes") {
             queues = {
-              request: flowClassConnections[`${connection.name}-request`],
-              response: flowClassConnections[`${connection.name}-response`],
+              request: flowBlueprintConnections[`${connection.name}-request`],
+              response: flowBlueprintConnections[`${connection.name}-response`],
             };
           }
         } else if (connectionKind === "flow") {
           // For flow: single queue value at connection.name
-          queues = { value: flowClassConnections[connection.name] };
+          queues = { value: flowBlueprintConnections[connection.name] };
         } else if (connectionKind === "passive") {
           // For passive: both consumer and provider use single queue value
-          queues = { value: flowClassConnections[connection.name] };
+          queues = { value: flowBlueprintConnections[connection.name] };
         }
 
         // Only add if we found valid queues
@@ -609,7 +664,7 @@ const generateEdgesFromFlowClass = (flowClass: FlowClass): Edge[] => {
 
   // Connect interfaces to their implementing processors
 
-  Object.entries(flowClass.interfaces || {}).forEach(
+  Object.entries(flowBlueprint.interfaces || {}).forEach(
     ([interfaceName, interfaceQueues]) => {
       const interfaceDefinition = serviceMap.interfaces?.[interfaceName];
       const interfaceKind = interfaceDefinition?.kind;
@@ -620,7 +675,7 @@ const generateEdgesFromFlowClass = (flowClass: FlowClass): Edge[] => {
 
       // Find processors that match this interface's queue pattern
       allProcessors.forEach(
-        ({ name, type, baseProcessorName, flowClassConnections }) => {
+        ({ name, type, baseProcessorName, flowBlueprintConnections }) => {
           const processorId = `${type}-${name}`;
           const processorInfo = serviceMap.processors[baseProcessorName];
           if (!processorInfo?.connections) return;
@@ -639,8 +694,8 @@ const generateEdgesFromFlowClass = (flowClass: FlowClass): Edge[] => {
 
             // Check if this processor provides this service
             if (
-              flowClassConnections.request === interfaceRequest &&
-              flowClassConnections.response === interfaceResponse
+              flowBlueprintConnections.request === interfaceRequest &&
+              flowBlueprintConnections.response === interfaceResponse
             ) {
               // Find the service connection that provides
               matchingConnection = processorInfo.connections.find(
@@ -657,7 +712,7 @@ const generateEdgesFromFlowClass = (flowClass: FlowClass): Edge[] => {
             // Check only provider connections for matching queue
             processorInfo.connections.forEach((connection) => {
               if (connection.role === "provides") {
-                const connectionQueue = flowClassConnections[connection.name];
+                const connectionQueue = flowBlueprintConnections[connection.name];
                 if (connectionQueue === interfaceQueue) {
                   matchingConnection = connection;
                   isMatch = true;
@@ -698,25 +753,50 @@ const generateEdgesFromFlowClass = (flowClass: FlowClass): Edge[] => {
   return edges;
 };
 
-export const FlowClassEditorView: React.FC<FlowClassEditorViewProps> = ({
-  flowClassId,
+export const FlowBlueprintEditorView: React.FC<FlowBlueprintEditorViewProps> = ({
+  flowBlueprintId,
   onBack,
 }) => {
-  const { flowClasses } = useFlowBlueprints();
-  const flowClass = flowClasses.find((fc) => fc.id === flowClassId);
+  const { flowBlueprints } = useFlowBlueprints();
+  const flowBlueprint = flowBlueprints.find((fc) => fc.id === flowBlueprintId);
 
-  // Generate nodes and edges from flow class data using useMemo - must be before early return
+  // Use theme-aware colors from flow-blueprint-colors.tsx
+  const headerBg = useHeaderBackgroundColor();
+  const headerBorder = useHeaderBorderColor();
+  const miniMapBg = useMiniMapBackgroundColor();
+  const edgeLabelBg = useEdgeLabelBackgroundColor();
+  const edgeLabelColor = useEdgeLabelTextColor();
+
+  // Generate nodes and edges from flow blueprint data using useMemo - must be before early return
   const initialNodes = useMemo(() => {
-    if (!flowClass) return [];
-    const nodes = generateNodesFromFlowClass(flowClass);
+    if (!flowBlueprint) return [];
+    const nodes = generateNodesFromFlowBlueprints(flowBlueprint);
     return nodes;
-  }, [flowClass]);
+  }, [flowBlueprint]);
 
   const generatedEdges = useMemo(() => {
-    if (!flowClass) return [];
-    const edges = generateEdgesFromFlowClass(flowClass);
+    if (!flowBlueprint) return [];
+    const edges = generateEdgesFromFlowBlueprints(flowBlueprint);
     return edges;
-  }, [flowClass]);
+  }, [flowBlueprint]);
+
+  // Apply dark mode styling to edge labels
+  const styledEdges = useMemo(() => {
+    return generatedEdges.map((edge) => ({
+      ...edge,
+      labelStyle: {
+        fill: edgeLabelColor,
+        fontWeight: 500,
+        fontSize: 12,
+      },
+      labelBgStyle: {
+        fill: edgeLabelBg,
+        fillOpacity: 0.9,
+      },
+      labelBgPadding: [8, 4] as [number, number],
+      labelBgBorderRadius: 4,
+    }));
+  }, [generatedEdges, edgeLabelColor, edgeLabelBg]);
 
   const layoutedNodes = useMemo(() => {
     const layouted = applyDagreLayout(initialNodes, generatedEdges);
@@ -732,15 +812,15 @@ export const FlowClassEditorView: React.FC<FlowClassEditorViewProps> = ({
   }, [layoutedNodes, setNodes]);
 
   useEffect(() => {
-    setEdges(generatedEdges);
-  }, [generatedEdges, setEdges]);
+    setEdges(styledEdges);
+  }, [styledEdges, setEdges]);
 
   const onConnect = useCallback(
     (params: Connection) => setEdges((eds) => addEdge(params, eds)),
     [setEdges],
   );
 
-  if (!flowClass) {
+  if (!flowBlueprint) {
     return (
       <Box p={6}>
         <HStack spacing={4} mb={4}>
@@ -749,10 +829,10 @@ export const FlowClassEditorView: React.FC<FlowClassEditorViewProps> = ({
             leftIcon={<ArrowLeft size={16} />}
             variant="ghost"
           >
-            Back to Flow Classes
+            Back to Flow Blueprints
           </Button>
         </HStack>
-        <Text>Flow class not found.</Text>
+        <Text>Flow blueprint not found.</Text>
       </Box>
     );
   }
@@ -763,9 +843,9 @@ export const FlowClassEditorView: React.FC<FlowClassEditorViewProps> = ({
       <VStack
         spacing={4}
         p={6}
-        bg="white"
+        bg={headerBg}
         borderBottom="1px"
-        borderColor="gray.200"
+        borderColor={headerBorder}
       >
         <HStack justifyContent="space-between" w="100%">
           <HStack spacing={4}>
@@ -774,7 +854,7 @@ export const FlowClassEditorView: React.FC<FlowClassEditorViewProps> = ({
               leftIcon={<ArrowLeft size={16} />}
               variant="ghost"
             >
-              Back to Flow Classes
+              Back to Flow Blueprints
             </Button>
           </HStack>
           <HStack spacing={4}>
@@ -790,7 +870,7 @@ export const FlowClassEditorView: React.FC<FlowClassEditorViewProps> = ({
         </HStack>
 
         <VStack spacing={2} align="start" w="100%">
-          <Heading size="lg">{flowClass.name}</Heading>
+          <Heading size="lg">{flowBlueprint?.name}</Heading>
         </VStack>
 
         <Separator />
@@ -813,11 +893,11 @@ export const FlowClassEditorView: React.FC<FlowClassEditorViewProps> = ({
           <Controls />
           <MiniMap
             nodeColor={(node) => {
-              return node.data?.type === "class" ? "#2563eb" : "#16a34a";
+              return node.data?.type === "blueprint" ? "#2563eb" : "#16a34a";
             }}
             position="top-right"
             style={{
-              backgroundColor: "rgba(255, 255, 255, 0.8)",
+              backgroundColor: miniMapBg,
             }}
           />
         </ReactFlow>

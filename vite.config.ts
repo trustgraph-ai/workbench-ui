@@ -6,7 +6,23 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     preserveSymlinks: true,
-    dedupe: ["react", "react-dom", "@trustgraph/react-provider"],
+    dedupe: [
+      "react",
+      "react-dom",
+      "@tanstack/react-query",
+      "zustand",
+      "@trustgraph/client",
+      "@trustgraph/react-provider",
+      "@trustgraph/react-state",
+    ],
+  },
+  optimizeDeps: {
+    exclude: [
+      "@trustgraph/client",
+      "@trustgraph/react-provider",
+      "@trustgraph/react-state",
+    ],
+    include: ["compute-cosine-similarity"],
   },
   server: {
     proxy: {

@@ -7,9 +7,9 @@ import CreateDialog from "../CreateDialog";
 
 // Mock the useFlows hook
 const mockStartFlow = vi.fn();
-const mockFlowClasses = [
-  ["class1", { description: "Class 1 Description" }],
-  ["class2", { description: "Class 2 Description" }],
+const mockFlowBlueprints = [
+  ["class1", { description: "Blueprints 1 Description" }],
+  ["class2", { description: "Blueprints 2 Description" }],
 ];
 
 vi.mock("@trustgraph/react-state", async () => {
@@ -17,7 +17,7 @@ vi.mock("@trustgraph/react-state", async () => {
   return {
     ...actual,
     useFlows: () => ({
-      flowClasses: mockFlowClasses,
+      flowBlueprints: mockFlowBlueprints,
       startFlow: mockStartFlow,
     }),
     useFlowParameters: () => ({
@@ -111,18 +111,18 @@ describe("CreateDialog", () => {
     expect(getByText("Create Flow")).toBeInTheDocument();
   });
 
-  it("should display flow class selector", () => {
+  it("should display flow blueprint selector", () => {
     const { getByLabelText } = renderComponent();
-    const select = getByLabelText("Flow class");
+    const select = getByLabelText("Flow blueprint");
     expect(select).toBeInTheDocument();
   });
 
-  it("should handle flow class selection and form submission", () => {
+  it("should handle flow blueprint selection and form submission", () => {
     const { getByRole, getByText } = renderComponent();
 
     // Verify the dialog contains the expected elements
     expect(
-      getByText("Select flow class and configuration:"),
+      getByText("Select flow blueprint and configuration:"),
     ).toBeInTheDocument();
 
     // The Create button should be initially disabled due to validation
@@ -176,7 +176,7 @@ describe("CreateDialog", () => {
     });
 
     it("should handle empty selection", () => {
-      // This verifies that when no flow class is selected,
+      // This verifies that when no flow blueprint is selected,
       // the component now validates and prevents submission
 
       const { getByRole } = renderComponent();

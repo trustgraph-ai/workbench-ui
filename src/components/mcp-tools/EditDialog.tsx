@@ -16,6 +16,7 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
   const [newId, setNewId] = useState("");
   const [remoteName, setRemoteName] = useState("");
   const [url, setUrl] = useState("");
+  const [authToken, setAuthToken] = useState("");
 
   useEffect(() => {
     if (!id || create) return;
@@ -31,6 +32,7 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
         // Store MCP tool information
         setRemoteName(x["remote-name"] || "");
         setUrl(x.url || "");
+        setAuthToken(x["auth-token"] || "");
       })
       .catch((e) => {
         console.log("Error:", e);
@@ -47,6 +49,7 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
       setNewId("");
       setRemoteName("");
       setUrl("");
+      setAuthToken("");
     }
   }, [create, open]);
 
@@ -55,6 +58,7 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
     const toolStruct = {
       "remote-name": remoteName,
       url: url,
+      ...(authToken && { "auth-token": authToken }), // Only include if provided
     };
 
     if (create) {
@@ -116,6 +120,16 @@ const EditDialog = ({ open, onOpenChange, onComplete, id, create }) => {
                 value={url}
                 onValueChange={(v) => setUrl(v)}
                 required={true}
+              />
+
+              <TextField
+                label="Auth Token"
+                placeholder="Enter bearer token (optional)"
+                value={authToken}
+                onValueChange={(v) => setAuthToken(v)}
+                type="password"
+                required={false}
+                helperText="Optional authentication token for secured MCP endpoints. Stored in plaintext in config."
               />
             </Dialog.Body>
             <Dialog.Footer>

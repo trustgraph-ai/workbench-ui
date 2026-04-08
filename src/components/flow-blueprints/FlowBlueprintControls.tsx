@@ -1,15 +1,15 @@
 import React from "react";
 import { Plus } from "lucide-react";
 import { Button, Box } from "@chakra-ui/react";
-import { generateFlowClassId } from "@trustgraph/react-state";
+import { generateFlowBlueprintId } from "@trustgraph/react-state";
 
-interface FlowClassControlsProps {
+interface FlowBlueprintsControlsProps {
   onNew?: (id: string) => void;
 }
 
-const FlowClassControls: React.FC<FlowClassControlsProps> = ({ onNew }) => {
+const FlowBlueprintsControls: React.FC<FlowBlueprintControlsProps> = ({ onNew }) => {
   const handleCreate = () => {
-    const newId = generateFlowClassId("flow-class");
+    const newId = generateFlowBlueprintId("flow-blueprint");
     onNew?.(newId);
   };
 
@@ -23,10 +23,10 @@ const FlowClassControls: React.FC<FlowClassControlsProps> = ({ onNew }) => {
         colorPalette="primary"
         onClick={handleCreate}
       >
-        <Plus /> Create Flow Class
+        <Plus /> Create Flow Blueprints
       </Button>
     </Box>
   );
 };
 
-export default FlowClassControls;
+export default FlowBlueprintsControls;

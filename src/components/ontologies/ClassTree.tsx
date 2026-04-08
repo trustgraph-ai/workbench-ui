@@ -11,6 +11,15 @@ import {
 import { Plus, ChevronRight, ChevronDown, Hash, Trash2 } from "lucide-react";
 import { OWLClass } from "@trustgraph/react-state";
 import { useNotification } from "@trustgraph/react-state";
+import {
+  useContentBackgroundColor,
+  useHeadingTextColor,
+  useTextColor,
+  useSubtleTextColor,
+  useHoverBackgroundColor,
+  useSelectedBackgroundColor,
+  useSelectedHoverBackgroundColor,
+} from "../ui/ontology-colors";
 
 interface ClassTreeProps {
   classes: Record<string, OWLClass>;
@@ -29,6 +38,14 @@ export const ClassTree: React.FC<ClassTreeProps> = ({
   onUpdateClass,
   onDeleteClass,
 }) => {
+  const contentBg = useContentBackgroundColor();
+  const headingColor = useHeadingTextColor();
+  const textColor = useTextColor();
+  const subtleTextColor = useSubtleTextColor();
+  const hoverBg = useHoverBackgroundColor();
+  const selectedBg = useSelectedBackgroundColor();
+  const selectedHoverBg = useSelectedHoverBackgroundColor();
+
   const [isCreating, setIsCreating] = useState(false);
   const [newClassName, setNewClassName] = useState("");
   const [expandedClasses, setExpandedClasses] = useState<Set<string>>(
@@ -213,7 +230,7 @@ export const ClassTree: React.FC<ClassTreeProps> = ({
             isDraggedOver
               ? "green.100"
               : isSelected
-                ? "blue.50"
+                ? selectedBg
                 : isDragging
                   ? "gray.200"
                   : "transparent"
@@ -227,8 +244,8 @@ export const ClassTree: React.FC<ClassTreeProps> = ({
             bg: isDraggedOver
               ? "green.100"
               : isSelected
-                ? "blue.100"
-                : "gray.50",
+                ? selectedHoverBg
+                : hoverBg,
           }}
           onClick={() => onSelectClass(classId)}
           draggable
@@ -256,19 +273,19 @@ export const ClassTree: React.FC<ClassTreeProps> = ({
             <Box w={6} /> // Spacer for alignment
           )}
 
-          <Hash size={14} color="#666" />
+          <Hash size={14} color={subtleTextColor} />
 
           <VStack align="start" spacing={0} flex="1" minW="0">
             <Text
               fontSize="sm"
               fontWeight={isSelected ? "semibold" : "normal"}
-              color={isSelected ? "blue.800" : "gray.800"}
+              color={isSelected ? "blue.600" : textColor}
               noOfLines={1}
             >
               {getClassLabel(owlClass)}
             </Text>
             {owlClass["rdfs:comment"] && (
-              <Text fontSize="xs" color="gray.500" noOfLines={1}>
+              <Text fontSize="xs" color={subtleTextColor} noOfLines={1}>
                 {owlClass["rdfs:comment"]}
               </Text>
             )}
@@ -309,9 +326,9 @@ export const ClassTree: React.FC<ClassTreeProps> = ({
   return (
     <VStack align="stretch" spacing={0} h="100%">
       {/* Header */}
-      <Box p={4} borderBottomWidth="1px" bg="gray.50">
+      <Box p={4} borderBottomWidth="1px" bg={contentBg}>
         <HStack justify="space-between">
-          <Text fontWeight="semibold" fontSize="md" color="gray.800">
+          <Text fontWeight="semibold" fontSize="md" color={headingColor}>
             Classes ({classEntries.length})
           </Text>
           <IconButton
