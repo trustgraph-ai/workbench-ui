@@ -154,8 +154,6 @@ const SourceDrawer = ({ source, isOpen, onClose }: SourceDrawerProps) => {
                       bg="bg.subtle"
                       borderRadius="md"
                       p={3}
-                      maxH="400px"
-                      overflowY="auto"
                     >
                       <Text fontSize="sm" whiteSpace="pre-wrap">
                         {chunkText}
